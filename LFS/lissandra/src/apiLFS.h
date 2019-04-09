@@ -10,5 +10,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef enum{
+	SELECT,
+	INSERT,
+	CREATE,
+	DESCRIBE,
+	DROP
+}op_code;
 
 #endif /* APILFS_H_ */
