@@ -10,22 +10,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 
 #include<commons/log.h>
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
 #include "apiLFS.h"
+#include<commons/collections/node.h>
+#include<commons/collections/list.h>
+
 t_log* init_logger(void);
 t_config* read_config(void);
-/*typedef struct{
+
+typedef struct{
 	long timestamp;
 	u_int16_t key;
 	char* value;
 }Registry;
+
+
 //NO ESTA COMPLETAMENTE DECIDIDO
-struct memtable{
-	Registry *reg;
-	Registry *next;
-};*/
+
 #endif /* LISSANDRA_H_ */

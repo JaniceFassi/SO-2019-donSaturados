@@ -18,4 +18,8 @@ typedef enum{
 	DROP
 }op_code;
 
+void api(op_code option);
+
+
+
 #endif /* APILFS_H_ */
