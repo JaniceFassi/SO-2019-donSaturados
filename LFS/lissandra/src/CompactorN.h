@@ -1,12 +1,12 @@
 /*
- * Compactor.h
+ * CompactorN.h
  *
- *  Created on: 9 abr. 2019
+ *  Created on: 12 abr. 2019
  *      Author: utnso
  */
 
-#ifndef COMPACTOR_H_
-#define COMPACTOR_H_
+#ifndef LFS_LISSANDRA_SRC_COMPACTORN_H_
+#define LFS_LISSANDRA_SRC_COMPACTORN_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,4 +17,4 @@
 t_log* init_logger(void);
 t_config* read_config(void);
 
-#endif /* COMPACTOR_H_ */
+#endif /* LFS_LISSANDRA_SRC_COMPACTORN_H_ */
