@@ -8,8 +8,6 @@
  ============================================================================
  */
 #include "Lissandra.h"
-#include <commons/collections/list.h>
-#include <commons/collections/node.h>
 
 int main(void) {
 
@@ -26,7 +24,7 @@ int main(void) {
 	int servidor= socket(AF_INET,SOCK_STREAM,0);
 
 	//INICIO DEL SERVIDOR
-
+	//VER SI SE PUEDE HACER EN UNA FUNCION APARTE, PARA NO TENERLO EN EL MAIN
 	if(bind(servidor, (void*) &direccionServidor, sizeof(direccionServidor))!=0){
 		perror("Fallo el bind");
 		log_info(logger, "Error al iniciar el servidor");

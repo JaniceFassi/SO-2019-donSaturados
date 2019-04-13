@@ -21,6 +21,8 @@
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
 
+#include "Compactor.h"
+
 t_log* init_logger(void);
 t_config* read_config(void);
 
