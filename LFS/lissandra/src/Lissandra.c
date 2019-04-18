@@ -34,6 +34,26 @@ int main(void) {
 	listen(servidor,100);
 	printf("Estoy escuchando");
 	log_info(logger, "Servidor escuchando");
+	struct sockaddr_in direccionCliente;
+		unsigned int tamanioDireccion= sizeof(direccionCliente);
+
+		int cliente = accept(servidor, (void*) &direccionCliente, (socklen_t*)&tamanioDireccion);
+
+		log_info(logger, "Se conecto un cliente\n");
+
+		char* buffer = malloc(sizeof(char)*11);
+		int bytesRecibidos = recv(cliente, buffer, 10, 0);
+
+		if(bytesRecibidos<=0){
+			perror("Fallo la conexion\n");
+			return 1;
+		}
+
+		buffer[bytesRecibidos]='\0';
+		printf("Recibi %d bytes con %s\n", bytesRecibidos, buffer);
+
+		free(buffer);
+
 
 	char* value = config_get_string_value(config, "PUNTO_MONTAJE");
 	log_info(logger, value);

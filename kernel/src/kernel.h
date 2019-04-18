@@ -1,13 +1,12 @@
 /*
- * soquetes.h
+ * kernel.h
  *
  *  Created on: 18 abr. 2019
  *      Author: utnso
  */
 
-#ifndef SOQUETES_H_
-#define SOQUETES_H_
-
+#ifndef KERNEL_H_
+#define KERNEL_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
@@ -17,12 +16,10 @@
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
-
-int crearServidor();
-
-void escuchar(int servidor, int cantConexiones);
-
-int aceptarConexion(int servidor);
+#include<commons/collections/node.h>
+#include<commons/collections/list.h>
+#include<socketSaturados.h>
 
 
-#endif /* SOQUETES_H_ */
+
+#endif /* KERNEL_H_ */
