@@ -14,3 +14,56 @@
 [INFO] 19:38:51:668 Lissandra/(7312:7312): 8003
 [INFO] 19:38:51:668 Lissandra/(7312:7312): 4
 [INFO] 19:38:51:668 Lissandra/(7312:7312): Error al iniciar el servidor
+[INFO] 01:29:36:120 Lissandra/(4993:4993): 192.168.1.116
+[INFO] 01:29:36:127 Lissandra/(4993:4993): 8003
+[INFO] 01:29:36:127 Lissandra/(4993:4993): 4
+[INFO] 01:29:36:127 Lissandra/(4993:4993): Error al iniciar el servidor
+[INFO] 01:32:37:748 Lissandra/(5327:5327): 192.168.1.116
+[INFO] 01:32:37:750 Lissandra/(5327:5327): 8003
+[INFO] 01:32:37:750 Lissandra/(5327:5327): 4
+[INFO] 01:32:37:750 Lissandra/(5327:5327): Error al iniciar el servidor
+[INFO] 01:36:48:357 Lissandra/(5609:5609): 192.168.1.116
+[INFO] 01:36:48:362 Lissandra/(5609:5609): 8003
+[INFO] 01:36:48:373 Lissandra/(5609:5609): 4
+[INFO] 01:36:48:374 Lissandra/(5609:5609): Error al iniciar el servidor
+[INFO] 01:37:25:994 Lissandra/(5676:5676): 192.168.1.116
+[INFO] 01:37:25:995 Lissandra/(5676:5676): 8003
+[INFO] 01:37:25:996 Lissandra/(5676:5676): 4
+[INFO] 01:37:25:997 Lissandra/(5676:5676): Error al iniciar el servidor
+[INFO] 01:40:19:452 Lissandra/(5772:5772): 192.168.1.123
+[INFO] 01:40:19:458 Lissandra/(5772:5772): 8003
+[INFO] 01:40:19:458 Lissandra/(5772:5772): 4
+[INFO] 01:40:19:459 Lissandra/(5772:5772): Error al iniciar el servidor
+[INFO] 01:41:27:457 Lissandra/(5829:5829): 192.168.0.124
+[INFO] 01:41:27:464 Lissandra/(5829:5829): 8003
+[INFO] 01:41:27:464 Lissandra/(5829:5829): 4
+[INFO] 01:41:27:465 Lissandra/(5829:5829): Error al iniciar el servidor
+[INFO] 01:43:09:185 Lissandra/(6041:6041): 192.168.0.124
+[INFO] 01:43:09:187 Lissandra/(6041:6041): 8003
+[INFO] 01:43:09:187 Lissandra/(6041:6041): 4
+[INFO] 01:43:09:187 Lissandra/(6041:6041): Error al iniciar el servidor
+[INFO] 01:44:40:393 Lissandra/(6168:6168): 192.168.0.124
+[INFO] 01:44:40:393 Lissandra/(6168:6168): 8003
+[INFO] 01:44:40:393 Lissandra/(6168:6168): 4
+[INFO] 01:44:40:394 Lissandra/(6168:6168): Servidor escuchando
+[INFO] 01:45:39:707 Lissandra/(6209:6209): 127.0.0.1
+[INFO] 01:45:39:709 Lissandra/(6209:6209): 8003
+[INFO] 01:45:39:709 Lissandra/(6209:6209): 4
+[INFO] 01:45:39:709 Lissandra/(6209:6209): Error al iniciar el servidor
+[INFO] 01:46:15:470 Lissandra/(6248:6248): 127.0.0.1
+[INFO] 01:46:15:471 Lissandra/(6248:6248): 8003
+[INFO] 01:46:15:471 Lissandra/(6248:6248): 4
+[INFO] 01:46:15:471 Lissandra/(6248:6248): Error al setear el servidor
+
+[INFO] 01:46:37:850 Lissandra/(6285:6285): 127.0.0.1
+[INFO] 01:46:37:850 Lissandra/(6285:6285): 8003
+[INFO] 01:46:37:851 Lissandra/(6285:6285): 4
+[INFO] 01:46:37:851 Lissandra/(6285:6285): Error al iniciar el servidor
+[INFO] 01:47:00:560 Lissandra/(6309:6309): 127.0.0.1
+[INFO] 01:47:00:565 Lissandra/(6309:6309): 8004
+[INFO] 01:47:00:565 Lissandra/(6309:6309): 4
+[INFO] 01:47:00:565 Lissandra/(6309:6309): Servidor escuchando
+[INFO] 01:47:28:753 Lissandra/(6355:6355): 127.0.0.1
+[INFO] 01:47:28:756 Lissandra/(6355:6355): 8004
+[INFO] 01:47:28:756 Lissandra/(6355:6355): 4
+[INFO] 01:47:28:756 Lissandra/(6355:6355): Servidor escuchando

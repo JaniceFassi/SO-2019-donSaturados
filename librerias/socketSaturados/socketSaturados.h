@@ -18,7 +18,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-void completServer(struct sockaddr_in adressServer,char* ipServer, int portServer);
+struct sockaddr_in completServer(char* ipServer, int portServer);
 int createSocket(u_int16_t *sock);
 int conectClient(u_int16_t *sock,struct sockaddr_in direccionServidor);
 int recivHandsake(u_int16_t sock,char*handshake);

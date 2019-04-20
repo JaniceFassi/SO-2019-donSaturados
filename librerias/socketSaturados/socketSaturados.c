@@ -7,10 +7,12 @@
 
 #include "socketSaturados.h"
 //ESTE CREA EL STRUCT DE ADRESSSERVER
-void completServer(struct sockaddr_in adressServer,char* ipServer, int portServer){
+struct sockaddr_in completServer(char* ipServer, int portServer){
+	struct sockaddr_in adressServer;
 	adressServer.sin_family = AF_INET;
 	adressServer.sin_addr.s_addr = inet_addr(ipServer);
 	adressServer.sin_port = htons(portServer);
+	return adressServer;
 }
 //ESTE CREA EL SOCKET CLIENTE Y DEVULEVE EL NUMERO
 int createSocket(u_int16_t *sock){
@@ -23,7 +25,7 @@ int createSocket(u_int16_t *sock){
 }
 
 int conectClient(u_int16_t *sock,struct sockaddr_in direccionServidor){
-	if(connect(*sock,(struct sockaddr *)&direccionServidor,sizeof(direccionServidor))!=0){
+	if(connect((int) *sock,(struct sockaddr *)&direccionServidor,sizeof(direccionServidor))!=0){
 		perror("no se pudo conectar");
 		return 1;
 	}
@@ -53,6 +55,7 @@ int sendData(u_int16_t sock ,void *buffer ,int sizeBytes){
 }
 int linkClient(u_int16_t *sock,char* ipServer, int portServer){
 	struct sockaddr_in adressServer;
+	adressServer= completServer(ipServer,portServer);
 
 	if(createSocket(sock)!=0){
 		return 1;
@@ -67,7 +70,7 @@ int linkClient(u_int16_t *sock,char* ipServer, int portServer){
 int createServer(char* ipAddress,u_int16_t port, u_int16_t* server){
 
 	struct sockaddr_in serverAddress;
-
+	serverAddress=completServer(ipAddress,(int)port);
 	//int server = socket(AF_INET, SOCK_STREAM, 0);
 	if(createSocket(server)!=0){
 			return 1;
@@ -75,15 +78,15 @@ int createServer(char* ipAddress,u_int16_t port, u_int16_t* server){
 	//Para desocupar el puerto
 	//Si da -1 es porque falló el intento de desocupar
 
-	u_int16_t ocp = 1;
-	if(setsockopt(*server, SOL_SOCKET, SO_REUSEADDR, &ocp, sizeof(u_int16_t)) == -1){
+	int ocp = 1;
+	if(setsockopt((int)*server, SOL_SOCKET, SO_REUSEADDR, &ocp, sizeof(ocp)) == -1){
 		perror("No se pudo desocupar el puerto");
 		return 1;
 			}
 
 		//Bind, para anclar el socket al puerto al que va a escuchar
 
-	if(bind(*server, (void*) &serverAddress, sizeof(serverAddress))!=0){
+	if(bind((int)*server, (void*) &serverAddress, sizeof(serverAddress))!=0){
 		perror("Fallo el bind");
 		return 1;
 			}

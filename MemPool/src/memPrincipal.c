@@ -13,7 +13,7 @@
 
 int main(void) {
 
-
+/* COMENTE TODO XQ HICE LA PRUEBA CON LA LIBRERIA
 	//SERVIDOR PARA KERNEL
 	struct sockaddr_in servidorParaKernel;
 	servidorParaKernel.sin_family = AF_INET;
@@ -76,7 +76,26 @@ int main(void) {
 		return 1;
 		}
 
+*/
 
+	// Prueba con la libreria
+	u_int16_t sock;
+		char * ip = "127.0.0.1";
+		u_int16_t port= 7000;
+		if(createServer(ip,port,&sock)!=0){
+			printf("se me rompio el programa");
+			return 1;
+		}
+		printf("soy crack\n");
+		listenForClients(sock,100); // esta funcion esta al pedo
+		printf("\nya escucha el wachin\n");
+		u_int16_t sockClient;
+		char * p="me llamo Kernel wacho";
+		if(acceptConexion(sock,&sockClient,p,0,0)!=0){
+			printf("habiamos llegado tan lejos...");
+			return 1;
+		}
+		printf("lo logramos!!");
 
 
 
@@ -108,6 +127,30 @@ int main(void) {
 
 	return EXIT_SUCCESS;
 }
+
+void mSelect(){
+
+}
+void mInsert(){
+
+}
+void mCreate(){
+
+}
+void mDescribe(){
+
+}
+void mDrop(){
+
+}
+void mJournal(){
+
+}
+void mGossip(){
+
+}
+
+
 
 
 

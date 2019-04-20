@@ -9,6 +9,7 @@
  */
 #include "Lissandra.h"
 
+
 int main(void) {
 
 	t_log* logger = init_logger();	//HAY QUE ACORDARSE DE CERRAR EL LOGGER EN ALGUN MOMENTO
@@ -20,7 +21,7 @@ int main(void) {
 	log_info(logger, ip);
 	char* port=config_get_string_value(config, "PORT");
 	log_info(logger, port);
-	u_int16_t server;
+	u_int16_t  server;
 	char* value=config_get_string_value(config, "TAMVALUE");
 	log_info(logger, value);
 	/*//PRUEBA CON LA LIBRERIA
@@ -62,7 +63,7 @@ int main(void) {
 		return 1;
 	}
 	int activado=1;
-	if(setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (void*)&activado, (socklen_t)sizeof(activado))==-1){
+	if(setsockopt((int)server, SOL_SOCKET, SO_REUSEADDR, (void*)&activado, (socklen_t)sizeof(activado))==-1){
 		log_info(logger, "Error al setear el servidor\n");
 		return 1;
 	}
@@ -70,12 +71,13 @@ int main(void) {
 	//VER SI SE PUEDE HACER EN UNA FUNCION APARTE, PARA NO TENERLO EN EL MAIN
 
 
-	if(bind(server, (void*) &direccionServidor, sizeof(direccionServidor))!=0){
+	if(bind((int)server, (void*) &direccionServidor, sizeof(direccionServidor))!=0){
 		log_info(logger, "Error al iniciar el servidor");
+		perror("");
 		return 1;
 	}
 
-	listen(server,100);
+	listen((int)server,100);
 
 	log_info(logger, "Servidor escuchando");
 
