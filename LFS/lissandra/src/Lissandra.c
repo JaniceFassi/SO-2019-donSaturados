@@ -24,8 +24,9 @@ int main(void) {
 	u_int16_t  server;
 	char* value=config_get_string_value(config, "TAMVALUE");
 	log_info(logger, value);
-	/*//PRUEBA CON LA LIBRERIA
-	if(createServer(ip,port,server)!=0){
+	createServer(ip,atoi(port),&server);
+	//PRUEBA CON LA LIBRERIA
+/*	if(createServer(ip,atoi(port),&server)!=0){
 		log_info(logger, "No se pudo crear el server por el puerto o el bind");
 	}else{
 		log_info(logger, "Se pudo crear el server");
@@ -33,11 +34,11 @@ int main(void) {
 
 	listenForClients(server, 100);
 
-	u_int16_t *socket_client;
+	u_int16_t socket_client;
 
 	char* serverName=config_get_string_value(config, "NAME");
 
-	if(acceptConexion( server, socket_client,serverName,1, value)!=0){
+	if(acceptConexion( server, &socket_client,serverName,1, atoi(value))!=0){
 		log_info(logger, "Error en el acept o al enviar handshake");
 	}else{
 		log_info(logger, "Se acepto la conexion");
@@ -51,7 +52,7 @@ int main(void) {
 		log_info(logger, buffer);
 	}
 	*/
-	struct sockaddr_in direccionServidor;
+/*	struct sockaddr_in direccionServidor;
 
 	direccionServidor.sin_family=AF_INET;
 	direccionServidor.sin_addr.s_addr=inet_addr(ip);
@@ -118,7 +119,7 @@ int main(void) {
 
 	}
 
-	free(buffer);
+	free(buffer);*/
 	return EXIT_SUCCESS;
 }
 

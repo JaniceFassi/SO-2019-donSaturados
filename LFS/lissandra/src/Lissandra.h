@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-
+#include <socketSaturados.h>
 #include<commons/log.h>
 #include<commons/string.h>
 #include<commons/config.h>
@@ -20,7 +20,7 @@
 #include "apiLFS.h"
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
-#include<socketSaturados.h>
+
 #include "Compactor.h"
 
 t_log* init_logger(void);
