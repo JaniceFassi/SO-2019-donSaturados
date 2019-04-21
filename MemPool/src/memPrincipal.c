@@ -79,7 +79,7 @@ int main(void) {
 */
 
 	// Prueba con la libreria
-	u_int16_t sock;
+		u_int16_t sock;
 		char * ip = "127.0.0.1";
 		u_int16_t port= 7000;
 		if(createServer(ip,port,&sock)!=0){

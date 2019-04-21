@@ -11,17 +11,17 @@
 #include "kernel.h"
 
 int main(void) {
+
 	u_int16_t sock;
 	char * ip = "127.0.0.1";
 	u_int16_t port= 7000;
 
+	completServer(ip, port);
 
 	linkClient(&sock,ip , port);
 
-
-
-
-
-
 	return EXIT_SUCCESS;
 }
+
+
+
