@@ -16,9 +16,13 @@ int main(void) {
 	char * ip = "127.0.0.1";
 	u_int16_t port= 7000;
 
-	completServer(ip, port);
+	int a;
 
-	linkClient(&sock,ip , port);
+	a=linkClient(&sock,ip , port);
+
+	if(a!=0){
+		printf("no se pudo conectar...");
+	}
 
 	return EXIT_SUCCESS;
 }
