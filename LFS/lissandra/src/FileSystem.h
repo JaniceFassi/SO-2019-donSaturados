@@ -14,5 +14,5 @@
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
-
+#include "Lissandra.h"
 #endif /* LFS_LISSANDRA_SRC_FILESYSTEM_H_ */

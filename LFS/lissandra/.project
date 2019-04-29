@@ -3,7 +3,6 @@
 	<name>Lissandra</name>
 	<comment></comment>
 	<projects>
-		<project>sharedLibrary</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
