@@ -9,7 +9,7 @@
 #define APILFS_H_
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <time.h>
 #include <string.h>
 #include<commons/log.h>
 #include<commons/string.h>
@@ -36,11 +36,10 @@ typedef struct{
 void api(op_code option);
 
 //FUNCIONES API
-
 void drop(char* nameTable);
 t_list* describe(char* nameTable);
 void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction);
-//char* select(char* nameTable, u_int16_t key);	//porque rompe con select?? PREGUNTA
+char* selectS(char* nameTable, u_int16_t key);
 void insert(char* nameTable, u_int16_t key, char *value, long timestamp);
 
 //FUNCIONES DE TAD REGISTRY
