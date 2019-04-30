@@ -11,87 +11,26 @@
 
 #include "memPrincipal.h"
 
+Lista *primero = NULL;
+Lista *ultimo = NULL;
+
 int main(void) {
 
-/* COMENTE TODO XQ HICE LA PRUEBA CON LA LIBRERIA
-	//SERVIDOR PARA KERNEL
-	struct sockaddr_in servidorParaKernel;
-	servidorParaKernel.sin_family = AF_INET;
-	servidorParaKernel.sin_addr.s_addr = inet_addr("192.168.1.116");
-	servidorParaKernel.sin_port = htons(7700);
-
-	int servidorKernel= socket(AF_INET,SOCK_STREAM,0);
-
-	if(servidorKernel==-1){
-		perror("Error al crear socket\n");
-		return 1;
-		}
-
-	int activado=1;
-
-	if(setsockopt(servidorKernel, SOL_SOCKET, SO_REUSEADDR, (void*)&activado, (socklen_t)sizeof(activado))==-1){
-		perror("Error al setear el socket\n");
-		return 1;
-		}
-
-
-	if(bind(servidorKernel, (void*) &servidorParaKernel, sizeof(servidorParaKernel))!=0){
-		perror("Fallo el bind\n");
-		return 1;
-			}
-
-
-	listen(servidorKernel,100);
-	printf("Servidor escuchando\n");
-
-	struct sockaddr_in direccionCliente;
-	unsigned int tamanioDireccion=sizeof(direccionCliente);
-
-	int clienteKernel = accept(servidorKernel, (void*) &direccionCliente, (socklen_t*)&tamanioDireccion);
-
-
-	if(clienteKernel<0){
-		perror("Error al aceptar la conexion");
-			}
-
-	printf("Se conecto un cliente\n");
-
-
-	//CLIENTE PARA LISSANDRA
-
-	struct sockaddr_in servidorLissandra;
-
-	servidorLissandra.sin_family = AF_INET;
-	servidorLissandra.sin_addr.s_addr = inet_addr("192.168.1.116");
-	servidorLissandra.sin_port = htons(7700);
-
-	int lissandraServer = socket(AF_INET, SOCK_STREAM, 0);
-
-	if(lissandraServer < 0){
-		perror("No se pudo crear el socket cliente");
-	}
-
-	if(connect(lissandraServer, (struct sockaddr *) &servidorLissandra, sizeof(servidorLissandra)) !=0){
-		perror("No se pudo conectar al servidor Lissandra");
-		return 1;
-		}
-
-*/
-
-	// Conexión kernel
+	// CONEXIONES
+	//KERNEL
 
 	u_int16_t kernelServer;
-	char * ip = "127.0.0.1";
-	u_int16_t port= 7000;
+	char * ipKernel = "127.0.0.1";
+	u_int16_t puertoKernel= 7000;
 
-	if(createServer(ip,port,&kernelServer)!=0){
+	if(createServer(ipKernel,puertoKernel,&kernelServer)!=0){
 		printf("se me rompio el programa");
 		return 1;
 	}
 
 
 
-	listenForClients(kernelServer,100); // esta funcion esta al pedo
+	listenForClients(kernelServer,100);
 	printf("\nEstoy escuchando\n");
 
 	u_int16_t kernelClient;
@@ -104,6 +43,22 @@ int main(void) {
 	printf("lo logramos!!");
 
 
+	//LISSANDRA
+	u_int16_t lfsCliente;
+	char * ipLissandra = "127.0.0.1";
+	u_int16_t puertoLissandra= 7000;
+
+	int conexionExitosa;
+
+	conexionExitosa =linkClient(&lfsCliente,ipLissandra , puertoLissandra);
+
+	if(conexionExitosa !=0){
+		printf("Error al conectarse con LFS");
+	}
+
+
+/////////////////////////////
+
 
 	int protocoloFuncion = 0;
 
@@ -112,17 +67,26 @@ int main(void) {
 			mSelect();
 			break;
 		case 1:
-			mInsert();
+			char* nombreTabla;
+			scanf(String, &nombreTabla);
+			u_int16_t keyTabla;
+			char* value;
+
+			mInsert(nombreTabla, keyTabla, value);
 			break;
+
 		case 2:
 			mCreate();
 			break;
+
 		case 3:
 			mDescribe();
 			break;
+
 		case 4:
 			mDrop();
 			break;
+
 		case 5:
 			mJournal();
 			break;
@@ -137,7 +101,8 @@ int main(void) {
 void mSelect(){
 
 }
-void mInsert(){
+void mInsert(char* nombreTabla, u_int16_t keyTabla, char* valor){
+
 
 }
 void mCreate(){

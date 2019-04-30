@@ -37,7 +37,6 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.699341848" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker">
 								<option id="gnu.c.link.option.libs.519388379" name="Libraries (-l)" superClass="gnu.c.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="commons"/>
-									<listOptionValue builtIn="false" value="sharedLibrary"/>
 								</option>
 								<option id="gnu.c.link.option.paths.860337274" name="Library search path (-L)" superClass="gnu.c.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/home/utnso/tp-2019-1c-donSaturados/sharedLibrary"/>
