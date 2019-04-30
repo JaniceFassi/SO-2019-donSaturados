@@ -40,7 +40,7 @@
 									<listOptionValue builtIn="false" value="sharedLibrary"/>
 								</option>
 								<option id="gnu.c.link.option.paths.860337274" name="Library search path (-L)" superClass="gnu.c.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/home/utnso/tp-2019-1c-donSaturados/sharedLibrary/Debug"/>
+									<listOptionValue builtIn="false" value="/home/utnso/tp-2019-1c-donSaturados/sharedLibrary"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1654416690" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

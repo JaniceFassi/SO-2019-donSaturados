@@ -78,24 +78,30 @@ int main(void) {
 
 */
 
-	// Prueba con la libreria
-		u_int16_t sock;
-		char * ip = "127.0.0.1";
-		u_int16_t port= 7000;
-		if(createServer(ip,port,&sock)!=0){
-			printf("se me rompio el programa");
-			return 1;
-		}
-		printf("soy crack\n");
-		listenForClients(sock,100); // esta funcion esta al pedo
-		printf("\nya escucha el wachin\n");
-		u_int16_t sockClient;
-		char * p="me llamo Kernel wacho";
-		if(acceptConexion(sock,&sockClient,p,0,0)!=0){
-			printf("habiamos llegado tan lejos...");
-			return 1;
-		}
-		printf("lo logramos!!");
+	// Conexión kernel
+
+	u_int16_t kernelServer;
+	char * ip = "127.0.0.1";
+	u_int16_t port= 7000;
+
+	if(createServer(ip,port,&kernelServer)!=0){
+		printf("se me rompio el programa");
+		return 1;
+	}
+
+
+
+	listenForClients(kernelServer,100); // esta funcion esta al pedo
+	printf("\nEstoy escuchando\n");
+
+	u_int16_t kernelClient;
+	char * p="me llamo Kernel wacho";
+
+	if(acceptConexion(kernelServer,&kernelClient,p,0,0)!=0){
+		printf("habiamos llegado tan lejos...");
+		return 1;
+	}
+	printf("lo logramos!!");
 
 
 
