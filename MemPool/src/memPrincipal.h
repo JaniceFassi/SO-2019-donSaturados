@@ -27,6 +27,7 @@ void mDescribe();
 void mDrop();
 void mJournal();
 void mGossip();
+t_list tabla;
 
 //Estructura inicial de la memoria principal
 
@@ -36,10 +37,6 @@ typedef struct {
 	char *value;
 }Segmento;
 
-typedef struct {
-	Segmento segmento;
-	struct Lista *siguiente;
-}Lista;
 
 
 #endif
