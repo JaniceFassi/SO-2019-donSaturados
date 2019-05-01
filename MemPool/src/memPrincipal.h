@@ -15,27 +15,34 @@
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
 
-t_log* init_logger(void);
-t_config* read_config(void);
+//VARIABLES
+t_list *tabla;
+t_log* logger;
+t_config* config;
 
-//Funciones API
+//ESTRUCTURAS
+typedef struct {
+	int timestamp;
+	u_int16_t key;
+	char *value;
+}Segmento;
 
-void mSelect();
+
+//API
+void mSelect(char* nombreTabla, u_int16_t keyTabla);
 void mInsert(char* nombreTabla, u_int16_t keyTabla, char* valor);
 void mCreate();
 void mDescribe();
 void mDrop();
 void mJournal();
 void mGossip();
-t_list tabla;
 
-//Estructura inicial de la memoria principal
 
-typedef struct {
-	int timestamp;
-	u_int16_t key;
-	char *value;
-}Segmento;
+//FUNCIONES AUXILIARES
+t_log* init_logger(void);
+t_config* read_config(void);
+
+
 
 
 

@@ -10,22 +10,19 @@
 
 #include "memPrincipal.h"
 
-Lista *primero = NULL;
-Lista *ultimo = NULL;
-
 int main(void) {
 
-	// CONEXIONES
-	// KERNEL
 
-	t_log* logger = init_logger();
-    t_config* config = read_config();
+	logger = init_logger();
+    config = read_config();
 
 	char* ipLFS = config_get_string_value(config,"IP_FS");
 	char* puertoLFS = config_get_string_value(config,"PUERTO_FS");
 
 
-	// Conexion kernel
+/////// CONEXIONES//////////////////////////////////////////////
+	// KERNEL
+
 	u_int16_t kernelServer;
 	char * ip = "127.0.0.1";
 	u_int16_t port= 7000;
@@ -65,18 +62,25 @@ int main(void) {
 
 /////////////////////////////
 
+	tabla = list_create();
+	char* nombreTabla;
+	char* value;
+	u_int16_t keyTabla; //COMO ESCANEO UN INT16????????
+
 	int protocoloFuncion = 0;
 
 	switch(protocoloFuncion){
 		case 0:
-			//mSelect(char* tableName,u_int16_t key);
+			//scanf("%s", &nombreTabla);
+			//scanf("%i", &keyTabla);
+			mSelect(nombreTabla, keyTabla);
 			break;
+
 		case 1:
-			char* nombreTabla;
-			scanf(String, &nombreTabla);
-			u_int16_t keyTabla;
-			char* value;
-			mInsert(nombreTabla, keyTabla, valor);
+
+			//scanf("%s", &value);
+
+			mInsert(nombreTabla, keyTabla, value);
 			break;
 
 			break;
@@ -98,19 +102,14 @@ int main(void) {
 }
 
 
-t_config* read_config() {
-	return config_create("/home/utnso/tp-2019-1c-donSaturados/MemPool/Mem.config");
-}
 
-t_log* init_logger() {
-	return log_create("memPrincipal.log", "memPrincipal", 1, LOG_LEVEL_INFO);
-}
+//////////API////////////////////////////////////////////
 
+void mSelect(char* nombreTabla, u_int16_t keyTabla){
 
-void mSelect(char* nombreTabla,u_int16_t keyTabla){
 
 }
-void mInsert(char* nombreTabla,u_int16_t keyTabla,char* valor){
+void mInsert(char* nombreTabla, u_int16_t keyTabla, char* valor){
 
 }
 void mCreate(){
@@ -130,6 +129,15 @@ void mGossip(){
 }
 
 
+//////////FUNCIONES AUXILIARES/////////////////////////////
 
+
+t_config* read_config() {
+	return config_create("/home/utnso/tp-2019-1c-donSaturados/MemPool/Mem.config");
+}
+
+t_log* init_logger() {
+	return log_create("memPrincipal.log", "memPrincipal", 1, LOG_LEVEL_INFO);
+}
 
 
