@@ -77,7 +77,8 @@ int main(void) {
 			break;
 
 		case 1:
-
+			//scanf("%s", &nombreTabla);
+			//scanf("%i", &keyTabla);
 			//scanf("%s", &value);
 
 			mInsert(nombreTabla, keyTabla, value);
