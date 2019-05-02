@@ -10,8 +10,6 @@
 
 #include "memPrincipal.h"
 
-Lista *primero = NULL;
-Lista *ultimo = NULL;
 
 int main(void) {
 
@@ -20,9 +18,7 @@ int main(void) {
 
 	t_log* logger = init_logger();
     t_config* config = read_config();
-
-	char* ipLFS = config_get_string_value(config,"IP_FS");
-	char* puertoLFS = config_get_string_value(config,"PUERTO_FS");
+    t_list* segmentoLista = list_create(); //no se bien como se maneja las commons para los elementos de esta lista
 
 
 	// Conexion kernel
@@ -50,17 +46,20 @@ int main(void) {
 	printf("lo logramos!!");
 
 	//LISSANDRA
+	//la idea aca es hacer el handshake con LFS y recibir el value maximo obvio que no esta terminado
+
 	u_int16_t lfsCliente;
-	char * ipLissandra = "127.0.0.1";
-	u_int16_t puertoLissandra= 7000;
+	char * ipLissandra = config_get_string_value(config,"IP_FS");
+	u_int16_t puertoLissandra = config_get_string_value(config,"PUERTO_FS");
 
 	int conexionExitosa;
 
-	conexionExitosa =linkClient(&lfsCliente,ipLissandra , puertoLissandra);
+	conexionExitosa = linkClient(&lfsCliente,ipLissandra , puertoLissandra);
 
 	if(conexionExitosa !=0){
-		printf("Error al conectarse con LFS");
+		printf("Error al conectarse con LFS"); // no es mejor el perror aca?
 	}
+
 
 
 /////////////////////////////
@@ -69,14 +68,15 @@ int main(void) {
 
 	switch(protocoloFuncion){
 		case 0:
-			//mSelect(char* tableName,u_int16_t key);
+			//mSelect(char* nombreTabla,u_int16_t keyTabla);
 			break;
 		case 1:
-			char* nombreTabla;
-			scanf(String, &nombreTabla);
-			u_int16_t keyTabla;
-			char* value;
-			mInsert(nombreTabla, keyTabla, valor);
+			// esto me rompia asi que lo comente
+			//char* nombreTabla;
+			//scanf(String, &nombreTabla);
+			//u_int16_t keyTabla;
+			//char* valor;
+			//mInsert(nombreTabla, keyTabla, valor);
 			break;
 
 			break;
@@ -106,6 +106,13 @@ t_log* init_logger() {
 	return log_create("memPrincipal.log", "memPrincipal", 1, LOG_LEVEL_INFO);
 }
 
+Segmento *crearSegmento(char* nombre,u_int16_t key){
+	Segmento *nuevo = malloc(sizeof(Segmento));
+	nuevo->nombre = nombre;
+	nuevo->keyTabla = key;
+	return nuevo;
+}
+
 
 void mSelect(char* nombreTabla,u_int16_t keyTabla){
 
@@ -129,7 +136,9 @@ void mGossip(){
 
 }
 
-
+//list_destroy(segmentoLista);
+//log_destroy(logger);
+//config_destroy(config);
 
 
 
