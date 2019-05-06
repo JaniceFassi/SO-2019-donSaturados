@@ -7,31 +7,6 @@
 
 
 #include "apiLFS.h"
-#include "Lissandra.h"
-
-void api(op_code option){
-
-	}
-
-//FUNCIONES ASOCIADAS AL TAD REGISTRO
-Registry *createRegistry(char *table, u_int16_t key, char *val, long time){
-	Registry *data = malloc(sizeof(Registry));
-	data->timestamp = time;
-	data->key = key;
-	data ->value=strdup(val);
-	data ->name=strdup(table);
-	return data;
-}
-void destroyRegistry(Registry *self) {
-    free(self->name);
-    free(self->value);
-    free(self);
-}
-Registry *getList(){
-	Registry *data = malloc(sizeof(Registry));
-	data= list_get(memtable,0);
-	return data;
-}
 
 //API
 void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
@@ -40,9 +15,8 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
 	char *path=config_get_string_value(config, "PUNTO_MONTAJE");
-	//strcat(path,"Tables/");
-	//strcat(path,param_nameTable);
-	strcat(path,"lissandra/");
+	strcat(path,"Tables/");
+	strcat(path,param_nameTable);
 	if(folderExist(path)==0){
 		log_info(logger,"No existe esta tabla");
 		return;
@@ -76,15 +50,14 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 }
 
-char* selectS(char* nameTable , u_int16_t key){
-	char** valor;
+int selectS(char* nameTable , u_int16_t key, char *valor){
 	//Verificar que la tabla exista en el file system.
 	char *path=config_get_string_value(config, "PUNTO_MONTAJE");
 	strcat(path,"Tables/");
 	strcat(path,nameTable);
 	if(folderExist(path)==0){
 		log_info(logger,"No existe esa tabla");
-		return *valor;
+		return 1;
 	}else{
 		//Obtener la metadata asociada a dicha tabla.
 		t_config* metadata=config_create(strcat(path,"/Metadata"));
@@ -101,16 +74,16 @@ char* selectS(char* nameTable , u_int16_t key){
 
 		}
 
-	return *valor;
+	return 0;
 }
 
 void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
 
 }
 
-t_list* describe(char* nameTable){//PREGUNTAR
-	t_list* arch;
-	return arch;
+int describe(char* nameTable, t_list *tablas){//PREGUNTAR
+
+	return 0;
 
 }
 
