@@ -40,8 +40,9 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
 	char *path=config_get_string_value(config, "PUNTO_MONTAJE");
-	strcat(path,"Tables/");
-	strcat(path,param_nameTable);
+	//strcat(path,"Tables/");
+	//strcat(path,param_nameTable);
+	strcat(path,"lissandra/");
 	if(folderExist(path)==0){
 		log_info(logger,"No existe esta tabla");
 		return;

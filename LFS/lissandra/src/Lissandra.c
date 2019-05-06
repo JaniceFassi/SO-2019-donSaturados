@@ -10,18 +10,23 @@
 #include "Lissandra.h"
 #include "apiLFS.h"
 
+char *valgrind;
 
 int main(void) {
+
+	//PRUEBA VALGRIND
+valgrind = malloc(8);
+
 	theStart();
-	connectMemory();
+	//connectMemory();
 
 	//PRUEBA DEL INSERT
-	Registry *prueba;
-	insert("tablita",2,"Mensaje",300);
-	prueba= getList();
-	log_info(logger,prueba->name);
-	log_info(logger, prueba->value);
-	console();
+	//Registry *prueba;
+	//insert("tablita",2,"Mensaje",300);
+	//prueba= getList();
+	//log_info(logger,prueba->name);
+	//log_info(logger, prueba->value);
+	//console();
 	theEnd();
 	return EXIT_SUCCESS;
 }
@@ -68,7 +73,7 @@ void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 	log_info(logger, value);
 
 	if(createServer(ip,atoi(port),&server)!=0){
-		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind");
+		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
 	}else{
 		log_info(logger, "\nSe pudo crear el server");
 	}
@@ -98,22 +103,23 @@ void console(){
 
 		if(!strncmp(linea,"SELECT ",7))
 		{
+
 			//selectS();
 		}
 	 	if(!strncmp(linea,"INSERT ",7)){
 	 		//insert(linea);
 	 	}
-		if(!strncmp(linea,"CREATE ",2)){
+		if(!strncmp(linea,"CREATE ",7)){
 			//create();
 		}
-		if(!strncmp(linea,"DESCRIBE ",3)){
+		if(!strncmp(linea,"DESCRIBE ",9)){
 			//describe();
 		}
-		if(!strncmp(linea,"DROP ",3)){
+		if(!strncmp(linea,"DROP ",5)){
 			//	drop();
 		}
 
-		if(!strncmp(linea,"exit",4)){
+		if(!strncmp(linea,"exit",5)){
 			free(linea);
 			theEnd();
 			break;

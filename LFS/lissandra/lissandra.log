@@ -1,0 +1,15 @@
+[INFO] 14:58:45:771 Lissandra/(5610:5610): 127.0.0.1
+[INFO] 14:58:45:774 Lissandra/(5610:5610): 8004
+[INFO] 14:58:45:774 Lissandra/(5610:5610): 4
+[INFO] 14:58:45:774 Lissandra/(5610:5610): se agrego el registro a la lista
+[INFO] 14:58:45:774 Lissandra/(5610:5610): tablita
+[INFO] 14:58:45:774 Lissandra/(5610:5610): Mensaje
+[INFO] 18:48:54:77 Lissandra/(5869:5869): 127.0.0.1
+[INFO] 18:48:54:78 Lissandra/(5869:5869): 8004
+[INFO] 18:48:54:78 Lissandra/(5869:5869): 4
+[INFO] 18:48:54:80 Lissandra/(5869:5869): 
+Se pudo crear el server
+[INFO] 18:50:37:662 Lissandra/(6028:6028): No existe esta tabla
+[INFO] 18:54:08:229 Lissandra/(6189:6189): No existe esta tabla
+[INFO] 18:55:26:797 Lissandra/(6265:6265): No existe esta tabla
+[INFO] 14:40:29:251 Lissandra/(3982:3982): No existe esta tabla
