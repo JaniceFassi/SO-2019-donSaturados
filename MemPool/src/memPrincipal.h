@@ -14,11 +14,16 @@
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
 
+typedef struct {
+	char* nombre;
+	u_int16_t keyTabla;
+}Segmento;
+
 t_log* init_logger(void);
 t_config* read_config(void);
 
-void mSelect();
-void mInsert();
+void mSelect(char* nameTable,u_int16_t key);
+void mInsert(char*,u_int16_t,char*);
 void mCreate();
 void mDescribe();
 void mDrop();
