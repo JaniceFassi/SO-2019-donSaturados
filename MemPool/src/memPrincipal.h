@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <string.h>
 
 #include<commons/log.h>
 #include<commons/string.h>
@@ -15,35 +14,24 @@
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
 
-//VARIABLES
-t_list *tabla;
-t_log* logger;
-t_config* config;
-
-//ESTRUCTURAS
 typedef struct {
-	int timestamp;
-	u_int16_t key;
-	char *value;
+	char* nombre;
+	char* valor;
+	u_int16_t keyTabla;
+	u_int16_t modificado;
+	u_int16_t timestamp;
 }Segmento;
 
+t_log* init_logger(void);
+t_config* read_config(void);
 
-//API
-void mSelect(char* nombreTabla, u_int16_t keyTabla);
-void mInsert(char* nombreTabla, u_int16_t keyTabla, char* valor);
+void mSelect(char* nameTable,u_int16_t key);
+void mInsert(char* nombreTabla,u_int16_t key,char* valor);
 void mCreate();
 void mDescribe();
 void mDrop();
 void mJournal();
 void mGossip();
-
-
-//FUNCIONES AUXILIARES
-t_log* init_logger(void);
-t_config* read_config(void);
-
-
-
-
+Segmento *crearSegmento(char* nombre,u_int16_t key,char* value);
 
 #endif
