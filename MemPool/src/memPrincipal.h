@@ -33,5 +33,6 @@ void mDrop();
 void mJournal();
 void mGossip();
 Segmento *crearSegmento(char* nombre,u_int16_t key,char* value);
+int buscarYreemplazar(char* nombreTabla,u_int16_t ketTabla,char* valor);
 
 #endif

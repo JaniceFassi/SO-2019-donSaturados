@@ -21,7 +21,7 @@ int main(void) {
 	//INICIALIZO
 	logger = init_logger();
 	config = read_config();
-	segmentoLista = list_create();
+	segmentoLista = list_create(); //Va a ser nuestra solucion pedorra de memoria por el momento, un unico segmento con  una sola pagina.
 
 	//LISSANDRA
 	//la idea aca es hacer el handshake con LFS y recibir el value maximo, obvio que no esta terminado
@@ -80,7 +80,6 @@ void consola(){
 
 		if(!strncmp(linea,"SELECT ",7))
 			{
-
 				//selectS();
 			}
 		if(!strncmp(linea,"INSERT ",7)){
@@ -108,15 +107,20 @@ void mSelect(char* nombreTabla,u_int16_t keyTabla){
 }
 void mInsert(char* nombreTabla,u_int16_t keyTabla,char* valor){
 
-	Segmento *nuevoSegmento = crearSegmento(nombreTabla,keyTabla,valor);
+	u_int16_t reemplazoExitoso = 0;
+	reemplazoExitoso = buscarYreemplazar(nombreTabla,keyTabla,valor);
 
-	//Verificar si existe la key en la lista, si existe reemplazar y generar nuevo timestamp (buscar como se genera)
-
-	//Si no existe le cargas el timestamp y luego haces el add
-
-	list_add(segmentoLista,nuevoSegmento);
-
+	if(!reemplazoExitoso){
+		Segmento *nuevoSegmento = crearSegmento(nombreTabla,keyTabla,valor);
+		list_add(segmentoLista,nuevoSegmento);
+	}
+	//Explicacion:
+	//se fija si existe la tabla, en ese caso se fija si ya hay alguien con esa key, si hay alguien lo reemplaza y sino agrega la pagina (not done yet)
+	//si no existe la tabla, la crea y la agrega
 }
+
+
+
 void mCreate(){
 
 }
@@ -143,12 +147,13 @@ t_log* init_logger() {
 	return log_create("memPrincipal.log", "memPrincipal", 1, LOG_LEVEL_INFO);
 }
 
-Segmento *crearSegmento(char* nombre,u_int16_t key,char* value){
+Segmento *crearSegmento(char* nombre,u_int16_t key,char* valor){
 	Segmento *nuevo = malloc(sizeof(Segmento));
 	nuevo->nombre = nombre;
 	nuevo->keyTabla = key;
-	nuevo->valor = value;
+	nuevo->valor = valor;
 	nuevo->modificado = 0;
+	nuevo->timestamp = (unsigned)time(NULL);
 	return nuevo;
 }
 
@@ -161,6 +166,33 @@ int handshakeConLissandra(int lfsCliente,char* ipLissandra,int puertoLissandra){
 		}
 
 }
+
+int buscarYreemplazar(char* nombreTabla,u_int16_t keyTablaNueva,char* nuevoValor){
+
+	t_link_element* primero = segmentoLista->head; //Esto no funca, tengo que mandar mail sobre las funciones de las commons
+
+	while(primero){
+
+		if(strcmp(primero->nombre,nombreTabla) == 0){
+
+			if(primero->keyTabla == keyTablaNueva){
+
+				primero->valor = nuevoValor;
+				primero->timestamp = (unsigned)time(NULL);
+				return 1;
+
+			}
+		//else agregar pagina nueva
+		}
+		else{
+			primero = primero->next;
+		}
+
+	}
+	return 0;
+}
+
+
 
 //list_destroy(segmentoLista);
 //log_destroy(logger);
