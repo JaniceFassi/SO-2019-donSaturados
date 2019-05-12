@@ -6,9 +6,19 @@
  */
 
 #include "FileSystem.h"
-
-int folderExist(char* path){ //Verifica si existe la carpeta, si no existe devuelve 0
+int carpTabla(char* puntoMontaje){
+	strcat(puntoMontaje,"/Tablas");
+	if(mkdir(puntoMontaje,0777)<0){
+		log_info(logger,"Error al crear la Tabla principal");
+		return 1;
+	}
+	return 0;
+}
+int folderExist(char* name){ //Verifica si existe la carpeta, si no existe devuelve 0
 	struct stat st = {0};
+	char *path=config_get_string_value(config, "PUNTO_MONTAJE");
+	strcat(path,"/Tablas/");
+	strcat(path,name);
 	if (stat(path, &st) == -1){
 		return 0;
 	}else{

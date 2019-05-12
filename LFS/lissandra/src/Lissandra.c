@@ -15,9 +15,12 @@ char *valgrind;
 int main(void) {
 
 	//PRUEBA VALGRIND
-valgrind = malloc(8);
+//valgrind = malloc(8);
 
 	theStart();
+	char* puntoMontaje=config_get_string_value(config, "PUNTO_MONTAJE");
+	log_info(logger, puntoMontaje);
+	carpTabla(puntoMontaje);
 	//connectMemory();
 
 	//PRUEBA DEL INSERT
@@ -61,18 +64,19 @@ void theStart(){
 	logger = init_logger();
 	config = read_config();
 	memtable= list_create();
+
 }
 void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 	u_int16_t  server;
 	u_int16_t socket_client;
 	char* ip=config_get_string_value(config, "IP");
 	log_info(logger, ip);
-	char* port=config_get_string_value(config, "PORT");
-	log_info(logger, port);
-	char* value=config_get_string_value(config, "TAMVALUE");
-	log_info(logger, value);
+	u_int16_t port= config_get_int_value(config, "PORT");
+	log_info(logger, "%i",port);
+	u_int16_t value= config_get_int_value(config, "TAMVALUE");
+	log_info(logger, "%i",value);
 
-	if(createServer(ip,atoi(port),&server)!=0){
+	if(createServer(ip,port,&server)!=0){
 		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
 	}else{
 		log_info(logger, "\nSe pudo crear el server");
@@ -82,7 +86,7 @@ void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 
 	char* serverName=config_get_string_value(config, "NAME");
 
-	if(acceptConexion( server, &socket_client,serverName,1, atoi(value))!=0){
+	if(acceptConexion( server, &socket_client,serverName,1, value)!=0){
 		log_info(logger, "\nError en el acept o al enviar handshake");
 	}else{
 		log_info(logger, "\nSe acepto la conexion");
@@ -103,20 +107,43 @@ void console(){
 
 		if(!strncmp(linea,"SELECT ",7))
 		{
-
-			//selectS();
+			char *valor;
+			char **subStrings= string_n_split(linea,3," ");
+			selectS(subStrings[1],atoi(subStrings[2]),valor);
+			printf("%s",valor);
 		}
 	 	if(!strncmp(linea,"INSERT ",7)){
-	 		//insert(linea);
+	 		char **subStrings= string_n_split(linea,5," ");
+	 		if(subStrings[3]==NULL){
+	 			long timestamp= time(NULL);
+	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],timestamp);
+	 		}else{
+	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],subStrings[4]);
+	 			//es CHAR* hay q pasarlo a LONG
+	 		}
 	 	}
 		if(!strncmp(linea,"CREATE ",7)){
-			//create();
+			char **subStrings= string_n_split(linea,5," ");
+			create(subStrings[1],subStrings[2],atoi(subStrings[3]),subStrings[4]);
+			//El subSTrung 4 es char* cuando deberia ser long
 		}
 		if(!strncmp(linea,"DESCRIBE ",9)){
-			//describe();
+			char **subStrings= string_n_split(linea,2," ");
+			t_list *tablas;
+			if(subStrings[1]==NULL){
+				describe(subStrings[1],tablas,0);// 0 si no ponen nombre de una Tabla
+			}else{
+				describe(subStrings[1],tablas,1);//1 si ponen nombre de Tabla
+			}
+
 		}
 		if(!strncmp(linea,"DROP ",5)){
-			//	drop();
+			char **subStrings= string_n_split(linea,2," ");
+			if(subStrings[1]==NULL){
+				log_info(logger,"No se ingreso el nombre de la tabla");
+			}else{
+				drop(subStrings[1]);
+			}
 		}
 
 		if(!strncmp(linea,"exit",5)){

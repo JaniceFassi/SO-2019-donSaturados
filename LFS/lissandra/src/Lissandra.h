@@ -10,6 +10,8 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include <time.h>
+#include <commons/temporal.h>
 #include<commons/log.h>
 #include<commons/string.h>
 #include<commons/config.h>

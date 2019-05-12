@@ -17,8 +17,6 @@
 #include<readline/readline.h>
 #include "Lissandra.h"
 
-int folderExist(char* path);
-
 typedef struct{
 	char *name;
 	u_int16_t key;
@@ -31,5 +29,7 @@ typedef struct{
 void destroyRegistry(Registry *self);
 Registry *createRegistry(char *table, u_int16_t key, char *val, long time);
 Registry *getList();
-
+//FUNCIONES DE CARPETAS Y ARCHIVOS
+int folderExist(char* name);
+int carpTabla(char* puntoMontaje);
 #endif /* LFS_LISSANDRA_SRC_FILESYSTEM_H_ */
