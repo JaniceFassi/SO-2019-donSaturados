@@ -14,24 +14,19 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//TODAVIA NO ESTA DECIDIDO
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
-	/*if(folderExist(param_nameTable)==0){
-		log_info(logger,"No existe esta tabla");
+	if(folderExist(param_nameTable,1)==1){
+		log_info(logger,"No existe la tabla %s", param_nameTable);
 		return;
-	}else{
+	}
 	//	Obtener la metadata asociada a dicha tabla. PARA QUE?
-		char *path=config_get_string_value(config, "PUNTO_MONTAJE");
-		strcat(path,"/Tablas/");
-		strcat(path,param_nameTable);
-		FILE *metadata = txt_open_for_append(path);
-*/
+	char *path=pathFinal(param_nameTable, 1);
+	FILE *metadata = txt_open_for_append(path);
+
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
 
 
-	//El Timestamp es opcional. En caso que no este, se usará el valor actual del Epoch UNIX.
-	/*if(param_timestamp==NULL){//No se muy bien como hacer lo del timestamp
-		param_timestamp=time(NULL);
-	}*/
+	//El Timestamp es opcional. En caso que no este, se usará el valor actual del Epoch UNIX. ESTO SE HACE EN CONSOLA
 
 	//Insertar en la memoria temporal del punto anterior una nueva entrada que contenga los datos enviados en la request.
 
@@ -42,8 +37,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	int tam= list_size(memtable);
 
 	if(tam>ant){
-		char log[]="se agrego el registro a la lista";
-		log_info(logger,log);
+		log_info(logger,"se agrego el registro a la lista");
 	}
 
 		char *rutaf=malloc(255);
@@ -65,14 +59,12 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 int selectS(char* nameTable , u_int16_t key, char *valor){
 	//Verificar que la tabla exista en el file system.
-	/*if(folderExist(nameTable)==0){
-		log_info(logger,"No existe esa tabla");
+	if(folderExist(nameTable,1)==0){
+		log_info(logger,"No existe la tabla %s",nameTable);
 		return 1;
 	}else{
 		//Obtener la metadata asociada a dicha tabla.
-		char *path=config_get_string_value(config, "PUNTO_MONTAJE");
-		strcat(path,"/Tablas/");
-		strcat(path,nameTable);
+		char *path=pathFinal(nameTable,1);
 		FILE *metadata = txt_open_for_append(path);
 
 		//Calcular cual es la partición que contiene dicho KEY.
@@ -84,8 +76,9 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 
 		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
 		txt_close_file(metadata);
+		return 0;
 
-		}*/
+		}
 
 	/*char *rutaf=malloc(255);
 	strcpy(rutaf,"/home/utnso/");
@@ -122,12 +115,15 @@ void create(char* nameTable, char* consistency , u_int16_t numPartition,long tim
 	//Para dichos nombres de las tablas siempre tomaremos sus valores en UPPERCASE (mayúsculas).
 	//En caso que exista, se guardará el resultado en un archivo .log
 	//y se retorna un error indicando dicho resultado.
-	if(folderExist(nameTable)!=0){
-			log_info(logger, "Ya existe esa Tabla");
-			perror("La tabla ya existe");
-		}else{
+	if(folderExist(nameTable,1)==0){
+		log_info(logger, "Ya existe la Tabla %s",nameTable);
+		perror("La tabla ya existe");
+		return;
 	//Crear el directorio para dicha tabla.
-
+	if(crearCarpeta(nameTable,1)==1){
+		log_info(logger,"ERROR AL CREAR LA TABLA %s",nameTable);
+		return;
+	}
 	//Crear el archivo Metadata asociado al mismo.
 
 	//Grabar en dicho archivo los parámetros pasados por el request.
@@ -151,14 +147,15 @@ int describe(char* nameTable, t_list *tablas,int variante){//PREGUNTAR
 
 	}else{
 		//Verificar que la tabla exista en el file system.
-		if(folderExist(nameTable)!=0){
-			//Eliminar directorio y todos los archivos de dicha tabla.
+		if(folderExist(nameTable,1)==0){
+			//Leer el archivo Metadata de dicha tabla.
+
+			//Retornar el contenido del archivo.
 		}else{
 			log_info(logger, "No existe esa Tabla");
+			return 1;
 		}
-		//Leer el archivo Metadata de dicha tabla.
 
-		//Retornar el contenido del archivo.
 
 	}
 	return 0;
@@ -167,8 +164,9 @@ int describe(char* nameTable, t_list *tablas,int variante){//PREGUNTAR
 void drop(char* nameTable){
 	//Verificar que la tabla exista en el file system.
 
-	if(folderExist(nameTable)!=0){
+	if(folderExist(nameTable,1)==0){
 		//Eliminar directorio y todos los archivos de dicha tabla.
+		borrarCarpeta(nameTable,1);
 	}else{
 		log_info(logger, "No existe esa Tabla");
 	}

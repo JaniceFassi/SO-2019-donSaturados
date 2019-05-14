@@ -15,12 +15,14 @@ char *valgrind;
 int main(void) {
 
 	//PRUEBA VALGRIND
-//valgrind = malloc(8);
+	//valgrind = malloc(8);
 
 	theStart();
-	char* puntoMontaje=config_get_string_value(config, "PUNTO_MONTAJE");
-	log_info(logger, puntoMontaje);
-	//carpTabla(puntoMontaje);
+	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
+	if(crearCarpeta("Tablas",0)!=0){
+		theEnd();
+		return 1;
+	}
 	//connectMemory();
 
 	//PRUEBA DE INSERT Y SELECT
@@ -67,7 +69,6 @@ void theStart(){
 	logger = init_logger();
 	config = read_config();
 	memtable= list_create();
-
 }
 void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 	u_int16_t  server;
@@ -121,14 +122,14 @@ void console(){
 	 			long timestamp= time(NULL);
 	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],timestamp);
 	 		}else{
-	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],subStrings[4]);
-	 			//es CHAR* hay q pasarlo a LONG
+	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],atol(subStrings[4]));
+
 	 		}
 	 	}
 		if(!strncmp(linea,"CREATE ",7)){
 			char **subStrings= string_n_split(linea,5," ");
-			create(subStrings[1],subStrings[2],atoi(subStrings[3]),subStrings[4]);
-			//El subSTrung 4 es char* cuando deberia ser long
+			create(subStrings[1],subStrings[2],atoi(subStrings[3]),atol(subStrings[4]));
+
 		}
 		if(!strncmp(linea,"DESCRIBE ",9)){
 			char **subStrings= string_n_split(linea,2," ");
@@ -159,6 +160,10 @@ void console(){
 }
 void theEnd(){
 	list_destroy(memtable);
+	if(folderExist("Tablas", 0)==0){
+		borrarCarpeta("Tablas",0);
+	}
 	log_destroy(logger);
 	config_destroy(config);
+
 }

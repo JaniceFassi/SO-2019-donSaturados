@@ -10,8 +10,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include<commons/log.h>
+#include <fcntl.h>
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
@@ -25,11 +27,23 @@ typedef struct{
 
 }Registry;
 
+typedef struct{
+	char consistency[3];
+	int partintion;
+	long compaction_time;
+}metaTabla;
+
 //FUNCIONES DE TAD REGISTRY
+
 void destroyRegistry(Registry *self);
 Registry *createRegistry(char *table, u_int16_t key, char *val, long time);
 Registry *getList();
+
 //FUNCIONES DE CARPETAS Y ARCHIVOS
-int folderExist(char* name);
-int carpTabla(char* puntoMontaje);
+char *pathFinal(char *nombre, int principal);
+int folderExist(char* name, int principal);
+int crearCarpeta(char* nombre, int principal);
+int borrarCarpeta(char *nombre, int principal);
+int crearParticiones(char *nombre, int cantidad);
+
 #endif /* LFS_LISSANDRA_SRC_FILESYSTEM_H_ */
