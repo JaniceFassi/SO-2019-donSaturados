@@ -14,7 +14,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//TODAVIA NO ESTA DECIDIDO
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
-	if(folderExist(param_nameTable)==0){
+	/*if(folderExist(param_nameTable)==0){
 		log_info(logger,"No existe esta tabla");
 		return;
 	}else{
@@ -22,20 +22,20 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 		char *path=config_get_string_value(config, "PUNTO_MONTAJE");
 		strcat(path,"/Tablas/");
 		strcat(path,param_nameTable);
-		t_config* metadata=config_create(strcat(path,"/Metadata"));
-
+		FILE *metadata = txt_open_for_append(path);
+*/
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
 
 
 	//El Timestamp es opcional. En caso que no este, se usará el valor actual del Epoch UNIX.
-	if(param_timestamp==NULL){//No se muy bien como hacer lo del timestamp
+	/*if(param_timestamp==NULL){//No se muy bien como hacer lo del timestamp
 		param_timestamp=time(NULL);
-	}
+	}*/
 
 	//Insertar en la memoria temporal del punto anterior una nueva entrada que contenga los datos enviados en la request.
 
-		int ant=list_size(memtable);
+	int ant=list_size(memtable);
 	Registry *data = createRegistry(param_nameTable, param_key, param_value, param_timestamp);
 
 	list_add(memtable, data);
@@ -45,13 +45,27 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 		char log[]="se agrego el registro a la lista";
 		log_info(logger,log);
 	}
-	}
 
+		char *rutaf=malloc(255);
+		strcpy(rutaf,"/home/utnso/");
+		strcat(rutaf,param_nameTable);
+		strcat(rutaf,".txt");
+		FILE* f =txt_open_for_append(rutaf);
+		Registry *prueba;					//MOMENTANEAMENTE SACO EL NODO PARA LUEGO ESCRIBIRLO EN UN ARCHIVO
+
+		prueba= list_get(memtable,param_key);
+		strcat(prueba->name,";");
+		txt_write_in_file(f,prueba->name);
+
+		txt_close_file(f);
+		free(rutaf);
+	//}
+	//txt_close_file(metadata);
 }
 
 int selectS(char* nameTable , u_int16_t key, char *valor){
 	//Verificar que la tabla exista en el file system.
-	if(folderExist(nameTable)==0){
+	/*if(folderExist(nameTable)==0){
 		log_info(logger,"No existe esa tabla");
 		return 1;
 	}else{
@@ -59,7 +73,7 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 		char *path=config_get_string_value(config, "PUNTO_MONTAJE");
 		strcat(path,"/Tablas/");
 		strcat(path,nameTable);
-		t_config* metadata=config_create(strcat(path,"/Metadata"));
+		FILE *metadata = txt_open_for_append(path);
 
 		//Calcular cual es la partición que contiene dicho KEY.
 		char* partition=config_get_string_value(metadata, "PARTITIONS");
@@ -69,11 +83,37 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 
 
 		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
-		config_destroy(metadata);
+		txt_close_file(metadata);
 
+		}*/
+
+	/*char *rutaf=malloc(255);
+	strcpy(rutaf,"/home/utnso/");
+	strcat(rutaf,nameTable);
+	strcat(rutaf,".txt");
+	char *texto=malloc(255);
+	char c;
+	FILE *f=fopen(rutaf,"r");		//ABRO EL ARCHIVO Y MOMENTANEAMENTE LOS VALORES SE SEPARAN POR ; HAY QUE ENCONTRAR EL VALOR DE LA ; NUMERO (KEY).
+	int count=0;
+	while(EOF){
+		while(strcmp(c,";")!=0){		//GUARDO EL TEXTO HASTA EL ;
+			c=getc(f);
+			strcat(texto,&c);
 		}
-
-	return 0;
+		if(count==key){				//SI TUVE LA CANTIDAD DE PALABRAS QUE NECESITO, LOGUEA
+			log_info(logger,texto);
+			free(texto);
+			free(rutaf);
+			return 0;
+		}
+		else{
+			count++;				//SI NO AUMENTA EL CONTADOR DE PALABRAS
+		}
+	}
+	log_info(logger,"No se encontro la key");	//SI TERMINO EL WHILE ES PORQUE NO ENCONTRO LA KEY Y LOGUEA
+	free(rutaf);
+	free(texto);
+	return -1;*/
 }
 
 void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){

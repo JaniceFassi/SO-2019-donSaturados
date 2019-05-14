@@ -20,16 +20,19 @@ int main(void) {
 	theStart();
 	char* puntoMontaje=config_get_string_value(config, "PUNTO_MONTAJE");
 	log_info(logger, puntoMontaje);
-	carpTabla(puntoMontaje);
+	//carpTabla(puntoMontaje);
 	//connectMemory();
 
-	//PRUEBA DEL INSERT
-	//Registry *prueba;
-	//insert("tablita",2,"Mensaje",300);
-	//prueba= getList();
-	//log_info(logger,prueba->name);
-	//log_info(logger, prueba->value);
+	//PRUEBA DE INSERT Y SELECT
+	char* valor=malloc(255);
+
+	insert("tablita1",0,"Mensaje1",300);  //MIENTRAS QUE NO HAYA FILE SYSTEM, LA KEY ES EL INDEX DE MEMTABLE
+	insert("tablita2",0,"Mensaje2",300); //Y EL NOMBRE DE LA TABLA ES EL NOMBRE DEL ARCHIVO
+
+	selectS("tablita1",0,valor);
+
 	//console();
+	free(valor);
 	theEnd();
 	return EXIT_SUCCESS;
 }
