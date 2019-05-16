@@ -20,7 +20,7 @@ typedef struct {
 	u_int16_t keyTabla;
 	u_int16_t modificado;
 	u_int16_t timestamp;
-}Segmento;
+}segmento;
 
 t_log* init_logger(void);
 t_config* read_config(void);
@@ -32,7 +32,7 @@ void mDescribe();
 void mDrop();
 void mJournal();
 void mGossip();
-Segmento *crearSegmento(char* nombre,u_int16_t key,char* value);
-int buscarYreemplazar(char* nombreTabla,u_int16_t ketTabla,char* valor);
+segmento *crearSegmento(char* nombre,u_int16_t key,char* value);
+segmento * buscarYreemplazar(u_int16_t ketTabla,char* valor);
 
 #endif

@@ -33,8 +33,21 @@ int main(void) {
 	//int valueLissandra = handshakeConLissandra(&lfsCliente,ipLissandra,puertoLissandra);
 	//Lo comento por ahora para que no me tire los errores
 
-	mInsert("TABLA1",57,"DUKI");
+	//mInsert("TABLA1",57,"DUKI");
+	//ignorar esto que son pruebas, todavia parece que no funciona bien el insert
+	list_add(segmentoLista,crearSegmento("TABLA1",57,"DUKI"));
+	list_add(segmentoLista,crearSegmento("TABLA1",58,"DUKI"));
+	list_add(segmentoLista,crearSegmento("TABLA1",59,"DUKI"));
 
+	int index = 0;
+	segmento *aux = list_get(segmentoLista,index);
+
+
+	while(aux){
+		printf("Key: %i, Valor: %s \n",aux->keyTabla,aux->valor);
+		index++;
+		aux = list_get(segmentoLista,index);
+	}//prueba para ver que hay en memoria nada mas
 
 /////////////////////////////
 
@@ -107,13 +120,11 @@ void mSelect(char* nombreTabla,u_int16_t keyTabla){
 }
 void mInsert(char* nombreTabla,u_int16_t keyTabla,char* valor){
 
-	u_int16_t reemplazoExitoso = 0;
-	reemplazoExitoso = buscarYreemplazar(nombreTabla,keyTabla,valor);
+	if(buscarYreemplazar(keyTabla,valor)){
 
-	if(!reemplazoExitoso){
-		Segmento *nuevoSegmento = crearSegmento(nombreTabla,keyTabla,valor);
-		list_add(segmentoLista,nuevoSegmento);
+		list_add(segmentoLista,crearSegmento(nombreTabla,keyTabla,valor));
 	}
+
 	//Explicacion:
 	//se fija si existe la tabla, en ese caso se fija si ya hay alguien con esa key, si hay alguien lo reemplaza y sino agrega la pagina (not done yet)
 	//si no existe la tabla, la crea y la agrega
@@ -147,8 +158,8 @@ t_log* init_logger() {
 	return log_create("memPrincipal.log", "memPrincipal", 1, LOG_LEVEL_INFO);
 }
 
-Segmento *crearSegmento(char* nombre,u_int16_t key,char* valor){
-	Segmento *nuevo = malloc(sizeof(Segmento));
+segmento *crearSegmento(char* nombre,u_int16_t key,char* valor){
+	segmento *nuevo = malloc(sizeof(segmento));
 	nuevo->nombre = nombre;
 	nuevo->keyTabla = key;
 	nuevo->valor = valor;
@@ -167,29 +178,16 @@ int handshakeConLissandra(int lfsCliente,char* ipLissandra,int puertoLissandra){
 
 }
 
-int buscarYreemplazar(char* nombreTabla,u_int16_t keyTablaNueva,char* nuevoValor){
+segmento *buscarYreemplazar(u_int16_t keyTablaNueva,char* nuevoValor){
 
-	t_link_element* primero = segmentoLista->head; //Esto no funca, tengo que mandar mail sobre las funciones de las commons
-
-	while(primero){
-
-		if(strcmp(primero->nombre,nombreTabla) == 0){
-
-			if(primero->keyTabla == keyTablaNueva){
-
-				primero->valor = nuevoValor;
-				primero->timestamp = (unsigned)time(NULL);
-				return 1;
-
-			}
-		//else agregar pagina nueva
+	int tieneMismaKey(segmento *p){
+		if((p->keyTabla) == keyTablaNueva){
+				p->valor = nuevoValor;
 		}
-		else{
-			primero = primero->next;
-		}
-
+		return ((p->keyTabla) == keyTablaNueva);
 	}
-	return 0;
+
+	return list_find(segmentoLista,(void*) tieneMismaKey);
 }
 
 
