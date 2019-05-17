@@ -28,6 +28,9 @@ t_config* config;
 t_log* init_logger(void);
 t_config* read_config(void);
 t_list *memtable;
+
+char *puntoMontaje;
+
 void theStart();
 void connectMemory();
 void console();

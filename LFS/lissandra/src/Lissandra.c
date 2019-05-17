@@ -19,10 +19,22 @@ int main(void) {
 
 	theStart();
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
-	if(crearCarpeta("Tablas",0)!=0){
+	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
+	char *path=pathFinal("Tablas",0,puntoMontaje);
+	if(folderExist(path)==0){
+		log_info(logger,"LA CARPETA PRINCIPAL YA EXISTE");
+		free(path);
 		theEnd();
 		return 1;
 	}
+
+	if(crearCarpeta(path)!=0){
+
+		free(path);
+		theEnd();
+		return 1;
+	}
+	free(path);
 	//connectMemory();
 
 	//PRUEBA DE INSERT Y SELECT
@@ -160,9 +172,12 @@ void console(){
 }
 void theEnd(){
 	list_destroy(memtable);
-	if(folderExist("Tablas", 0)==0){
-		borrarCarpeta("Tablas",0);
+	char *path=pathFinal("Tablas",0,puntoMontaje);
+	if(folderExist(path)==0){
+		borrarCarpeta(path);
+		free(path);
 	}
+	free(path);
 	log_destroy(logger);
 	config_destroy(config);
 

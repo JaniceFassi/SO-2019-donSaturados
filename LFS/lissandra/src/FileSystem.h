@@ -28,8 +28,8 @@ typedef struct{
 }Registry;
 
 typedef struct{
-	char consistency[3];
-	int partintion;
+	char *consistency;
+	int partitions;
 	long compaction_time;
 }metaTabla;
 
@@ -40,10 +40,12 @@ Registry *createRegistry(char *table, u_int16_t key, char *val, long time);
 Registry *getList();
 
 //FUNCIONES DE CARPETAS Y ARCHIVOS
-char *pathFinal(char *nombre, int principal);
-int folderExist(char* name, int principal);
-int crearCarpeta(char* nombre, int principal);
-int borrarCarpeta(char *nombre, int principal);
+char *pathFinal(char *nombre, int principal,char *path);
+int crearCarpeta(char* path);
+int folderExist(char* path);
+int borrarCarpeta(char *path);
 int crearParticiones(char *nombre, int cantidad);
+void crearArchMetadata(char* path, char* consistency , u_int16_t numPartition,long timeCompaction);
+metaTabla *leerArchMetadata(char *path);
 
 #endif /* LFS_LISSANDRA_SRC_FILESYSTEM_H_ */
