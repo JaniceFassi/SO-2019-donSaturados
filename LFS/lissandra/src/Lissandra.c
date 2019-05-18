@@ -19,34 +19,34 @@ int main(void) {
 
 	theStart();
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
-	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
-	char *path=pathFinal("Tablas",0,puntoMontaje);
-	if(folderExist(path)==0){
+	//puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
+	//char *path=pathFinal("Tablas",0,puntoMontaje);
+	/*if(folderExist(path)==0){
 		log_info(logger,"LA CARPETA PRINCIPAL YA EXISTE");
 		free(path);
 		theEnd();
 		return 1;
-	}
+	}*/
 
-	if(crearCarpeta(path)!=0){
+	/*if(crearCarpeta(path)!=0){
 
 		free(path);
 		theEnd();
 		return 1;
 	}
-	free(path);
-	//connectMemory();
+	free(path);*/
+	connectMemory();
 
 	//PRUEBA DE INSERT Y SELECT
-	char* valor=malloc(255);
+	//char* valor=malloc(255);
 
-	insert("tablita1",0,"Mensaje1",300);  //MIENTRAS QUE NO HAYA FILE SYSTEM, LA KEY ES EL INDEX DE MEMTABLE
-	insert("tablita2",0,"Mensaje2",300); //Y EL NOMBRE DE LA TABLA ES EL NOMBRE DEL ARCHIVO
+	//insert("tablita1",0,"Mensaje1",300);  //MIENTRAS QUE NO HAYA FILE SYSTEM, LA KEY ES EL INDEX DE MEMTABLE
+	//insert("tablita2",1,"Mensaje2",300); //Y EL NOMBRE DE LA TABLA ES EL NOMBRE DEL ARCHIVO
 
-	selectS("tablita1",0,valor);
+	//selectS("tablita1",0,valor);
 
 	//console();
-	free(valor);
+	//free(valor);
 	theEnd();
 	return EXIT_SUCCESS;
 }
@@ -108,12 +108,17 @@ void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 		log_info(logger, "\nSe acepto la conexion");
 	}
 
-	char* buffer = malloc(sizeof(char)*11);
+	char* buffer = malloc(16);
+	int tamanio= 15;
+	memset(buffer,'\0',tamanio+1);
 
-	if(recvData(socket_client, buffer,10)!=0){
+	if(recvData(socket_client, buffer,tamanio)!=0){
 		log_info(logger, "\nError al recibir la informacion");
 	}else{
+
+		printf("%s",buffer);
 		log_info(logger, buffer);
+
 	}
 }
 void console(){

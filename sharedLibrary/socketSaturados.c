@@ -40,7 +40,7 @@ int recivHandsake(u_int16_t sock,char*handshake){//recibe el handshake
 	handshake[numbytes]='\0';
 	return 0;
 }
-int sendData(u_int16_t sock ,void *buffer ,int sizeBytes){
+int sendData(u_int16_t sock ,const void *buffer ,int sizeBytes){
 	int bytesSend=0;
 	int bytesReturn=0;
 	while(bytesSend<sizeBytes){
@@ -135,13 +135,13 @@ int acceptConexion(int server,u_int16_t *socket_client,char* serverName,int hand
 	return 0;
 }
 
-int recvData(u_int16_t socket,void* buffer,u_int16_t bytesToRecieve){
-	u_int16_t returnByte;
-	u_int16_t byteRecv;
+int recvData(u_int16_t socket,const void* buffer,int bytesToRecieve){
+	u_int16_t returnByte=0;
+	u_int16_t byteRecv=0;
 
 
 	while (byteRecv < (int)bytesToRecieve) {
-	   returnByte = recv(socket, (void*)(buffer+byteRecv), bytesToRecieve-byteRecv, 0);
+	   returnByte = recv((int)socket, (void*)(buffer+byteRecv), bytesToRecieve-byteRecv, 0);
 	   //Controlo Errores
 	   if( returnByte <= 0 ) {
 		  printf("Error al recibir Datos, solo se recibieron %d bytes de los %d bytes a recibir\n", byteRecv, (int)bytesToRecieve);

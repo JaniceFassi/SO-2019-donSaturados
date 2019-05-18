@@ -14,7 +14,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//TODAVIA NO ESTA DECIDIDO
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
-	char *path=pathFinal(param_nameTable,1,puntoMontaje);
+	/*char *path=pathFinal(param_nameTable,1,puntoMontaje);
 	if(folderExist(path)==1){
 		log_info(logger,"No existe la tabla %s", param_nameTable);
 		free(path);
@@ -24,7 +24,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//	Obtener la metadata asociada a dicha tabla. PARA QUE?
 	path=pathFinal(param_nameTable, 1,puntoMontaje);
 	metaTabla *metadata= leerArchMetadata(path);
-	free(path);
+	free(path);*/
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
 
@@ -52,19 +52,22 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 		prueba= list_get(memtable,param_key);
 		strcat(prueba->name,";");
+		strcat(string_itoa(prueba->key),";");
+		strcat(prueba->value,";");
+		strcat(prueba->value,";");
 		txt_write_in_file(f,prueba->name);
 
 		txt_close_file(f);
 		free(rutaf);
-		free(metadata->consistency);
-		free(metadata);
+		//free(metadata->consistency);
+		//free(metadata);
 	//}
 	//txt_close_file(metadata);
 }
 
 int selectS(char* nameTable , u_int16_t key, char *valor){
 	//Verificar que la tabla exista en el file system.
-	char *path=pathFinal(nameTable,1,puntoMontaje);
+	/*char *path=pathFinal(nameTable,1,puntoMontaje);
 		if(folderExist(path)==1){
 			log_info(logger,"No existe la tabla %s", nameTable);
 			free(path);
@@ -76,20 +79,20 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 			metaTabla *metadata= leerArchMetadata(path);
 			free(path);
 		//Calcular cual es la partición que contiene dicho KEY.
-		int part=key % metadata->partitions;
+		int part=key % metadata->partitions;*/
 		//Escanear la partición objetivo, todos los archivos temporales
 		//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
 
 
 		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
 
-		free(metadata->consistency);
-		free(metadata);
-		return 0;
+		//free(metadata->consistency);
+		//free(metadata);
+		//return 0;
 
-		}
+		//}
 
-	/*char *rutaf=malloc(255);
+	char *rutaf=malloc(255);
 	strcpy(rutaf,"/home/utnso/");
 	strcat(rutaf,nameTable);
 	strcat(rutaf,".txt");
@@ -97,9 +100,8 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 	char c;
 	FILE *f=fopen(rutaf,"r");		//ABRO EL ARCHIVO Y MOMENTANEAMENTE LOS VALORES SE SEPARAN POR ; HAY QUE ENCONTRAR EL VALOR DE LA ; NUMERO (KEY).
 	int count=0;
-	while(EOF){
-		while(strcmp(c,";")!=0){		//GUARDO EL TEXTO HASTA EL ;
-			c=getc(f);
+	while(feof(f)==0){
+		while((c=fgetc(f))!=59){		//GUARDO EL TEXTO HASTA EL ;
 			strcat(texto,&c);
 		}
 		if(count==key){				//SI TUVE LA CANTIDAD DE PALABRAS QUE NECESITO, LOGUEA
@@ -111,11 +113,12 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 		else{
 			count++;				//SI NO AUMENTA EL CONTADOR DE PALABRAS
 		}
+
 	}
 	log_info(logger,"No se encontro la key");	//SI TERMINO EL WHILE ES PORQUE NO ENCONTRO LA KEY Y LOGUEA
 	free(rutaf);
 	free(texto);
-	return -1;*/
+	return -1;
 }
 
 void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
