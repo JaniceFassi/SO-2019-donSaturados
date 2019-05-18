@@ -102,13 +102,13 @@ void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 
 	char* serverName=config_get_string_value(config, "NAME");
 
-	if(acceptConexion( server, &socket_client,serverName,1, value)!=0){
+	if(acceptConexion( server, &socket_client,serverName,0, value)!=0){
 		log_info(logger, "\nError en el acept o al enviar handshake");
 	}else{
 		log_info(logger, "\nSe acepto la conexion");
 	}
 
-	char* buffer = malloc(16);
+	/*char* buffer = malloc(16);
 	int tamanio= 15;
 	memset(buffer,'\0',tamanio+1);
 
@@ -119,7 +119,7 @@ void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 		printf("%s",buffer);
 		log_info(logger, buffer);
 
-	}
+	}*/
 }
 void console(){
 	char* linea;

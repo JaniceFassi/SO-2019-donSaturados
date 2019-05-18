@@ -14,7 +14,8 @@ struct sockaddr_in completServer(char* ipServer, int portServer){
 	adressServer.sin_port = htons(portServer);
 	return adressServer;
 }
-//ESTE CREA EL SOCKET CLIENTE Y DEVULEVE EL NUMERO
+
+//CREA EL SOCKET CLIENTE Y DEVULEVE 0 (BIEN) 1 (FALLO)
 int createSocket(u_int16_t *sock){
 	 *sock = socket(AF_INET, SOCK_STREAM, 0);
 	if(sock<0){
@@ -24,51 +25,8 @@ int createSocket(u_int16_t *sock){
 	return 0;
 }
 
-int conectClient(u_int16_t *sock,struct sockaddr_in direccionServidor){
-	if(connect((int) *sock,(struct sockaddr *)&direccionServidor,sizeof(direccionServidor))!=0){
-		perror("no se pudo conectar");
-		return 1;
-	}
-	return 0;
-}
-int recivHandsake(u_int16_t sock,char*handshake){//recibe el handshake
-	u_int16_t numbytes;
-	if ((numbytes=recv(sock, handshake, sizeof(handshake), 0)) == -1) {
-		perror("No pudo hacer recv de handshake");
-		return 1;
-	}
-	handshake[numbytes]='\0';
-	return 0;
-}
-int sendData(u_int16_t sock ,const void *buffer ,int sizeBytes){
-	int bytesSend=0;
-	int bytesReturn=0;
-	while(bytesSend<sizeBytes){
-	bytesReturn= send(sock,(void*)(buffer+ bytesSend) ,sizeBytes-bytesSend,0);
-	if(bytesReturn<0){
-		perror("no se pudo enviar");
-		return 1;
-		}
-	bytesSend+=bytesReturn;
-	}
-	return 0;
-}
-int linkClient(u_int16_t *sock,char* ipServer, int portServer){
-	struct sockaddr_in adressServer;
-	adressServer= completServer(ipServer,portServer);
-
-	if(createSocket(sock)!=0){
-		return 1;
-	}
-	if(conectClient(sock,adressServer)!=0){
-			return 1;
-	}
-	return 0;
-}
-
-
+//CREA EL SOCKET SERVIDOR Y DEVULEVE 0 (BIEN) 1 (FALLO)
 int createServer(char* ipAddress,u_int16_t port, u_int16_t* server){
-
 	struct sockaddr_in serverAddress;
 	serverAddress=completServer(ipAddress,(int)port);
 	//int server = socket(AF_INET, SOCK_STREAM, 0);
@@ -90,27 +48,41 @@ int createServer(char* ipAddress,u_int16_t port, u_int16_t* server){
 		perror("Fallo el bind");
 		return 1;
 			}
-
 	return 0;
-
-
 }
 
-
-void listenForClients(int server, int cantConexiones){
-	if(listen(server, cantConexiones) == -1){
-		perror("No se pudo escuchar correctamente");
+//CONECTA EL CLIENTE Y DEVULEVE 0 (BIEN) 1 (FALLO)
+int conectClient(u_int16_t *sock,struct sockaddr_in direccionServidor){
+	if(connect((int) *sock,(struct sockaddr *)&direccionServidor,sizeof(direccionServidor))!=0){
+		perror("No se pudo conectar");
+		return 1;
 	}
-	printf("Estoy escuchando");
+	return 0;
 }
 
+//CREA EL SOCKET CLIENTE, LO CONECTA Y HACE EL HANDSHAKE SI ES NECESARIO. DEVULEVE 0 (BIEN) 1 (FALLO)
+int linkClient(u_int16_t *sock,char* ipServer, int portServer, u_int16_t id){
+	struct sockaddr_in adressServer;
+	adressServer= completServer(ipServer,portServer);
 
-int acceptConexion(int server,u_int16_t *socket_client,char* serverName,int handshake,u_int16_t value){
+	if(createSocket(sock)!=0){
+		return 1;
+	}
+	if(conectClient(sock,adressServer)!=0){
+		return 1;
+	}
+		sendData(*sock, &id, sizeof(id));
+	return 0;
+}
+
+//ACEPTA LA CONEXION, EN CASO DE QUE HAYA HANDSHAKE VERIFICA. dEVUELVE 0 (BIEN) 1 (FALLO)
+int acceptConexion(int server,u_int16_t *socket_client,char* serverName,int idEsperado,u_int16_t value){
 
 	//creo un struct local para referenciar a los clientes que llegaron a la cola del listen
 	struct sockaddr_in clientAddress;
 	u_int16_t client;
 	u_int16_t addressSize = sizeof(clientAddress);
+	u_int16_t idRecv;
 
 	client = accept(server, (void *) &clientAddress, (socklen_t*)&addressSize);
 
@@ -118,27 +90,43 @@ int acceptConexion(int server,u_int16_t *socket_client,char* serverName,int hand
 		perror("Fallo el accept");
 		return 1;
 		}
+
 	printf("Alguien se conecto\n");
-	char message [50]="Hola te conectaste con ";
-	strcat(message,serverName);
-	if (handshake!=0){
-		if(send(client,message,strlen(message),0)==-1){ //PASAR POR PARAMETRO EL NOMBRE DEL SERVIDOR
-			perror("Error al enviar handshake");
+
+	//if(handshake==0){
+
+		if(recvData(client,&idRecv,sizeof(u_int16_t))!=0){
+		perror("No se pudo recibir el handshake");
+		return 1;
+		}															//ARREGLAR. NO GUARDA BIEN EL ID EN idRecv. SI DEBUGUEAS TE DAS CUENTA
+
+		if(idRecv!=idEsperado){
+			perror("Conexion denegada");
 			return 1;
 		}
-/*		if(send(client,value,sizeof(value),0)==-1){ //PASAR POR PARAMETRO EL NOMBRE DEL SERVIDOR
-			perror("Error al enviar handshake");
-			return 1;
-		}*/
-	}
+	//}
+
 	*socket_client = client;
+	return 0;
+}
+
+int sendData(u_int16_t sock ,const void *buffer ,int sizeBytes){
+	int bytesSend=0;
+	int bytesReturn=0;
+	while(bytesSend<sizeBytes){
+	bytesReturn= send(sock,(void*)(buffer+ bytesSend) ,sizeBytes-bytesSend,0);
+	if(bytesReturn<0){
+		perror("no se pudo enviar");
+		return 1;
+		}
+	bytesSend+=bytesReturn;
+	}
 	return 0;
 }
 
 int recvData(u_int16_t socket,const void* buffer,int bytesToRecieve){
 	u_int16_t returnByte=0;
 	u_int16_t byteRecv=0;
-
 
 	while (byteRecv < (int)bytesToRecieve) {
 	   returnByte = recv((int)socket, (void*)(buffer+byteRecv), bytesToRecieve-byteRecv, 0);
@@ -155,3 +143,9 @@ int recvData(u_int16_t socket,const void* buffer,int bytesToRecieve){
 	return 0;
 }
 
+void listenForClients(int server, int cantConexiones){
+	if(listen(server, cantConexiones) == -1){
+		perror("No se pudo escuchar correctamente");
+	}
+	printf("Estoy escuchando");
+}
