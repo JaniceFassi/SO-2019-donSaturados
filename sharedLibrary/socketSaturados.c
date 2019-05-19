@@ -76,35 +76,32 @@ int linkClient(u_int16_t *sock,char* ipServer, int portServer, u_int16_t id){
 }
 
 //ACEPTA LA CONEXION, EN CASO DE QUE HAYA HANDSHAKE VERIFICA. dEVUELVE 0 (BIEN) 1 (FALLO)
-int acceptConexion(int server,u_int16_t *socket_client,char* serverName,int idEsperado,u_int16_t value){
+int acceptConexion(int server,u_int16_t *socket_client,int idEsperado){
 
 	//creo un struct local para referenciar a los clientes que llegaron a la cola del listen
 	struct sockaddr_in clientAddress;
 	u_int16_t client;
 	u_int16_t addressSize = sizeof(clientAddress);
-	u_int16_t idRecv;
+	u_int16_t idRecv=0;
 
 	client = accept(server, (void *) &clientAddress, (socklen_t*)&addressSize);
 
 	if (client == -1){
-		perror("Fallo el accept");
+		perror("\nFallo el accept");
 		return 1;
 		}
 
-	printf("Alguien se conecto\n");
-
-	//if(handshake==0){
+	printf("\nAlguien se conecto\n");
 
 		if(recvData(client,&idRecv,sizeof(u_int16_t))!=0){
-		perror("No se pudo recibir el handshake");
+		perror("\nNo se pudo recibir el handshake");
 		return 1;
 		}															//ARREGLAR. NO GUARDA BIEN EL ID EN idRecv. SI DEBUGUEAS TE DAS CUENTA
 
 		if(idRecv!=idEsperado){
-			perror("Conexion denegada");
+			perror("\nConexion denegada");
 			return 1;
 		}
-	//}
 
 	*socket_client = client;
 	return 0;

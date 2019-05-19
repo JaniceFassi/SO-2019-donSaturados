@@ -14,7 +14,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//TODAVIA NO ESTA DECIDIDO
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
-	/*char *path=pathFinal(param_nameTable,1,puntoMontaje);
+	char *path=pathFinal(param_nameTable,1,puntoMontaje);
 	if(folderExist(path)==1){
 		log_info(logger,"No existe la tabla %s", param_nameTable);
 		free(path);
@@ -22,9 +22,10 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	}
 	free(path);
 	//	Obtener la metadata asociada a dicha tabla. PARA QUE?
-	path=pathFinal(param_nameTable, 1,puntoMontaje);
+	/*path=pathFinal(param_nameTable, 1,puntoMontaje);
 	metaTabla *metadata= leerArchMetadata(path);
 	free(path);*/
+
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
 
@@ -43,19 +44,23 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 		log_info(logger,"se agrego el registro a la lista");
 	}
 
-		char *rutaf=malloc(255);
-		strcpy(rutaf,"/home/utnso/");
+		char *rutaf=pathFinal(param_nameTable,2,puntoMontaje);
 		strcat(rutaf,param_nameTable);
 		strcat(rutaf,".txt");
 		FILE* f =txt_open_for_append(rutaf);
-		Registry *prueba;					//MOMENTANEAMENTE SACO EL NODO PARA LUEGO ESCRIBIRLO EN UN ARCHIVO
+		Registry *nodoEncontrado;		//MOMENTANEAMENTE SACO EL NODO PARA LUEGO ESCRIBIRLO EN UN ARCHIVO
 
-		prueba= list_get(memtable,param_key);
-		strcat(prueba->name,";");
-		strcat(string_itoa(prueba->key),";");
-		strcat(prueba->value,";");
-		strcat(prueba->value,";");
-		txt_write_in_file(f,prueba->name);
+		//PRIMERA APROXIMACION AL DUMP (CREACION DE ARCHIVOS TEMPORALES)
+		nodoEncontrado= list_get(memtable,param_key);
+		char *texto=malloc(255);
+		//strcat(texto,prueba->timestamp);
+		//strcat(texto,";");
+		strcpy(texto,string_itoa(nodoEncontrado->key));
+		strcat(texto,";");
+		strcat(texto,nodoEncontrado->value);
+		strcat(texto,"\n");
+
+		txt_write_in_file(f,texto);
 
 		txt_close_file(f);
 		free(rutaf);
@@ -67,19 +72,20 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 int selectS(char* nameTable , u_int16_t key, char *valor){
 	//Verificar que la tabla exista en el file system.
-	/*char *path=pathFinal(nameTable,1,puntoMontaje);
+	char *path=pathFinal(nameTable,1,puntoMontaje);
 		if(folderExist(path)==1){
 			log_info(logger,"No existe la tabla %s", nameTable);
 			free(path);
 			return 1;
 		}else{
 		//Obtener la metadata asociada a dicha tabla.
-			free(path);
+			/*free(path);
 			path=pathFinal(nameTable, 3,puntoMontaje);
 			metaTabla *metadata= leerArchMetadata(path);
-			free(path);
+			free(path);*/
+
 		//Calcular cual es la partición que contiene dicho KEY.
-		int part=key % metadata->partitions;*/
+		//int part=key % metadata->partitions;*/
 		//Escanear la partición objetivo, todos los archivos temporales
 		//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
 
@@ -92,33 +98,37 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 
 		//}
 
-	char *rutaf=malloc(255);
-	strcpy(rutaf,"/home/utnso/");
+	char *rutaf=pathFinal(nameTable,2,puntoMontaje);
 	strcat(rutaf,nameTable);
 	strcat(rutaf,".txt");
 	char *texto=malloc(255);
+	FILE *f=fopen(rutaf,"r");		//ABRO EL ARCHIVO Y MOMENTANEAMENTE LOS VALORES SE SEPARAN POR ;
 	char c;
-	FILE *f=fopen(rutaf,"r");		//ABRO EL ARCHIVO Y MOMENTANEAMENTE LOS VALORES SE SEPARAN POR ; HAY QUE ENCONTRAR EL VALOR DE LA ; NUMERO (KEY).
-	int count=0;
+
 	while(feof(f)==0){
-		while((c=fgetc(f))!=59){		//GUARDO EL TEXTO HASTA EL ;
-			strcat(texto,&c);
-		}
-		if(count==key){				//SI TUVE LA CANTIDAD DE PALABRAS QUE NECESITO, LOGUEA
+		c=fgetc(f);
+		if(c==key){
+			while(strcmp(&c,"\n")!=0){
+				c=fgetc(f);
+				strcat(texto,&c);
+			}
 			log_info(logger,texto);
 			free(texto);
 			free(rutaf);
 			return 0;
 		}
 		else{
-			count++;				//SI NO AUMENTA EL CONTADOR DE PALABRAS
+			while(strcmp(&c,"\n")!=0){
+				c=fgetc(f);					//SI NO AUMENTA EL CONTADOR DE PALABRAS
+			}
 		}
 
 	}
-	log_info(logger,"No se encontro la key");	//SI TERMINO EL WHILE ES PORQUE NO ENCONTRO LA KEY Y LOGUEA
+	log_info(logger,"No se encontro la key");	//SI TERMINO EL WHILE ES PORQUE NO ENCONTRO LA KEY Y LOGUEA*/
 	free(rutaf);
 	free(texto);
-	return -1;
+	return 1;
+}
 }
 
 void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
@@ -184,7 +194,6 @@ int describe(char* nameTable, t_list *tablas,int variante){//PREGUNTAR
 			free(path);
 			return 1;
 		}
-
 
 	}
 	return 0;
