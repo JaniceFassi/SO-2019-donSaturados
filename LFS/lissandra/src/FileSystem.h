@@ -34,18 +34,26 @@ typedef struct{
 }metaTabla;
 
 //FUNCIONES DE TAD REGISTRY
-
 void destroyRegistry(Registry *self);
 Registry *createRegistry(char *table, u_int16_t key, char *val, long time);
 Registry *getList();
 
-//FUNCIONES DE CARPETAS Y ARCHIVOS
-char *pathFinal(char *nombre, int principal,char *path);
+//FUNCIONES DE CONCATENAR
+char *pathFinal(char *nombre, int principal);
+char *concatParaArchivo(long timestamp,int key,char *value,int opc);
+
+//FUNCIONES DE CARPETAS
 int crearCarpeta(char* path);
 int folderExist(char* path);
 int borrarCarpeta(char *path);
+
+//FUNCIONES ARCHIVOS
 int crearParticiones(char *nombre, int cantidad);
 void crearArchMetadata(char* path, char* consistency , u_int16_t numPartition,long timeCompaction);
 metaTabla *leerArchMetadata(char *path);
+int escribirArchBinario(char *path,long timestamp,int key,char *value);
+int leerTodoArchBinario(char *path);
+int agregarArchBinario(char *path,long timestamp,int key,char *value);
+
 
 #endif /* LFS_LISSANDRA_SRC_FILESYSTEM_H_ */

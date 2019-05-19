@@ -7,47 +7,103 @@
 
 #include "FileSystem.h"
 
-char *pathFinal(char *nombre, int principal,char *path){
+/************************************************************************************************/
+//FUNCIONES DE CONCATENAR
+
+char *pathFinal(char *nombre, int principal){
 	//0 ES LA CARP PRINCIPAL, 1 ES LA CARP DE LAS TABLAS, 2 PATH DE ARCH, 3 METADATA
-	int base=string_length(path)+string_length(nombre)+2;
+	int base=string_length(puntoMontaje)+string_length(nombre)+2;
+	char *pathF=malloc(base);
+	strcpy(pathF,puntoMontaje);
+
 	if(principal==0){
-		char *pathF=malloc(base);
-		strcpy(pathF,path);
 		strcat(pathF,nombre);
 		return pathF;
 	}
+
 	char tab[]="Tablas/";
 	base+=string_length(tab)+1;
+	pathF=realloc(pathF,base);
+	strcat(pathF,tab);
+	strcat(pathF,nombre);
+
 	if(principal==1){
-		char *pathF=malloc(base);
-		strcpy(pathF,path);
-		strcat(pathF,tab);
-		strcat(pathF,nombre);
 		return pathF;
 	}
+
 	char barra[]="/";
 	base +=string_length(barra)+1;
+	pathF=realloc(pathF,base);
+	strcat(pathF,barra);
+
 	if(principal==2){
-		char *pathF=malloc(base+string_length(tab)+2);
-		strcpy(pathF,path);
-		strcat(pathF,tab);
-		strcat(pathF,nombre);
-		strcat(pathF,barra);
 		return pathF;
 	}
+
 	char metadata[]="METADATA";
 	base += string_length(metadata)+1;
+	pathF=realloc(pathF,base);
+
 	if(principal==3){
-		char *pathF=malloc(base+string_length(tab)+2);
-		strcpy(pathF,path);
-		strcat(pathF,tab);
-		strcat(pathF,nombre);
-		strcat(pathF,barra);
 		strcat(pathF,metadata);
 		return pathF;
 	}
+	free(pathF);
 	return NULL;
 }
+
+char *concatParaArchivo(long timestamp,int key,char *value,int opc){
+	//0 para Escribir, 1 para Agregar
+
+	char *separador=";";
+	char *salto="\n";
+	int base;
+
+	char *keys=string_itoa(key);
+	char *time=string_from_format("%ld",timestamp);
+	char *linea;
+
+	if(opc==0){
+		base=strlen(time)+1;
+		linea=malloc(base);
+		strcpy(linea,time);
+
+	}else{
+		base=strlen(salto)+1;
+		char *linea=malloc(base);
+		strcpy(linea,salto);
+		base+=strlen(time)+1;
+		linea=realloc(linea,base);
+		string_append(&linea,time);
+	}
+	free(time);
+
+	base +=strlen(separador)+1;
+	linea=realloc(linea,base);
+	string_append(&linea,separador);
+
+	base +=strlen(keys)+1;
+	linea=realloc(linea,base);
+	string_append(&linea,keys);
+	free(keys);
+
+	base +=strlen(separador)+1;
+	linea=realloc(linea,base);
+	string_append(&linea,separador);
+
+	base +=strlen(value)+1;
+	linea=realloc(linea,base);
+	string_append(&linea,value);
+
+	base +=strlen(salto)+1;
+	linea=realloc(linea,base);
+	string_append(&linea,salto);
+
+	return linea;
+}
+
+/****************************************************************************************************/
+//FUNCIONES DE CARPETAS
 
 int crearCarpeta(char* path){//CREA LA CARPETA
 	if(mkdir(path,0777)<0){
@@ -56,6 +112,7 @@ int crearCarpeta(char* path){//CREA LA CARPETA
 	}
 	return 0;
 }
+
 int folderExist(char* path){ //Verifica si existe la carpeta, si no existe devuelve 1
 
 	struct stat st = {0};
@@ -65,6 +122,7 @@ int folderExist(char* path){ //Verifica si existe la carpeta, si no existe devue
 	}
 	return 0;
 }
+
 int borrarCarpeta(char *path){//BORRA LA CARPETA
 
 	if(rmdir(path)<0){
@@ -73,6 +131,9 @@ int borrarCarpeta(char *path){//BORRA LA CARPETA
 	}
 	return 0;
 }
+
+/***********************************************************************************************/
+//FUNCIONES DE ARCHIVOS
 
 int crearParticiones(char *path, int cantidad){
 	FILE* arch; //BINARIO
@@ -127,23 +188,94 @@ metaTabla *leerArchMetadata(char *path){
 	return nuevo;
 }
 
-//////////////////////
+int  escribirArchBinario(char *path,long timestamp,int key,char *value){
+
+	char *linea=concatParaArchivo(timestamp,key,value,0);
+	int base=strlen(linea+1);
+
+	FILE* particion=fopen(path,"wb");
+	if(particion== NULL){
+		printf("No se pudo abrir el archivo para escribir");
+		return 1;
+	}
+
+	fwrite(linea,1,base,particion);
+
+	fclose(particion);
+	free(linea);
+
+	return 0;
+}
+
+int  agregarArchBinario(char *path,long timestamp,int key,char *value){
+
+	char *linea=concatParaArchivo(timestamp,key,value,1);
+	int base=strlen(linea+1);
+
+	FILE* particion=fopen(path,"ab+");
+	if(particion== NULL){
+		printf("No se pudo abrir el archivo para escribir");
+		return 1;
+	}
+
+	fwrite(linea,1,base,particion);
+
+	fclose(particion);
+	free(linea);
+
+	return 0;
+}
+
+int leerTodoArchBinario(char *path){
+
+	FILE* particion=fopen(path,"rb");
+	if(particion== NULL){
+		printf("Error al abrir el archivo para leer");
+		return 1;
+	}
+
+	size_t t = 1000;
+
+	char *buffer=NULL;
+
+	while(!feof(particion)){
+		getline(&buffer,&t,particion);
+		printf("%s",buffer);
+		buffer=NULL;
+	}
+
+	free(buffer);
+	return 0;
+}
+
+/**************************************************************************************************/
 //FUNCIONES ASOCIADAS AL TAD REGISTRO
+
 Registry *createRegistry(char *table, u_int16_t key, char *val, long time){
+
 	Registry *data = malloc(sizeof(Registry));
+
 	data->timestamp = time;
 	data->key = key;
 	data ->value=strdup(val);
 	data ->name=strdup(table);
+
 	return data;
 }
+
 void destroyRegistry(Registry *self) {
-    free(self->name);
+
+	free(self->name);
     free(self->value);
     free(self);
+
 }
+
 Registry *getList(){
+
 	Registry *data = malloc(sizeof(Registry));
 	data= list_get(memtable,0);
+
 	return data;
+
 }
