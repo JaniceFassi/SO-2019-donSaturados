@@ -18,7 +18,7 @@ int main(void) {
 
 	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
 
-	char *path=pathFinal("Tablas",0,puntoMontaje);	//DEVUELVE EL PATH HASTA LA CARPETA TABLAS
+	char *path=pathFinal("Tablas",0);	//DEVUELVE EL PATH HASTA LA CARPETA TABLAS
 
 	if(folderExist(path)!=0){		//SI NO EXISTE LA CARPETA TABLAS DEL FILESYSTEM LA CREA
 		if(crearCarpeta(path)!=0){
@@ -30,21 +30,11 @@ int main(void) {
 	free(path);
 	}
 
+	insert("tablita",0,"mensaje",30);
+
 	//connectMemory();
 
-	//PRUEBA DE INSERT Y SELECT
-
-	char* valor=malloc(255);
-
-	//insert("tablita1",0,"Mensaje0",300);  //MIENTRAS QUE NO HAYA FILE SYSTEM, LA KEY ES EL INDEX DE MEMTABLE
-	//insert("tablita1",1,"Mensaje1",300); //Y EL NOMBRE DE LA TABLA ES EL NOMBRE DEL ARCHIVO
-	//insert("tablita1",2,"Mensaje0",300);
-	//insert("tablita1",3,"Mensaje1",300);
-
-	selectS("tablita1",0,valor);
-
 	//console();
-	//free(valor);
 
 	theEnd();
 	return EXIT_SUCCESS;
