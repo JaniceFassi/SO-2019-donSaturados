@@ -248,24 +248,36 @@ int leerTodoArchBinario(char *path){
 	return 0;
 }
 
-/**************************************************************************************************/
-//FUNCIONES ASOCIADAS AL TAD REGISTRO
+int eliminarArchivo(char *path){
+	if(remove(path)==0){
+		return 0;
+	}
+	printf("Error al intentar borrar archivo");
+	return 1;
+}
 
-Registry *createRegistry(char *table, u_int16_t key, char *val, long time){
+/**************************************************************************************************/
+//FUNCIONES ASOCIADAS AL REGISTRO
+
+Registry *createRegistry(u_int16_t key, char *val, long time){
 
 	Registry *data = malloc(sizeof(Registry));
 
 	data->timestamp = time;
 	data->key = key;
 	data ->value=strdup(val);
-	data ->name=strdup(table);
 
 	return data;
 }
 
+void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time){
+
+	Registry *nuevo=createRegistry(key,val,time);
+	list_add(name->registros,nuevo);
+}
+
 void destroyRegistry(Registry *self) {
 
-	free(self->name);
     free(self->value);
     free(self);
 
@@ -278,4 +290,30 @@ Registry *getList(){
 
 	return data;
 
+}
+/**************************************************************************************************/
+//FUNCIONES ASOCIADAS A TABLAS
+Tabla *find_tabla_by_name(char *name) {
+	int _is_the_one(Tabla *p) {
+
+		return string_equals_ignore_case(p->nombre, name);
+
+	}
+
+	return list_find(memtable, (void*) _is_the_one);
+}
+
+Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time){
+	Tabla *nueva=malloc(sizeof(Tabla));
+	nueva->nombre=malloc(strlen(nombre+1));
+	strcpy(nueva->nombre,nombre);
+	nueva->registros=list_create();
+	list_add(nueva->registros,createRegistry(key,val,time));
+	return nueva;
+}
+
+void liberarTabla(Tabla *self){
+	free(self->nombre);
+	list_destroy_and_destroy_elements(self->registros,(void *)destroyRegistry);
+	free(self);
 }

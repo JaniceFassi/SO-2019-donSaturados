@@ -24,7 +24,7 @@ typedef enum{
 void drop(char* nameTable);
 int describe(char* nameTable, t_list *tablas,int variante);
 void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction);
-int selectS(char* nameTable, u_int16_t key, char* valor);
+char *selectS(char* nameTable, u_int16_t key);
 void insert(char* nameTable, u_int16_t key, char *value, long timestamp);
 
 #endif /* APILFS_H_ */

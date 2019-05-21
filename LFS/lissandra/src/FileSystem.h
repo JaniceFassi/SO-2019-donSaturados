@@ -19,13 +19,16 @@
 #include<readline/readline.h>
 #include "Lissandra.h"
 
-typedef struct{
-	char *name;
+typedef struct {
 	u_int16_t key;
 	char *value;
 	long timestamp;
-
 }Registry;
+
+typedef struct{
+	char *nombre;
+	t_list *registros;
+}Tabla;
 
 typedef struct{
 	char *consistency;
@@ -33,10 +36,16 @@ typedef struct{
 	long compaction_time;
 }metaTabla;
 
-//FUNCIONES DE TAD REGISTRY
+//FUNCIONES DE REGISTROS
 void destroyRegistry(Registry *self);
-Registry *createRegistry(char *table, u_int16_t key, char *val, long time);
+Registry *createRegistry(u_int16_t key, char *val, long time);
 Registry *getList();
+void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);
+
+//FUNCIONES DE TABLAS
+Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);
+Tabla *find_tabla_by_name(char *name);
+void liberarTabla(Tabla *self);
 
 //FUNCIONES DE CONCATENAR
 char *pathFinal(char *nombre, int principal);
@@ -54,6 +63,7 @@ metaTabla *leerArchMetadata(char *path);
 int escribirArchBinario(char *path,long timestamp,int key,char *value);
 int leerTodoArchBinario(char *path);
 int agregarArchBinario(char *path,long timestamp,int key,char *value);
+int eliminarArchivo(char *path);
 
 
 #endif /* LFS_LISSANDRA_SRC_FILESYSTEM_H_ */

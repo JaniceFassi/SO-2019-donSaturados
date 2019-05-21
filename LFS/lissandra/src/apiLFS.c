@@ -11,7 +11,6 @@
 //API
 void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 
-	//TODAVIA NO ESTA DECIDIDO
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
 	char *path=pathFinal(param_nameTable,1);
@@ -26,24 +25,37 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	metaTabla *metadata= leerArchMetadata(path);
 	free(path);*/
 
+	int ant=list_size(memtable);
+
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
 
+	if(list_is_empty(memtable)){
 
-	//El Timestamp es opcional. En caso que no este, se usará el valor actual del Epoch UNIX. ESTO SE HACE EN CONSOLA
+		Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
+		list_add(memtable,nueva);
 
-	//Insertar en la memoria temporal del punto anterior una nueva entrada que contenga los datos enviados en la request.
+	}else{
+		//Insertar en la memoria temporal del punto anterior una nueva entrada que contenga los datos enviados en la request.
 
-	int ant=list_size(memtable);
-	Registry *data = createRegistry(param_nameTable, param_key, param_value, param_timestamp);
+		Tabla *encontrada= find_tabla_by_name(param_nameTable);
 
-	list_add(memtable, data);
-	int tam= list_size(memtable);
+		if(encontrada==NULL){
 
-	if(tam>ant){
-		log_info(logger,"se agrego el registro a la lista");
+			Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
+			list_add(memtable,nueva);
+
+		}else{
+
+			agregarRegistro(encontrada,param_key,param_value,param_timestamp);
+
+		}
 	}
+		int tam= list_size(memtable);
 
+			if(tam>ant){
+				printf("se agrego el registro a la lista");
+			}
 		char *rutaf=pathFinal(param_nameTable,2);
 		strcat(rutaf,param_nameTable);
 		strcat(rutaf,".txt");
@@ -70,13 +82,14 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//txt_close_file(metadata);
 }
 
-int selectS(char* nameTable , u_int16_t key, char *valor){
+char *selectS(char* nameTable , u_int16_t key){
 	//Verificar que la tabla exista en el file system.
 	char *path=pathFinal(nameTable,1);
+	char *valor=NULL;
 		if(folderExist(path)==1){
 			log_info(logger,"No existe la tabla %s", nameTable);
 			free(path);
-			return 1;
+			return valor;
 		}else{
 		//Obtener la metadata asociada a dicha tabla.
 			free(path);
@@ -94,7 +107,7 @@ int selectS(char* nameTable , u_int16_t key, char *valor){
 
 		free(metadata->consistency);
 		free(metadata);
-		return 0;
+		return NULL;
 
 		}
 

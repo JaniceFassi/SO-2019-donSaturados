@@ -25,11 +25,11 @@ int main(void) {
 			free(path);
 			theEnd();
 			return 1;
+		}
+
 	}
 	log_info(logger,"LA CARPETA PRINCIPAL TABLAS YA EXISTE");
 	free(path);
-	}
-
 	insert("tablita",0,"mensaje",30);
 
 	//connectMemory();
@@ -109,9 +109,8 @@ void console(){
 
 		if(!strncmp(linea,"SELECT ",7))
 		{
-			char *valor;
 			char **subStrings= string_n_split(linea,3," ");
-			selectS(subStrings[1],atoi(subStrings[2]),valor);
+			char *valor=selectS(subStrings[1],atoi(subStrings[2]));
 			printf("%s",valor);
 		}
 	 	if(!strncmp(linea,"INSERT ",7)){
@@ -158,7 +157,7 @@ void console(){
 }
 
 void theEnd(){
-	list_destroy(memtable);
+	list_destroy_and_destroy_elements(memtable,(void *)liberarTabla);
 	log_destroy(logger);
 	config_destroy(config);
 }
