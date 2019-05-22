@@ -86,12 +86,24 @@ char *selectS(char* nameTable , u_int16_t key){
 	//Verificar que la tabla exista en el file system.
 	char *path=pathFinal(nameTable,1);
 	char *valor=NULL;
-		if(folderExist(path)==1){
-			log_info(logger,"No existe la tabla %s", nameTable);
-			free(path);
-			return valor;
-		}else{
-		//Obtener la metadata asociada a dicha tabla.
+	if(folderExist(path)==1){
+		log_info(logger,"No existe la tabla %s", nameTable);
+		free(path);
+		return valor;
+	}
+	if(!list_is_empty(memtable)){
+		Tabla *encontrada= find_tabla_by_name(nameTable);
+		if(encontrada!=NULL){
+			if(encontrarRegistroPorKey(encontrada->registros,key)==0){
+				t_list *aux=filtrearPorKey(encontrada->registros,key);
+				Registry *obtenido=keyConMayorTime(aux);
+				valor=malloc(50);
+				strcpy(valor,obtenido->value);
+				list_destroy_and_destroy_elements(aux,(void *)destroyRegistry);
+				return valor;
+			}
+		}
+	}			//Obtener la metadata asociada a dicha tabla.
 			free(path);
 			path=pathFinal(nameTable, 3);
 			metaTabla *metadata= leerArchMetadata(path);
@@ -109,9 +121,9 @@ char *selectS(char* nameTable , u_int16_t key){
 		free(metadata);
 		return NULL;
 
-		}
 
-	return 1;
+
+	return valor;
 }
 
 void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){

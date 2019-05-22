@@ -291,6 +291,20 @@ Registry *getList(){
 	return data;
 
 }
+Registry *keyConMayorTime(t_list *registros){
+	Registry *mayor=NULL;
+		void comparar(Registry *comparar){
+			if(mayor==NULL){
+				mayor=comparar;
+			}else{
+				if(mayor->timestamp < comparar->timestamp){
+					mayor=comparar;
+				}
+			}
+		}
+        list_iterate(registros, (void*) comparar);
+	return mayor;
+}
 /**************************************************************************************************/
 //FUNCIONES ASOCIADAS A TABLAS
 Tabla *find_tabla_by_name(char *name) {
@@ -316,4 +330,22 @@ void liberarTabla(Tabla *self){
 	free(self->nombre);
 	list_destroy_and_destroy_elements(self->registros,(void *)destroyRegistry);
 	free(self);
+}
+int encontrarRegistroPorKey(t_list *registros,int key){
+//devuelve 1 cuando no hay registros de esa key, devuelve 0 cuando si hay
+	bool existe(Registry *p) {
+		return p->key == key;
+	}
+
+	if(list_is_empty(list_find(registros, (void*) existe))){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+t_list* filtrearPorKey(t_list *registros,int key){
+	bool misma_key(Registry *reg) {
+		return reg->key == key;
+	}
+	return list_filter(registros, (void*) misma_key);
 }

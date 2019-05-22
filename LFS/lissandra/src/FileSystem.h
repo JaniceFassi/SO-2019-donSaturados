@@ -46,7 +46,9 @@ void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);
 Tabla *find_tabla_by_name(char *name);
 void liberarTabla(Tabla *self);
-
+t_list* filtrearPorKey(t_list *registros,int key);
+Registry *keyConMayorTime(t_list *registros);
+int encontrarRegistroPorKey(t_list *registros,int key);
 //FUNCIONES DE CONCATENAR
 char *pathFinal(char *nombre, int principal);
 char *concatParaArchivo(long timestamp,int key,char *value,int opc);
