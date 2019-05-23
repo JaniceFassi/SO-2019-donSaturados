@@ -256,6 +256,24 @@ int eliminarArchivo(char *path){
 	return 1;
 }
 
+void escribirReg(char *name,t_list *registros,int cantParticiones){
+	void escribirTemp(Registry* nuevo){
+		int part=nuevo->key % cantParticiones;
+		char *nombre=string_itoa(part);
+		char *exten=".tmp";
+		char *path=pathFinal(name,2);
+		int base=strlen(path)+1+strlen(exten)+1+strlen(nombre)+1;
+		path=realloc(path,base);
+		strcat(path,nombre);
+		strcat(path,exten);
+		agregarArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
+		free(nombre);
+		free(exten);
+		free(path);
+	}
+	list_iterate(registros, (void*) escribirTemp);
+}
+
 /**************************************************************************************************/
 //FUNCIONES ASOCIADAS AL REGISTRO
 
@@ -305,6 +323,27 @@ Registry *keyConMayorTime(t_list *registros){
         list_iterate(registros, (void*) comparar);
 	return mayor;
 }
+t_list *regDep(t_list *aDepu){
+	t_list *depu=list_create();
+	void compara(Registry* nuevo){
+		if(list_is_empty(depu)){
+			list_add(depu,nuevo);
+		}else{
+			Registry *viejo=encontrarKeyDepu(depu,nuevo->key);
+			if(viejo!=NULL){
+				if(viejo->timestamp < nuevo->timestamp){
+					list_add(depu,nuevo);
+				}else{
+					list_add(depu,viejo);
+				}
+			}else{
+				list_add(depu,nuevo);
+			}
+		}
+	}
+	list_iterate(aDepu, (void*) compara);
+	return depu;
+}
 /**************************************************************************************************/
 //FUNCIONES ASOCIADAS A TABLAS
 Tabla *find_tabla_by_name(char *name) {
@@ -343,6 +382,15 @@ int encontrarRegistroPorKey(t_list *registros,int key){
 		return 0;
 	}
 }
+Registry *encontrarKeyDepu(t_list *registros,int key){
+//devuelve 1 cuando no hay registros de esa key, devuelve 0 cuando si hay
+	bool existe(Registry *p) {
+		return p->key == key;
+	}
+
+	return list_find(registros, (void*) existe);
+}
+
 t_list* filtrearPorKey(t_list *registros,int key){
 	bool misma_key(Registry *reg) {
 		return reg->key == key;

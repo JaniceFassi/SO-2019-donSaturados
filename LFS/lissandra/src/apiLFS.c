@@ -94,13 +94,15 @@ char *selectS(char* nameTable , u_int16_t key){
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name(nameTable);
 		if(encontrada!=NULL){
-			if(encontrarRegistroPorKey(encontrada->registros,key)==0){
-				t_list *aux=filtrearPorKey(encontrada->registros,key);
+			t_list *aux=filtrearPorKey(encontrada->registros,key);
+			if(list_is_empty(aux)){
 				Registry *obtenido=keyConMayorTime(aux);
 				valor=malloc(50);
 				strcpy(valor,obtenido->value);
 				list_destroy_and_destroy_elements(aux,(void *)destroyRegistry);
 				return valor;
+			}else{
+				list_destroy(aux);
 			}
 		}
 	}			//Obtener la metadata asociada a dicha tabla.

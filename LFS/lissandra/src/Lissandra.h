@@ -34,6 +34,7 @@ char *puntoMontaje;
 void theStart();
 void connectMemory();
 void console();
+void dump();
 void theEnd();
 
 #endif /* LISSANDRA_H_ */

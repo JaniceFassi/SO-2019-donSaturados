@@ -155,6 +155,31 @@ void console(){
 		free(linea);
 	}
 }
+void dump(){
+	t_list *dump=list_duplicate(memtable);
+	list_clean(memtable);
+	int cant=list_size(dump);
+	while(dump>=0){
+		Tabla *dumpT=list_get(dump,cant-1);
+		char *path=pathFinal(dumpT->nombre,1);
+		if(folderExist(path)==0){
+			free(path);
+			path=pathFinal(dumpT->nombre,3);
+			metaTabla *metadata= leerArchMetadata(path);
+			free(path);
+			t_list *regDepurados=regDep(dumpT->registros);
+			escribirReg(dumpT->nombre,regDepurados,metadata->partitions);
+			free(metadata);
+			list_destroy_and_destroy_elements(regDepurados,(void *)destroyRegistry);//no se si tengo q liberar los registros tambn
+			liberarTabla(dumpT);
+		}else{
+			liberarTabla(dumpT);
+			free(path);
+
+		}
+
+	}
+}
 
 void theEnd(){
 	list_destroy_and_destroy_elements(memtable,(void *)liberarTabla);
