@@ -14,6 +14,8 @@ int main(void) {
 
 	theStart();
 
+	u_int16_t socket_client;
+
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
 
 	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
@@ -30,13 +32,17 @@ int main(void) {
 	}
 	log_info(logger,"LA CARPETA PRINCIPAL TABLAS YA EXISTE");
 	free(path);
-	insert("tablita",0,"mensaje",30);
 
-	//connectMemory();
+	connectMemory(&socket_client);
 
+	char *buffer=malloc(2);
+	int recibidos=recvData(socket_client,buffer,2);
+
+	exec_api(atoi(buffer),socket_client);
+	free(buffer);
 	//console();
 
-	theEnd();
+	//theEnd();
 	return EXIT_SUCCESS;
 }
 
@@ -48,42 +54,108 @@ t_config* read_config() {
 	return config_create("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
 }
 
-void exec_api(op_code mode){	//Averiguar si se puede hacer asi, segun el header que le llegue llama a la funcion correspondiente (en api o fs??)
+void recibirDeMemoria(u_int16_t sock,char *buffer){
+	char *tam=malloc(3);
 
-	switch(mode){				//Tendria que haber una funcion comun. Ver ejemplo en las commons log que hay funciones template
+	recvData(sock,tam,3);
 
-	case 0:
+	realloc(buffer,atoi(tam));
+	recvData(sock,buffer,((atoi(tam))));
+
+	free(tam);
+	log_info(logger,buffer);
+}
+
+void exec_api(op_code mode,u_int16_t sock){
+
+	char *buffer=malloc(2);
+	char **subCadena;
+
+	switch(mode){
+	case 0:								//orden: tabla, key
+
+		log_info(logger,"\nSELECT");
+		recibirDeMemoria(sock,buffer);
+		log_info(logger,buffer);
+		/*subCadena=string_split(buffer, ";");
+		printf("%s",subCadena[1]);
+		log_info(logger,subCadena[1]);
+		log_info(logger,subCadena[2]);
+		char *valor=selectS(subCadena[1],atoi(subCadena[2]));
+		printf("%s",valor);
+		log_info(logger,valor);*/
 		break;
+
 	case 1:
+		log_info(logger,"\nINSERT");	//Este es el insert que viene con el timestamp
+		recibirDeMemoria(sock,buffer);	//orden: tabla, key, value, timestamp
+		log_info(logger,buffer);
+		/*subCadena=string_split(buffer, ";");
+		insert(subCadena[1], atoi(subCadena[2]),subCadena[3],atol(subCadena[4]));*/
+
 		break;
+
 	case 2:
+		log_info(logger,"\nCREATE");	//orden: tabla, consistencia, particiones, tiempoCompactacion
+		recibirDeMemoria(sock,buffer);
+		log_info(logger,buffer);
+		/*subCadena=string_split(buffer, ";");
+		create(subCadena[1],subCadena[2],atoi(subCadena[3]),atol(subCadena[4]));*/
 		break;
+
 	case 3:
+		log_info(logger,"\nDESCRIBE");	//orden: tabla
+		recibirDeMemoria(sock,buffer);
+		log_info(logger,buffer);
+		//completar
 		break;
+
 	case 4:
+		log_info(logger,"\nDROP");		//orden: tabla
+		recibirDeMemoria(sock,buffer);
+		log_info(logger,buffer);
+
+		//drop(buffer);
 		break;
+
+	/*case 5:									//insert sin timestamp orden: nombre, key, value
+		log_info(logger,"\nINSERTSINTIME");
+		recibirDeMemoria(sock,buffer);
+		log_info(logger,buffer);
+		//completar
+		break;
+
+	case 6:									//describe sin timestamp	no hay parametros
+		log_info(logger,"\nDESCRIBESINDROP");
+		recibirDeMemoria(sock,buffer);
+		log_info(logger,buffer);
+		//completar
+		break;*/
+
 	default:
+		log_info(logger,"\nOTRO");
 		break;
 	}
+	free(buffer);
+	//free(subCadena);
 }
 void theStart(){
 	logger = init_logger();
 	config = read_config();
 	memtable= list_create();
 }
-void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
+void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 	u_int16_t  server;
-	u_int16_t socket_client;
 	char* ip=config_get_string_value(config, "IP");
-	log_info(logger, ip);
+	//log_info(logger, ip);
 	u_int16_t port= config_get_int_value(config, "PORT");
-	log_info(logger, "%i",port);
+	//log_info(logger, "%i",port);
 	u_int16_t maxValue= config_get_int_value(config, "TAMVALUE");
-	log_info(logger, "%i",maxValue);
+	//log_info(logger, "%i",maxValue);
 	u_int16_t id= config_get_int_value(config, "ID");
-	log_info(logger, "%i",id);
+	//log_info(logger, "%i",id);
 	u_int16_t idEsperado= config_get_int_value(config, "IDESPERADO");
-	log_info(logger, "%i",idEsperado);
+	//log_info(logger, "%i",idEsperado);
 
 	if(createServer(ip,port,&server)!=0){
 		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
@@ -95,11 +167,12 @@ void connectMemory(){	//PRUEBA SOCKETS CON LIBRERIA
 
 	//char* serverName=config_get_string_value(config, "NAME");
 
-	if(acceptConexion( server, &socket_client,idEsperado)!=0){
+	if(acceptConexion( server, socket_client,idEsperado)!=0){
 		log_info(logger, "\nError en el acept");
 	}else{
 		log_info(logger, "\nSe acepto la conexion de %i con %i",id,idEsperado);
 	}
+
 }
 
 void console(){

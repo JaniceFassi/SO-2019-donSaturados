@@ -13,6 +13,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
+	t_list *registros=list_create();
 	char *path=pathFinal(param_nameTable,1);
 	if(folderExist(path)==1){
 		log_info(logger,"No existe la tabla %s", param_nameTable);
@@ -61,9 +62,14 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 		strcat(rutaf,".txt");
 		FILE* f =txt_open_for_append(rutaf);
 		Registry *nodoEncontrado;		//MOMENTANEAMENTE SACO EL NODO PARA LUEGO ESCRIBIRLO EN UN ARCHIVO
+		Tabla *tabEncontrada;
 
 		//PRIMERA APROXIMACION AL DUMP (CREACION DE ARCHIVOS TEMPORALES)
-		nodoEncontrado= list_get(memtable,param_key);
+
+		tabEncontrada= find_tabla_by_name(param_nameTable);
+		registros=filtrearPorKey(tabEncontrada->registros,param_key);
+		nodoEncontrado=keyConMayorTime(registros);
+
 		char *texto=malloc(255);
 		//strcat(texto,prueba->timestamp);
 		//strcat(texto,";");
@@ -75,7 +81,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 		txt_write_in_file(f,texto);
 
 		txt_close_file(f);
-		free(rutaf);
+		//free(rutaf);
 		//free(metadata->consistency);
 		//free(metadata);
 	//}

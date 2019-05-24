@@ -12,13 +12,13 @@
 #include "FileSystem.h"
 #include "Lissandra.h"
 
-typedef enum{
+/*typedef enum{
 	SELECT,
 	INSERT,
 	CREATE,
 	DESCRIBE,
 	DROP
-}op_code;
+}op_code;*/
 
 //FUNCIONES API
 void drop(char* nameTable);
