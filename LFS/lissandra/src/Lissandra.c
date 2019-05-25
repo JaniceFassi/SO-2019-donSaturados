@@ -118,20 +118,6 @@ void exec_api(op_code mode,u_int16_t sock){
 		//drop(buffer);
 		break;
 
-	/*case 5:									//insert sin timestamp orden: nombre, key, value
-		log_info(logger,"\nINSERTSINTIME");
-		recibirDeMemoria(sock,buffer);
-		log_info(logger,buffer);
-		//completar
-		break;
-
-	case 6:									//describe sin timestamp	no hay parametros
-		log_info(logger,"\nDESCRIBESINDROP");
-		recibirDeMemoria(sock,buffer);
-		log_info(logger,buffer);
-		//completar
-		break;*/
-
 	default:
 		log_info(logger,"\nOTRO");
 		break;

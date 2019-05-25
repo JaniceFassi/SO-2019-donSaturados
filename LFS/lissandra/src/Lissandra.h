@@ -23,6 +23,14 @@
 #include <socketSaturados.h>
 #include "Compactor.h"
 
+typedef enum{
+	SELECT,
+	INSERT,
+	CREATE,
+	DESCRIBE,
+	DROP
+}op_code;
+
 t_log* logger;
 t_config* config;
 t_log* init_logger(void);
@@ -32,9 +40,11 @@ t_list *memtable;
 char *puntoMontaje;
 
 void theStart();
-void connectMemory();
+void connectMemory(u_int16_t *cliente);
 void console();
 void dump();
 void theEnd();
+void exec_api(op_code mode, u_int16_t sock);
+void recibirDeMemoria(u_int16_t sock,char *buffer);
 
 #endif /* LISSANDRA_H_ */
