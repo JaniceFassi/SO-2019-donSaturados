@@ -30,7 +30,7 @@ int main(void) {
 	char * ipLissandra = config_get_string_value(config,"IP_FS");
 	u_int16_t puertoLissandra = config_get_string_value(config,"PUERTO_FS");
 
-	handshakeConLissandra(&lfsCliente,ipLissandra,puertoLissandra);
+	//handshakeConLissandra(&lfsCliente,ipLissandra,puertoLissandra);
 	//Lo comento por ahora para que no me tire los errores
 
 	mInsert("TABLA1",57,"DUKI");
@@ -156,7 +156,8 @@ segmento *crearSegmento(char* nombre,u_int16_t key,char* valor){
 
 void handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
 	int conexionExitosa;
-	conexionExitosa = linkClient(&lfsCliente,ipLissandra , puertoLissandra);
+	int id; //para que no rompa pero ni idea de donde saco esta vaina
+	conexionExitosa = linkClient(&lfsCliente,ipLissandra , puertoLissandra,id);
 
 		if(conexionExitosa !=0){
 			perror("Error al conectarse con LFS");
