@@ -13,9 +13,9 @@
 int main(void) {
 
 	theStart();
-
+/*
 	u_int16_t socket_client;
-
+*/
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
 
 	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
@@ -33,16 +33,20 @@ int main(void) {
 	log_info(logger,"LA CARPETA PRINCIPAL TABLAS YA EXISTE");
 	free(path);
 
-	connectMemory(&socket_client);
-
-	char *buffer=malloc(2);
-	int recibidos=recvData(socket_client,buffer,2);
+//	connectMemory(&socket_client);
+/*
+	int i=0;
+	while(i<5){
+		char *buffer=malloc(2);
+	int recibidos=recvData(socket_client,buffer,1);
 
 	exec_api(atoi(buffer),socket_client);
 	free(buffer);
-	//console();
+	i++;
+	}*/
+	console();
 
-	//theEnd();
+	theEnd();
 	return EXIT_SUCCESS;
 }
 
@@ -54,65 +58,73 @@ t_config* read_config() {
 	return config_create("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
 }
 
-void recibirDeMemoria(u_int16_t sock,char *buffer){
+char* recibirDeMemoria(u_int16_t sock){
 	char *tam=malloc(3);
+	char * buffer;
+	recvData(sock,tam,2);
 
-	recvData(sock,tam,3);
-
-	realloc(buffer,atoi(tam));
+	buffer=malloc(atoi(tam));
 	recvData(sock,buffer,((atoi(tam))));
 
 	free(tam);
 	log_info(logger,buffer);
+	return buffer;
 }
 
 void exec_api(op_code mode,u_int16_t sock){
 
-	char *buffer=malloc(2);
+	char *buffer;
 	char **subCadena;
 
 	switch(mode){
 	case 0:								//orden: tabla, key
 
 		log_info(logger,"\nSELECT");
-		recibirDeMemoria(sock,buffer);
+		buffer=recibirDeMemoria(sock);
 		log_info(logger,buffer);
-		/*subCadena=string_split(buffer, ";");
-		printf("%s",subCadena[1]);
+		subCadena=string_split(buffer, ";");
+		log_info(logger,subCadena[0]);
 		log_info(logger,subCadena[1]);
-		log_info(logger,subCadena[2]);
-		char *valor=selectS(subCadena[1],atoi(subCadena[2]));
-		printf("%s",valor);
+		/*char *valor=selectS(subCadena[0],atoi(subCadena[1]));
+		printf("\n%s",valor);
 		log_info(logger,valor);*/
 		break;
 
 	case 1:
 		log_info(logger,"\nINSERT");	//Este es el insert que viene con el timestamp
-		recibirDeMemoria(sock,buffer);	//orden: tabla, key, value, timestamp
+		buffer=recibirDeMemoria(sock);	//orden: tabla, key, value, timestamp
 		log_info(logger,buffer);
-		/*subCadena=string_split(buffer, ";");
-		insert(subCadena[1], atoi(subCadena[2]),subCadena[3],atol(subCadena[4]));*/
+		subCadena=string_split(buffer, ";");
+		log_info(logger,subCadena[0]);
+		log_info(logger,subCadena[1]);
+		log_info(logger,subCadena[2]);
+		log_info(logger,subCadena[3]);
+		//insert(subCadena[0], atoi(subCadena[1]),subCadena[2],atol(subCadena[3]));
 
 		break;
 
 	case 2:
 		log_info(logger,"\nCREATE");	//orden: tabla, consistencia, particiones, tiempoCompactacion
-		recibirDeMemoria(sock,buffer);
+		buffer=recibirDeMemoria(sock);
 		log_info(logger,buffer);
-		/*subCadena=string_split(buffer, ";");
-		create(subCadena[1],subCadena[2],atoi(subCadena[3]),atol(subCadena[4]));*/
+		subCadena=string_split(buffer, ";");
+		log_info(logger,subCadena[0]);
+		log_info(logger,subCadena[1]);
+		log_info(logger,subCadena[2]);
+		log_info(logger,subCadena[3]);
+		create(subCadena[0],subCadena[1],atoi(subCadena[2]),atol(subCadena[3]));
 		break;
 
 	case 3:
 		log_info(logger,"\nDESCRIBE");	//orden: tabla
-		recibirDeMemoria(sock,buffer);
+		buffer=recibirDeMemoria(sock);
 		log_info(logger,buffer);
 		//completar
 		break;
 
 	case 4:
 		log_info(logger,"\nDROP");		//orden: tabla
-		recibirDeMemoria(sock,buffer);
+		buffer=recibirDeMemoria(sock);
 		log_info(logger,buffer);
 
 		//drop(buffer);
@@ -174,9 +186,10 @@ void console(){
 		}
 	 	if(!strncmp(linea,"INSERT ",7)){
 	 		char **subStrings= string_n_split(linea,5," ");
-	 		if(subStrings[3]==NULL){
+	 		if(subStrings[4]==NULL){
 	 			long timestamp= time(NULL);
-	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],timestamp);
+	 			int key=atoi(subStrings[2]);
+	 			insert(subStrings[1],key,subStrings[3],timestamp);
 	 		}else{
 	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],atol(subStrings[4]));
 

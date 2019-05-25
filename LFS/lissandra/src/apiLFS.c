@@ -13,7 +13,6 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
-	t_list *registros=list_create();
 	char *path=pathFinal(param_nameTable,1);
 	if(folderExist(path)==1){
 		log_info(logger,"No existe la tabla %s", param_nameTable);
@@ -25,8 +24,6 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	/*path=pathFinal(param_nameTable, 1,puntoMontaje);
 	metaTabla *metadata= leerArchMetadata(path);
 	free(path);*/
-
-	int ant=list_size(memtable);
 
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
@@ -52,36 +49,9 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 		}
 	}
-		int tam= list_size(memtable);
-
-			if(tam>ant){
-				printf("se agrego el registro a la lista");
-			}
-		char *rutaf=pathFinal(param_nameTable,2);
-		strcat(rutaf,param_nameTable);
-		strcat(rutaf,".txt");
-		FILE* f =txt_open_for_append(rutaf);
-		Registry *nodoEncontrado;		//MOMENTANEAMENTE SACO EL NODO PARA LUEGO ESCRIBIRLO EN UN ARCHIVO
-		Tabla *tabEncontrada;
-
-		//PRIMERA APROXIMACION AL DUMP (CREACION DE ARCHIVOS TEMPORALES)
-
-		tabEncontrada= find_tabla_by_name(param_nameTable);
-		registros=filtrearPorKey(tabEncontrada->registros,param_key);
-		nodoEncontrado=keyConMayorTime(registros);
-
-		char *texto=malloc(255);
-		//strcat(texto,prueba->timestamp);
-		//strcat(texto,";");
-		strcpy(texto,string_itoa(nodoEncontrado->key));
-		strcat(texto,";");
-		strcat(texto,nodoEncontrado->value);
-		strcat(texto,"\n");
-
-		txt_write_in_file(f,texto);
-
-		txt_close_file(f);
-		//free(rutaf);
+		char* valor=selectS("tablita",3);
+		log_info(logger,valor);
+				//free(rutaf);
 		//free(metadata->consistency);
 		//free(metadata);
 	//}
@@ -102,13 +72,13 @@ char *selectS(char* nameTable , u_int16_t key){
 		if(encontrada!=NULL){
 			t_list *aux=filtrearPorKey(encontrada->registros,key);
 			if(list_is_empty(aux)){
+				list_destroy(aux);
+			}else{
 				Registry *obtenido=keyConMayorTime(aux);
 				valor=malloc(50);
 				strcpy(valor,obtenido->value);
-				list_destroy_and_destroy_elements(aux,(void *)destroyRegistry);
-				return valor;
-			}else{
 				list_destroy(aux);
+				return valor;
 			}
 		}
 	}			//Obtener la metadata asociada a dicha tabla.

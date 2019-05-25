@@ -45,6 +45,6 @@ void console();
 void dump();
 void theEnd();
 void exec_api(op_code mode, u_int16_t sock);
-void recibirDeMemoria(u_int16_t sock,char *buffer);
+char* recibirDeMemoria(u_int16_t sock);
 
 #endif /* LISSANDRA_H_ */
