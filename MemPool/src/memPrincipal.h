@@ -20,7 +20,12 @@ typedef struct {
 	u_int16_t keyTabla;
 	u_int16_t modificado;
 	u_int16_t timestamp;
-}segmento;
+}pagina;
+
+typedef struct {
+	char *nombreTabla;
+	pagina pag[10];
+}tabla; //las tablas son segmentos y las paginas son listas de structs con info
 
 t_log* init_logger(void);
 t_config* read_config(void);
@@ -32,7 +37,10 @@ void mDescribe();
 void mDrop();
 void mJournal();
 void mGossip();
-segmento *crearSegmento(char* nombre,u_int16_t key,char* value);
-segmento * buscarYreemplazar(u_int16_t ketTabla,char* valor);
+pagina *crearPagina(char* nombre,u_int16_t key,char* value);
+pagina * buscarYreemplazar(u_int16_t ketTabla,char* valor);
+tabla *buscarTabla(char *unNombre);
+pagina *buscarPagina(tabla unaTabla, u_int16_t unaKey);
+void pedirleALissandra(char *nombreTabla, u_int16_t unaKey);
 
 #endif

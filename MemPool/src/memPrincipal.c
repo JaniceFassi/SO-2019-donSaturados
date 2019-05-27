@@ -11,6 +11,7 @@
 #include "memPrincipal.h"
 
 t_list* segmentoLista;
+t_list* listaDeTablas;
 t_log* logger;
 t_config *config;
 
@@ -21,7 +22,8 @@ int main(void) {
 	//INICIALIZO
 	logger = init_logger();
 	config = read_config();
-	segmentoLista = list_create(); //Va a ser nuestra solucion pedorra de memoria por el momento, un unico segmento con  una sola pagina.
+	segmentoLista = list_create();
+	listaDeTablas = list_create();
 
 	//LISSANDRA
 	//la idea aca es hacer el handshake con LFS y recibir el value maximo, obvio que no esta terminado
@@ -40,7 +42,7 @@ int main(void) {
 	list_add(segmentoLista,crearSegmento("TABLA1",59,"DUKI"));
 
 	int index = 0;
-	segmento *aux = list_get(segmentoLista,index);
+	pagina *aux = list_get(segmentoLista,index);
 
 
 	while(aux){
@@ -58,11 +60,6 @@ int main(void) {
 			//mSelect(char* nombreTabla,u_int16_t keyTabla);
 			break;
 		case 1:
-			// esto me rompia asi que lo comente
-			//char* nombreTabla;
-			//scanf(String, &nombreTabla);
-			//u_int16_t keyTabla;
-			//char* valor;
 			//mInsert(nombreTabla, keyTabla, valor);
 			break;
 
@@ -115,7 +112,20 @@ void consola(){
 		}
 }
 
-void mSelect(char* nombreTabla,u_int16_t keyTabla){
+void mSelect(char* nombreTabla,u_int16_t key){
+	tabla tablaEncontrada = buscarTabla(nombreTabla);{//busca tabla, tabla = segmento
+		if(tablaEncontrada != NULL){
+			pagina pag = buscarPagina(tablaEncontrada, key); //busca la pagina
+
+		}else{
+			pedirleALissandra(nombreTabla, key);
+		}
+		if(pag != NULL){
+			printf("La tabla %s ha sido encontrada y el valor correspondiente a esa key es: %s \n", nombreTabla, pag->valor);
+		}else{
+			pedirleALissandra(nombreTabla, key);
+		}
+	}
 
 }
 void mInsert(char* nombreTabla,u_int16_t keyTabla,char* valor){
@@ -158,8 +168,8 @@ t_log* init_logger() {
 	return log_create("memPrincipal.log", "memPrincipal", 1, LOG_LEVEL_INFO);
 }
 
-segmento *crearSegmento(char* nombre,u_int16_t key,char* valor){
-	segmento *nuevo = malloc(sizeof(segmento));
+pagina *crearSegmento(char* nombre,u_int16_t key,char* valor){
+	pagina *nuevo = malloc(sizeof(pagina));
 	nuevo->nombre = nombre;
 	nuevo->keyTabla = key;
 	nuevo->valor = valor;
@@ -178,9 +188,9 @@ int handshakeConLissandra(int lfsCliente,char* ipLissandra,int puertoLissandra){
 
 }
 
-segmento *buscarYreemplazar(u_int16_t keyTablaNueva,char* nuevoValor){
+pagina *buscarYreemplazar(u_int16_t keyTablaNueva,char* nuevoValor){
 
-	int tieneMismaKey(segmento *p){
+	int tieneMismaKey(pagina *p){
 		if((p->keyTabla) == keyTablaNueva){
 				p->valor = nuevoValor;
 		}
@@ -190,9 +200,61 @@ segmento *buscarYreemplazar(u_int16_t keyTablaNueva,char* nuevoValor){
 	return list_find(segmentoLista,(void*) tieneMismaKey);
 }
 
+tabla *buscarTabla(char *unNombre){
 
+	int existeTabla(tabla *unaTabla){
+		int encontrado;
+		if(strcmp((unaTabla->nombreTabla),unNombre) !=1){
+			encontrado = 1;
+
+		}
+		return encontrado;
+	}
+
+	return list_find(listaDeTablas, (void*) existeTabla);
+
+
+}
+
+pagina *buscarPagina(tabla unaTabla, u_int16_t unaKey){
+
+	for(int i=0; i<10; i++){
+		if(unaTabla ->pag[i]->keyTabla == unaKey){
+			return pag[i];
+			i = 10;
+		}
+	}
+
+}
+
+void pedirleALissandra(char *nombreTabla, u_int16_t unaKey){
+
+	char *paquete = empaquetar(1, nombreTabla, unaKey);
+	int tamanioPaquete = sizeof(paquete);
+	char paqueteAEnviar[1000];
+	strcpy(paqueteAEnviar,(string_itoa(tamanioPaquete)));
+	strcat(paqueteAEnviar, ";");
+	strcat(paqueteAEnviar, &paquete);
+
+	send(lfsCliente, paqueteAEnviar, strlen(paqueteAEnviar), 0); //falta el socket lissandra
+
+}
+
+char *empaquetar(int operacion, char *nombreTabla, u_int16_t keyTabla){
+	char *op = string_itoa(operacion);
+	char *key = string_itoa(keyTabla);
+	char* paquete = string_new();
+	string_append(&paquete, &op);
+	string_append(&paquete, ";");
+	string_append(&paquete, &nombreTabla);
+	string_append(&paquete, ";");
+	string_append(&paquete, &key);
+
+	return paquete;
+}
 
 //list_destroy(segmentoLista);
+//list_destroy_and_destroy_elements(listaDeTablas); para que borre la lista y componentes
 //log_destroy(logger);
 //config_destroy(config);
 
