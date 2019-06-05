@@ -8,6 +8,8 @@
 
 #include "apiLFS.h"
 
+
+
 //API
 void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 
@@ -20,10 +22,6 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 		return;
 	}
 	free(path);
-	//	Obtener la metadata asociada a dicha tabla. PARA QUE?
-	/*path=pathFinal(param_nameTable, 1,puntoMontaje);
-	metaTabla *metadata= leerArchMetadata(path);
-	free(path);*/
 
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
@@ -49,7 +47,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 		}
 	}
-		char* valor=selectS("tablita",3);
+		char* valor=selectS(param_nameTable,param_key);
 		log_info(logger,valor);
 				//free(rutaf);
 		//free(metadata->consistency);

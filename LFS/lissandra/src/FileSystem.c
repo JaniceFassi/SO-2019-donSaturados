@@ -315,7 +315,7 @@ Registry *keyConMayorTime(t_list *registros){
 			if(mayor==NULL){
 				mayor=comparar;
 			}else{
-				if(mayor->timestamp < comparar->timestamp){
+				if(mayor->timestamp <= comparar->timestamp){
 					mayor=comparar;
 				}
 			}

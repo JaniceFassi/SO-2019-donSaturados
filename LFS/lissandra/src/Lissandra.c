@@ -13,9 +13,9 @@
 int main(void) {
 
 	theStart();
-/*
+
 	u_int16_t socket_client;
-*/
+
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
 
 	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
@@ -28,22 +28,23 @@ int main(void) {
 			theEnd();
 			return 1;
 		}
-
+		log_info(logger,"\nSe ha creado la carpeta principal.");
 	}
-	log_info(logger,"LA CARPETA PRINCIPAL TABLAS YA EXISTE");
+
 	free(path);
 
-//	connectMemory(&socket_client);
-/*
-	int i=0;
-	while(i<5){
-		char *buffer=malloc(2);
+	//connectMemory(&socket_client);
+
+	//int i=0;
+	//while(i<5){
+	/*char *buffer=malloc(2);
 	int recibidos=recvData(socket_client,buffer,1);
 
 	exec_api(atoi(buffer),socket_client);
-	free(buffer);
-	i++;
-	}*/
+	free(buffer);*/
+	//i++;
+	//}
+
 	console();
 
 	theEnd();
@@ -99,7 +100,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		log_info(logger,subCadena[1]);
 		log_info(logger,subCadena[2]);
 		log_info(logger,subCadena[3]);
-		//insert(subCadena[0], atoi(subCadena[1]),subCadena[2],atol(subCadena[3]));
+		insert(subCadena[0], atoi(subCadena[1]),subCadena[2],atol(subCadena[3]));
 
 		break;
 
