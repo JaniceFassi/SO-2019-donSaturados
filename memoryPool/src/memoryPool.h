@@ -32,7 +32,6 @@ typedef struct {
 typedef struct {
 	void* inicio;
 	int offset;
-	datoTabla pagina;
 	int modificado;
 }marco;
 

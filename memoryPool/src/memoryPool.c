@@ -9,8 +9,9 @@
  */
 
 #include "memoryPool.h"
-
+/*
 void* testeandoHilos(void * arg){
+
 	int *sarlompa = (int *) arg;
 
 	printf("hola soy un hilo \n");
@@ -23,6 +24,31 @@ void* testeandoHilos(void * arg){
 	return numero;
 }
 
+*/
+
+segmento *crearSegmento(char* nombre){
+	segmento *nuevoSegmento = malloc(sizeof(segmento));
+	nuevoSegmento->nombreTabla = nombre;
+	nuevoSegmento->tablaPaginas = list_create();
+
+	return nuevoSegmento;
+}
+
+segmento *buscarSegmento(t_list *lista, char* nombre){
+
+	int tieneMismoNombre(segmento *seg){
+		int rta = 0;
+		if(strcmp(seg->nombreTabla, nombre) !=1){
+			rta = 1;
+		}
+
+		return rta;
+	}
+
+	return list_find(lista, (void*)tieneMismoNombre);
+}
+
+
 
 int main(void) {
 
@@ -31,27 +57,34 @@ int main(void) {
 	void* memoria = malloc(tamanioMemoria);
 	tablaMarcos = list_create();
 
-	int cantMarcos = tamanioMemoria/sizeof(marco);
+	int cantMarcos = tamanioMemoria/sizeof(datoTabla);
 
-	//inicializo lista/tabla de marcos
+	//inicializo tabla de marcos
 
 	for(int i=0; i<cantMarcos; i++){
 		void* posicion = memoria;
-		marco unMarco;
-		unMarco.inicio = posicion;
-		unMarco.offset = sizeof(marco);
-		unMarco.modificado = 0;
-		unMarco.pagina = NULL;
+		marco* unMarco = malloc(sizeof(marco));
+		unMarco->inicio = posicion; //puntero a posición de memoria donde se guarda el struct datoTabla
+		unMarco->offset = sizeof(datoTabla);
+		unMarco->modificado = 0;
 		list_add(tablaMarcos, unMarco);
-		posicion = posicion + sizeof(marco);
+		posicion = posicion + sizeof(datoTabla);
 
 	}
 
 
+	tablaSegmentos = list_create();
 
 
+	segmento *animales = crearSegmento("ANIMALES");
+	printf("%s\n", animales->nombreTabla);
+	list_add(tablaSegmentos, animales);
 
+	char* nuevo = "hola";
+	printf("%s\n", nuevo);
 
+	segmento *encontrado = buscarSegmento(tablaSegmentos, "ANIMALES");
+	printf("vamo loko %s\n", encontrado->nombreTabla);
 
 
 
