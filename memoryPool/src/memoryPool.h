@@ -46,6 +46,11 @@ typedef struct {
 	marco* pagina;
 }pagina;
 
+t_list* tablaMarcos;
+t_list* tablaSegmentos;
+t_list* tablaPaginas;
+
+
 
 
 void mSelect(char* nombreTabla,u_int16_t key);
@@ -55,5 +60,15 @@ void mDescribe();
 void mDrop();
 void mJournal();
 void mGossip();
+
+
+//AUXILIARES
+
+segmento *crearSegmento(char* nombre);
+segmento *buscarSegmento(char* nombre);
+pagina *crearPagina();
+void agregarPagina(segmento *seg);
+
+
 
 #endif /* MEMORYPOOL_H_ */

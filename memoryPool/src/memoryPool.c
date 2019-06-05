@@ -25,34 +25,6 @@ void* testeandoHilos(void * arg){
 }
 
 */
-	t_list* tablaMarcos;
-	t_list* tablaSegmentos;
-	t_list* tablaPaginas;
-
-
-
-segmento *crearSegmento(char* nombre){
-	segmento *nuevoSegmento = malloc(sizeof(segmento));
-	nuevoSegmento->nombreTabla = nombre;
-	nuevoSegmento->tablaPaginas = list_create();
-
-	return nuevoSegmento;
-}
-
-segmento *buscarSegmento(char* nombre){
-
-	int tieneMismoNombre(segmento *seg){
-		int rta = 0;
-		if(strcmp((seg->nombreTabla), nombre) ==0){
-			rta = 1;
-		}
-
-		return rta;
-	}
-//quiero que sepas que te odio
-	return list_find(tablaSegmentos, (void *) tieneMismoNombre);
-}
-
 
 
 int main(void) {
@@ -63,6 +35,7 @@ int main(void) {
 	int tamanioMemoria = 1024;
 	void* memoria = malloc(tamanioMemoria);
 	tablaMarcos = list_create();
+	tablaSegmentos = list_create();
 
 	int cantMarcos = tamanioMemoria/sizeof(datoTabla);
 
@@ -80,7 +53,6 @@ int main(void) {
 	}
 
 
-	tablaSegmentos = list_create();
 
 
 	segmento *animales = crearSegmento("ANIMALES");
@@ -92,12 +64,9 @@ int main(void) {
 	char* nuevo = "hola";
 	printf("%s\n", nuevo);
 
-	printf("%s", postres->nombreTabla);
+	printf("%s\n", postres->nombreTabla);
 
-	segmento *daleman = malloc(sizeof(segmento));
-	daleman = buscarSegmento("POSTRES");
 
-	printf("\n%s", daleman->nombreTabla);
 
 
 
@@ -257,9 +226,43 @@ int main(void) {
 	return EXIT_SUCCESS;
 }
 
+//AUXILIARES
+
+segmento *crearSegmento(char* nombre){
+	segmento *nuevoSegmento = malloc(sizeof(segmento));
+	nuevoSegmento->nombreTabla = nombre;
+	nuevoSegmento->tablaPaginas = list_create();
+
+	return nuevoSegmento;
+}
+
+segmento *buscarSegmento(char* nombre){
+
+	int tieneMismoNombre(segmento *seg){
+		int rta = 0;
+		if(strcmp((seg->nombreTabla), nombre) ==0){
+			rta = 1;
+		}
+
+		return rta;
+	}
+	return list_find(tablaSegmentos, (void *) tieneMismoNombre);
+}
 
 
+pagina *crearPagina(){
+	pagina *pag = malloc(sizeof(pagina));
+	pag->nroPagina = 1;
+	return pag;
+}
 
+void agregarPagina(segmento *seg){
+	pagina *pag;
+	pag = crearPagina();
+
+	list_add(seg->tablaPaginas, pag);
+
+}
 
 
 
