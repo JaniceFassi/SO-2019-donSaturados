@@ -135,20 +135,30 @@ int borrarCarpeta(char *path){//BORRA LA CARPETA
 /***********************************************************************************************/
 //FUNCIONES DE ARCHIVOS
 
-int crearParticiones(char *path, int cantidad){
+int crearParticiones(char *nombre, int cantidad){
 	FILE* arch; //BINARIO
 
 	while(cantidad>0){
-		char *extencion=".bin";
-		char *aux=string_duplicate(path);
-		strcat(aux,string_itoa(cantidad));
-		strcat(aux,extencion);
+		char *extencion=malloc(5);
+		strcpy(extencion,".bin");
+		char *part=string_itoa(cantidad-1);
+		char *path=pathFinal(nombre,2);
+		int base=strlen(path)+1+strlen(part)+1;
+		path=realloc(path,base);
+		strcat(path,part);
+		free(part);
+		base+=strlen(extencion)+1;
+		path=realloc(path,base);
+		strcat(path,extencion);
+		free(extencion);
 		if((arch= fopen(path,"wb"))<0){
 			printf("Error al crear la particion numero %i de la tabla\n",cantidad);
 			return 1;
 		}
 		fclose(arch);
+		free(path);
 		cantidad --;
+
 	}
 	return 0;
 }
@@ -257,10 +267,13 @@ int eliminarArchivo(char *path){
 }
 
 void escribirReg(char *name,t_list *registros,int cantParticiones){
-	void escribirTemp(Registry* nuevo){
+	int size=list_size(registros);
+	while(size>0){
+		Registry *nuevo=list_get(registros, size-1);
 		int part=nuevo->key % cantParticiones;
 		char *nombre=string_itoa(part);
-		char *exten=".tmp";
+		char *exten= malloc(5);
+		strcpy(exten,".tmp");
 		char *path=pathFinal(name,2);
 		int base=strlen(path)+1+strlen(exten)+1+strlen(nombre)+1;
 		path=realloc(path,base);
@@ -270,8 +283,8 @@ void escribirReg(char *name,t_list *registros,int cantParticiones){
 		free(nombre);
 		free(exten);
 		free(path);
+		size--;
 	}
-	list_iterate(registros, (void*) escribirTemp);
 }
 
 /**************************************************************************************************/
@@ -301,6 +314,16 @@ void destroyRegistry(Registry *self) {
 
 }
 
+int calcularIndex(t_list *lista,int key){
+	int index=0;
+	bool encontrar(Registry *es){
+		index++;
+		return es->key == key;
+	}
+	list_iterate(lista, (void*) encontrar);
+	return index;
+}
+
 Registry *getList(){
 
 	Registry *data = malloc(sizeof(Registry));
@@ -325,23 +348,32 @@ Registry *keyConMayorTime(t_list *registros){
 }
 t_list *regDep(t_list *aDepu){
 	t_list *depu=list_create();
-	void compara(Registry* nuevo){
+	int cant=list_size(aDepu);
+
+	int cant2=list_size(depu);
+	while(cant>0){
+		Registry* nuevo=list_get(aDepu, cant-1);
 		if(list_is_empty(depu)){
 			list_add(depu,nuevo);
 		}else{
-			Registry *viejo=encontrarKeyDepu(depu,nuevo->key);
-			if(viejo!=NULL){
-				if(viejo->timestamp < nuevo->timestamp){
-					list_add(depu,nuevo);
+			if(encontrarKeyDepu(depu,nuevo->key)!=NULL){
+				Registry *viejo=encontrarKeyDepu(depu,nuevo->key);
+				if(viejo->timestamp <= nuevo->timestamp){
+					int index= calcularIndex(depu,viejo->key);
+					list_replace_and_destroy_element(depu, index-1, nuevo, (void*)destroyRegistry);
 				}else{
-					list_add(depu,viejo);
+					list_remove_and_destroy_element(aDepu, cant-1, (void*)destroyRegistry);
 				}
 			}else{
 				list_add(depu,nuevo);
 			}
+
 		}
+
+		cant2=list_size(depu);
+		nuevo=NULL;
+		cant--;
 	}
-	list_iterate(aDepu, (void*) compara);
 	return depu;
 }
 /**************************************************************************************************/

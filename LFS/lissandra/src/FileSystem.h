@@ -45,6 +45,7 @@ Registry *encontrarKeyDepu(t_list *registros,int key);
 Registry *keyConMayorTime(t_list *registros);
 int encontrarRegistroPorKey(t_list *registros,int key);
 t_list* filtrearPorKey(t_list *registros,int key);
+int calcularIndex(t_list *lista,int key);
 
 //FUNCIONES DE TABLAS
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);
@@ -63,7 +64,7 @@ int borrarCarpeta(char *path);
 
 //FUNCIONES ARCHIVOS
 int crearParticiones(char *nombre, int cantidad);
-void crearArchMetadata(char* path, char* consistency , u_int16_t numPartition,long timeCompaction);
+void crearArchMetadata(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction);
 metaTabla *leerArchMetadata(char *path);
 int escribirArchBinario(char *path,long timestamp,int key,char *value);
 int leerTodoArchBinario(char *path);

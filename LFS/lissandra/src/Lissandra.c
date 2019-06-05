@@ -232,26 +232,27 @@ void dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
-	while(dump>=0){
+	while(cant>0){
 		Tabla *dumpT=list_get(dump,cant-1);
 		char *path=pathFinal(dumpT->nombre,1);
 		if(folderExist(path)==0){
 			free(path);
 			path=pathFinal(dumpT->nombre,3);
 			metaTabla *metadata= leerArchMetadata(path);
-			free(path);
 			t_list *regDepurados=regDep(dumpT->registros);
+			list_destroy(dumpT->registros);
 			escribirReg(dumpT->nombre,regDepurados,metadata->partitions);
+			free(metadata->consistency);
 			free(metadata);
-			list_destroy_and_destroy_elements(regDepurados,(void *)destroyRegistry);//no se si tengo q liberar los registros tambn
-			liberarTabla(dumpT);
-		}else{
-			liberarTabla(dumpT);
-			free(path);
-
+			list_destroy_and_destroy_elements(regDepurados,(void *)destroyRegistry);
 		}
-
+		free(path);
+		free(dumpT->nombre);
+		free(dumpT);
+		dumpT=NULL;
+		cant--;
 	}
+	list_destroy(dump);
 }
 
 void theEnd(){

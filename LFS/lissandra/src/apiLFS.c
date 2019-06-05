@@ -122,16 +122,12 @@ void create(char* nameTable, char* consistency , u_int16_t numPartition,long tim
 		return;
 	}
 	free(path);
-	path=pathFinal(nameTable,3);
 	//Crear el archivo Metadata asociado al mismo.
 	//Grabar en dicho archivo los parámetros pasados por el request.
-	crearArchMetadata(path,consistency,numPartition,timeCompaction);
-	free(path);
-	path=pathFinal(nameTable,2);
+	crearArchMetadata(nameTable,consistency,numPartition,timeCompaction);
 	//Crear los archivos binarios asociados a cada partición de la tabla y
-	if(crearParticiones(path,numPartition)==1){
+	if(crearParticiones(nameTable,numPartition)==1){
 		log_info(logger,"ERROR AL CREAR LAS PARTICIONES");
-		free(path);
 		return;
 	}
 	//asignar a cada uno un bloque
