@@ -25,6 +25,11 @@ void* testeandoHilos(void * arg){
 }
 
 */
+	t_list* tablaMarcos;
+	t_list* tablaSegmentos;
+	t_list* tablaPaginas;
+
+
 
 segmento *crearSegmento(char* nombre){
 	segmento *nuevoSegmento = malloc(sizeof(segmento));
@@ -34,23 +39,25 @@ segmento *crearSegmento(char* nombre){
 	return nuevoSegmento;
 }
 
-segmento *buscarSegmento(t_list *lista, char* nombre){
+segmento *buscarSegmento(char* nombre){
 
 	int tieneMismoNombre(segmento *seg){
 		int rta = 0;
-		if(strcmp(seg->nombreTabla, nombre) !=1){
+		if(strcmp((seg->nombreTabla), nombre) ==0){
 			rta = 1;
 		}
 
 		return rta;
 	}
-
-	return list_find(lista, (void*)tieneMismoNombre);
+//quiero que sepas que te odio
+	return list_find(tablaSegmentos, (void *) tieneMismoNombre);
 }
 
 
 
 int main(void) {
+
+
 
 	//este 1024 debería salir del archivo de configuración
 	int tamanioMemoria = 1024;
@@ -77,14 +84,20 @@ int main(void) {
 
 
 	segmento *animales = crearSegmento("ANIMALES");
+	segmento *postres = crearSegmento("POSTRES");
 	printf("%s\n", animales->nombreTabla);
 	list_add(tablaSegmentos, animales);
+	list_add(tablaSegmentos, postres);
 
 	char* nuevo = "hola";
 	printf("%s\n", nuevo);
 
-	segmento *encontrado = buscarSegmento(tablaSegmentos, "ANIMALES");
-	printf("vamo loko %s\n", encontrado->nombreTabla);
+	printf("%s", postres->nombreTabla);
+
+	segmento *daleman = malloc(sizeof(segmento));
+	daleman = buscarSegmento("POSTRES");
+
+	printf("\n%s", daleman->nombreTabla);
 
 
 
