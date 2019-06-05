@@ -10,6 +10,11 @@
 
 #include "kernel.h"
 
+// Falta describe COMPLETO (hablar con memoria),
+// create(HECHO, falta probarlo)
+// ver como identificar las tablas(tengo que cambiar el modo de buscarla(buscaba x KEY)), supongo que buscarla por el nombre bastara
+// deberia poner los estados como ENUM porque nadie los va a entender
+
 int main(void) {
 	logger = init_logger();
 	config = read_config();
@@ -64,7 +69,7 @@ void apiKernel(){
 			else{
 				struct script *nuevo= malloc(sizeof(struct script));
 				nuevo->lineasLeidas=0;
-				nuevo->estado=1;
+				nuevo->estado=0;
 				nuevo->modoOp=1;// Script de una sola linea
 				nuevo->input= linea;
 				queue_push(ready,nuevo);
@@ -74,22 +79,19 @@ void apiKernel(){
 	}
 }
 
-int conexionMemoria(){
+int conexionMemoria(int puerto){
 		u_int16_t sock;
-		char * ip = "192.168.0.80";
-		u_int16_t port= 36015;
-		int enviados;
-
+		char * ip = config_get_string_value(config,"IP_MEMORIA");
+		u_int16_t port= puerto;
+		//int enviados;
 		if(linkClient(&sock,ip , port,1)!=0){
-			log_info(logger,"no se pudo conectar...");
+			return -1;
 		}
-
-		char* select =malloc(13);
+		/*char* select =malloc(13);
 		char* insert=malloc(21);
 		//char* create=malloc(18);
 		char * describe=malloc(11);
 		char * drop=malloc(11);
-
 		strcpy(select,"010tablita;0");
 		strcpy(insert,"118tablita;0;hola;20");
 		//strcpy(create,"215tablita;SC;3;5");
@@ -100,7 +102,8 @@ int conexionMemoria(){
 		//enviados=sendData(sock,create,strlen(create)+1);		//create
 		enviados=sendData(sock,describe,strlen(describe)+1);				//describe con parametro
 		enviados=sendData(sock,drop,strlen(drop)+1);				//drop
-		return 0;
+		*/
+		return sock;
 }
 
 void run(char *path){
@@ -109,7 +112,7 @@ void run(char *path){
 
 	struct script *nuevo= malloc(sizeof(struct script));
 	nuevo->lineasLeidas=0;
-	nuevo->estado=1;
+	nuevo->estado=0;
 	nuevo->modoOp=0;
 
 	char * pathReady=queue_pop(new);
@@ -122,13 +125,23 @@ void run(char *path){
 
 void ejecutarScripts(){
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
+	int resultado=0;
 	while(!queue_is_empty(ready)){
 		if(queue_size(exec)<=limiteProcesamiento){
 			struct script *execNuevo = queue_pop(ready);
 			queue_push(exec,execNuevo);
 			log_info(logger,"Script nro %i entro a cola EXEC",execNuevo->id);
 			if(execNuevo->modoOp==1){// es para scripts de una sola linea introducidos desde consola
-				parsear(execNuevo->input);
+				resultado=parsear(execNuevo->input);
+				if(resultado!=0){
+					execNuevo= queue_pop(exec);
+					execNuevo->estado=1;//fallo
+					queue_push(myExit,execNuevo);
+				}
+				else{
+					execNuevo= queue_pop(exec);
+					queue_push(myExit,execNuevo);
+				}
 			}
 			else{
 				FILE *f;
@@ -145,14 +158,24 @@ void ejecutarScripts(){
 				int lineasEjecutadas=0;
 				getline(&linea,&a,f);
 				do{
-					parsear(linea);
+					resultado=parsear(linea);
+					if(resultado!=0){
+						execNuevo= queue_pop(exec);
+						execNuevo->estado=1;//fallo
+						queue_push(myExit,execNuevo);
+					}
 					lineasEjecutadas++;
 					execNuevo->lineasLeidas++;
-				}while(getline(&linea,&a,f)!=EOF && lineasEjecutadas<quantum);
+				}while(getline(&linea,&a,f)!=EOF && lineasEjecutadas<quantum && resultado==0);
 				if(!feof(f)){
-					log_info(logger,"Script nro %i salio por fin de quantum",execNuevo->id);
-					queue_pop(exec);
-					queue_push(ready,execNuevo);
+					if(lineasEjecutadas>=quantum && resultado==0){
+						log_info(logger,"Script nro %i salio por fin de quantum",execNuevo->id);
+						queue_pop(exec);
+						queue_push(ready,execNuevo);
+					}
+					else{
+						log_info(logger,"El script fallo");
+					}
 				}
 				else{
 					queue_pop(exec);
@@ -177,41 +200,43 @@ FILE* avanzarLineas(int num,FILE * fp){
 	return fp;
 }
 
-void parsear(char * linea){
+int parsear(char * linea){
 	char ** split;
+	int resultado=1;
 	if(string_starts_with(linea,"SELECT")){
 		split = string_n_split(linea,3," ");
-		mySelect(split[1],split[2]);
+		resultado=mySelect(split[1],split[2]);
 	}
 	if(string_starts_with(linea,"INSERT")){
 		split = string_n_split(linea,4," ");
-		insert(split[1],split[2],split[3]);
+		resultado=insert(split[1],split[2],split[3]);
 	}
 	if(string_starts_with(linea,"DROP")){
 		split = string_n_split(linea,2," ");
-		drop(split[1]);
+		resultado=drop(split[1]);
 	}
 	if(string_starts_with(linea,"CREATE")){
 		split = string_n_split(linea,5," ");
-		create(split[1],split[2],split[3],split[4]);
+		resultado=create(split[1],split[2],split[3],split[4]);
 	}
 	if(string_starts_with(linea,"DESCRIBE")){
 		split = string_n_split(linea,2," ");
-		describe(split[1]);
+		resultado=describe(split[1]);
 	}
 	if(string_starts_with(linea,"JOURNAL")){
-		journal();
+		resultado=journal();
 	}
 	if(string_starts_with(linea,"ADD")){
 		split= string_n_split(linea,3," ");
-		add(split[1],split[2]);
+		resultado=add(split[1],split[2]);
 	}
 	if(string_starts_with(linea,"METRICS")){
-		//metrics();
+		//resultado=metrics();
 	}
+	return resultado;
 }
 
-void mySelect(char * table, char *key){
+int mySelect(char * table, char *key){
 	int op= 0;
 	char *linea= malloc(strlen(table)+strlen(key)+3);
 	linea=string_from_format("%s;%s",table,key);
@@ -229,15 +254,29 @@ void mySelect(char * table, char *key){
 	log_info(logger,"SELECT %s",msj);
 
 	//aca fijandome la tabla deberia elegir la memoria adecuada
+	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+	metadata = buscarMetadataTabla(key);
+	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
 
-	// faltaria el send, probar mañana
+	int sock = conexionMemoria(memAsignada->puerto);
+
+	sendData(sock,msj,strlen(msj)+1);
+
+	char * resultado=malloc(2);
+	recvData(sock,&resultado,1);
+
+	if(atoi(resultado)!=0){
+		return -1;
+	}
 
 	free(linea);
 	free(msj);
 	free(tamanioYop);
+	return 0;
 }
 
-void insert(char* table ,char* key ,char* value){
+int insert(char* table ,char* key ,char* value){
 	int op= 1;
 	char *linea= malloc(strlen(table)+strlen(key)+3+strlen(value));
 	linea=string_from_format("%s;%s;%s",table,key,value);
@@ -252,66 +291,123 @@ void insert(char* table ,char* key ,char* value){
 	}
 	msj=string_from_format("%s%s",tamanioYop,linea);
 
-	log_info(logger,"INSERT %s",msj);
+	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+	metadata = buscarMetadataTabla(key);
+	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
 
-	//aca fijandome la tabla deberia elegir la memoria adecuada
-	// faltaria el send, probar mañana
+	int sock = conexionMemoria(memAsignada->puerto);
+
+	sendData(sock,msj,strlen(msj)+1);
+
+	char * resultado=malloc(2);
+	recvData(sock,&resultado,1);
+
+	if(atoi(resultado)!=0){
+		return -1;
+	}
+
+	log_info(logger,"INSERT %s",msj);
 
 	free(linea);
 	free(msj);
 	free(tamanioYop);
+	return 0;
 }
 
-void create(char* table , char* consistency , char* numPart , char* timeComp){
+int create(char* table , char* consistency , char* numPart , char* timeComp){
+	int op= 2;
+	char *linea= malloc(strlen(table)+strlen(consistency)+4+strlen(numPart)+strlen(timeComp));
+	linea=string_from_format("%s;%s;%s;%s",table,consistency,numPart,timeComp);
+	int len = strlen(linea);
+	char* msj= malloc(4+strlen(linea));
+	char* tamanioYop= malloc(4);
+	if(len>10){
+		tamanioYop=string_from_format("%i%i",op,len);
+	}
+	else{
+		tamanioYop=string_from_format("%i0%i",op,len);
+	}
+	msj=string_from_format("%s%s",tamanioYop,linea);
+	//tengo que hacer la metadata de la tabla? o despues con el describe? quedaria inconsistente hasta que lo hagan
+/*	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+	metadata = buscarMetadataTabla(key);*/
+	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	memAsignada= asignarMemoriaSegunCriterio(consistency);
 
-	log_info(logger,"HOLA CREATE");
+	int sock = conexionMemoria(memAsignada->puerto);
 
+	sendData(sock,msj,strlen(msj)+1);
+
+	char * resultado=malloc(2);
+	recvData(sock,&resultado,1);
+
+	if(atoi(resultado)!=0){
+		return -1;
+	}
+
+	log_info(logger,"INSERT %s",msj);
+
+	free(linea);
+	free(msj);
+	free(tamanioYop);
+	return 0;
+
+	return 0;
 }
 
-void journal(){
-
+int journal(){
+	return 0;
 }
 
-void describe(char *table){
+int describe(char *table){
 	log_info(logger,"HOLA DESCRIBE");
+	return 0;
 }
 
-void drop(char*table){
-
+int drop(char*table){
+	return 0;
 }
 
-void add(char* memory , char* consistency){
+int add(char* memory , char* consistency){
 	u_int16_t idMemoria = atoi(memory);
 	struct memoria *memoria= malloc(sizeof(struct memoria));
 	memoria= buscarMemoria(idMemoria);
 	if(memoria==NULL){
 		log_info(logger,"La memoria no existe, no se pudo agregar al criterio");
-		return;
+		return -1;
 	}
 	if(strcmp(consistency,"SC")==0){
 		if(!verificaMemoriaRepetida(idMemoria,criterioSC)){
 			list_add(criterioSC,memoria);
+			return 0;
 		}
 		else{
 			log_info(logger,"No se pudo agregar la memoria %i al criterio SC porque esta repetida", idMemoria);
+			return -1;
 		}
 	}
 	if(strcmp(consistency,"SHC")==0){
 		if(!verificaMemoriaRepetida(idMemoria,criterioSHC)){
 			list_add(criterioSHC,memoria);
+			return 0;
 		}
 		else{
 			log_info(logger,"No se pudo agregar la memoria %i al criterio SHC porque esta repetida", idMemoria);
+			return -1;
 		}
 	}
 	if(strcmp(consistency,"EC")==0){
 		if(!verificaMemoriaRepetida(idMemoria,criterioEC)){
 			list_add(criterioEC,memoria);
+			return 0;
 		}
 		else{
 			log_info(logger,"No se pudo agregar la memoria %i al criterio EC porque esta repetida", idMemoria);
+			return -1;
 		}
 	}
+	return -1;
 }
 
 bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio){
@@ -341,9 +437,10 @@ void inicializarListas(){
 	criterioSC=list_create();
 	criterioSHC=list_create();
 	criterioEC=list_create();
+	listaMetadata=list_create();
 }
 
-struct memoria *asignarMemoriaSegunCriterio(char* key, char *consistency){
+struct memoria *asignarMemoriaSegunCriterio(char *consistency){
 	struct memoria *memAsignada= malloc(sizeof(struct memoria));
 	if(strcmp(consistency,"SC")==0){
 		memAsignada=verMemoriaLibre(criterioSC);
@@ -363,6 +460,20 @@ struct memoria *verMemoriaLibre(t_list *lista){
 	}
 	return list_find(lista,(void*) memFind);
 }
+//esta mal
+struct metadataTabla * buscarMetadataTabla(char* key){
+	u_int16_t keyTabla = atoi(key);
+	bool findTabla(struct metadataTabla *m){
+		return m->key==keyTabla;
+	}
+	return list_find(listaMetadata,(void*) findTabla);
+}
+
+
+
+//---------------- PRUEBAS ----------------------------
+
+
 
 void pruebas(){
 	struct memoria *m2= malloc(sizeof(struct memoria));
@@ -412,3 +523,5 @@ void mostrarResultados(){
 		mem=list_get(criterioSHC,i);
 	}
 }
+
+

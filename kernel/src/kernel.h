@@ -58,28 +58,36 @@ t_queue *exec;
 // cola de exit
 t_queue *myExit;
 
+struct metadataTabla{
+	u_int16_t key;
+	char *consistency;
+};
+
+t_list *listaMetadata;
+
 int main();
 void run(char * path);
-void parsear(char *linea);
-int conexionMemoria();
+int parsear(char *linea);
+int conexionMemoria(int puerto);
 void apiKernel();
-void mySelect(char * table, char *key);
-void insert(char* table ,char* key ,char* value);
-void create(char* table , char* consistency , char* numPart , char* timeComp);
-void journal();
-void describe(char *table);
-void drop(char*table);
-void add(char* memory , char* consistency);
+int mySelect(char * table, char *key);
+int insert(char* table ,char* key ,char* value);
+int create(char* table , char* consistency , char* numPart , char* timeComp);
+int journal();
+int describe(char *table);
+int drop(char*table);
+int add(char* memory , char* consistency);
 void ejecutarScripts();
 void inicializarColas();
 FILE* avanzarLineas(int num,FILE * fp);
 void inicializarListas();
-struct memoria *asignarMemoriaSegunCriterio(char* key, char *consistency);
+struct memoria *asignarMemoriaSegunCriterio( char *consistency);
 struct memoria *verMemoriaLibre(t_list *lista);
 bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio);
 struct memoria * buscarMemoria(u_int16_t id);
 void pruebas();
 void mostrarResultados();
+struct metadataTabla * buscarMetadataTabla(char* key);
 
 #endif /*KERNEL_H_*/
 
