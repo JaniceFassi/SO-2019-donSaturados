@@ -175,11 +175,6 @@ void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 
 }
 
-int esDigito(int ascii){		//Si es numero retorna 0, si no 1
-	if(ascii >47 && ascii <58){
-		return 0;
-	}else return 1;
-}
 
 void console(){
 	char* linea;
@@ -191,83 +186,82 @@ void console(){
 			char **subStrings= string_n_split(linea,3," ");
 			char *valor=selectS(subStrings[1],atoi(subStrings[2]));
 			log_info(logger,valor);
+			printf("%s\n",valor);
+			free(subStrings);
+			free(valor);
 		}
 
-	 	if(!strncmp(linea,"INSERT ",7)){
+	 	if(!strncmp(linea,"INSERT ",7)){//INSERT "NOMBRE" 5/ "VALUE" 156876
 	 		char **split= string_n_split(linea,4," ");
 	 		int cantPalabras=0;
+	 		int key= atoi(split[2]);
 	 		char **cadena=string_split(split[3]," ");
+
 	 		while(cadena[cantPalabras]!=NULL){			//Cuento la cantidad de palabras sin tener en cuenta la primera parte
 	 			cantPalabras++;							// INSERT nombre key no se toma en cuenta
 	 		}
-	 		/*char *letra=string_substring(cadena[cantPalabras], 0, 1);
-	 		if(esDigito(toascii(*letra))==0){		//Si la ultima letra de la ultima palabra es numero tiene timestamp
-	 			char *value=malloc(string_length(cadena[0]));
+
+	 		long timestamp=atol(cadena[cantPalabras-1]);
+
+	 		if(timestamp==0){//NO TIENE TIMESTAMP
+	 			timestamp= time(NULL);
+	 			printf("%s",split[3]);
+	 			if(insert(split[1],key,split[3],timestamp)==0){
+	 				printf("Se realizo el insert\n");	//Calculo el timestamp y el value es la cadena completa
+	 			}else{
+	 				printf("No se pudo realizar el insert\n");
+	 			}
+	 		}else{
+	 			int base= string_length(cadena[0])+1;
+	 			char *value=malloc(base);
+	 			char *espacio=malloc(2);
+	 			strcpy(espacio," ");
 	 			strcpy(value,cadena[0]);
+
 	 			for (int i=1;i<cantPalabras-1;i++){
+	 				base +=+strlen(espacio)+1;
+	 				value=realloc(value,base);
+	 				strcat(value,espacio);
+	 				base += strlen(cadena[i])+1;
+	 				value=realloc(value,base);
 	 				strcat(value,cadena[i]);
 	 			}
-	 			insert(split[1],atoi(split[2]),value,cadena[cantPalabras]);
+
+	 			if(insert(split[1],key,value,timestamp)==0){
+	 				printf("Se realizo el insert\n");	//Calculo el timestamp y el value es la cadena completa
+	 			}else{
+	 				printf("No se pudo realizar el insert\n");
+	 			}
+
+	 			free(espacio);
+	 			free(value);
 	 		}
-	 		else{										//Si no, no tiene timestamp
-	 			long timestamp= time(NULL);
-	 			log_info(logger,split[3]);
-	 			insert(split[1],atoi(split[2]),split[3],timestamp);	//Calculo el timestamp y el value es la cadena completa
-	 		}			YA CASI		*/
 
-	 		/*	//si es mayor a 4 el split hay que concatenar...
-	 		if(cantPalabras>4){
-	 			printf("%i\n",cantPalabras);
-	 			printf("%s\n",split[cantPalabras-1]);
-	 			int cantPalabrasMenosUno=atoi(split[cantPalabras-1]);
-	 			printf("%i\n",cantPalabrasMenosUno);
-	 			char*conc=malloc(19);
-	 			strcpy(conc,"");
-	 			if(cantPalabrasMenosUno==0){
-	 				int i=3;
-	 				while(i<cantPalabras){
-	 					string_append(&conc,split[i]);
-	 					string_append(&conc," ");
-	 					i++;
-	 				}
-	 			}
-	 			else{
-	 				int i=3;
-	 			while(i<cantPalabras-1){
-	 					string_append(&conc,split[i]);
-	 					string_append(&conc," ");
-	 					i++;
-	 				}
-	 			}
-	 				insert(split[1],split[2],&conc,split[4]);
-	 			}*/
-// en caso de no serlo el ultimo elemento del split es el value
-// si es menor a 4 deberia romper, manejense con eso
-
-	 		/*char **subStrings= string_n_split(linea,5," ");
-	 		if(subStrings[4]==NULL){
-	 			long timestamp= time(NULL);
-	 			int key=atoi(subStrings[2]);
-	 			insert(subStrings[1],key,subStrings[3],timestamp);
-	 		}else{
-	 			insert(subStrings[1], atoi(subStrings[2]),subStrings[3],atol(subStrings[4]));
-*/
+	 		free(cadena);
+ 			free(split);
 	 	}
-		if(!strncmp(linea,"CREATE ",7)){
-			char **subStrings= string_n_split(linea,5," ");
-			create(subStrings[1],subStrings[2],atoi(subStrings[3]),atol(subStrings[4]));
 
+	 	if(!strncmp(linea,"CREATE ",7)){
+			char **subStrings= string_n_split(linea,5," ");
+			if(create(subStrings[1],subStrings[2],atoi(subStrings[3]),atol(subStrings[4]))==0){
+				printf("se pudo crear la tabla\n");
+			}else{
+				printf("No se pudo crear la tablas\n");
+			}
+			free(subStrings);
 		}
+
 		if(!strncmp(linea,"DESCRIBE ",9)){
 			char **subStrings= string_n_split(linea,2," ");
 			t_list *tablas;
 			if(subStrings[1]==NULL){
-				describe(subStrings[1],tablas,0);// 0 si no ponen nombre de una Tabla
+				tablas=describe(subStrings[1],0);// 0 si no ponen nombre de una Tabla
 			}else{
-				describe(subStrings[1],tablas,1);//1 si ponen nombre de Tabla
+				tablas=describe(subStrings[1],1);//1 si ponen nombre de Tabla
 			}
-
+			free(subStrings);
 		}
+
 		if(!strncmp(linea,"DROP ",5)){
 			char **subStrings= string_n_split(linea,2," ");
 			if(subStrings[1]==NULL){
@@ -275,6 +269,7 @@ void console(){
 			}else{
 				drop(subStrings[1]);
 			}
+			free(subStrings);
 		}
 
 		if(!strncmp(linea,"exit",5)){

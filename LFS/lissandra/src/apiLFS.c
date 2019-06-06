@@ -11,7 +11,7 @@
 
 
 //API
-void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
+int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
@@ -19,13 +19,13 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	if(folderExist(path)==1){
 		log_info(logger,"No se puede hacer el insert porque no existe la tabla %s.", param_nameTable);
 		free(path);
-		return;
+		return 1;
 	}
 	free(path);
 
 		if(string_length(param_value)>atoi(config_get_string_value(config,"TAMVALUE"))){
 			log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
-			return;
+			return 1;
 		}
 
 	/*Verificar si existe en memoria una lista de datos a dumpear.
@@ -53,60 +53,107 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 		}
 	}
 		log_info(logger,"Se ha insertado el registro en la memtable.");
-				//free(rutaf);
-		//free(metadata->consistency);
-		//free(metadata);
-	//}
-	//txt_close_file(metadata);
+	return 0;
 }
-
+//**********************MODIFICADO
 char *selectS(char* nameTable , u_int16_t key){
-	//Verificar que la tabla exista en el file system.
 	char *path=pathFinal(nameTable,1);
 	char *valor=NULL;
+	Registry *obtenidoMem;
+	Registry *obtenidoPart;
+	Registry *obtenidoTemp;
+	t_list *obtenidos=list_create();
+	//Verificar que la tabla exista en el file system.
 	if(folderExist(path)==1){
-		log_info(logger,"No se puede hacer el select porque no existe la tabla %s.", nameTable);
+		printf("No existe la tabla %s", nameTable);
 		free(path);
 		return valor;
 	}
+	//Obtener la metadata asociada a dicha tabla.
+	free(path);
+
+	metaTabla *metadata= leerArchMetadata(nameTable);
+
+	//Calcular cual es la partición que contiene dicho KEY.
+	int part=key % metadata->partitions;
+	//Escanear la partición objetivo, todos los archivos temporales
+	path=concatExtencion(nameTable,part,1);
+	t_list *temp=leerTodoArchBinario(path);
+	if(list_is_empty(temp)){
+		obtenidoPart=NULL;
+		list_destroy(temp);
+	}else{
+		if(encontrarKeyDepu(temp,key)!=NULL){
+			obtenidoPart=encontrarKeyDepu(temp,key);
+			list_add(obtenidos,obtenidoTemp);
+		}else{
+			obtenidoPart=NULL;
+		}
+	}
+
+	free(path);
+	path=concatExtencion(nameTable,part,0);
+	t_list *bin=leerTodoArchBinario(path);
+
+	if(list_is_empty(bin)){
+		obtenidoPart=NULL;
+		list_destroy(bin);
+	}else{
+		if(encontrarKeyDepu(bin,key)!=NULL){
+			obtenidoPart=encontrarKeyDepu(bin,key);
+			list_add(obtenidos,obtenidoPart);
+		}else{
+			obtenidoPart=NULL;
+		}
+	}
+
+	free(path);
+	//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
+
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name(nameTable);
 		if(encontrada!=NULL){
 			t_list *aux=filtrearPorKey(encontrada->registros,key);
 			if(list_is_empty(aux)){
 				list_destroy(aux);
+				obtenidoMem=NULL;
 			}else{
-				Registry *obtenido=keyConMayorTime(aux);
-				valor=malloc(50);
-				strcpy(valor,obtenido->value);
+				obtenidoMem=keyConMayorTime(aux);
+				list_add(obtenidos,obtenidoMem);
 				list_destroy(aux);
-				return valor;
 			}
 		}
-	}			//Obtener la metadata asociada a dicha tabla.
-			free(path);
-			path=pathFinal(nameTable, 3);
-			metaTabla *metadata= leerArchMetadata(path);
-			free(path);
-
-		//Calcular cual es la partición que contiene dicho KEY.
-		int part=key % metadata->partitions;
-		//Escanear la partición objetivo, todos los archivos temporales
-		//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
-
-
+	}else{
+		obtenidoMem=NULL;
+	}
+	if(list_is_empty(obtenidos)){
+		valor=NULL;
+		return valor;
+	}else{
+		Registry *final=keyConMayorTime(obtenidos);
+		valor=malloc(strlen(final->value)+1);
+		strcpy(valor,final->value);
+		destroyRegistry(final);
+	}
 		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
-
-		free(metadata->consistency);
-		free(metadata);
-		return NULL;
-
-		log_info(logger,"Se obtuvo el valor %s.",valor);
-
+	free(metadata->nombre);
+	free(metadata->consistency);
+	free(metadata);
+	destroyRegistry(obtenidoMem);
+	if(list_is_empty(bin)){
+		list_destroy(bin);
+	}else{
+		list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
+	}
+	if(list_is_empty(temp)){
+			list_destroy(temp);
+		}else{
+			list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
+		}
 	return valor;
 }
-
-void create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
+//*****************************************************************************************************
+int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
 	//Verificar que la tabla no exista en el file system.
 	//Por convención, una tabla existe si ya hay otra con el mismo nombre.
 	//Para dichos nombres de las tablas siempre tomaremos sus valores en UPPERCASE (mayúsculas).
@@ -120,13 +167,13 @@ void create(char* nameTable, char* consistency , u_int16_t numPartition,long tim
 			log_info(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
 			perror("La tabla ya existe.");
 			free(path);
-			return;
+			return 1;
 		}
 	//Crear el directorio para dicha tabla.
 	if(crearCarpeta(path)==1){
 		log_info(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
 		free(path);
-		return;
+		return 1;
 	}
 
 	//Crear el archivo Metadata asociado al mismo.
@@ -135,14 +182,16 @@ void create(char* nameTable, char* consistency , u_int16_t numPartition,long tim
 	//Crear los archivos binarios asociados a cada partición de la tabla y
 	if(crearParticiones(nameTable,numPartition)==1){
 		log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
-		return;
+		return 1;
 	}
 	//asignar a cada uno un bloque
 
 	free(path);
+	return 0;
 }
 
-int describe(char* nameTable, t_list *tablas,int variante){//PREGUNTAR
+t_list *describe(char* nameTable,int variante){//PREGUNTAR
+	t_list *tablas=list_create();
 	if(variante==0){
 		//cuando no tiene el nombre de la tabla
 		//Recorrer el directorio de árboles de tablas
@@ -151,7 +200,7 @@ int describe(char* nameTable, t_list *tablas,int variante){//PREGUNTAR
 		//Leer los archivos Metadata de cada tabla.
 
 		//Retornar el contenido de dichos archivos Metadata.
-
+		return tablas;
 	}else{
 		//Verificar que la tabla exista en el file system.
 		char *path=pathFinal(nameTable,1);
@@ -160,17 +209,19 @@ int describe(char* nameTable, t_list *tablas,int variante){//PREGUNTAR
 			path=pathFinal(nameTable,3);
 			//Leer el archivo Metadata de dicha tabla.
 			metaTabla *metadata= leerArchMetadata(path);
+			metadata->nombre=malloc(strlen(nameTable)+1);
+			strcpy(metadata->nombre,nameTable);
+			list_add(tablas,metadata);
 			//Retornar el contenido del archivo.
 			free(path);
-
+			return tablas;
 		}else{
 			log_info(logger, "No se puede hacer el describe porque no existe la tabla %s.", nameTable);
 			free(path);
-			return 1;
+			return NULL;
 		}
 
 	}
-	return 0;
 }
 
 void drop(char* nameTable){

@@ -51,6 +51,43 @@ char *pathFinal(char *nombre, int principal){
 	free(pathF);
 	return NULL;
 }
+////////////////*****************NUEVOOOOO
+char *concatExtencion(char *name,int particion, int tipo){//0 es bin, si es 1 es temp
+	char *pathF=pathFinal(name,2);
+	int base=strlen(pathF)+1;
+	char *part=string_itoa(particion);
+	base+=strlen(part)+1;
+	pathF=realloc(pathF,base);
+	strcat(pathF,part);
+	free(part);
+	if(tipo==0){
+		char *extencion= malloc(5);
+		strcpy(extencion, ".bin");
+		base+=strlen(extencion)+1;
+		pathF=realloc(pathF,base);
+		strcat(pathF,extencion);
+		free(extencion);
+
+	}else{
+		char *extencion= malloc(6);
+		strcpy(extencion, ".temp");
+		base+=strlen(extencion)+1;
+		pathF=realloc(pathF,base);
+		strcat(pathF,extencion);
+		free(extencion);
+	}
+	return pathF;
+}/////////////////////*************************************************************************
+
+//***********************************NUEVO
+Registry *desconcatParaArch(char *linea){
+	char **subString=string_n_split(linea,3,";");
+	int key=atoi(subString[1]);
+	long timestamp=atol(subString[0]);
+	Registry *nuevo=createRegistry(key,subString[2],timestamp);
+	return nuevo;
+}//**************************************************************************************
+
 
 char *concatParaArchivo(long timestamp,int key,char *value,int opc){
 	//0 para Escribir, 1 para Agregar
@@ -134,23 +171,12 @@ int borrarCarpeta(char *path){//BORRA LA CARPETA
 
 /***********************************************************************************************/
 //FUNCIONES DE ARCHIVOS
-
+//********************MODIFICADO
 int crearParticiones(char *nombre, int cantidad){
 	FILE* arch; //BINARIO
 
 	while(cantidad>0){
-		char *extencion=malloc(5);
-		strcpy(extencion,".bin");
-		char *part=string_itoa(cantidad-1);
-		char *path=pathFinal(nombre,2);
-		int base=strlen(path)+1+strlen(part)+1;
-		path=realloc(path,base);
-		strcat(path,part);
-		free(part);
-		base+=strlen(extencion)+1;
-		path=realloc(path,base);
-		strcat(path,extencion);
-		free(extencion);
+		char *path=concatExtencion(nombre,cantidad-1,0);
 		if((arch= fopen(path,"wb"))<0){
 			printf("Error al crear la particion numero %i de la tabla\n",cantidad);
 			return 1;
@@ -162,17 +188,19 @@ int crearParticiones(char *nombre, int cantidad){
 	}
 	return 0;
 }
-
-void crearArchMetadata(char* path, char* consistency , u_int16_t numPartition,long timeCompaction){
+//*****************************************************************************************
+//********************MODIFICADO
+void crearArchMetadata(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
+	char *path=pathFinal(nombre,3);
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=timeCompaction;
-	nuevo->consistency= consistency;
+	nuevo->consistency= malloc(strlen(consistency)+1);
+	strcpy(nuevo->consistency,consistency);
 	nuevo->partitions= numPartition;
-	char *pathF=pathFinal(path,3);
-	FILE* metadata= fopen(pathF,"wb"); //BINARIO
+	FILE* metadata= fopen(path,"wb"); //BINARIO
 	//FILE* metadata= fopen(path,"w");    //TXT
 	fclose(metadata);
-	t_config *metaTab=config_create(pathF);
+	t_config *metaTab=config_create(path);
 	config_set_value(metaTab,"CONSISTENCY",nuevo->consistency);
 	char* cantParticiones = string_itoa(nuevo->partitions);
 	config_set_value(metaTab,"PARTITIONS",cantParticiones);
@@ -183,26 +211,33 @@ void crearArchMetadata(char* path, char* consistency , u_int16_t numPartition,lo
 
 	free(cantParticiones);
 	free(tiempoCompact);
+	free(nuevo->consistency);
 	free(nuevo);
-	free(pathF);
+	free(path);
 }
-
-metaTabla *leerArchMetadata(char *path){
+//******************************************************************
+//*********************MODIFICADO
+metaTabla *leerArchMetadata(char *nombre){
+	char *path=pathFinal(nombre,3);
 	t_config *metaTab=config_create(path);
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
 	char *aux=config_get_string_value(metaTab, "CONSISTENCY");
 	nuevo->consistency=malloc(string_length(aux));
 	strcpy(nuevo->consistency,aux);
+	free(aux);
 	nuevo->partitions= config_get_int_value(metaTab, "PARTITIONS");
+	nuevo->nombre=malloc(strlen(nombre)+1);
+	strcpy(nuevo->nombre,nombre);
 	config_destroy(metaTab);
+	free(path);
 	return nuevo;
 }
-
+//****************************************************************************************
 int  escribirArchBinario(char *path,long timestamp,int key,char *value){
 
 	char *linea=concatParaArchivo(timestamp,key,value,0);
-	int base=strlen(linea+1);
+	int base=strlen(linea)+1;
 
 	FILE* particion=fopen(path,"wb");
 	if(particion== NULL){
@@ -236,13 +271,14 @@ int  agregarArchBinario(char *path,long timestamp,int key,char *value){
 
 	return 0;
 }
-
-int leerTodoArchBinario(char *path){
+//**********************************************MODIFICADO
+t_list *leerTodoArchBinario(char *path){
+	t_list *registrosLeidos=list_create();
 
 	FILE* particion=fopen(path,"rb");
 	if(particion== NULL){
 		printf("Error al abrir el archivo para leer");
-		return 1;
+		return registrosLeidos;
 	}
 
 	size_t t = 1000;
@@ -252,13 +288,16 @@ int leerTodoArchBinario(char *path){
 	while(!feof(particion)){
 		getline(&buffer,&t,particion);
 		printf("%s",buffer);
+		if(buffer!=NULL){
+			list_add(registrosLeidos,desconcatParaArch(buffer));
+		}
 		buffer=NULL;
 	}
 
 	free(buffer);
-	return 0;
+	return registrosLeidos;
 }
-
+//***********************************************************************************************
 int eliminarArchivo(char *path){
 	if(remove(path)==0){
 		return 0;
@@ -266,28 +305,19 @@ int eliminarArchivo(char *path){
 	printf("Error al intentar borrar archivo");
 	return 1;
 }
-
+//***************************************MODIFICADO
 void escribirReg(char *name,t_list *registros,int cantParticiones){
 	int size=list_size(registros);
 	while(size>0){
 		Registry *nuevo=list_get(registros, size-1);
 		int part=nuevo->key % cantParticiones;
-		char *nombre=string_itoa(part);
-		char *exten= malloc(5);
-		strcpy(exten,".tmp");
-		char *path=pathFinal(name,2);
-		int base=strlen(path)+1+strlen(exten)+1+strlen(nombre)+1;
-		path=realloc(path,base);
-		strcat(path,nombre);
-		strcat(path,exten);
+		char *path=concatExtencion(name,part,1);
 		agregarArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
-		free(nombre);
-		free(exten);
 		free(path);
 		size--;
 	}
 }
-
+//*************************************************************************************
 /**************************************************************************************************/
 //FUNCIONES ASOCIADAS AL REGISTRO
 
@@ -351,7 +381,6 @@ t_list *regDep(t_list *aDepu){
 	t_list *depu=list_create();
 	int cant=list_size(aDepu);
 
-	int cant2=list_size(depu);
 	while(cant>0){
 		Registry* nuevo=list_get(aDepu, cant-1);
 		if(list_is_empty(depu)){
@@ -371,7 +400,6 @@ t_list *regDep(t_list *aDepu){
 
 		}
 
-		cant2=list_size(depu);
 		nuevo=NULL;
 		cant--;
 	}

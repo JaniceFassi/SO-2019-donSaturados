@@ -31,6 +31,7 @@ typedef struct{
 }Tabla;
 
 typedef struct{
+	char *nombre;
 	char *consistency;
 	int partitions;
 	long compaction_time;
@@ -56,6 +57,8 @@ t_list *regDep(t_list *aDepu);
 //FUNCIONES DE CONCATENAR
 char *pathFinal(char *nombre, int principal);
 char *concatParaArchivo(long timestamp,int key,char *value,int opc);
+Registry *desconcatParaArch(char *linea);
+char *concatExtencion(char *name,int particion, int tipo);
 
 //FUNCIONES DE CARPETAS
 int crearCarpeta(char* path);
@@ -65,9 +68,9 @@ int borrarCarpeta(char *path);
 //FUNCIONES ARCHIVOS
 int crearParticiones(char *nombre, int cantidad);
 void crearArchMetadata(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction);
-metaTabla *leerArchMetadata(char *path);
+metaTabla *leerArchMetadata(char *nombre);
 int escribirArchBinario(char *path,long timestamp,int key,char *value);
-int leerTodoArchBinario(char *path);
+t_list *leerTodoArchBinario(char *path);
 int agregarArchBinario(char *path,long timestamp,int key,char *value);
 int eliminarArchivo(char *path);
 void escribirReg(char *name,t_list *registros,int cantParticiones);
