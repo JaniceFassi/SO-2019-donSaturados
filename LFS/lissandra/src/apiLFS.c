@@ -17,11 +17,16 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 	//En caso que no exista, informa el error y continúa su ejecución.
 	char *path=pathFinal(param_nameTable,1);
 	if(folderExist(path)==1){
-		log_info(logger,"No existe la tabla %s", param_nameTable);
+		log_info(logger,"No se puede hacer el insert porque no existe la tabla %s.", param_nameTable);
 		free(path);
 		return;
 	}
 	free(path);
+
+		if(string_length(param_value)>atoi(config_get_string_value(config,"TAMVALUE"))){
+			log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
+			return;
+		}
 
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
@@ -47,8 +52,7 @@ void insert(char *param_nameTable, u_int16_t param_key, char *param_value, long 
 
 		}
 	}
-		char* valor=selectS(param_nameTable,param_key);
-		log_info(logger,valor);
+		log_info(logger,"Se ha insertado el registro en la memtable.");
 				//free(rutaf);
 		//free(metadata->consistency);
 		//free(metadata);
@@ -61,7 +65,7 @@ char *selectS(char* nameTable , u_int16_t key){
 	char *path=pathFinal(nameTable,1);
 	char *valor=NULL;
 	if(folderExist(path)==1){
-		log_info(logger,"No existe la tabla %s", nameTable);
+		log_info(logger,"No se puede hacer el select porque no existe la tabla %s.", nameTable);
 		free(path);
 		return valor;
 	}
@@ -97,7 +101,7 @@ char *selectS(char* nameTable , u_int16_t key){
 		free(metadata);
 		return NULL;
 
-
+		log_info(logger,"Se obtuvo el valor %s.",valor);
 
 	return valor;
 }
@@ -108,26 +112,29 @@ void create(char* nameTable, char* consistency , u_int16_t numPartition,long tim
 	//Para dichos nombres de las tablas siempre tomaremos sus valores en UPPERCASE (mayúsculas).
 	//En caso que exista, se guardará el resultado en un archivo .log
 	//y se retorna un error indicando dicho resultado.
+
+	//string_to_upper(nameTable);									************NO FUNCA************
 	char *path=pathFinal(nameTable,1);
+
 		if(folderExist(path)==0){
-			log_info(logger, "Ya existe la Tabla %s",nameTable);
-			perror("La tabla ya existe");
+			log_info(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
+			perror("La tabla ya existe.");
 			free(path);
 			return;
 		}
 	//Crear el directorio para dicha tabla.
 	if(crearCarpeta(path)==1){
-		log_info(logger,"ERROR AL CREAR LA TABLA %s",nameTable);
+		log_info(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
 		free(path);
 		return;
 	}
-	free(path);
+
 	//Crear el archivo Metadata asociado al mismo.
 	//Grabar en dicho archivo los parámetros pasados por el request.
 	crearArchMetadata(nameTable,consistency,numPartition,timeCompaction);
 	//Crear los archivos binarios asociados a cada partición de la tabla y
 	if(crearParticiones(nameTable,numPartition)==1){
-		log_info(logger,"ERROR AL CREAR LAS PARTICIONES");
+		log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
 		return;
 	}
 	//asignar a cada uno un bloque
@@ -157,7 +164,7 @@ int describe(char* nameTable, t_list *tablas,int variante){//PREGUNTAR
 			free(path);
 
 		}else{
-			log_info(logger, "No existe esa Tabla");
+			log_info(logger, "No se puede hacer el describe porque no existe la tabla %s.", nameTable);
 			free(path);
 			return 1;
 		}
@@ -175,7 +182,7 @@ void drop(char* nameTable){
 		borrarCarpeta(path);
 
 	}else{
-		log_info(logger, "No existe esa Tabla");
+		log_info(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);
 	}
 	free(path);
 }

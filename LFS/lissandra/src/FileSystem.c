@@ -18,17 +18,17 @@ char *pathFinal(char *nombre, int principal){
 
 	if(principal==0){
 		strcat(pathF,nombre);
-		return pathF;
+		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/nombre
 	}
 
-	char tab[]="Tablas/";
+	char tab[]="TABLAS/";
 	base+=string_length(tab)+1;
 	pathF=realloc(pathF,base);
 	strcat(pathF,tab);
 	strcat(pathF,nombre);
 
 	if(principal==1){
-		return pathF;
+		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/Tablas/nombre
 	}
 
 	char barra[]="/";
@@ -37,7 +37,7 @@ char *pathFinal(char *nombre, int principal){
 	strcat(pathF,barra);
 
 	if(principal==2){
-		return pathF;
+		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/Tablas/nombre/
 	}
 
 	char metadata[]="METADATA";
@@ -46,7 +46,7 @@ char *pathFinal(char *nombre, int principal){
 
 	if(principal==3){
 		strcat(pathF,metadata);
-		return pathF;
+		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/Tablas/nombre/METADATA
 	}
 	free(pathF);
 	return NULL;
@@ -117,7 +117,7 @@ int folderExist(char* path){ //Verifica si existe la carpeta, si no existe devue
 
 	struct stat st = {0};
 	if (stat(path, &st) == -1){
-		printf("No existe la Carpeta\n");
+		//printf("No existe la Carpeta\n");
 		return 1;
 	}
 	return 0;
@@ -167,13 +167,12 @@ void crearArchMetadata(char* path, char* consistency , u_int16_t numPartition,lo
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=timeCompaction;
 	nuevo->consistency= consistency;
-	printf("%s",nuevo->consistency);
 	nuevo->partitions= numPartition;
-	printf("%i",nuevo->partitions);
-	FILE* metadata= fopen(path,"wb"); //BINARIO
+	char *pathF=pathFinal(path,3);
+	FILE* metadata= fopen(pathF,"wb"); //BINARIO
 	//FILE* metadata= fopen(path,"w");    //TXT
 	fclose(metadata);
-	t_config *metaTab=config_create(path);
+	t_config *metaTab=config_create(pathF);
 	config_set_value(metaTab,"CONSISTENCY",nuevo->consistency);
 	char* cantParticiones = string_itoa(nuevo->partitions);
 	config_set_value(metaTab,"PARTITIONS",cantParticiones);
@@ -181,9 +180,11 @@ void crearArchMetadata(char* path, char* consistency , u_int16_t numPartition,lo
 	config_set_value(metaTab,"COMPACTION_TIME",tiempoCompact);
 	config_save(metaTab);
 	config_destroy(metaTab);
+
 	free(cantParticiones);
 	free(tiempoCompact);
 	free(nuevo);
+	free(pathF);
 }
 
 metaTabla *leerArchMetadata(char *path){
