@@ -26,14 +26,24 @@ void* testeandoHilos(void * arg){
 
 */
 
+//no anda
+void agregarDato(datoTabla* valor, int nromarco){
+	marco *marcoBuscado;
+	marcoBuscado = list_get(tablaMarcos, nromarco);
+	marcoBuscado->inicio = memcpy(&marcoBuscado->inicio, valor, sizeof(datoTabla));
+
+
+
+}
 
 int main(void) {
 
 
 
 	//este 1024 debería salir del archivo de configuración
+	//haciendo la cuenta hay aprox 84 marcos
 	int tamanioMemoria = 1024;
-	void* memoria = malloc(tamanioMemoria);
+	datoTabla* memoria = malloc(tamanioMemoria);
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
 
@@ -41,15 +51,25 @@ int main(void) {
 
 	//inicializo tabla de marcos
 
+	datoTabla* posicion = memoria;
+
 	for(int i=0; i<cantMarcos; i++){
-		void* posicion = memoria;
 		marco* unMarco = malloc(sizeof(marco));
 		unMarco->inicio = posicion; //puntero a posición de memoria donde se guarda el struct datoTabla
 		unMarco->offset = sizeof(datoTabla);
 		unMarco->modificado = 0;
 		list_add(tablaMarcos, unMarco);
 		posicion = posicion + sizeof(datoTabla);
+		free(unMarco);
 
+	}
+
+	//seteo un array de tamanio = nro marcos en 0, para usar como bitarray
+	//porque ni idea como usar bitarrays
+
+	int marcosLibres[cantMarcos];
+	for (int i = 0; i < cantMarcos; i++){
+		marcosLibres[i] = 0;
 	}
 
 
@@ -57,18 +77,23 @@ int main(void) {
 
 	segmento *animales = crearSegmento("ANIMALES");
 	segmento *postres = crearSegmento("POSTRES");
-	printf("%s\n", animales->nombreTabla);
 	list_add(tablaSegmentos, animales);
 	list_add(tablaSegmentos, postres);
+	agregarPagina(animales, marcosLibres);
 
-	char* nuevo = "hola";
-	printf("%s\n", nuevo);
+	datoTabla *nuevaEntrada= malloc(sizeof(datoTabla));
+	nuevaEntrada->key = 100;
+	nuevaEntrada->timestamp = 1000000000;
+	nuevaEntrada->value = "SORE";
 
-	printf("%s\n", postres->nombreTabla);
+	//no puedo guardar nada en meoria te odio c y a tus malditos punteros
+	/*agregarDato(nuevaEntrada, 0);
 
+	printf("Timestamp %ld \n", memoria->timestamp);
+	printf("Key %d \n", memoria->key);
+	printf("Value %s \n", memoria->value);
 
-
-
+	 */
 
 
 /*  int sarasa = 10;
@@ -82,7 +107,7 @@ int main(void) {
 
 
 	//DESERIALIZAR Y RECIBIR MENSAJES
-
+*/
 	struct sockaddr_in direccionServidor;
 
 
@@ -125,7 +150,7 @@ int main(void) {
 
 			printf("Se conecto un cliente\n");
 			char* buffer = malloc(sizeof(char));
-
+//ESTO HAY QUE MODIFICARLO
 			int bytesRecibidos=0;
 //recibo operacion
 			bytesRecibidos = recv(cliente, buffer, 1, 0);
@@ -145,7 +170,7 @@ int main(void) {
 					printf("%s\n", recibido[i]);
 
 				}
-			}
+				}
 
 
 
@@ -160,7 +185,7 @@ int main(void) {
 				break;
 			case 2:
 				mCreate();
-				break;
+			break;
 
 			case 3:
 				mDescribe();
@@ -196,7 +221,7 @@ int main(void) {
 			free(buffer);
 
 
-*/
+
 
 
 
@@ -249,23 +274,48 @@ segmento *buscarSegmento(char* nombre){
 	return list_find(tablaSegmentos, (void *) tieneMismoNombre);
 }
 
-
-pagina *crearPagina(){
+pagina *crearPagina(int marcosLibres[]){
 	pagina *pag = malloc(sizeof(pagina));
-	pag->nroPagina = 1;
+	pag->direccionLogicaMarco = primerMarcoLibre(marcosLibres);
 	return pag;
 }
 
-void agregarPagina(segmento *seg){
+void agregarPagina(segmento *seg, int marcosLibres[]){
 	pagina *pag;
-	pag = crearPagina();
+	pag = crearPagina(marcosLibres);
 
 	list_add(seg->tablaPaginas, pag);
 
 }
 
+int primerMarcoLibre(int marcos[]){
+	int posMarco = 0;
+	while(marcos[posMarco] == 1){
+		posMarco++;
+	}
+
+	//si todos están en 1 es porque la memoria está full y debería
+	//frenar la creación de una página
+
+	return posMarco;
+}
 
 
+char* empaquetar(int operacion, datoTabla dato){
+	char* msj;
+	msj = string_new();
+	string_append(&msj,string_itoa(operacion));
+	string_append(&msj, ";");
+	string_append(&msj,string_itoa(sizeof(dato)));
+	string_append(&msj, ";");
+	string_append(&msj, string_itoa(dato.timestamp));
+	string_append(&msj, ";");
+	string_append(&msj, string_itoa(dato.key));
+	string_append(&msj, ";");
+	string_append(&msj, dato.value);
+
+	return msj;
+}
 
 
 
