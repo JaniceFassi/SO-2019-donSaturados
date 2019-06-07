@@ -32,7 +32,25 @@ int main(void) {
 
 	free(path);
 
-	create("tab","SC",3,300);
+	/*************************************************************/
+
+	create("PELICULAS", "SC", 5, 10000);
+	insert("PELICULAS", 163, "Nemo", 100);
+	insert("PELICULAS", 10, "Toy Story",10);
+	insert("PELICULAS", 10, "Harry Potte",15);
+	//insert("PELICULAS", 10, "Harry Potter",10);	//NO SE POR QUE ROMPE, SI LE SACAS LA ULTIMA R FUNCA
+	selectS("PELICULAS", 10);
+	//dump();
+	selectS("PELICULAS", 163);
+	//insert("PELICULAS", 13535, "Titanic",1);
+	//insert("PELICULAS", 922, "Ratatouille",1);
+	//insert("PELICULAS", 4829,"Aladdin",1);
+	//insert("PELICULAS", 2516, "Godzilla",1);
+	//selectS("PELICULAS", 4829);
+	//insert("PELICULAS", 3671, "Avatar",1);
+	//selectS("PELICULAS", 163);
+
+	/*************************************************************/
 
 	//connectMemory(&socket_client);
 
@@ -46,8 +64,9 @@ int main(void) {
 	//i++;
 	//}
 
-	console();
+	//console();
 
+	//free(valor);
 	theEnd();
 	return EXIT_SUCCESS;
 }
@@ -236,7 +255,6 @@ void console(){
 	 			free(espacio);
 	 			free(value);
 	 		}
-
 	 		free(cadena);
  			free(split);
 	 	}
@@ -308,7 +326,7 @@ void dump(){
 }
 
 void theEnd(){
-	list_destroy_and_destroy_elements(memtable,(void *)liberarTabla);
+	//list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
 	log_destroy(logger);
 	config_destroy(config);
 }

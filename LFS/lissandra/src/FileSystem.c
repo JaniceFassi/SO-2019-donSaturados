@@ -12,7 +12,7 @@
 
 char *pathFinal(char *nombre, int principal){
 	//0 ES LA CARP PRINCIPAL, 1 ES LA CARP DE LAS TABLAS, 2 PATH DE ARCH, 3 METADATA
-	int base=string_length(puntoMontaje)+string_length(nombre)+2;
+	int base=string_length(puntoMontaje)+string_length(nombre)+1;
 	char *pathF=malloc(base);
 	strcpy(pathF,puntoMontaje);
 
@@ -197,6 +197,8 @@ void crearArchMetadata(char* nombre, char* consistency , u_int16_t numPartition,
 	nuevo->consistency= malloc(strlen(consistency)+1);
 	strcpy(nuevo->consistency,consistency);
 	nuevo->partitions= numPartition;
+	nuevo->nombre=malloc(strlen(nombre)+1);
+	strcpy(nuevo->nombre,nombre);
 	FILE* metadata= fopen(path,"wb"); //BINARIO
 	//FILE* metadata= fopen(path,"w");    //TXT
 	fclose(metadata);
@@ -212,6 +214,7 @@ void crearArchMetadata(char* nombre, char* consistency , u_int16_t numPartition,
 	free(cantParticiones);
 	free(tiempoCompact);
 	free(nuevo->consistency);
+	free(nuevo->nombre);
 	free(nuevo);
 	free(path);
 }
@@ -223,7 +226,7 @@ metaTabla *leerArchMetadata(char *nombre){
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
 	char *aux=config_get_string_value(metaTab, "CONSISTENCY");
-	nuevo->consistency=malloc(string_length(aux));
+	nuevo->consistency=malloc(strlen(aux)+1);
 	strcpy(nuevo->consistency,aux);
 	free(aux);
 	nuevo->partitions= config_get_int_value(metaTab, "PARTITIONS");
@@ -428,7 +431,7 @@ Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time){
 
 void liberarTabla(Tabla *self){
 	free(self->nombre);
-	list_destroy_and_destroy_elements(self->registros,(void *)destroyRegistry);
+	list_destroy_and_destroy_elements(self->registros,(void*)destroyRegistry);
 	free(self);
 }
 int encontrarRegistroPorKey(t_list *registros,int key){

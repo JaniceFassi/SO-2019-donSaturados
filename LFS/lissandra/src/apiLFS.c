@@ -5,10 +5,7 @@
  *      Author: utnso
  */
 
-
 #include "apiLFS.h"
-
-
 
 //API
 int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
@@ -23,10 +20,10 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	}
 	free(path);
 
-		if(string_length(param_value)>atoi(config_get_string_value(config,"TAMVALUE"))){
-			log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
-			return 1;
-		}
+	if(string_length(param_value)>atoi(config_get_string_value(config,"TAMVALUE"))){
+		log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
+		return 1;
+	}
 
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
@@ -35,7 +32,6 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 
 		Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
 		list_add(memtable,nueva);
-
 	}else{
 		//Insertar en la memoria temporal del punto anterior una nueva entrada que contenga los datos enviados en la request.
 
@@ -45,16 +41,34 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 
 			Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
 			list_add(memtable,nueva);
-
 		}else{
 
 			agregarRegistro(encontrada,param_key,param_value,param_timestamp);
-
 		}
 	}
 		log_info(logger,"Se ha insertado el registro en la memtable.");
 	return 0;
 }
+
+int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 1
+	FILE *archB;
+	archB= fopen(path, "r");
+	if(archB!=NULL){
+		fseek(archB, 0, SEEK_END);
+		if (ftell(archB) == 0 ){
+			fclose(archB);
+			return 0;
+		}
+		else{
+			fclose(archB);
+			return 1;
+		}
+	}
+	else {
+		return 0;
+	}
+}
+
 //**********************MODIFICADO
 char *selectS(char* nameTable , u_int16_t key){
 	char *path=pathFinal(nameTable,1);
@@ -63,50 +77,59 @@ char *selectS(char* nameTable , u_int16_t key){
 	Registry *obtenidoPart;
 	Registry *obtenidoTemp;
 	t_list *obtenidos=list_create();
+	//printf("%s",obtenidoPart->value);
+	//printf("%s",obtenidoTemp->value);
+
 	//Verificar que la tabla exista en el file system.
 	if(folderExist(path)==1){
 		printf("No existe la tabla %s", nameTable);
 		free(path);
 		return valor;
 	}
-	//Obtener la metadata asociada a dicha tabla.
 	free(path);
 
+	//Obtener la metadata asociada a dicha tabla.
 	metaTabla *metadata= leerArchMetadata(nameTable);
 
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
-	//Escanear la partición objetivo, todos los archivos temporales
+
+	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
 	path=concatExtencion(nameTable,part,1);
-	t_list *temp=leerTodoArchBinario(path);
-	if(list_is_empty(temp)){
-		obtenidoPart=NULL;
-		list_destroy(temp);
-	}else{
-		if(encontrarKeyDepu(temp,key)!=NULL){
-			obtenidoPart=encontrarKeyDepu(temp,key);
-			list_add(obtenidos,obtenidoTemp);
+	t_list *temp;
+	if(archivoValido(path)==1){
+		temp=leerTodoArchBinario(path);
+		if(list_is_empty(temp)){
+			obtenidoTemp=NULL;
+			list_destroy(temp);
 		}else{
-			obtenidoPart=NULL;
+			if(encontrarKeyDepu(temp,key)!=NULL){
+				obtenidoTemp=encontrarKeyDepu(temp,key);
+				list_add(obtenidos,obtenidoTemp);
+			}else{
+				obtenidoTemp=NULL;
+			}
 		}
 	}
 
 	free(path);
 	path=concatExtencion(nameTable,part,0);
-	t_list *bin=leerTodoArchBinario(path);
+	t_list *bin;
+	if(archivoValido(path)==1){
+		bin=leerTodoArchBinario(path);
 
-	if(list_is_empty(bin)){
-		obtenidoPart=NULL;
-		list_destroy(bin);
-	}else{
-		if(encontrarKeyDepu(bin,key)!=NULL){
-			obtenidoPart=encontrarKeyDepu(bin,key);
-			list_add(obtenidos,obtenidoPart);
-		}else{
+		if(list_is_empty(bin)){
 			obtenidoPart=NULL;
+			list_destroy(bin);
+		}else{
+			if(encontrarKeyDepu(bin,key)!=NULL){
+				obtenidoPart=encontrarKeyDepu(bin,key);
+				list_add(obtenidos,obtenidoPart);
+			}else{
+				obtenidoPart=NULL;
+			}
 		}
 	}
-
 	free(path);
 	//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
 
@@ -136,20 +159,21 @@ char *selectS(char* nameTable , u_int16_t key){
 		destroyRegistry(final);
 	}
 		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
-	free(metadata->nombre);
+	//free(metadata->nombre);
 	free(metadata->consistency);
 	free(metadata);
 	destroyRegistry(obtenidoMem);
 	if(list_is_empty(bin)){
-		list_destroy(bin);
+		//list_destroy(bin);
 	}else{
-		list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
+		//list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
 	}
 	if(list_is_empty(temp)){
 			list_destroy(temp);
 		}else{
-			list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
+			//list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
 		}
+	log_info(logger,valor);
 	return valor;
 }
 //*****************************************************************************************************
@@ -209,8 +233,8 @@ t_list *describe(char* nameTable,int variante){//PREGUNTAR
 			path=pathFinal(nameTable,3);
 			//Leer el archivo Metadata de dicha tabla.
 			metaTabla *metadata= leerArchMetadata(path);
-			metadata->nombre=malloc(strlen(nameTable)+1);
-			strcpy(metadata->nombre,nameTable);
+			//metadata->nombre=malloc(strlen(nameTable)+1);
+			//strcpy(metadata->nombre,nameTable);
 			list_add(tablas,metadata);
 			//Retornar el contenido del archivo.
 			free(path);
