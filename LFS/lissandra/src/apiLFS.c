@@ -90,6 +90,8 @@ char *selectS(char* nameTable , u_int16_t key){
 				obtenidoTemp=NULL;
 			}
 		}
+	}else{
+		list_destroy(temp);
 	}
 
 	free(path);
@@ -108,6 +110,8 @@ char *selectS(char* nameTable , u_int16_t key){
 				obtenidoPart=NULL;
 			}
 		}
+	}else{
+		list_destroy(bin);
 	}
 	free(path);
 	//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
@@ -140,21 +144,13 @@ char *selectS(char* nameTable , u_int16_t key){
 	free(metadata->nombre);
 	free(metadata);
 
-	if(list_is_empty(bin)){
-		//list_destroy(bin);
-	}else{
-		//list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
+	if(!list_is_empty(bin)){
+		list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
 	}
-	if(list_is_empty(temp)){
-		//list_destroy(temp);
-	}else{
-		//list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
+	if(!list_is_empty(temp)){
+		list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
 	}
-	if(list_is_empty(aux)){
-			//list_destroy(aux);
-		}else{
-			//list_destroy_and_destroy_elements(aux,(void *)destroyRegistry);
-		}
+	list_destroy(aux);
 	log_info(logger,valor);
 	return valor;
 }

@@ -226,14 +226,12 @@ metaTabla *leerArchMetadata(char *nombre){
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
 	char *aux=config_get_string_value(metaTab, "CONSISTENCY");
-	nuevo->consistency=malloc(strlen(aux)+1);
+	nuevo->consistency=malloc(string_length(aux)+1);
 	strcpy(nuevo->consistency,aux);
-	free(aux);
 	nuevo->partitions= config_get_int_value(metaTab, "PARTITIONS");
 	nuevo->nombre=malloc(strlen(nombre)+1);
 	strcpy(nuevo->nombre,nombre);
 	config_destroy(metaTab);
-	free(path);
 	return nuevo;
 }
 //****************************************************************************************
