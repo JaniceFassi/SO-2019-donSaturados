@@ -17,10 +17,13 @@ int main(void) {
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
 
 	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
-	timeDump=config_get_long_value(config,"TIEMPO_DUMP");
-	//****************FUNCION DE TIEMPO PARA EL DUMP
-	alarm(timeDump);
-    signal(SIGALRM, funcionSenial);
+
+
+	//****************PARA USAR TIEMPO DEL DUMP*************
+
+	//timeDump=config_get_long_value(config,"TIEMPO_DUMP");
+	//alarm(timeDump);
+    //signal(SIGALRM, funcionSenial);
 
 	char *path=pathFinal("TABLAS",0);	//DEVUELVE EL PATH HASTA LA CARPETA TABLAS
 
@@ -35,25 +38,33 @@ int main(void) {
 
 	free(path);
 
-	/*************************************************************/
+	/***************PARA USAR LA FUNCION PURA*****************/
 
 	create("PELICULAS", "SC", 5, 10000);
-	insert("PELICULAS", 163, "Nemo", 100);
-	insert("PELICULAS", 10, "Toy Story",10);
-	insert("PELICULAS", 10, "Harry Potte",15);
-	insert("PELICULAS", 10, "Harry Potter",10);	//NO SE POR QUE ROMPE, SI LE SACAS LA ULTIMA R FUNCA
-	selectS("PELICULAS", 10);
-	//dump();
-	selectS("PELICULAS", 163);
-	//insert("PELICULAS", 13535, "Titanic",1);
-	//insert("PELICULAS", 922, "Ratatouille",1);
-	//insert("PELICULAS", 4829,"Aladdin",1);
-	//insert("PELICULAS", 2516, "Godzilla",1);
-	//selectS("PELICULAS", 4829);
-	//insert("PELICULAS", 3671, "Avatar",1);
-	//selectS("PELICULAS", 163);
+	insert("PELICULAS", 163, "Nemo", 100);				// 3
+	insert("PELICULAS", 10, "Toy Story",10);			// 0
+	insert("PELICULAS", 10, "Harry Potter",10);			// 0
+	selectS("PELICULAS", 10);				// Harry Potter
+	selectS("PELICULAS", 163);					// Nemo
+	insert("PELICULAS", 13535, "Titanic",20);			// 0
+	selectS("PELICULAS", 13535);					// Titanic
+	insert("PELICULAS", 922, "Ratatouille",18);			// 2
+	insert("PELICULAS", 4829,"Aladdin",10);				// 5
+	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
+	insert("PELICULAS", 163, "Buscando a dory",1300);	// 1
+	selectS("PELICULAS", 4829);					// Aladdin
+	insert("PELICULAS", 3671, "Avatar",1000);			// 1
+	selectS("PELICULAS", 163);					// Buscando a dory
+	selectS("PELICULAS", 3671);					// Avatar
 
 	/*************************************************************/
+
+	/****************PARA USAR LA CONSOLA******************/
+
+	//console();
+	//free(valor);
+
+	/****************PARA USAR CONEXIONES******************/
 
 	//connectMemory(&socket_client);
 
@@ -67,9 +78,6 @@ int main(void) {
 	//i++;
 	//}
 
-	//console();
-
-	//free(valor);
 	theEnd();
 	return EXIT_SUCCESS;
 }
@@ -161,11 +169,13 @@ void exec_api(op_code mode,u_int16_t sock){
 	free(buffer);
 	//free(subCadena);
 }
+
 void theStart(){
 	logger = init_logger();
 	config = read_config();
 	memtable= list_create();
 }
+
 void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 	u_int16_t  server;
 	char* ip=config_get_string_value(config, "IP");
@@ -194,9 +204,7 @@ void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 	}else{
 		log_info(logger, "\nSe acepto la conexion de %i con %i.",id,idEsperado);
 	}
-
 }
-
 
 void console(){
 	char* linea;
@@ -225,11 +233,11 @@ void console(){
 
 	 		long timestamp=atol(cadena[cantPalabras-1]);
 
-	 		if(timestamp==0){//NO TIENE TIMESTAMP
+	 		if(timestamp==0){									//NO TIENE TIMESTAMP
 	 			timestamp= time(NULL);
 	 			printf("%s",split[3]);
 	 			if(insert(split[1],key,split[3],timestamp)==0){
-	 				printf("Se realizo el insert\n");	//Calculo el timestamp y el value es la cadena completa
+	 				printf("Se realizo el insert\n");			//Calculo el timestamp y el value es la cadena completa
 	 			}else{
 	 				printf("No se pudo realizar el insert\n");
 	 			}
@@ -250,7 +258,7 @@ void console(){
 	 			}
 
 	 			if(insert(split[1],key,value,timestamp)==0){
-	 				printf("Se realizo el insert\n");	//Calculo el timestamp y el value es la cadena completa
+	 				printf("Se realizo el insert\n");
 	 			}else{
 	 				printf("No se pudo realizar el insert\n");
 	 			}
@@ -301,6 +309,7 @@ void console(){
 		free(linea);
 	}
 }
+
 void funcionSenial(int sig){
 	log_info(logger,"Comienzo de dump");
 	dump();

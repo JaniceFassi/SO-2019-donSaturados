@@ -73,6 +73,7 @@ char *selectS(char* nameTable , u_int16_t key){
 
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
+	log_info(logger, "la key %i esta contenida en la particion %i",key, part);
 
 	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
 	path=concatExtencion(nameTable,part,1);
@@ -81,7 +82,6 @@ char *selectS(char* nameTable , u_int16_t key){
 		temp=leerTodoArchBinario(path);
 		if(list_is_empty(temp)){
 			obtenidoTemp=NULL;
-			list_destroy(temp);
 		}else{
 			if(encontrarKeyDepu(temp,key)!=NULL){
 				obtenidoTemp=encontrarKeyDepu(temp,key);
@@ -100,7 +100,6 @@ char *selectS(char* nameTable , u_int16_t key){
 
 		if(list_is_empty(bin)){
 			obtenidoPart=NULL;
-			list_destroy(bin);
 		}else{
 			if(encontrarKeyDepu(bin,key)!=NULL){
 				obtenidoPart=encontrarKeyDepu(bin,key);
@@ -112,18 +111,16 @@ char *selectS(char* nameTable , u_int16_t key){
 	}
 	free(path);
 	//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
-
+	t_list *aux=list_create();
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name(nameTable);
 		if(encontrada!=NULL){
-			t_list *aux=filtrearPorKey(encontrada->registros,key);
+			aux=filtrearPorKey(encontrada->registros,key);
 			if(list_is_empty(aux)){
-				list_destroy(aux);
 				obtenidoMem=NULL;
 			}else{
 				obtenidoMem=keyConMayorTime(aux);
 				list_add(obtenidos,obtenidoMem);
-				list_destroy(aux);
 			}
 		}
 	}else{
@@ -142,15 +139,21 @@ char *selectS(char* nameTable , u_int16_t key){
 	free(metadata->consistency);
 	free(metadata->nombre);
 	free(metadata);
+
 	if(list_is_empty(bin)){
-		list_destroy(bin);
+		//list_destroy(bin);
 	}else{
-		list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
+		//list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
 	}
 	if(list_is_empty(temp)){
-			list_destroy(temp);
+		//list_destroy(temp);
+	}else{
+		//list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
+	}
+	if(list_is_empty(aux)){
+			//list_destroy(aux);
 		}else{
-			list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
+			//list_destroy_and_destroy_elements(aux,(void *)destroyRegistry);
 		}
 	log_info(logger,valor);
 	return valor;
