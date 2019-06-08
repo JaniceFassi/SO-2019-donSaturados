@@ -8,7 +8,6 @@
  ============================================================================
  */
 #include "Lissandra.h"
-#include "apiLFS.h"
 
 int main(void) {
 
@@ -18,6 +17,10 @@ int main(void) {
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
 
 	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
+	timeDump=config_get_long_value(config,"TIEMPO_DUMP");
+	//****************FUNCION DE TIEMPO PARA EL DUMP
+	alarm(timeDump);
+    signal(SIGALRM, funcionSenial);
 
 	char *path=pathFinal("TABLAS",0);	//DEVUELVE EL PATH HASTA LA CARPETA TABLAS
 
@@ -38,7 +41,7 @@ int main(void) {
 	insert("PELICULAS", 163, "Nemo", 100);
 	insert("PELICULAS", 10, "Toy Story",10);
 	insert("PELICULAS", 10, "Harry Potte",15);
-	//insert("PELICULAS", 10, "Harry Potter",10);	//NO SE POR QUE ROMPE, SI LE SACAS LA ULTIMA R FUNCA
+	insert("PELICULAS", 10, "Harry Potter",10);	//NO SE POR QUE ROMPE, SI LE SACAS LA ULTIMA R FUNCA
 	selectS("PELICULAS", 10);
 	//dump();
 	selectS("PELICULAS", 163);
@@ -238,7 +241,7 @@ void console(){
 	 			strcpy(value,cadena[0]);
 
 	 			for (int i=1;i<cantPalabras-1;i++){
-	 				base +=+strlen(espacio)+1;
+	 				base +=strlen(espacio)+1;
 	 				value=realloc(value,base);
 	 				strcat(value,espacio);
 	 				base += strlen(cadena[i])+1;
@@ -298,6 +301,14 @@ void console(){
 		free(linea);
 	}
 }
+void funcionSenial(int sig){
+	log_info(logger,"Comienzo de dump");
+	dump();
+	log_info(logger,"Finalizacion de dump");
+	alarm(timeDump);
+
+}
+
 void dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
@@ -306,13 +317,12 @@ void dump(){
 		Tabla *dumpT=list_get(dump,cant-1);
 		char *path=pathFinal(dumpT->nombre,1);
 		if(folderExist(path)==0){
-			free(path);
-			path=pathFinal(dumpT->nombre,3);
-			metaTabla *metadata= leerArchMetadata(path);
+			metaTabla *metadata= leerArchMetadata(dumpT->nombre);
 			t_list *regDepurados=regDep(dumpT->registros);
 			list_destroy(dumpT->registros);
 			escribirReg(dumpT->nombre,regDepurados,metadata->partitions);
 			free(metadata->consistency);
+			free(metadata->nombre);
 			free(metadata);
 			list_destroy_and_destroy_elements(regDepurados,(void *)destroyRegistry);
 		}

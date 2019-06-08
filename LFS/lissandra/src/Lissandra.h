@@ -20,6 +20,8 @@
 #include"apiLFS.h"
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
+#include <sys/types.h>
+#include <signal.h>
 #include <socketSaturados.h>
 #include "Compactor.h"
 
@@ -38,10 +40,12 @@ t_config* read_config(void);
 t_list *memtable;
 
 char *puntoMontaje;
+long timeDump;
 
 void theStart();
 void connectMemory(u_int16_t *cliente);
 void console();
+void funcionSenial(int sig);
 void dump();
 void theEnd();
 void exec_api(op_code mode, u_int16_t sock);

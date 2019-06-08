@@ -50,24 +50,6 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	return 0;
 }
 
-int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 1
-	FILE *archB;
-	archB= fopen(path, "r");
-	if(archB!=NULL){
-		fseek(archB, 0, SEEK_END);
-		if (ftell(archB) == 0 ){
-			fclose(archB);
-			return 0;
-		}
-		else{
-			fclose(archB);
-			return 1;
-		}
-	}
-	else {
-		return 0;
-	}
-}
 
 //**********************MODIFICADO
 char *selectS(char* nameTable , u_int16_t key){
@@ -77,8 +59,6 @@ char *selectS(char* nameTable , u_int16_t key){
 	Registry *obtenidoPart;
 	Registry *obtenidoTemp;
 	t_list *obtenidos=list_create();
-	//printf("%s",obtenidoPart->value);
-	//printf("%s",obtenidoTemp->value);
 
 	//Verificar que la tabla exista en el file system.
 	if(folderExist(path)==1){
@@ -96,7 +76,7 @@ char *selectS(char* nameTable , u_int16_t key){
 
 	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
 	path=concatExtencion(nameTable,part,1);
-	t_list *temp;
+	t_list *temp=list_create();
 	if(archivoValido(path)==1){
 		temp=leerTodoArchBinario(path);
 		if(list_is_empty(temp)){
@@ -114,7 +94,7 @@ char *selectS(char* nameTable , u_int16_t key){
 
 	free(path);
 	path=concatExtencion(nameTable,part,0);
-	t_list *bin;
+	t_list *bin=list_create();
 	if(archivoValido(path)==1){
 		bin=leerTodoArchBinario(path);
 
@@ -156,22 +136,21 @@ char *selectS(char* nameTable , u_int16_t key){
 		Registry *final=keyConMayorTime(obtenidos);
 		valor=malloc(strlen(final->value)+1);
 		strcpy(valor,final->value);
-		destroyRegistry(final);
 	}
 		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
 	//free(metadata->nombre);
 	free(metadata->consistency);
+	free(metadata->nombre);
 	free(metadata);
-	destroyRegistry(obtenidoMem);
 	if(list_is_empty(bin)){
-		//list_destroy(bin);
+		list_destroy(bin);
 	}else{
-		//list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
+		list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
 	}
 	if(list_is_empty(temp)){
 			list_destroy(temp);
 		}else{
-			//list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
+			list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
 		}
 	log_info(logger,valor);
 	return valor;

@@ -74,6 +74,7 @@ t_list *leerTodoArchBinario(char *path);
 int agregarArchBinario(char *path,long timestamp,int key,char *value);
 int eliminarArchivo(char *path);
 void escribirReg(char *name,t_list *registros,int cantParticiones);
+int archivoValido(char *path);
 
 
 #endif /* LFS_LISSANDRA_SRC_FILESYSTEM_H_ */

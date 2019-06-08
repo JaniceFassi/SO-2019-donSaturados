@@ -237,6 +237,25 @@ metaTabla *leerArchMetadata(char *nombre){
 	return nuevo;
 }
 //****************************************************************************************
+int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 1
+	FILE *archB;
+	archB= fopen(path, "r");
+	if(archB!=NULL){
+		fseek(archB, 0, SEEK_END);
+		if (ftell(archB) == 0 ){
+			fclose(archB);
+			return 0;
+		}
+		else{
+			fclose(archB);
+			return 1;
+		}
+	}
+	else {
+		return 0;
+	}
+}
+
 int  escribirArchBinario(char *path,long timestamp,int key,char *value){
 
 	char *linea=concatParaArchivo(timestamp,key,value,0);
@@ -259,7 +278,7 @@ int  escribirArchBinario(char *path,long timestamp,int key,char *value){
 int  agregarArchBinario(char *path,long timestamp,int key,char *value){
 
 	char *linea=concatParaArchivo(timestamp,key,value,1);
-	int base=strlen(linea+1);
+	int base=strlen(linea)+1;
 
 	FILE* particion=fopen(path,"ab+");
 	if(particion== NULL){
@@ -291,7 +310,7 @@ t_list *leerTodoArchBinario(char *path){
 	while(!feof(particion)){
 		getline(&buffer,&t,particion);
 		printf("%s",buffer);
-		if(buffer!=NULL){
+		if(strlen(buffer)>0){
 			list_add(registrosLeidos,desconcatParaArch(buffer));
 		}
 		buffer=NULL;
@@ -315,7 +334,11 @@ void escribirReg(char *name,t_list *registros,int cantParticiones){
 		Registry *nuevo=list_get(registros, size-1);
 		int part=nuevo->key % cantParticiones;
 		char *path=concatExtencion(name,part,1);
-		agregarArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
+		if(archivoValido(path)!=0){
+			agregarArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
+		}else{
+			escribirArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
+		}
 		free(path);
 		size--;
 	}
@@ -330,7 +353,8 @@ Registry *createRegistry(u_int16_t key, char *val, long time){
 
 	data->timestamp = time;
 	data->key = key;
-	data ->value=strdup(val);
+	data ->value=malloc(strlen(val)+1);
+	strcpy(data->value,val);
 
 	return data;
 }
@@ -422,7 +446,7 @@ Tabla *find_tabla_by_name(char *name) {
 
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time){
 	Tabla *nueva=malloc(sizeof(Tabla));
-	nueva->nombre=malloc(strlen(nombre+1));
+	nueva->nombre=malloc(strlen(nombre)+1);
 	strcpy(nueva->nombre,nombre);
 	nueva->registros=list_create();
 	list_add(nueva->registros,createRegistry(key,val,time));
