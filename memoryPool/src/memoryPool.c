@@ -24,53 +24,38 @@ void* testeandoHilos(void * arg){
 	return numero;
 }
 
-*/
+
 
 //no anda
 void agregarDato(datoTabla* valor, int nromarco){
 	marco *marcoBuscado;
+	int desplazamiento = 0;
 	marcoBuscado = list_get(tablaMarcos, nromarco);
-	marcoBuscado->inicio = memcpy(&marcoBuscado->inicio, valor, sizeof(datoTabla));
+	memcpy(marcoBuscado->inicio, &valor->timestamp, sizeof(long));
+	desplazamiento = desplazamiento + (sizeof(long));
+	memcpy(marcoBuscado->inicio + desplazamiento, &valor->key, sizeof(u_int16_t));
+	desplazamiento = desplazamiento + sizeof(u_int16_t);
+	memcpy(marcoBuscado->inicio + desplazamiento, &valor->value, sizeof(valor->value));
+	marcoBuscado->inicio = valor->timestamp;
+
+	printf("timestamp: %ld", (long) marcoBuscado->inicio);
+
+
 
 
 
 }
 
+*/
+
+
+
+
 int main(void) {
 
 
 
-	//este 1024 debería salir del archivo de configuración
-	//haciendo la cuenta hay aprox 84 marcos
-	int tamanioMemoria = 1024;
-	datoTabla* memoria = malloc(tamanioMemoria);
-	tablaMarcos = list_create();
-	tablaSegmentos = list_create();
-
-	int cantMarcos = tamanioMemoria/sizeof(datoTabla);
-
-	//inicializo tabla de marcos
-
-	datoTabla* posicion = memoria;
-
-	for(int i=0; i<cantMarcos; i++){
-		marco* unMarco = malloc(sizeof(marco));
-		unMarco->inicio = posicion; //puntero a posición de memoria donde se guarda el struct datoTabla
-		unMarco->offset = sizeof(datoTabla);
-		unMarco->modificado = 0;
-		list_add(tablaMarcos, unMarco);
-		posicion = posicion + sizeof(datoTabla);
-		free(unMarco);
-
-	}
-
-	//seteo un array de tamanio = nro marcos en 0, para usar como bitarray
-	//porque ni idea como usar bitarrays
-
-	int marcosLibres[cantMarcos];
-	for (int i = 0; i < cantMarcos; i++){
-		marcosLibres[i] = 0;
-	}
+	inicializar();
 
 
 
@@ -79,13 +64,14 @@ int main(void) {
 	segmento *postres = crearSegmento("POSTRES");
 	list_add(tablaSegmentos, animales);
 	list_add(tablaSegmentos, postres);
-	agregarPagina(animales, marcosLibres);
+	agregarPagina(animales);
 
 	datoTabla *nuevaEntrada= malloc(sizeof(datoTabla));
 	nuevaEntrada->key = 100;
 	nuevaEntrada->timestamp = 1000000000;
 	nuevaEntrada->value = "SORE";
 
+	//agregarDato(nuevaEntrada, 0);
 	//no puedo guardar nada en meoria te odio c y a tus malditos punteros
 	/*agregarDato(nuevaEntrada, 0);
 
@@ -108,7 +94,7 @@ int main(void) {
 
 	//DESERIALIZAR Y RECIBIR MENSAJES
 */
-	struct sockaddr_in direccionServidor;
+	/*struct sockaddr_in direccionServidor;
 
 
 			direccionServidor.sin_family=AF_INET;
@@ -184,7 +170,8 @@ int main(void) {
 				printf("insert");
 				break;
 			case 2:
-				mCreate();
+				printf("create");
+				//mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion);
 			break;
 
 			case 3:
@@ -228,7 +215,7 @@ int main(void) {
 
 
 
-
+*/
 
 
 
@@ -274,26 +261,24 @@ segmento *buscarSegmento(char* nombre){
 	return list_find(tablaSegmentos, (void *) tieneMismoNombre);
 }
 
-pagina *crearPagina(int marcosLibres[]){
+pagina *crearPagina(){
 	pagina *pag = malloc(sizeof(pagina));
-	pag->direccionLogicaMarco = primerMarcoLibre(marcosLibres);
+	pag->nroMarco = primerMarcoLibre();
 	return pag;
 }
 
-void agregarPagina(segmento *seg, int marcosLibres[]){
+void agregarPagina(segmento *seg){
 	pagina *pag;
-	pag = crearPagina(marcosLibres);
+	pag = crearPagina(tablaMarcos);
 
 	list_add(seg->tablaPaginas, pag);
 
 }
 
-int primerMarcoLibre(int marcos[]){
+int primerMarcoLibre(){
 	int posMarco = 0;
-	while(marcos[posMarco] == 1){
-		posMarco++;
-	}
 
+	//any satisfy? si da que no tirar que está full y sino después list find
 	//si todos están en 1 es porque la memoria está full y debería
 	//frenar la creación de una página
 
@@ -319,6 +304,24 @@ char* empaquetar(int operacion, datoTabla dato){
 
 
 
+void inicializar(){
+	//este 1024 debería salir del archivo de configuración
+	int tamanioMemoria = 1024;
+	memoria = malloc(tamanioMemoria); //ver si char* y recorro con sizeof o datotabla* y recorro con +1
+	tablaMarcos = list_create();
+	tablaSegmentos = list_create();
+
+	int cantMarcos = tamanioMemoria/sizeof(datoTabla);
+	for(int i=0; i<cantMarcos; i++){
+			marco* unMarco = malloc(sizeof(marco));
+			unMarco->nroMarco = i;
+			unMarco->estaLibre = 0;
+			list_add(tablaMarcos, unMarco);
+
+		}
+
+
+}
 
 
 
@@ -369,8 +372,9 @@ void mInsert(char* nombreTabla,u_int16_t keyTabla,char* valor){
 
 
 
-void mCreate(){
-	printf("Hola soy create");
+void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
+	//char* msj;
+	//msj = empaquetar(2, )
 }
 void mDescribe(){
 	printf("Hola soy describe");

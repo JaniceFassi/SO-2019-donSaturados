@@ -30,9 +30,8 @@ typedef struct {
 }datoTabla;
 
 typedef struct {
-	datoTabla* inicio;
-	int offset;
-	int modificado;
+	int nroMarco;
+	int estaLibre; //0 si libre 1 si ocupado
 }marco;
 
 typedef struct {
@@ -42,7 +41,8 @@ typedef struct {
 
 
 typedef struct {
-	int direccionLogicaMarco; //como dirección lógica y después lo busco en la tabla de marcos
+	int nroMarco; //como dirección lógica y después lo busco en la tabla de marcos
+	int modificado;
 }pagina;
 
 
@@ -50,13 +50,14 @@ typedef struct {
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* tablaPaginas;
+datoTabla* memoria;
 
 
 
 
 void mSelect(char* nombreTabla,u_int16_t key);
 void mInsert(char* nombreTabla,u_int16_t key,char* valor);
-void mCreate();
+void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
 void mDescribe();
 void mDrop();
 void mJournal();
@@ -68,9 +69,10 @@ char* empaquetar(int operacion, datoTabla dato);
 
 segmento *crearSegmento(char* nombre);
 segmento *buscarSegmento(char* nombre);
-pagina *crearPagina(int marcosLibres[]);
-void agregarPagina(segmento *seg, int marcosLibres[]);
-int primerMarcoLibre(int lista[]);
+pagina *crearPagina();
+void agregarPagina(segmento *seg);
+int primerMarcoLibre();
+void inicializar();
 
 
 
