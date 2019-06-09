@@ -12,9 +12,9 @@
 
 char *pathFinal(char *nombre, int principal){
 	//0 ES LA CARP PRINCIPAL, 1 ES LA CARP DE LAS TABLAS, 2 PATH DE ARCH, 3 METADATA
-	int base=string_length(puntoMontaje)+string_length(nombre)+1;
+	int base=string_length(lissConf->puntoMontaje)+string_length(nombre)+1;
 	char *pathF=malloc(base);
-	strcpy(pathF,puntoMontaje);
+	strcpy(pathF,lissConf->puntoMontaje);
 
 	if(principal==0){
 		strcat(pathF,nombre);
@@ -200,7 +200,6 @@ void crearArchMetadata(char* nombre, char* consistency , u_int16_t numPartition,
 	nuevo->nombre=malloc(strlen(nombre)+1);
 	strcpy(nuevo->nombre,nombre);
 	FILE* metadata= fopen(path,"wb"); //BINARIO
-	//FILE* metadata= fopen(path,"w");    //TXT
 	fclose(metadata);
 	t_config *metaTab=config_create(path);
 	config_set_value(metaTab,"CONSISTENCY",nuevo->consistency);

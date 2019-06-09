@@ -20,7 +20,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	}
 	free(path);
 
-	if(string_length(param_value)>atoi(config_get_string_value(config,"TAMVALUE"))){
+	if(string_length(param_value)>lissConf->tamValor){
 		log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
 		return 1;
 	}

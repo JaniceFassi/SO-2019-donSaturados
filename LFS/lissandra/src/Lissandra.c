@@ -12,16 +12,16 @@
 int main(void) {
 
 	theStart();
-	u_int16_t socket_client;
+
+/*	u_int16_t socket_client;
 
 	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
 
-	puntoMontaje= config_get_string_value(config,"PUNTO_MONTAJE");
 
 
-	//****************PARA USAR TIEMPO DEL DUMP*************
+	// ****************PARA USAR TIEMPO DEL DUMP*************
 
-	//timeDump=config_get_long_value(config,"TIEMPO_DUMP");
+	//
 	//alarm(timeDump);
     //signal(SIGALRM, funcionSenial);
 
@@ -38,7 +38,7 @@ int main(void) {
 
 	free(path);
 
-	/***************PARA USAR LA FUNCION PURA*****************/
+	// ***************PARA USAR LA FUNCION PURA****************
 
 	create("PELICULAS", "SC", 5, 10000);
 	insert("PELICULAS", 163, "Nemo", 100);				// 3
@@ -56,7 +56,7 @@ int main(void) {
 	insert("PELICULAS", 3671, "Avatar",1000);			// 1
 	selectS("PELICULAS", 163);					// Buscando a dory
 	selectS("PELICULAS", 3671);					// Avatar
-
+*/
 	/*************************************************************/
 
 	/****************PARA USAR LA CONSOLA******************/
@@ -87,9 +87,152 @@ t_log* init_logger() {
 }
 
 t_config* read_config() {
-	return config_create("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
+	return config_create(pathConf);
 }
 
+void leerConfig(){
+	t_config *config = read_config();
+	lissConf=malloc(sizeof(datosConfig));
+	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
+	lissConf->puntoMontaje=malloc(strlen(aux)+1);
+	strcpy(lissConf->puntoMontaje,aux);
+	free(aux);
+	lissConf->timeDump=config_get_long_value(config,"TIEMPO_DUMP");
+	aux=config_get_string_value(config, "IP");
+	lissConf->ip=malloc(strlen(aux)+1);
+	strcpy(lissConf->ip,aux);
+	free(aux);
+	lissConf->puerto= config_get_int_value(config, "PORT");
+	lissConf->id= config_get_int_value(config, "ID");
+	lissConf->idEsperado= config_get_int_value(config, "ID_ESPERADO");
+	lissConf->retardo= config_get_int_value(config, "RETARDO");
+	lissConf->tamValor= config_get_int_value(config, "TAMVALUE");
+//	config_destroy(config);      NO SE PORQUE ROMPE
+}
+
+void borrarConfig(){
+	free(lissConf->ip);
+	free(lissConf->puntoMontaje);
+	free(lissConf);
+}
+
+void crearConfig(){
+	log_info(logger,"No existe el arch config, asi q se crea con los datos del checkpoint 3\n");
+	lissConf=malloc(sizeof(datosConfig));
+	lissConf->ip=malloc(15);
+	strcpy(lissConf->ip,"192.3.0.58");
+	lissConf->puerto=5005;
+	char *aux=malloc(60);
+	strcpy(aux,"/home/utnso/lissandra-checkpoint/");
+	lissConf->puntoMontaje=malloc(strlen(aux)+1);
+	strcpy(lissConf->puntoMontaje,aux);
+	free(aux);
+	lissConf->retardo=100;
+	lissConf->tamValor=255;
+	lissConf->timeDump=60000;
+	lissConf->id=1;
+	lissConf->idEsperado=2;
+
+	FILE* configuracion= fopen(pathConf,"wb"); //NO SE PORQUE NO ME DEJA CREAR UN ARCHIVO
+	fclose(configuracion);
+
+	t_config *config = read_config();
+
+	char *ip=string_duplicate(lissConf->ip);
+	config_set_value(config,"IP",ip);
+
+	char* port = string_itoa(lissConf->puerto);
+	config_set_value(config,"PORT",port);
+
+	char *punto=string_duplicate(lissConf->puntoMontaje);
+	config_set_value(config,"PUNTO_MONTAJE",punto);
+
+	char *retardo=string_itoa(lissConf->retardo);
+	config_set_value(config,"RETARDO",retardo);
+
+	char *tamVal=string_itoa(lissConf->tamValor);
+	config_set_value(config,"TAMVALUE",tamVal);
+
+	char* tiempoDump = string_from_format("%ld",lissConf->timeDump);
+	config_set_value(config,"TIEMPO_DUMP",tiempoDump);
+
+	char *id=string_itoa(lissConf->id);
+	config_set_value(config,"ID",id);
+
+	char *idE=string_itoa(lissConf->idEsperado);
+	config_set_value(config,"ID_ESPERADO",idE);
+
+	config_save(config);
+	config_destroy(config);
+	free(port);
+	free(punto);
+	free(ip);
+	free(retardo);
+	free(tamVal);
+	free(tiempoDump);
+	free(id);
+	free(idE);
+}
+void funMetaLFS(){
+	char *path=malloc(strlen(lissConf->puntoMontaje)+1);
+	strcpy(path,lissConf->puntoMontaje);
+	char *meta=malloc(9);
+	strcpy(meta,"METADATA");
+	char *barra=malloc(2);
+	strcpy(barra,"/");
+	int base= strlen(path)+1+strlen(meta)+1;
+	path=realloc(path,base);
+	strcat(path,meta);
+	base+=strlen(barra)+1;
+	path=realloc(path,base);
+	strcat(path,barra);
+	base+=strlen(meta)+1;
+	path=realloc(path,base);
+	strcat(path,meta);
+	char *ext=malloc(5);
+	strcpy(ext,".bin");
+	base+=strlen(ext)+1;
+	path=realloc(path,base);
+	strcat(path,ext);
+	metaLFS=malloc(sizeof(metadataLFS));
+	if(archivoValido(path)!=0){
+		t_config *metadata=config_create(path);
+		metaLFS->cantBloques=config_get_int_value(metadata, "BLOCKS");
+		metaLFS->tamBloques=config_get_int_value(metadata, "BLOCK_SIZE");
+		char *aux=config_get_string_value(metadata,"MAGIC_NUMBER");
+		metaLFS->magicNumber=malloc(strlen(aux)+1);
+		strcpy(metaLFS->magicNumber,aux);
+		free(aux);
+		config_destroy(metadata);
+	}else{
+		metaLFS->cantBloques=5192;
+		metaLFS->tamBloques=64;
+		metaLFS->magicNumber=malloc(10);
+		strcpy(metaLFS->magicNumber,"LISSANDRA");
+		int metadataF= open(path,O_RDWR); //BINARIO
+		close(metadataF);
+		t_config *metadataC=config_create(path);
+		char* tam = string_itoa(metaLFS->tamBloques);
+		config_set_value(metadataC,"BLOCK_SIZE",tam);
+		char* cant = string_itoa(metaLFS->cantBloques);
+		config_set_value(metadataC,"BLOCKS",cant);
+		config_set_value(metadataC,"MAGIC_NUMBER",metaLFS->magicNumber);
+		config_save(metadataC);
+		config_destroy(metadataC);
+		free(tam);
+		free(cant);
+	}
+
+
+	free(path);
+	free(meta);
+	free(barra);
+	free(ext);
+}
+void borrarMetaLFS(){
+	free(metaLFS->magicNumber);
+	free(metaLFS);
+}
 char* recibirDeMemoria(u_int16_t sock){
 	char *tam=malloc(3);
 	char * buffer;
@@ -171,25 +314,22 @@ void exec_api(op_code mode,u_int16_t sock){
 }
 
 void theStart(){
+	pathConf="/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config";
 	logger = init_logger();
-	config = read_config();
 	memtable= list_create();
+	if(archivoValido(pathConf)!=0){
+		leerConfig();
+	}else{
+		crearConfig();
+	}
+//	crearCarpeta("/home/utnso/lissandra-checkpoint");
+	funMetaLFS();
 }
 
 void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 	u_int16_t  server;
-	char* ip=config_get_string_value(config, "IP");
-	//log_info(logger, ip);
-	u_int16_t port= config_get_int_value(config, "PORT");
-	//log_info(logger, "%i",port);
-	u_int16_t maxValue= config_get_int_value(config, "TAMVALUE");
-	//log_info(logger, "%i",maxValue);
-	u_int16_t id= config_get_int_value(config, "ID");
-	//log_info(logger, "%i",id);
-	u_int16_t idEsperado= config_get_int_value(config, "IDESPERADO");
-	//log_info(logger, "%i",idEsperado);
 
-	if(createServer(ip,port,&server)!=0){
+	if(createServer(lissConf->ip,lissConf->puerto,&server)!=0){
 		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
 	}else{
 		log_info(logger, "\nSe pudo crear el server.");
@@ -197,12 +337,12 @@ void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 
 	listenForClients(server,100);
 
-	//char* serverName=config_get_string_value(config, "NAME");
 
-	if(acceptConexion( server, socket_client,idEsperado)!=0){
+	if(acceptConexion( server, socket_client,lissConf->idEsperado)!=0){
 		log_info(logger, "\nError en el acept.");
 	}else{
-		log_info(logger, "\nSe acepto la conexion de %i con %i.",id,idEsperado);
+		log_info(logger, "\nSe acepto la conexion de %i con %i.",lissConf->id,lissConf->idEsperado);
+		//aca deberia mandar el tamaño maximo del valor
 	}
 }
 
@@ -314,7 +454,7 @@ void funcionSenial(int sig){
 	log_info(logger,"Comienzo de dump");
 	dump();
 	log_info(logger,"Finalizacion de dump");
-	alarm(timeDump);
+	alarm(lissConf->timeDump);
 
 }
 
@@ -345,7 +485,12 @@ void dump(){
 }
 
 void theEnd(){
-	//list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
+	if(!list_is_empty(memtable)){
+		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
+	}else{
+		list_destroy(memtable);
+	}
+	borrarConfig();
+	borrarMetaLFS();
 	log_destroy(logger);
-	config_destroy(config);
 }

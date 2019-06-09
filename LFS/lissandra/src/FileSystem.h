@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include<commons/log.h>
 #include <fcntl.h>
+#include <sys/types.h>
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
