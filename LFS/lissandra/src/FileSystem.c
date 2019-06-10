@@ -45,7 +45,7 @@ int crearMontaje(char *montaje){
 		free(subCadena[i]);
 		i++;
 	}
-	free(path);
+	//free(path);
 	return 0;
 }
 
@@ -97,6 +97,8 @@ int crearNivelBloques(char *path){
 			fclose(bloque);
 		}
 		i++;
+		free(pathBloque);
 	}
+	free(pathMetadata);
 	return 0;
 }

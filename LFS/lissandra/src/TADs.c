@@ -176,6 +176,7 @@ char *concatParaArchivo(long timestamp,int key,char *value,int opc){
 char *ponerBarra(char *linea){
 	char *concat=malloc(strlen(linea)+1);
 	char *barra=malloc(2);
+	strcpy(barra,"/");
 	strcpy(concat,linea);
 	concat=realloc(concat,strlen(concat)+strlen(barra)+1);
 	strcat(concat,barra);
@@ -183,8 +184,8 @@ char *ponerBarra(char *linea){
 }
 
 char *obtenerMontaje(){
-	char *montaje=malloc(13);
-	strcpy(montaje,"/home/utnso/");
+	char *montaje=malloc(strlen(raizDirectorio)+1);
+	strcpy(montaje,raizDirectorio);
 	montaje=realloc(montaje,strlen(montaje)+strlen(configLissandra->puntoMontaje)+1);
 	strcat(montaje,configLissandra->puntoMontaje);
 	return montaje;
