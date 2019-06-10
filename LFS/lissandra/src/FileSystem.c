@@ -87,10 +87,10 @@ int crearNivelBloques(char *path){
 		crearCarpeta(path);
 	}
 	char *pathMetadata=nivelMetadata(1);
-	metaFileSystem *metadato=leerMetaLFS(pathMetadata);
+	leerMetaLFS(pathMetadata);
 	//crear todos los bloques .bin
 	int i=0;
-	while(i<=metadato->cantBloques){
+	while(i<=metaLFS->cantBloques){
 		char *pathBloque=rutaBloqueNro(i);
 		FILE *bloque=fopen(pathBloque,"rb");
 		if(bloque!=NULL){

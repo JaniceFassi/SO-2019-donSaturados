@@ -115,21 +115,21 @@ void estructurarConfig(){							//Lee el config y crea una estructura con esos d
 	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
 	strcpy(configLissandra->puntoMontaje,aux);
 	free(aux);
-	configLissandra->timeDump=config_get_long_value(config,"TIEMPO_DUMP");
+	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
 	aux=config_get_string_value(config, "IP");
-	configLissandra->ip=malloc(strlen(aux)+1);
-	strcpy(configLissandra->ip,aux);
+	configLissandra->Ip=malloc(strlen(aux)+1);
+	strcpy(configLissandra->Ip,aux);
 	free(aux);
 	configLissandra->puerto= config_get_int_value(config, "PORT");
 	configLissandra->id= config_get_int_value(config, "ID");
 	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
 	configLissandra->retardo= config_get_int_value(config, "RETARDO");
-	configLissandra->tamValor= config_get_int_value(config, "TAMVALUE");
+	configLissandra->tamValue= config_get_int_value(config, "TAMVALUE");
 	//config_destroy(config);
 }
 
 void borrarDatosConfig(){
-	free(configLissandra->ip);
+	free(configLissandra->Ip);
 	free(configLissandra->puntoMontaje);
 	free(configLissandra);
 }
@@ -137,8 +137,8 @@ void borrarDatosConfig(){
 void crearConfig(){
 	log_info(logger,"No existe el arch config, asi q se crea con los datos del checkpoint 3\n");
 	configLissandra=malloc(sizeof(datosConfig));
-	configLissandra->ip=malloc(15);
-	strcpy(configLissandra->ip,"192.3.0.58");
+	configLissandra->Ip=malloc(15);
+	strcpy(configLissandra->Ip,"192.3.0.58");
 	configLissandra->puerto=5005;
 	char *aux=malloc(60);
 	strcpy(aux,"/home/utnso/lissandra-checkpoint/");
@@ -146,8 +146,8 @@ void crearConfig(){
 	strcpy(configLissandra->puntoMontaje,aux);
 	free(aux);
 	configLissandra->retardo=100;
-	configLissandra->tamValor=255;
-	configLissandra->timeDump=60000;
+	configLissandra->tamValue=255;
+	configLissandra->tiempoDump=60000;
 	configLissandra->id=1;
 	configLissandra->idEsperado=2;
 
@@ -156,7 +156,7 @@ void crearConfig(){
 
 	t_config *config = init_config();
 
-	char *ip=string_duplicate(configLissandra->ip);
+	char *ip=string_duplicate(configLissandra->Ip);
 	config_set_value(config,"IP",ip);
 
 	char* port = string_itoa(configLissandra->puerto);
@@ -168,10 +168,10 @@ void crearConfig(){
 	char *retardo=string_itoa(configLissandra->retardo);
 	config_set_value(config,"RETARDO",retardo);
 
-	char *tamVal=string_itoa(configLissandra->tamValor);
+	char *tamVal=string_itoa(configLissandra->tamValue);
 	config_set_value(config,"TAMVALUE",tamVal);
 
-	char* tiempoDump = string_from_format("%ld",configLissandra->timeDump);
+	char* tiempoDump = string_from_format("%ld",configLissandra->tiempoDump);
 	config_set_value(config,"TIEMPO_DUMP",tiempoDump);
 
 	char *id=string_itoa(configLissandra->id);
@@ -333,7 +333,7 @@ void exec_api(op_code mode,u_int16_t sock){
 void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 	u_int16_t  server;
 
-	if(createServer(configLissandra->ip,configLissandra->puerto,&server)!=0){
+	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
 		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
 	}else{
 		log_info(logger, "\nSe pudo crear el server.");
@@ -458,7 +458,7 @@ void funcionSenial(int sig){
 	log_info(logger,"Comienzo de dump");
 	dump();
 	log_info(logger,"Finalizacion de dump");
-	alarm(configLissandra->timeDump);
+	alarm(configLissandra->tiempoDump);
 
 }
 
@@ -470,7 +470,7 @@ void dump(){
 		Tabla *dumpT=list_get(dump,cant-1);
 		char *path=pathFinal(dumpT->nombre,1);
 		if(folderExist(path)==0){
-			metaTabla *metadata= leerMetaTabla(dumpT->nombre);
+			metaTabla *metadata= leerMetadataTabla(dumpT->nombre);
 			t_list *regDepurados=regDep(dumpT->registros);
 			list_destroy(dumpT->registros);
 			escribirReg(dumpT->nombre,regDepurados,metadata->partitions);

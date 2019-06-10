@@ -20,7 +20,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	}
 	free(path);
 
-	if(string_length(param_value)>configLissandra->tamValor){
+	if(string_length(param_value)>configLissandra->tamValue){
 		log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
 		return 1;
 	}
@@ -69,7 +69,7 @@ char *selectS(char* nameTable , u_int16_t key){
 	free(path);
 
 	//Obtener la metadata asociada a dicha tabla.
-	metaTabla *metadata= leerMetaTabla(nameTable);
+	metaTabla *metadata= leerMetadataTabla(nameTable);
 
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
@@ -180,7 +180,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 
 	//Crear el archivo Metadata asociado al mismo.
 	//Grabar en dicho archivo los parámetros pasados por el request.
-	crearMetaTabla(nameTable,consistency,numPartition,timeCompaction);
+	crearMetadataTabla(nameTable,consistency,numPartition,timeCompaction);
 	//Crear los archivos binarios asociados a cada partición de la tabla y
 	if(crearParticiones(nameTable,numPartition)==1){
 		log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
@@ -210,7 +210,7 @@ t_list *describe(char* nameTable,int variante){//PREGUNTAR
 			free(path);
 			path=pathFinal(nameTable,3);
 			//Leer el archivo Metadata de dicha tabla.
-			metaTabla *metadata= leerMetaTabla(path);
+			metaTabla *metadata= leerMetadataTabla(path);
 			//metadata->nombre=malloc(strlen(nameTable)+1);
 			//strcpy(metadata->nombre,nameTable);
 			list_add(tablas,metadata);
