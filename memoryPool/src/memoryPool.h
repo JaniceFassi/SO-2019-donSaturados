@@ -23,6 +23,7 @@
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
 
+
 typedef struct {
 	long timestamp;
 	u_int16_t key;
@@ -41,7 +42,7 @@ typedef struct {
 
 
 typedef struct {
-	int nroMarco; //como dirección lógica y después lo busco en la tabla de marcos
+	int nroMarco; //como dirección lógica y después me desplazo en la memoria
 	int modificado;
 }pagina;
 
@@ -62,18 +63,17 @@ void mDescribe();
 void mDrop();
 void mJournal();
 void mGossip();
-char* empaquetar(int operacion, datoTabla dato);
+
 
 
 //AUXILIARES
-
+void inicializar();
 segmento *crearSegmento(char* nombre);
 segmento *buscarSegmento(char* nombre);
 pagina *crearPagina();
 void agregarPagina(segmento *seg);
 int primerMarcoLibre();
-void inicializar();
-
+char* empaquetar(int operacion, datoTabla dato);
 
 
 #endif /* MEMORYPOOL_H_ */

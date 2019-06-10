@@ -25,28 +25,20 @@ void* testeandoHilos(void * arg){
 }
 
 
+*/
 
-//no anda
-void agregarDato(datoTabla* valor, int nromarco){
-	marco *marcoBuscado;
-	int desplazamiento = 0;
-	marcoBuscado = list_get(tablaMarcos, nromarco);
-	memcpy(marcoBuscado->inicio, &valor->timestamp, sizeof(long));
-	desplazamiento = desplazamiento + (sizeof(long));
-	memcpy(marcoBuscado->inicio + desplazamiento, &valor->key, sizeof(u_int16_t));
-	desplazamiento = desplazamiento + sizeof(u_int16_t);
-	memcpy(marcoBuscado->inicio + desplazamiento, &valor->value, sizeof(valor->value));
-	marcoBuscado->inicio = valor->timestamp;
-
-	printf("timestamp: %ld", (long) marcoBuscado->inicio);
-
-
-
+void agregarDato(long timestamp, u_int16_t key, char* value){
+	int offset = 0;
+	memcpy((char*)(memoria)+offset, &timestamp, sizeof(long));
+	offset = offset + sizeof(long);
+	memcpy((char*)(memoria)+offset, &key, sizeof(u_int16_t));
+	offset = offset + sizeof(u_int16_t);
+	memcpy((char*)(memoria)+offset, &value, sizeof(value));
 
 
 }
 
-*/
+
 
 
 
@@ -71,7 +63,19 @@ int main(void) {
 	nuevaEntrada->timestamp = 1000000000;
 	nuevaEntrada->value = "SORE";
 
-	//agregarDato(nuevaEntrada, 0);
+
+	agregarDato(nuevaEntrada->timestamp, nuevaEntrada->key, nuevaEntrada->value);
+
+	printf("Timestamp: %ld \n", memoria->timestamp);
+	printf("Key: %d \n",  memoria->key);
+	printf("Value: %s \n", memoria->value);
+
+
+/*
+	printf("Timestamp: %ld \n", memoria);
+	printf("Key: %d \n",  (memoria) + sizeof(long));
+	printf("Value: %s \n", (memoria) + sizeof(long) + sizeof(u_int16_t));
+*/
 	//no puedo guardar nada en meoria te odio c y a tus malditos punteros
 	/*agregarDato(nuevaEntrada, 0);
 
