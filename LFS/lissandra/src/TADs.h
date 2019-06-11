@@ -71,7 +71,7 @@ int encontrarRegistroPorKey(t_list *registros,int key);
 t_list* filtrearPorKey(t_list *registros,int key);
 int calcularIndex(t_list *lista,int key);
 
-void crearMetaLFS(char *path,int size,int cantBloques,char *magicNumber);
+void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
 char *nivelTablas();
 char *nivelBloques();
 void leerMetaLFS();

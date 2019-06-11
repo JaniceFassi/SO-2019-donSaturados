@@ -125,7 +125,7 @@ void estructurarConfig(){							//Lee el config y crea una estructura con esos d
 	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
 	configLissandra->retardo= config_get_int_value(config, "RETARDO");
 	configLissandra->tamValue= config_get_int_value(config, "TAMVALUE");
-	//config_destroy(config);
+	config_destroy(config);
 }
 
 void borrarDatosConfig(){

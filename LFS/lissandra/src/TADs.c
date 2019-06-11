@@ -82,34 +82,32 @@ char *concatExtencion(char *name,int particion, int tipo){//0 es bin, si es 1 es
 char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
 	char *punto=malloc(2);
 	strcpy(punto,".");
-	char *concat=malloc(strlen(path)+strlen(punto)+1);
-	strcpy(concat,path);
-	strcat(concat,punto);
+	path=realloc(path,strlen(path)+strlen(punto)+1);
+		strcat(path,punto);
 
-	if(modo==0){
-		char *bin=malloc(4);
-		strcpy(bin,"bin");
-		concat=realloc(concat,strlen(concat)+strlen(bin)+1);
-		strcat(concat,bin);
-		free(bin);
-	}
-	if(modo==1){
-		char *tmp=malloc(4);
-		strcpy(tmp,"tmp");
-		concat=realloc(concat,strlen(concat)+strlen(tmp)+1);
-		strcat(concat,tmp);
-		free(tmp);
-	}
-	if(modo==2){
-		char *tmpc=malloc(5);
-		strcpy(tmpc,"tmpc");
-		concat=realloc(concat,strlen(concat)+strlen(tmpc)+1);
-		strcat(concat,tmpc);
-		free(tmpc);
-	}
-	free(punto);
-	free(path);
-	return concat;
+		if(modo==0){
+			char *bin=malloc(4);
+			strcpy(bin,"bin");
+			path=realloc(path,strlen(path)+strlen(bin)+1);
+			strcat(path,bin);
+			free(bin);
+		}
+		if(modo==1){
+			char *tmp=malloc(4);
+			strcpy(tmp,"tmp");
+			path=realloc(path,strlen(path)+strlen(tmp)+1);
+			strcat(path,tmp);
+			free(tmp);
+		}
+		if(modo==2){
+			char *tmpc=malloc(5);
+			strcpy(tmpc,"tmpc");
+			path=realloc(path,strlen(path)+strlen(tmpc)+1);
+			strcat(path,tmpc);
+			free(tmpc);
+		}
+		free(punto);
+		return path;
 }
 /////////////////////*************************************************************************
 
@@ -174,13 +172,12 @@ char *concatParaArchivo(long timestamp,int key,char *value,int opc){
 
 /***************************************NUEVOS*****************************************************/
 char *ponerBarra(char *linea){
-	char *concat=malloc(strlen(linea)+1);
 	char *barra=malloc(2);
 	strcpy(barra,"/");
-	strcpy(concat,linea);
-	concat=realloc(concat,strlen(concat)+strlen(barra)+1);
-	strcat(concat,barra);
-	return concat;
+	linea=realloc(linea,strlen(linea)+strlen(barra)+1);
+	strcat(linea,barra);
+	free(barra);
+	return linea;
 }
 
 char *obtenerMontaje(){
@@ -195,25 +192,26 @@ char *nivelMetadata(int modo){	//0 metadata carpeta, 1 metadata.bin, 2 metadata.
 	char *path=obtenerMontaje();
 	char *metadata=malloc(9);
 	strcpy(metadata,"METADATA");
-	char *bitmap=malloc(7);
-	strcpy(bitmap,"BITMAP");
 	path=realloc(path,strlen(path)+strlen(metadata)+1);
 	strcat(path,metadata);
-	path=ponerBarra(path);
 
 	if(modo==1){
+		path=ponerBarra(path);
 		path=realloc(path,strlen(path)+strlen(metadata)+1);
 		strcat(path,metadata);
 		path=extension(path,0);
 	}
 
 	if(modo==2){
+		path=ponerBarra(path);
+		char *bitmap=malloc(7);
+		strcpy(bitmap,"BITMAP");
 		path=realloc(path,strlen(path)+strlen(bitmap)+1);
 		strcat(path,bitmap);
 		path=extension(path,0);
+		free(bitmap);
 	}
 	free(metadata);
-	free(bitmap);
 	return path;
 }
 char *nivelTablas(){
@@ -361,26 +359,26 @@ void borrarMetadataTabla(metaTabla *metadata){
 	free(metadata->nombre);
 	free(metadata);
 }
-void crearMetaLFS(char *path,int size,int cantBloques,char *magicNumber){
+void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
+	char *path=nivelMetadata(1);
+	FILE *arch=fopen(path,"wb");
+	fclose(arch);
 	metaLFS =malloc(sizeof(metaFileSystem));
 	metaLFS->cantBloques=cantBloques;
+	metaLFS->tamBloques=size;
 	metaLFS->magicNumber=malloc(strlen(magicNumber)+1);
 	strcpy(metaLFS->magicNumber,magicNumber);
-	metaLFS->tamBloques=size;
-	FILE* metadata= fopen(path,"wb"); //BINARIO
-	fclose(metadata);
-	t_config *metadataLFS=config_create(path);
-	char* tamanio = string_itoa(metaLFS->tamBloques);
-	config_set_value(metadataLFS,"TAM_BLOQUES",tamanio);
-	char* cantidad = string_itoa(metaLFS->cantBloques);
-	config_set_value(metadataLFS,"CANT_BLOQUES",tamanio);
-	config_set_value(metadataLFS,"MAGIC_NUMBER",metaLFS->magicNumber);
-
-	config_save(metadataLFS);
-	config_destroy(metadataLFS);
-
-	free(cantidad);
-	free(tamanio);
+	t_config *config = config_create(path);
+	char *bloq=string_itoa(metaLFS->cantBloques);
+	char *tam=string_itoa(metaLFS->tamBloques);
+	config_set_value(config, "BLOQUES", bloq);
+	config_set_value(config, "TAMANIO", tam);
+	config_set_value(config, "MAGIC_NUMBER", metaLFS->magicNumber);
+	config_save(config);
+	config_destroy(config);
+	free(bloq);
+	free(tam);
+	free(path);
 
 }
 void leerMetaLFS(){
@@ -404,19 +402,17 @@ void borrarMetaLFS(){
 //****************************************************************************************
 int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 1
 	FILE *archB;
-	archB= fopen(path, "r");
+	archB= fopen(path, "rb");
 	if(archB!=NULL){
-		fseek(archB, 0, SEEK_END);
-		if (ftell(archB) == 0 ){
-			fclose(archB);
-			return 0;
-		}
-		else{
-			fclose(archB);
+		size_t t = 1000;
+		char *buffer=NULL;
+		getline(&buffer,&t,archB);
+		if(strlen(buffer)>0){
 			return 1;
 		}
-	}
-	else {
+		free(buffer);
+		return 0;
+	}else{
 		return 0;
 	}
 }
