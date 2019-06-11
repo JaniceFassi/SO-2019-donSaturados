@@ -385,11 +385,11 @@ void leerMetaLFS(){
 	char *path=nivelMetadata(1);
 	t_config *metadataLFS=config_create(path);
 	metaLFS=malloc(sizeof(metaFileSystem));
-	metaLFS->tamBloques=config_get_int_value(metadataLFS, "TAM_BLOQUES");
+	metaLFS->tamBloques=config_get_int_value(metadataLFS, "TAMANIO");
 	char *magicN=config_get_string_value(metadataLFS, "MAGIC_NUMBER");
 	metaLFS->magicNumber=malloc(string_length(magicN)+1);
 	strcpy(metaLFS->magicNumber,magicN);
-	metaLFS->cantBloques= config_get_int_value(metadataLFS, "CANT_BLOQUES");
+	metaLFS->cantBloques= config_get_int_value(metadataLFS, "BLOQUES");
 	config_destroy(metadataLFS);
 	free(path);
 	free(magicN);
