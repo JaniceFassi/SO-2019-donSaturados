@@ -8,15 +8,13 @@
 #include "FileSystem.h"
 
 void levantarDirectorio(){
-	char *montaje=obtenerMontaje();
-	if(crearMontaje(montaje)==0){
+	if(crearMontaje()==0){
 		//log_info(logger,"Se ha creado el montaje.");
 	}
 
 	if(crearNivelMetadata()==0){
 		//log_info(logger,"Se ha creado el nivel Metadata.");
 	}
-	free(montaje);
 	if(crearNivelTablas()==0){
 		//log_info(logger,"Se ha creado el nivel Tablas.");
 	}
@@ -26,7 +24,8 @@ void levantarDirectorio(){
 
 }
 
-int crearMontaje(char *montaje){
+int crearMontaje(){
+	char *montaje=obtenerMontaje();
 	char **subCadena=string_split(montaje,"/");
 	int i=2;
 	char *path=malloc(strlen(raizDirectorio)+1);
@@ -47,6 +46,7 @@ int crearMontaje(char *montaje){
 		free(subCadena[i]);
 		i++;
 	}
+	free(montaje);
 	free(subCadena);
 	free(path);
 	return 0;

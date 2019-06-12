@@ -114,12 +114,11 @@ void estructurarConfig(){							//Lee el config y crea una estructura con esos d
 	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
 	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
 	strcpy(configLissandra->puntoMontaje,aux);
-	free(aux);
+
 	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
-	aux=config_get_string_value(config, "IP");
-	configLissandra->Ip=malloc(strlen(aux)+1);
-	strcpy(configLissandra->Ip,aux);
-	free(aux);
+	char *aux2=config_get_string_value(config, "IP");
+	configLissandra->Ip=malloc(strlen(aux2)+1);
+	strcpy(configLissandra->Ip,aux2);
 	configLissandra->puerto= config_get_int_value(config, "PORT");
 	configLissandra->id= config_get_int_value(config, "ID");
 	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
