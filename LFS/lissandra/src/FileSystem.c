@@ -62,7 +62,7 @@ int crearNivelMetadata(){
 	free(path);
 	path=nivelMetadata(1);
 	if(archivoValido(path)==0){
-		crearMetaLFS(64,5192,"Lissandra");
+		crearMetaLFS(64,10,"Lissandra");
 	}else{
 		leerMetaLFS();
 	}
@@ -75,38 +75,41 @@ int crearNivelMetadata(){
 	return 0;
 }
 
-int crearNivelTablas(char *path){
-	strcpy(path,nivelTablas());
+int crearNivelTablas(){
+	char *path=nivelTablas();
 	if(folderExist(path)!=1){
 		log_info(logger,"El directorio ya existe.");
-		return 1;
 	}else{
-		crearCarpeta(path);
+		if(crearCarpeta(path)==1){
+			free(path);
+			return 1;
+		}
 	}
+	free(path);
 	return 0;
 }
 
-int crearNivelBloques(char *path){
-	strcpy(path,nivelBloques());
+int crearNivelBloques(){
+	char *path=nivelBloques();
 	if(folderExist(path)!=1){
 		log_info(logger,"El directorio ya existe.");
-		return 1;
 	}else{
-		crearCarpeta(path);
+		if(crearCarpeta(path)==1){
+			free(path);
+			return 1;
+		}
 	}
-	char *pathMetadata=nivelMetadata(1);
-	leerMetaLFS(pathMetadata);
 	//crear todos los bloques .bin
 	int i=0;
-	while(i<=metaLFS->cantBloques){
+	while(i<metaLFS->cantBloques){
 		char *pathBloque=rutaBloqueNro(i);
-		FILE *bloque=fopen(pathBloque,"rb");
+		FILE *bloque=fopen(pathBloque,"wb");
 		if(bloque!=NULL){
 			fclose(bloque);
 		}
 		i++;
 		free(pathBloque);
 	}
-	free(pathMetadata);
+	free(path);
 	return 0;
 }
