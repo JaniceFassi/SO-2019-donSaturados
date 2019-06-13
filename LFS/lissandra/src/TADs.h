@@ -40,7 +40,7 @@ typedef struct{
 typedef struct{
 	u_int16_t size;
 	char bloques[];
-}METAArch;
+}metaArch;
 
 typedef struct{
 	char *puntoMontaje;
@@ -74,7 +74,7 @@ int calcularIndex(t_list *lista,int key);
 void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
 char *nivelTablas();
 char *nivelBloques();
-void leerMetaLFS();
+leerMetaLFS();
 char *rutaBloqueNro(int nroBloque);
 void borrarMetaLFS();
 char *nivelUnaTabla(char *nombre, int modo);
@@ -99,7 +99,7 @@ int folderExist(char* path);
 int borrarCarpeta(char *path);
 
 //FUNCIONES ARCHIVOS
-int crearParticiones(char *nombre, int cantidad);
+int crearParticiones(metaTabla *tabla);
 void crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction);
 metaTabla *leerMetadataTabla(char *nombre);
 void borrarMetadataTabla(metaTabla *metadata);
@@ -109,6 +109,8 @@ int agregarArchBinario(char *path,long timestamp,int key,char *value);
 int eliminarArchivo(char *path);
 void escribirReg(char *name,t_list *registros,int cantParticiones);
 int archivoValido(char *path);
+void crearMetaArchivo(char *path);
 
+void borrarMetaTabla(nuevo);
 
 #endif

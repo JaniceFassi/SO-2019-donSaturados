@@ -12,7 +12,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 
 	//Verificar que la tabla exista en el file system.
 	//En caso que no exista, informa el error y continúa su ejecución.
-	char *path=pathFinal(param_nameTable,1);
+	char *path=nivelUnaTabla(param_nameTable, 0);
 	if(folderExist(path)==1){
 		log_info(logger,"No se puede hacer el insert porque no existe la tabla %s.", param_nameTable);
 		free(path);
@@ -53,16 +53,17 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 
 //**********************MODIFICADO
 char *selectS(char* nameTable , u_int16_t key){
-	char *path=pathFinal(nameTable,1);
+	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
 	Registry *obtenidoMem;
 	Registry *obtenidoPart;
-	Registry *obtenidoTemp;
+	Registry *obtenidoTmp;
+	//Registry *obtenidoTmp;
 	t_list *obtenidos=list_create();
 
 	//Verificar que la tabla exista en el file system.
 	if(folderExist(path)==1){
-		printf("No existe la tabla %s", nameTable);
+		printf("No se puede hacer el select porque no existe la tabla %s.", nameTable);
 		free(path);
 		return valor;
 	}
@@ -73,25 +74,25 @@ char *selectS(char* nameTable , u_int16_t key){
 
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
-	log_info(logger, "la key %i esta contenida en la particion %i",key, part);
+	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 
 	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
-	path=concatExtencion(nameTable,part,1);
-	t_list *temp=list_create();
+	path=nivelParticion(nameTable,part);
+	t_list *tmp=list_create();
 	if(archivoValido(path)==1){
-		temp=leerTodoArchBinario(path);
-		if(list_is_empty(temp)){
-			obtenidoTemp=NULL;
+		tmp=leerTodoArchBinario(path);
+		if(list_is_empty(tmp)){
+			obtenidoTmp=NULL;
 		}else{
-			if(encontrarKeyDepu(temp,key)!=NULL){
-				obtenidoTemp=encontrarKeyDepu(temp,key);
-				list_add(obtenidos,obtenidoTemp);
+			if(encontrarKeyDepu(tmp,key)!=NULL){
+				obtenidoTmp=encontrarKeyDepu(tmp,key);
+				list_add(obtenidos,obtenidoTmp);
 			}else{
-				obtenidoTemp=NULL;
+				obtenidoTmp=NULL;
 			}
 		}
 	}else{
-		list_destroy(temp);
+		list_destroy(tmp);
 	}
 
 	free(path);
@@ -147,8 +148,8 @@ char *selectS(char* nameTable , u_int16_t key){
 	if(!list_is_empty(bin)){
 		list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
 	}
-	if(!list_is_empty(temp)){
-		list_destroy_and_destroy_elements(temp,(void *)destroyRegistry);
+	if(!list_is_empty(tmp)){
+		list_destroy_and_destroy_elements(tmp,(void *)destroyRegistry);
 	}
 	list_destroy(aux);
 	log_info(logger,valor);
@@ -163,7 +164,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	//y se retorna un error indicando dicho resultado.
 
 	//string_to_upper(nameTable);									************NO FUNCA************
-	char *path=pathFinal(nameTable,1);
+	char *path=nivelUnaTabla(nameTable, 0);
 
 		if(folderExist(path)==0){
 			log_info(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
@@ -181,12 +182,14 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	//Crear el archivo Metadata asociado al mismo.
 	//Grabar en dicho archivo los parámetros pasados por el request.
 	crearMetadataTabla(nameTable,consistency,numPartition,timeCompaction);
-	//Crear los archivos binarios asociados a cada partición de la tabla y
-	if(crearParticiones(nameTable,numPartition)==1){
+	//Crear los archivos binarios asociados a cada partición de la tabla con sus bloques
+
+	char *ruta=nivelUnaTabla(nameTable,1);
+	metaTabla *tabla=leerMetadataTabla(nameTable);
+	if(crearParticiones(tabla)==1){
 		log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
 		return 1;
 	}
-	//asignar a cada uno un bloque
 
 	free(path);
 	return 0;
@@ -210,7 +213,7 @@ t_list *describe(char* nameTable,int variante){//PREGUNTAR
 			free(path);
 			path=pathFinal(nameTable,3);
 			//Leer el archivo Metadata de dicha tabla.
-			metaTabla *metadata= leerMetadataTabla(path);
+			metaTabla *metadata= leerMetadataTabla(nameTable);
 			//metadata->nombre=malloc(strlen(nameTable)+1);
 			//strcpy(metadata->nombre,nameTable);
 			list_add(tablas,metadata);

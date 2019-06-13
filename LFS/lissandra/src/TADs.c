@@ -260,6 +260,15 @@ char *nivelUnaTabla(char *nombre, int modo){			//0 carpeta tabla, 1 metaTabla
 	}
 	return path;
 }
+
+char *nivelParticion(char *tabla, int particion){		//montaje/TABLAS/TABLA/part.bin
+	char *path=nivelUnaTabla(tabla,2);
+	char *part=string_itoa(particion);
+	path=realloc(path,strlen(path)+strlen(part)+1);
+	strcat(path,part);
+	path=extension(path,0);
+	return path;
+}
 /****************************************************************************************************/
 //FUNCIONES DE CARPETAS
 
@@ -292,27 +301,48 @@ int borrarCarpeta(char *path){//BORRA LA CARPETA
 
 /***********************************************************************************************/
 //FUNCIONES DE ARCHIVOS
-//********************MODIFICADO
-int crearParticiones(char *nombre, int cantidad){
-	FILE* arch; //BINARIO
 
-	while(cantidad>0){
-		char *path=concatExtencion(nombre,cantidad-1,0);
+//***************************************************MODIFICADO JANI
+int crearParticiones(metaTabla *tabla){
+	FILE* arch; //BINARIO
+	int cant=tabla->partitions;
+	char *path;
+	while(cant>0){
+		path=nivelParticion(tabla->nombre,cant-1);
 		if((arch= fopen(path,"wb"))<0){
-			printf("Error al crear la particion numero %i de la tabla\n",cantidad);
+			printf("Error al crear la particion numero %i de la tabla %s.",tabla->partitions, tabla->nombre);
 			return 1;
 		}
+		crearMetaArchivo(path);
 		fclose(arch);
-		free(path);
-		cantidad --;
-
+		//
+		cant --;
 	}
+//	free(path);
 	return 0;
 }
-//*****************************************************************************************
-//********************MODIFICADO
+
+crearMetaArchivo(char *path){
+	metaArch *nuevo=malloc(sizeof(metaArch));
+	nuevo->size=0;
+	//nuevo->bloques[0]=obtenerBloqueVacio();
+	t_config *metaArch=config_create(path);
+	char* size = string_itoa(nuevo->size);
+	config_set_value(metaArch,"SIZE",size);
+	//config_set_value(metaArch,"BLOCKS",nuevo->bloques);
+	config_save(metaArch);
+	config_destroy(metaArch);
+	borrarMetaArch(nuevo);
+
+	free(path);
+}
+
+borrarMetaArch(metaArch *archivo){
+	free(archivo);
+}
+
 void crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
-	char *path=pathFinal(nombre,3);
+	char *path=nivelUnaTabla(nombre,1);
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=timeCompaction;
 	nuevo->consistency= malloc(strlen(consistency)+1);
@@ -333,15 +363,12 @@ void crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition
 
 	free(cantParticiones);
 	free(tiempoCompact);
-	free(nuevo->consistency);
-	free(nuevo->nombre);
-	free(nuevo);
+	borrarMetadataTabla(nuevo);
 	free(path);
 }
-//******************************************************************
-//*********************MODIFICADO
+
 metaTabla *leerMetadataTabla(char *nombre){
-	char *path=pathFinal(nombre,3);
+	char *path=nivelUnaTabla(nombre,1);
 	t_config *metaTab=config_create(path);
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
@@ -381,7 +408,7 @@ void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
 	free(path);
 
 }
-void leerMetaLFS(){
+leerMetaLFS(){
 	char *path=nivelMetadata(1);
 	t_config *metadataLFS=config_create(path);
 	metaLFS=malloc(sizeof(metaFileSystem));
@@ -392,7 +419,6 @@ void leerMetaLFS(){
 	metaLFS->cantBloques= config_get_int_value(metadataLFS, "BLOQUES");
 	config_destroy(metadataLFS);
 	free(path);
-	free(magicN);
 }
 
 void borrarMetaLFS(){
@@ -454,7 +480,7 @@ int  agregarArchBinario(char *path,long timestamp,int key,char *value){
 
 	return 0;
 }
-//**********************************************MODIFICADO
+//**********************************************FALTA MODIFICAR
 t_list *leerTodoArchBinario(char *path){
 	t_list *registrosLeidos=list_create();
 
