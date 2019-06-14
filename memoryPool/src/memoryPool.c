@@ -27,13 +27,13 @@ void* testeandoHilos(void * arg){
 
 */
 
-void agregarDato(long timestamp, u_int16_t key, char* value){
+void agregarDato(long timestamp, u_int16_t key, char value[]){
 	int offset = 0;
-	memcpy((char*)(memoria)+offset, &timestamp, sizeof(long));
-	offset = offset + sizeof(long);
-	memcpy((char*)(memoria)+offset, &key, sizeof(u_int16_t));
-	offset = offset + sizeof(u_int16_t);
-	memcpy((char*)(memoria)+offset, &value, sizeof(value));
+	memcpy(memoria+offset, &timestamp, sizeof(long));
+	offset = sizeof(long);
+	memcpy(memoria+offset, &key, sizeof(u_int16_t));
+	int offset2 = offset + sizeof(u_int16_t);
+	memcpy(memoria+offset2, value, strlen(value)+1);
 
 
 }
@@ -58,32 +58,23 @@ int main(void) {
 	list_add(tablaSegmentos, postres);
 	agregarPagina(animales);
 
-	datoTabla *nuevaEntrada= malloc(sizeof(datoTabla));
-	nuevaEntrada->key = 100;
-	nuevaEntrada->timestamp = 1000000000;
-	nuevaEntrada->value = "SORE";
+
+	u_int16_t key = 150;
+	long timestamp = 1000000000;
+	char value[6] = "HOLA";
 
 
-	agregarDato(nuevaEntrada->timestamp, nuevaEntrada->key, nuevaEntrada->value);
-
-	printf("Timestamp: %ld \n", memoria->timestamp);
-	printf("Key: %d \n",  memoria->key);
-	printf("Value: %s \n", memoria->value);
+	agregarDato(1000000000, 158, "FORRO");
 
 
-/*
-	printf("Timestamp: %ld \n", memoria);
-	printf("Key: %d \n",  (memoria) + sizeof(long));
-	printf("Value: %s \n", (memoria) + sizeof(long) + sizeof(u_int16_t));
-*/
-	//no puedo guardar nada en meoria te odio c y a tus malditos punteros
-	/*agregarDato(nuevaEntrada, 0);
 
-	printf("Timestamp %ld \n", memoria->timestamp);
-	printf("Key %d \n", memoria->key);
-	printf("Value %s \n", memoria->value);
+	printf("Timestamp: %ld \n", *(long*)memoria);
+	printf("Key: %d \n", *(u_int16_t*)(memoria+sizeof(long)));
+	printf("Value: %s \n", (char*)(memoria + sizeof(long) + sizeof(u_int16_t)));
 
-	 */
+
+
+
 
 
 /*  int sarasa = 10;
@@ -310,8 +301,8 @@ char* empaquetar(int operacion, datoTabla dato){
 
 void inicializar(){
 	//este 1024 debería salir del archivo de configuración
-	int tamanioMemoria = 1024;
-	memoria = malloc(tamanioMemoria); //ver si char* y recorro con sizeof o datotabla* y recorro con +1
+	int tamanioMemoria = 2048;
+	memoria = calloc(1,tamanioMemoria);
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
 
