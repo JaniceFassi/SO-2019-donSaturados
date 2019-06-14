@@ -267,6 +267,7 @@ char *nivelParticion(char *tabla, int particion){		//montaje/TABLAS/TABLA/part.b
 	path=realloc(path,strlen(path)+strlen(part)+1);
 	strcat(path,part);
 	path=extension(path,0);
+	free(part);
 	return path;
 }
 /****************************************************************************************************/
@@ -306,42 +307,48 @@ int borrarCarpeta(char *path){//BORRA LA CARPETA
 int crearParticiones(metaTabla *tabla){
 	FILE* arch; //BINARIO
 	int cant=tabla->partitions;
-	char *path;
-	while(cant>0){
-		path=nivelParticion(tabla->nombre,cant-1);
-		if((arch= fopen(path,"wb"))<0){
-			printf("Error al crear la particion numero %i de la tabla %s.",tabla->partitions, tabla->nombre);
-			return 1;
+	if(hayXBloquesLibres(cant)){
+		char *path;
+		while(cant>=0){
+			path=nivelParticion(tabla->nombre,cant-1);
+			int bloque=obtenerBloqueVacio();
+			if((arch= fopen(path,"wb"))<0){
+				log_info(logger,"Error al crear la particion %i de la tabla %s\n",tabla->partitions,tabla->nombre);
+				return 1;
+			}
+			crearMetaArchivo(path,bloque);
+			marcarBloqueOcupado(bloque);
+			fclose(arch);
+			free(path);
+			cant --;
 		}
-		crearMetaArchivo(path);
-		fclose(arch);
-		//
-		cant --;
+
+	}else{
+		log_info(logger,"No hay %i bloques libres\n",cant);
 	}
-//	free(path);
 	return 0;
 }
 
-crearMetaArchivo(char *path){
+void crearMetaArchivo(char *path,int bloque){
 	metaArch *nuevo=malloc(sizeof(metaArch));
 	nuevo->size=0;
-	//nuevo->bloques[0]=obtenerBloqueVacio();
-	t_config *metaArch=config_create(path);
+	nuevo->bloques=string_itoa(bloque);
+	t_config *metaArchs=config_create(path);
 	char* size = string_itoa(nuevo->size);
-	config_set_value(metaArch,"SIZE",size);
-	//config_set_value(metaArch,"BLOCKS",nuevo->bloques);
-	config_save(metaArch);
-	config_destroy(metaArch);
+	config_set_value(metaArchs,"SIZE",size);
+	config_set_value(metaArchs,"BLOCKS",nuevo->bloques);
+	config_save(metaArchs);
+	config_destroy(metaArchs);
 	borrarMetaArch(nuevo);
-
-	free(path);
+	free(size);
 }
 
-borrarMetaArch(metaArch *archivo){
+void borrarMetaArch(metaArch *archivo){
+	free(archivo->bloques);
 	free(archivo);
 }
 
-void crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
+metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
 	char *path=nivelUnaTabla(nombre,1);
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=timeCompaction;
@@ -363,8 +370,8 @@ void crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition
 
 	free(cantParticiones);
 	free(tiempoCompact);
-	borrarMetadataTabla(nuevo);
 	free(path);
+	return nuevo;
 }
 
 metaTabla *leerMetadataTabla(char *nombre){
@@ -408,7 +415,7 @@ void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
 	free(path);
 
 }
-leerMetaLFS(){
+void leerMetaLFS(){
 	char *path=nivelMetadata(1);
 	t_config *metadataLFS=config_create(path);
 	metaLFS=malloc(sizeof(metaFileSystem));
@@ -425,6 +432,115 @@ void borrarMetaLFS(){
 	free(metaLFS->magicNumber);
 	free(metaLFS);
 }
+//****************************************************************************************
+//FUNCIONES EXPERIMENTALES DE BITMAPS
+void marcarBloqueOcupado(int Nrobloque){
+	char*rutaBloque=rutaBloqueNro(Nrobloque);
+
+	FILE* file = fopen(rutaBloque,"wb");
+	fflush(file);
+	fclose(file);
+	free(rutaBloque);
+	bitarray_set_bit(bitmap, Nrobloque);
+	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
+}
+void marcarBloqueDesocupado(int Nrobloque){
+	bitarray_clean_bit(bitmap, Nrobloque);
+	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
+}
+int obtenerBloqueVacio(){
+	int i = 0;
+	while(i<metaLFS->cantBloques && bitarray_test_bit(bitmap, i)){
+		i++;
+	}
+	if (i < metaLFS->cantBloques){
+		return i;
+	}else{
+		return -1;
+	}
+}
+bool hayXBloquesLibres(int cantidad){
+	int libres = 0;
+	int cont = 0;
+	while(cont<=10){
+		cont++;
+		if(!bitarray_test_bit(bitmap, cont)){
+			libres++;
+		}
+		if(libres>=cantidad){
+			break;
+		}
+	}
+	return libres>=cantidad;
+}
+int tamArchivo(char* path){
+    int fd;
+    struct stat fileInfo = {0};
+    fd=open(path, O_RDONLY);
+    if (fd == -1)
+    {
+        perror("Error opening file for writing");
+        exit(EXIT_FAILURE);
+    }
+    if (fstat(fd, &fileInfo) == -1)
+    {
+        perror("Error getting the file size");
+        return -1;
+    }
+	return fileInfo.st_size;
+	close(fd);
+}
+char *inicializarArray(){
+	char array[10];
+	int i=0;
+	char *valor=malloc(2);
+	strcpy(valor,"0");
+	while(i<10){
+		array[i]=0;
+		i++;
+	}
+	char *bitmapDatos=malloc(sizeof(array));
+	strcpy(bitmapDatos,array);
+	free(valor);
+	return bitmapDatos;
+}
+void cargarBitmap(){
+	char *rutaBitmap=nivelMetadata(2);
+	FILE *fBitmap;
+	fBitmap = fopen(rutaBitmap, "wb");
+
+	char *bitmapDatos=inicializarArray();
+	int cantBytes=10/8;
+	if(10%8!=0)
+		cantBytes++;
+	fclose(fBitmap);
+	bitmap = bitarray_create_with_mode(bitmapDatos, 10, MSB_FIRST);
+	free(rutaBitmap);
+	for(int i=0;i<(bitmap->size);i++){
+		printf("%d",bitarray_test_bit(bitmap,i));
+	}
+	printf("\n");
+}
+void mostrarBitmap(){
+	for(int i=0;i<(bitmap->size);i++){
+		if(i%64==0 && i!=0){
+			printf("\n");
+		}
+		printf("%d",bitarray_test_bit(bitmap,i));
+	}
+	printf("\n");
+	if(hayXBloquesLibres(10)){
+		printf("SI\n");
+	}else{
+		printf("NO\n");
+	}
+	//size_t i =bitarray_get_max_bit(bitmap);
+}
+
+
+
+
+
 //****************************************************************************************
 int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 1
 	FILE *archB;

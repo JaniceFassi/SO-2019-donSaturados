@@ -20,7 +20,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	}
 	free(path);
 
-	if(string_length(param_value)>configLissandra->tamValue){
+	if(string_length(param_value)+1>configLissandra->tamValue){
 		log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
 		return 1;
 	}
@@ -29,7 +29,6 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	   De no existir, alocar dicha memoria.*/
 
 	if(list_is_empty(memtable)){
-
 		Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
 		list_add(memtable,nueva);
 	}else{
@@ -38,27 +37,24 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 		Tabla *encontrada= find_tabla_by_name(param_nameTable);
 
 		if(encontrada==NULL){
-
 			Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
 			list_add(memtable,nueva);
 		}else{
-
 			agregarRegistro(encontrada,param_key,param_value,param_timestamp);
 		}
 	}
-		log_info(logger,"Se ha insertado el registro en la memtable.");
+	log_info(logger,"Se ha insertado el registro en la memtable.");
 	return 0;
 }
 
 
-//**********************MODIFICADO
 char *selectS(char* nameTable , u_int16_t key){
 	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
 	Registry *obtenidoMem;
 	Registry *obtenidoPart;
 	Registry *obtenidoTmp;
-	//Registry *obtenidoTmp;
+	//Registry *obtenidoTmpC;
 	t_list *obtenidos=list_create();
 
 	//Verificar que la tabla exista en el file system.
@@ -166,32 +162,29 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	//string_to_upper(nameTable);									************NO FUNCA************
 	char *path=nivelUnaTabla(nameTable, 0);
 
-		if(folderExist(path)==0){
-			log_info(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
-			perror("La tabla ya existe.");
-			free(path);
-			return 1;
-		}
+	if(folderExist(path)==0){
+		log_info(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
+		perror("La tabla ya existe.");
+		free(path);
+		return 1;
+	}
 	//Crear el directorio para dicha tabla.
 	if(crearCarpeta(path)==1){
 		log_info(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
 		free(path);
 		return 1;
 	}
-
+	free(path);
 	//Crear el archivo Metadata asociado al mismo.
 	//Grabar en dicho archivo los parámetros pasados por el request.
-	crearMetadataTabla(nameTable,consistency,numPartition,timeCompaction);
+	metaTabla *tabla=crearMetadataTabla(nameTable,consistency,numPartition,timeCompaction);
 	//Crear los archivos binarios asociados a cada partición de la tabla con sus bloques
 
-	char *ruta=nivelUnaTabla(nameTable,1);
-	metaTabla *tabla=leerMetadataTabla(nameTable);
 	if(crearParticiones(tabla)==1){
 		log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
 		return 1;
 	}
 
-	free(path);
 	return 0;
 }
 
