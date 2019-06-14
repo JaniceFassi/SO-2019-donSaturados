@@ -51,7 +51,7 @@ typedef struct {
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* tablaPaginas;
-datoTabla* memoria;
+void* memoria;
 
 
 
