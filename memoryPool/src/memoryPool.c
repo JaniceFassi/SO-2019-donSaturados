@@ -301,8 +301,15 @@ char* empaquetar(int operacion, datoTabla dato){
 
 void inicializar(){
 	//este 1024 debería salir del archivo de configuración
+<<<<<<< HEAD
 	int tamanioMemoria = 2048;
 	memoria = calloc(1,tamanioMemoria);
+=======
+	int tamanioMemoria = 1024;
+	int cantPaginas = 50 //tiro un nro
+	memoria = malloc(tamanioMemoria); //ver si char* y recorro con sizeof o datotabla* y recorro con +1
+	//memoria = malloc(cantPaginas*sizeof(datoTabla));  No deberia ser asi?
+>>>>>>> a2b55f21f8336f8030269de93c247bf7e07a695e
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
 
