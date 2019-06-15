@@ -72,9 +72,10 @@ void inicializar();
 segmento *crearSegmento(char* nombre);
 segmento *buscarSegmento(char* nombre);
 pagina *crearPagina();
-void agregarPagina(segmento *seg);
+void agregarPagina(segmento *seg, pagina *pag);
 int primerMarcoLibre();
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
+pagina *buscarPaginaConKey(u_int16_t key);
 
 #endif /* MEMORYPOOL_H_ */

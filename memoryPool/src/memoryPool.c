@@ -48,18 +48,19 @@ int main(void) {
 	segmento *postres = crearSegmento("POSTRES");
 	list_add(tablaSegmentos, animales);
 	list_add(tablaSegmentos, postres);
-	agregarPagina(animales);
+	pagina *pag = crearPagina();
+	agregarPagina(animales, pag);
 
 
 
 
 	segmento *seg = buscarSegmento("ANIMALES");
 
-	pagina *pag = list_get(seg->tablaPaginas, 0);
+	pagina *page = list_get(seg->tablaPaginas, 0);
 
 
 
-	agregarDato(10000, 107, "GIL", pag);
+	agregarDato(10000, 107, "GIL", page);
 
 
 
@@ -255,9 +256,7 @@ pagina *crearPagina(){
 	return pag;
 }
 
-void agregarPagina(segmento *seg){
-	pagina *pag;
-	pag = crearPagina(tablaMarcos);
+void agregarPagina(segmento *seg, pagina *pag){
 
 	list_add(seg->tablaPaginas, pag);
 
@@ -365,7 +364,49 @@ void mSelect(char* nombreTabla,u_int16_t key){
 	}
 */
 }
-void mInsert(char* nombreTabla,u_int16_t keyTabla,char* valor){
+
+
+pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
+
+	int tieneMismaKey(pagina *pag){
+			int rta = 0;
+			int offset = (offsetMarco * pag->nroMarco) + sizeof(long);
+			u_int16_t keyPag = (u_int16_t*) memoria+ offset;
+			if(keyPag == key){
+				rta = 1;
+			}
+
+			return rta;
+		}
+
+	return list_find(tablaSegmentos, (void *) tieneMismaKey);
+
+}
+
+
+void mInsert(char* nombreTabla, u_int16_t key, char* valor){
+
+	segmento *seg = buscarSegmento(nombreTabla);
+
+	if(seg != NULL){
+
+		pagina *pag = buscarPaginaConKey(nombreTabla, key);
+			if (pag == NULL){
+				pag = crearPagina();
+
+			}
+		int posMarco = offsetMarco *pag->nroMarco;
+		int offset = sizeof(long) + sizeof(u_int16_t);
+		memcpy(memoria+offset, valor, strlen(valor)+1);
+
+	}else{
+
+		seg = crearSegmento();
+		pagina *pag = crearPagina();
+		//persistir datos a memoria, ya tengo paja
+		agregarPagina(seg, pag);
+
+	}
 
 
 }
