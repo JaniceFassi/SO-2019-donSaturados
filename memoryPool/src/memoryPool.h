@@ -78,5 +78,7 @@ int primerMarcoLibre();
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
 pagina *buscarPaginaConKey(segmento *seg, u_int16_t key);
+t_log* init_logger();
+t_config* read_config();
 
 #endif /* MEMORYPOOL_H_ */

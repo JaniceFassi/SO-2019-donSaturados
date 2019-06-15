@@ -67,7 +67,7 @@ int main(void) {
 	printf("Timestamp: %ld \n", *(long*)memoria);
 	printf("Key: %d \n", *(u_int16_t*)(memoria+sizeof(long)));
 	printf("Value: %s \n", (char*)(memoria + sizeof(long) + sizeof(u_int16_t)));
-	printf("Modificado %d \n", pag->modificado);
+
 
 
 
@@ -292,9 +292,9 @@ char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
 
 
 void inicializar(){
-	//este 2048 debería salir del archivo de configuración
-
-	int tamanioMemoria = 2048;
+	//t_log *logger = init_logger();
+	t_config *configuracion = read_config();
+	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
 	memoria = calloc(1,tamanioMemoria);
 	maxValue = 20;
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
@@ -411,6 +411,24 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 
 }
+
+t_config* read_config() {
+	return config_create("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
+}
+
+ t_log* init_logger() {
+	return log_create("memoryPool.log", "memoryPool", 1, LOG_LEVEL_INFO);
+}
+
+
+
+
+
+
+
+
+
+
 
 /*
 
