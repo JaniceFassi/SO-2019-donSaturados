@@ -81,6 +81,6 @@ pagina *crearPagina();
 void agregarPagina(segmento *seg);
 int primerMarcoLibre();
 char* empaquetar(int operacion, datoTabla dato);
-void agregarDato(datoTabla dato, pagina pag);
+void agregarDato(datoTabla dato, pagina *pag);
 
 #endif /* MEMORYPOOL_H_ */

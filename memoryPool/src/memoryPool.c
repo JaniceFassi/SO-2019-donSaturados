@@ -50,14 +50,16 @@ int main(void) {
 	list_add(tablaSegmentos, postres);
 	agregarPagina(animales);
 
-	pagina pag;
-	pag.nroMarco = 3;
-	pag.modificado = 0;
+
 
 	datoTabla testeo;
 	testeo.timestamp = 100000;
 	testeo.key = 170;
 	testeo.value = "VAMA";
+
+	segmento *seg = buscarSegmento("ANIMALES");
+
+	pagina *pag = list_get(seg->tablaPaginas, 0);
 
 
 
@@ -65,10 +67,10 @@ int main(void) {
 
 
 
-	printf("Timestamp: %ld \n", *(long*)(memoria+ 3*offsetMarco));
-	printf("Key: %d \n", *(u_int16_t*)(memoria+ 3*offsetMarco+sizeof(long)));
-	printf("Value: %s \n", (char*)(memoria + 3*offsetMarco + sizeof(long) + sizeof(u_int16_t)));
-
+	printf("Timestamp: %ld \n", *(long*)memoria);
+	printf("Key: %d \n", *(u_int16_t*)(memoria+sizeof(long)));
+	printf("Value: %s \n", (char*)(memoria + sizeof(long) + sizeof(u_int16_t)));
+	printf("Modificado %d \n", pag->modificado);
 
 
 
@@ -320,14 +322,14 @@ void inicializar(){
 
 }
 
-void agregarDato(datoTabla dato, pagina pag){
-	int offset = offsetMarco*pag.nroMarco;
+void agregarDato(datoTabla dato, pagina *pag){
+	int offset = offsetMarco*(pag->nroMarco);
 	memcpy(memoria+offset, &dato.timestamp, sizeof(long));
 	offset = offset + sizeof(long);
 	memcpy(memoria+offset, &dato.key, sizeof(u_int16_t));
 	int offset2 = offset + sizeof(u_int16_t);
 	memcpy(memoria+offset2, dato.value, strlen(dato.value)+1);
-	pag.modificado = 1;
+	pag->modificado = 1;
 
 
 }
