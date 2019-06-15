@@ -56,7 +56,7 @@ typedef struct{
 }datosConfig;
 
 t_bitarray* bitmap;
-FILE *archivoBitmap;
+int archivoBitmap;
 datosConfig *configLissandra;
 metaFileSystem *metaLFS;
 /*char *pathConfig;
@@ -75,6 +75,7 @@ int calcularIndex(t_list *lista,int key);
 void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
 char *nivelTablas();
 char *nivelBloques();
+char *nivelParticion(char *tabla, int particion);
 void leerMetaLFS();
 char *rutaBloqueNro(int nroBloque);
 void borrarMetaLFS();
@@ -121,7 +122,9 @@ void cargarBitmap();
 void mostrarBitmap();
 char *inicializarArray();
 bool hayXBloquesLibres(int cantidad);
+int cantBloquesLibres(int cantidad);
 int obtenerBloqueVacio();
 void marcarBloqueDesocupado(int Nrobloque);
 void marcarBloqueOcupado(int Nrobloque);
+
 #endif

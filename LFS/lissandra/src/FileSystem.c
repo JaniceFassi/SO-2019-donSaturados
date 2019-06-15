@@ -67,11 +67,9 @@ int crearNivelMetadata(){
 		leerMetaLFS();
 	}
 	free(path);
-	path=nivelMetadata(2);
+	cargarBitmap();
 
-	//crear el archivo bitmap
-
-	free(path);
+	//free(path);
 	return 0;
 }
 

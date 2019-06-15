@@ -45,10 +45,14 @@ int main(void) {
 	insert("PELICULAS", 163, "Nemo", 100);				// 3
 	insert("PELICULAS", 10, "Toy Story",10);			// 0
 	insert("PELICULAS", 10, "Harry Potter",10);			// 0
-	selectS("PELICULAS", 10);				// Harry Potter
-	selectS("PELICULAS", 163);					// Nemo
+	create("COMIDAS", "SH", 2, 10000);
+	create("TERMINA", "SH", 4, 10000);
+	create("VIVE", "SH", 2, 10000);
+
+	//selectS("PELICULAS", 10);				// Harry Potter
+	//selectS("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
-	selectS("PELICULAS", 13535);					// Titanic
+	//selectS("PELICULAS", 13535);					// Titanic
 	insert("PELICULAS", 922, "Ratatouille",18);			// 2
 	insert("PELICULAS", 4829,"Aladdin",10);				// 5
 	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
@@ -465,18 +469,20 @@ void dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
+
 	while(cant>0){
 		Tabla *dumpT=list_get(dump,cant-1);
-		char *path=pathFinal(dumpT->nombre,1);
+		char *path=nivelUnaTabla(dumpT->nombre,0);
 		if(folderExist(path)==0){
-			metaTabla *metadata= leerMetadataTabla(dumpT->nombre);
-			t_list *regDepurados=regDep(dumpT->registros);
-			list_destroy(dumpT->registros);
-			escribirReg(dumpT->nombre,regDepurados,metadata->partitions);
-			free(metadata->consistency);
-			free(metadata->nombre);
-			free(metadata);
-			list_destroy_and_destroy_elements(regDepurados,(void *)destroyRegistry);
+			//Calcular el tamaño de dumpT->registros
+			//calcular cant bloques
+			//while(cantBloques>=0)
+			//pedir x cant bloques y guardarlas en un char           SI NO HAY ESPACIO Q PASA?  **PREGUNTAR**
+			//crearMetaArch
+			//escribirBloques(dumpT->nombre,regDepurados,metadata->partitions);
+			//BLOQUES[5]
+			//ESCRIBIR BLOQUES[1]
+			list_destroy_and_destroy_elements(dumpT->registros,(void *)destroyRegistry);
 		}
 		free(path);
 		free(dumpT->nombre);

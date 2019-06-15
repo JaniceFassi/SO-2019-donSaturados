@@ -169,22 +169,25 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		return 1;
 	}
 	//Crear el directorio para dicha tabla.
-	if(crearCarpeta(path)==1){
-		log_info(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
+	if(hayXBloquesLibres(numPartition)){
+		if(crearCarpeta(path)==1){
+			log_info(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
+			free(path);
+			return 1;
+		}
 		free(path);
-		return 1;
-	}
-	free(path);
-	//Crear el archivo Metadata asociado al mismo.
-	//Grabar en dicho archivo los parámetros pasados por el request.
-	metaTabla *tabla=crearMetadataTabla(nameTable,consistency,numPartition,timeCompaction);
-	//Crear los archivos binarios asociados a cada partición de la tabla con sus bloques
+		//Crear el archivo Metadata asociado al mismo.
+		//Grabar en dicho archivo los parámetros pasados por el request.
+		metaTabla *tabla=crearMetadataTabla(nameTable,consistency,numPartition,timeCompaction);
+		//Crear los archivos binarios asociados a cada partición de la tabla con sus bloques
 
-	if(crearParticiones(tabla)==1){
-		log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
-		return 1;
+		if(crearParticiones(tabla)==1){
+			log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
+			return 1;
+		}
+	}else{
+		log_info(logger,"No hay %i bloques libres\n",numPartition);
 	}
-
 	return 0;
 }
 
