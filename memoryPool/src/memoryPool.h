@@ -24,11 +24,14 @@
 #include<commons/collections/list.h>
 
 
-typedef struct {
-	long timestamp;
-	u_int16_t key;
-	char* value;
-}datoTabla;
+
+t_list* tablaMarcos;
+t_list* tablaSegmentos;
+t_list* tablaPaginas;
+void* memoria;
+int offsetMarco;
+
+
 
 typedef struct {
 	int nroMarco;
@@ -40,6 +43,13 @@ typedef struct {
 	t_list* tablaPaginas;
 }segmento;
 
+typedef struct{
+	long timestamp;
+	u_int16_t key;
+	char* value;
+}datoTabla;
+
+
 
 typedef struct {
 	int nroMarco; //como dirección lógica y después me desplazo en la memoria
@@ -48,10 +58,7 @@ typedef struct {
 
 
 
-t_list* tablaMarcos;
-t_list* tablaSegmentos;
-t_list* tablaPaginas;
-void* memoria;
+
 
 
 
@@ -74,6 +81,6 @@ pagina *crearPagina();
 void agregarPagina(segmento *seg);
 int primerMarcoLibre();
 char* empaquetar(int operacion, datoTabla dato);
-
+void agregarDato(datoTabla dato, pagina pag);
 
 #endif /* MEMORYPOOL_H_ */

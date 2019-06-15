@@ -27,16 +27,7 @@ void* testeandoHilos(void * arg){
 
 */
 
-void agregarDato(long timestamp, u_int16_t key, char value[]){
-	int offset = 0;
-	memcpy(memoria+offset, &timestamp, sizeof(long));
-	offset = sizeof(long);
-	memcpy(memoria+offset, &key, sizeof(u_int16_t));
-	int offset2 = offset + sizeof(u_int16_t);
-	memcpy(memoria+offset2, value, strlen(value)+1);
-
-
-}
+//rta kernel 0 todo bien 1 todo mal
 
 
 
@@ -52,25 +43,31 @@ int main(void) {
 
 
 
+
 	segmento *animales = crearSegmento("ANIMALES");
 	segmento *postres = crearSegmento("POSTRES");
 	list_add(tablaSegmentos, animales);
 	list_add(tablaSegmentos, postres);
 	agregarPagina(animales);
 
+	pagina pag;
+	pag.nroMarco = 3;
+	pag.modificado = 0;
+
+	datoTabla testeo;
+	testeo.timestamp = 100000;
+	testeo.key = 170;
+	testeo.value = "VAMA";
 
 
 
-
-	agregarDato(1000000000, 158, "FORRO");
-
+	agregarDato(testeo, pag);
 
 
-	printf("Timestamp: %ld \n", *(long*)memoria);
-	printf("Key: %d \n", *(u_int16_t*)(memoria+sizeof(long)));
-	printf("Value: %s \n", (char*)(memoria + sizeof(long) + sizeof(u_int16_t)));
 
-
+	printf("Timestamp: %ld \n", *(long*)(memoria+ 3*offsetMarco));
+	printf("Key: %d \n", *(u_int16_t*)(memoria+ 3*offsetMarco+sizeof(long)));
+	printf("Value: %s \n", (char*)(memoria + 3*offsetMarco + sizeof(long) + sizeof(u_int16_t)));
 
 
 
@@ -298,15 +295,18 @@ char* empaquetar(int operacion, datoTabla dato){
 
 
 void inicializar(){
-	//este 1024 debería salir del archivo de configuración
+	//este 2048 debería salir del archivo de configuración
 
 	int tamanioMemoria = 2048;
 	memoria = calloc(1,tamanioMemoria);
 
-
-
+	offsetMarco = sizeof(long) + sizeof(u_int16_t) + 20;
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
+
+	//handshake lissandra para que nos de el maxvalue
+
+
 
 	int cantMarcos = tamanioMemoria/sizeof(datoTabla);
 	for(int i=0; i<cantMarcos; i++){
@@ -316,6 +316,18 @@ void inicializar(){
 			list_add(tablaMarcos, unMarco);
 
 		}
+
+
+}
+
+void agregarDato(datoTabla dato, pagina pag){
+	int offset = offsetMarco*pag.nroMarco;
+	memcpy(memoria+offset, &dato.timestamp, sizeof(long));
+	offset = offset + sizeof(long);
+	memcpy(memoria+offset, &dato.key, sizeof(u_int16_t));
+	int offset2 = offset + sizeof(u_int16_t);
+	memcpy(memoria+offset2, dato.value, strlen(dato.value)+1);
+	pag.modificado = 1;
 
 
 }
