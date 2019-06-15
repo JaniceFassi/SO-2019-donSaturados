@@ -15,6 +15,7 @@
 #include <sys/socket.h>
 #include <pthread.h>
 #include <string.h>
+#include <time.h>
 
 #include<commons/log.h>
 #include<commons/string.h>
@@ -76,6 +77,6 @@ void agregarPagina(segmento *seg, pagina *pag);
 int primerMarcoLibre();
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
-pagina *buscarPaginaConKey(u_int16_t key);
+pagina *buscarPaginaConKey(segmento *seg, u_int16_t key);
 
 #endif /* MEMORYPOOL_H_ */
