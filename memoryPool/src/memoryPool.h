@@ -30,6 +30,7 @@ t_list* tablaSegmentos;
 t_list* tablaPaginas;
 void* memoria;
 int offsetMarco;
+int maxValue;
 
 
 
@@ -42,13 +43,6 @@ typedef struct {
 	char* nombreTabla;
 	t_list* tablaPaginas;
 }segmento;
-
-typedef struct{
-	long timestamp;
-	u_int16_t key;
-	char* value;
-}datoTabla;
-
 
 
 typedef struct {
@@ -80,7 +74,7 @@ segmento *buscarSegmento(char* nombre);
 pagina *crearPagina();
 void agregarPagina(segmento *seg);
 int primerMarcoLibre();
-char* empaquetar(int operacion, datoTabla dato);
-void agregarDato(datoTabla dato, pagina *pag);
+char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
+void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
 
 #endif /* MEMORYPOOL_H_ */

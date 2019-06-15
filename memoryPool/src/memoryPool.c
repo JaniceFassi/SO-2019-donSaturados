@@ -52,10 +52,6 @@ int main(void) {
 
 
 
-	datoTabla testeo;
-	testeo.timestamp = 100000;
-	testeo.key = 170;
-	testeo.value = "VAMA";
 
 	segmento *seg = buscarSegmento("ANIMALES");
 
@@ -63,7 +59,7 @@ int main(void) {
 
 
 
-	agregarDato(testeo, pag);
+	agregarDato(10000, 107, "GIL", pag);
 
 
 
@@ -278,18 +274,18 @@ int primerMarcoLibre(){
 }
 
 
-char* empaquetar(int operacion, datoTabla dato){
+char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
 	char* msj;
 	msj = string_new();
 	string_append(&msj,string_itoa(operacion));
 	string_append(&msj, ";");
-	string_append(&msj,string_itoa(sizeof(dato)));
+	string_append(&msj,string_itoa(strlen(value)));
 	string_append(&msj, ";");
-	string_append(&msj, string_itoa(dato.timestamp));
+	string_append(&msj, string_itoa(timestamp));
 	string_append(&msj, ";");
-	string_append(&msj, string_itoa(dato.key));
+	string_append(&msj, string_itoa(key));
 	string_append(&msj, ";");
-	string_append(&msj, dato.value);
+	string_append(&msj, value);
 
 	return msj;
 }
@@ -301,8 +297,8 @@ void inicializar(){
 
 	int tamanioMemoria = 2048;
 	memoria = calloc(1,tamanioMemoria);
-
-	offsetMarco = sizeof(long) + sizeof(u_int16_t) + 20;
+	maxValue = 20;
+	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
 
@@ -310,7 +306,7 @@ void inicializar(){
 
 
 
-	int cantMarcos = tamanioMemoria/sizeof(datoTabla);
+	int cantMarcos = tamanioMemoria/offsetMarco;
 	for(int i=0; i<cantMarcos; i++){
 			marco* unMarco = malloc(sizeof(marco));
 			unMarco->nroMarco = i;
@@ -322,13 +318,13 @@ void inicializar(){
 
 }
 
-void agregarDato(datoTabla dato, pagina *pag){
+void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 	int offset = offsetMarco*(pag->nroMarco);
-	memcpy(memoria+offset, &dato.timestamp, sizeof(long));
+	memcpy(memoria+offset, &timestamp, sizeof(long));
 	offset = offset + sizeof(long);
-	memcpy(memoria+offset, &dato.key, sizeof(u_int16_t));
+	memcpy(memoria+offset, &key, sizeof(u_int16_t));
 	int offset2 = offset + sizeof(u_int16_t);
-	memcpy(memoria+offset2, dato.value, strlen(dato.value)+1);
+	memcpy(memoria+offset2, value, strlen(value)+1);
 	pag->modificado = 1;
 
 
@@ -370,18 +366,11 @@ void mSelect(char* nombreTabla,u_int16_t key){
 */
 }
 void mInsert(char* nombreTabla,u_int16_t keyTabla,char* valor){
-/*
-	if(buscarYreemplazar(keyTabla,valor)){
 
-		list_add(segmentoLista,crearSegmento(nombreTabla,keyTabla,valor));
-	}
-*/
-	//Explicacion:
-	//se fija si existe la tabla, en ese caso se fija si ya hay alguien con esa key, si hay alguien lo reemplaza y sino agrega la pagina (not done yet)
-	//si no existe la tabla, la crea y la agrega
+
 }
 
-
+/*
 
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
 	//char* msj;
@@ -403,3 +392,4 @@ void mGossip(){
 	printf("Hola soy gossip");
 
 }
+*/
