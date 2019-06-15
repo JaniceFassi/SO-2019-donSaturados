@@ -1,0 +1,502 @@
+[INFO] 13:25:32:886 kernel/(9446:9446): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola new
+[INFO] 13:25:32:887 kernel/(9446:9446): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola ready
+[INFO] 13:25:32:887 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:930 kernel/(9446:9446): HOLA CREATE
+[INFO] 13:25:32:930 kernel/(9446:9446): HOLA DESCRIBE
+[INFO] 13:25:32:930 kernel/(9446:9446): INSERT 122MARINOS;983;"Ballena"
+
+[INFO] 13:25:32:930 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:930 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:931 kernel/(9446:9446): INSERT 122MARINOS;983;"Ballena"
+
+[INFO] 13:25:32:931 kernel/(9446:9446): HOLA CREATE
+[INFO] 13:25:32:931 kernel/(9446:9446): HOLA CREATE
+[INFO] 13:25:32:931 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:931 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:931 kernel/(9446:9446): HOLA DESCRIBE
+[INFO] 13:25:32:931 kernel/(9446:9446): INSERT 119MARINOS;33;"Pulpo"
+
+[INFO] 13:25:32:931 kernel/(9446:9446): INSERT 117AVES;11;"Paloma"
+
+[INFO] 13:25:32:931 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:931 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:931 kernel/(9446:9446): INSERT 122MAMIFEROS;2222;"Gato"
+
+[INFO] 13:25:32:931 kernel/(9446:9446): INSERT 122MAMIFEROS;239;"Perro"
+
+[INFO] 13:25:32:932 kernel/(9446:9446): INSERT 120MARINOS;22;"Delfin"
+
+[INFO] 13:25:32:932 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:932 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:932 kernel/(9446:9446): INSERT 117AVES;11;"Halcon"
+
+[INFO] 13:25:32:932 kernel/(9446:9446): SELECT 008AVES;11
+
+[INFO] 13:25:32:932 kernel/(9446:9446): INSERT 119MARINOS;983;"Orca"
+
+[INFO] 13:25:32:932 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:932 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:932 kernel/(9446:9446): HOLA DESCRIBE
+[INFO] 13:25:32:932 kernel/(9446:9446): INSERT 122MARINOS;310;"Calamar"
+
+[INFO] 13:25:32:932 kernel/(9446:9446): INSERT 117AVES;1102;"Buho"
+
+[INFO] 13:25:32:933 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:933 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:933 kernel/(9446:9446): SELECT 012MARINOS;310
+
+[INFO] 13:25:32:933 kernel/(9446:9446): INSERT 119AVES;333;"Colibri"
+
+[INFO] 13:25:32:933 kernel/(9446:9446): INSERT 126MAMIFEROS;2222;"Elefante"
+
+[INFO] 13:25:32:933 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:933 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:933 kernel/(9446:9446): INSERT 123MAMIFEROS;349;"Jirafa"
+
+[INFO] 13:25:32:934 kernel/(9446:9446): INSERT 124MARINOS;983;"Pez globo"
+
+[INFO] 13:25:32:934 kernel/(9446:9446): INSERT 117AVES;6262;"Loro"
+
+[INFO] 13:25:32:934 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:934 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:934 kernel/(9446:9446): INSERT 120AVES;888;"Pelicano"
+
+[INFO] 13:25:32:934 kernel/(9446:9446): HOLA DESCRIBE
+[INFO] 13:25:32:935 kernel/(9446:9446): INSERT 122MAMIFEROS;349;"Cebra"
+
+[INFO] 13:25:32:935 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:935 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:935 kernel/(9446:9446): INSERT 124MAMIFEROS;721;"Caballo"
+
+[INFO] 13:25:32:935 kernel/(9446:9446): INSERT 119AVES;11;"Pinguino"
+
+[INFO] 13:25:32:935 kernel/(9446:9446): INSERT 122MAMIFEROS;721;"Oveja"
+
+[INFO] 13:25:32:935 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:935 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:935 kernel/(9446:9446): SELECT 012MARINOS;983
+
+[INFO] 13:25:32:935 kernel/(9446:9446): HOLA DESCRIBE
+[INFO] 13:25:32:935 kernel/(9446:9446): INSERT 122MARINOS;983;"Tiburon"
+
+[INFO] 13:25:32:935 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:935 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:936 kernel/(9446:9446): INSERT 118MARINOS;33;"Raya"
+
+[INFO] 13:25:32:936 kernel/(9446:9446): SELECT 008AVES;11
+
+[INFO] 13:25:32:936 kernel/(9446:9446): SELECT 0010AVES;6262
+
+[INFO] 13:25:32:936 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:936 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:936 kernel/(9446:9446): INSERT 121MAMIFEROS;272;"Vaca"
+
+[INFO] 13:25:32:936 kernel/(9446:9446): SELECT 014MAMIFEROS;272
+
+[INFO] 13:25:32:936 kernel/(9446:9446): HOLA DESCRIBE
+[INFO] 13:25:32:936 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:944 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:944 kernel/(9446:9446): SELECT 012MARINOS;310
+
+[INFO] 13:25:32:944 kernel/(9446:9446): INSERT 124MARINOS;983;"Pez globo"
+
+[INFO] 13:25:32:944 kernel/(9446:9446): INSERT 127MAMIFEROS;209;"Hipopotamo"
+
+[INFO] 13:25:32:944 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:945 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:945 kernel/(9446:9446): INSERT 122MARINOS;3103;"Delfin"
+
+[INFO] 13:25:32:945 kernel/(9446:9446): INSERT 122MARINOS;3104;"Delfin"
+
+[INFO] 13:25:32:945 kernel/(9446:9446): INSERT 122MAMIFEROS;239;"Burro"
+
+[INFO] 13:25:32:945 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:945 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:945 kernel/(9446:9446): INSERT 123MAMIFEROS;21;"Caballo"
+
+[INFO] 13:25:32:949 kernel/(9446:9446): SELECT 008AVES;11
+
+[INFO] 13:25:32:949 kernel/(9446:9446): SELECT 013MARINOS;3105
+
+[INFO] 13:25:32:949 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:949 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:949 kernel/(9446:9446): SELECT 0010AVES;1102
+
+[INFO] 13:25:32:949 kernel/(9446:9446): HOLA DESCRIBE
+[INFO] 13:25:32:949 kernel/(9446:9446): INSERT 122MARINOS;3105;"Delfin"
+
+[INFO] 13:25:32:949 kernel/(9446:9446): Script nro 0 salio por fin de quantum
+[INFO] 13:25:32:949 kernel/(9446:9446): Script nro 0 entro a cola EXEC
+[INFO] 13:25:32:949 kernel/(9446:9446): SELECT 011MARINOS;33
+
+[INFO] 13:25:32:949 kernel/(9446:9446): SELECT 014MAMIFEROS;239
+
+[INFO] 13:25:32:950 kernel/(9446:9446): SELECT 013MARINOS;3103
+
+[INFO] 13:25:32:950 kernel/(9446:9446): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola exit
+[INFO] 14:08:25:471 kernel/(10770:10770): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola new
+[INFO] 14:08:25:481 kernel/(10770:10770): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola ready
+[INFO] 14:08:25:481 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:516 kernel/(10770:10770): HOLA CREATE
+[INFO] 14:08:25:516 kernel/(10770:10770): HOLA DESCRIBE
+[INFO] 14:08:25:516 kernel/(10770:10770): INSERT 122MARINOS;983;"Ballena"
+
+[INFO] 14:08:25:516 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:516 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:516 kernel/(10770:10770): INSERT 122MARINOS;983;"Ballena"
+
+[INFO] 14:08:25:516 kernel/(10770:10770): HOLA CREATE
+[INFO] 14:08:25:517 kernel/(10770:10770): HOLA CREATE
+[INFO] 14:08:25:517 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:517 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:517 kernel/(10770:10770): HOLA DESCRIBE
+[INFO] 14:08:25:517 kernel/(10770:10770): INSERT 119MARINOS;33;"Pulpo"
+
+[INFO] 14:08:25:517 kernel/(10770:10770): INSERT 117AVES;11;"Paloma"
+
+[INFO] 14:08:25:517 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:517 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:518 kernel/(10770:10770): INSERT 122MAMIFEROS;2222;"Gato"
+
+[INFO] 14:08:25:518 kernel/(10770:10770): INSERT 122MAMIFEROS;239;"Perro"
+
+[INFO] 14:08:25:518 kernel/(10770:10770): INSERT 120MARINOS;22;"Delfin"
+
+[INFO] 14:08:25:518 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:518 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:518 kernel/(10770:10770): INSERT 117AVES;11;"Halcon"
+
+[INFO] 14:08:25:518 kernel/(10770:10770): SELECT 008AVES;11
+
+[INFO] 14:08:25:518 kernel/(10770:10770): INSERT 119MARINOS;983;"Orca"
+
+[INFO] 14:08:25:519 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:519 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:519 kernel/(10770:10770): HOLA DESCRIBE
+[INFO] 14:08:25:519 kernel/(10770:10770): INSERT 122MARINOS;310;"Calamar"
+
+[INFO] 14:08:25:519 kernel/(10770:10770): INSERT 117AVES;1102;"Buho"
+
+[INFO] 14:08:25:519 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:519 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:520 kernel/(10770:10770): SELECT 012MARINOS;310
+
+[INFO] 14:08:25:520 kernel/(10770:10770): INSERT 119AVES;333;"Colibri"
+
+[INFO] 14:08:25:520 kernel/(10770:10770): INSERT 126MAMIFEROS;2222;"Elefante"
+
+[INFO] 14:08:25:520 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:520 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:520 kernel/(10770:10770): INSERT 123MAMIFEROS;349;"Jirafa"
+
+[INFO] 14:08:25:520 kernel/(10770:10770): INSERT 124MARINOS;983;"Pez globo"
+
+[INFO] 14:08:25:520 kernel/(10770:10770): INSERT 117AVES;6262;"Loro"
+
+[INFO] 14:08:25:520 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:520 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:520 kernel/(10770:10770): INSERT 120AVES;888;"Pelicano"
+
+[INFO] 14:08:25:521 kernel/(10770:10770): HOLA DESCRIBE
+[INFO] 14:08:25:521 kernel/(10770:10770): INSERT 122MAMIFEROS;349;"Cebra"
+
+[INFO] 14:08:25:521 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:521 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:521 kernel/(10770:10770): INSERT 124MAMIFEROS;721;"Caballo"
+
+[INFO] 14:08:25:521 kernel/(10770:10770): INSERT 119AVES;11;"Pinguino"
+
+[INFO] 14:08:25:521 kernel/(10770:10770): INSERT 122MAMIFEROS;721;"Oveja"
+
+[INFO] 14:08:25:521 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:521 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:521 kernel/(10770:10770): SELECT 012MARINOS;983
+
+[INFO] 14:08:25:521 kernel/(10770:10770): HOLA DESCRIBE
+[INFO] 14:08:25:522 kernel/(10770:10770): INSERT 122MARINOS;983;"Tiburon"
+
+[INFO] 14:08:25:522 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:522 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:522 kernel/(10770:10770): INSERT 118MARINOS;33;"Raya"
+
+[INFO] 14:08:25:522 kernel/(10770:10770): SELECT 008AVES;11
+
+[INFO] 14:08:25:522 kernel/(10770:10770): SELECT 0010AVES;6262
+
+[INFO] 14:08:25:522 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:522 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:522 kernel/(10770:10770): INSERT 121MAMIFEROS;272;"Vaca"
+
+[INFO] 14:08:25:522 kernel/(10770:10770): SELECT 014MAMIFEROS;272
+
+[INFO] 14:08:25:522 kernel/(10770:10770): HOLA DESCRIBE
+[INFO] 14:08:25:522 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:523 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:523 kernel/(10770:10770): SELECT 012MARINOS;310
+
+[INFO] 14:08:25:523 kernel/(10770:10770): INSERT 124MARINOS;983;"Pez globo"
+
+[INFO] 14:08:25:523 kernel/(10770:10770): INSERT 127MAMIFEROS;209;"Hipopotamo"
+
+[INFO] 14:08:25:523 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:523 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:524 kernel/(10770:10770): INSERT 122MARINOS;3103;"Delfin"
+
+[INFO] 14:08:25:524 kernel/(10770:10770): INSERT 122MARINOS;3104;"Delfin"
+
+[INFO] 14:08:25:524 kernel/(10770:10770): INSERT 122MAMIFEROS;239;"Burro"
+
+[INFO] 14:08:25:524 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:524 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:524 kernel/(10770:10770): INSERT 123MAMIFEROS;21;"Caballo"
+
+[INFO] 14:08:25:524 kernel/(10770:10770): SELECT 008AVES;11
+
+[INFO] 14:08:25:524 kernel/(10770:10770): SELECT 013MARINOS;3105
+
+[INFO] 14:08:25:524 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:524 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:524 kernel/(10770:10770): SELECT 0010AVES;1102
+
+[INFO] 14:08:25:524 kernel/(10770:10770): HOLA DESCRIBE
+[INFO] 14:08:25:525 kernel/(10770:10770): INSERT 122MARINOS;3105;"Delfin"
+
+[INFO] 14:08:25:525 kernel/(10770:10770): Script nro 0 salio por fin de quantum
+[INFO] 14:08:25:525 kernel/(10770:10770): Script nro 0 entro a cola EXEC
+[INFO] 14:08:25:525 kernel/(10770:10770): SELECT 011MARINOS;33
+
+[INFO] 14:08:25:525 kernel/(10770:10770): SELECT 014MAMIFEROS;239
+
+[INFO] 14:08:25:525 kernel/(10770:10770): SELECT 013MARINOS;3103
+
+[INFO] 14:08:25:526 kernel/(10770:10770): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola exit
+[INFO] 14:58:21:68 kernel/(10807:10807): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola new
+[INFO] 14:58:21:68 kernel/(10807:10807): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola ready
+[INFO] 14:58:21:68 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:68 kernel/(10807:10807): HOLA CREATE
+[INFO] 14:58:21:68 kernel/(10807:10807): HOLA DESCRIBE
+[INFO] 14:58:21:69 kernel/(10807:10807): INSERT 122MARINOS;983;"Ballena"
+
+[INFO] 14:58:21:69 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:69 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:69 kernel/(10807:10807): INSERT 122MARINOS;983;"Ballena"
+
+[INFO] 14:58:21:69 kernel/(10807:10807): HOLA CREATE
+[INFO] 14:58:21:69 kernel/(10807:10807): HOLA CREATE
+[INFO] 14:58:21:69 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:69 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:69 kernel/(10807:10807): HOLA DESCRIBE
+[INFO] 14:58:21:69 kernel/(10807:10807): INSERT 119MARINOS;33;"Pulpo"
+
+[INFO] 14:58:21:69 kernel/(10807:10807): INSERT 117AVES;11;"Paloma"
+
+[INFO] 14:58:21:69 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:69 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:69 kernel/(10807:10807): INSERT 122MAMIFEROS;2222;"Gato"
+
+[INFO] 14:58:21:70 kernel/(10807:10807): INSERT 122MAMIFEROS;239;"Perro"
+
+[INFO] 14:58:21:70 kernel/(10807:10807): INSERT 120MARINOS;22;"Delfin"
+
+[INFO] 14:58:21:70 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:70 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:70 kernel/(10807:10807): INSERT 117AVES;11;"Halcon"
+
+[INFO] 14:58:21:70 kernel/(10807:10807): SELECT 008AVES;11
+
+[INFO] 14:58:21:70 kernel/(10807:10807): INSERT 119MARINOS;983;"Orca"
+
+[INFO] 14:58:21:70 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:70 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:70 kernel/(10807:10807): HOLA DESCRIBE
+[INFO] 14:58:21:70 kernel/(10807:10807): INSERT 122MARINOS;310;"Calamar"
+
+[INFO] 14:58:21:70 kernel/(10807:10807): INSERT 117AVES;1102;"Buho"
+
+[INFO] 14:58:21:70 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:70 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:70 kernel/(10807:10807): SELECT 012MARINOS;310
+
+[INFO] 14:58:21:70 kernel/(10807:10807): INSERT 119AVES;333;"Colibri"
+
+[INFO] 14:58:21:71 kernel/(10807:10807): INSERT 126MAMIFEROS;2222;"Elefante"
+
+[INFO] 14:58:21:71 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:71 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:71 kernel/(10807:10807): INSERT 123MAMIFEROS;349;"Jirafa"
+
+[INFO] 14:58:21:71 kernel/(10807:10807): INSERT 124MARINOS;983;"Pez globo"
+
+[INFO] 14:58:21:71 kernel/(10807:10807): INSERT 117AVES;6262;"Loro"
+
+[INFO] 14:58:21:71 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:71 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:71 kernel/(10807:10807): INSERT 120AVES;888;"Pelicano"
+
+[INFO] 14:58:21:71 kernel/(10807:10807): HOLA DESCRIBE
+[INFO] 14:58:21:71 kernel/(10807:10807): INSERT 122MAMIFEROS;349;"Cebra"
+
+[INFO] 14:58:21:71 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:71 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:71 kernel/(10807:10807): INSERT 124MAMIFEROS;721;"Caballo"
+
+[INFO] 14:58:21:72 kernel/(10807:10807): INSERT 119AVES;11;"Pinguino"
+
+[INFO] 14:58:21:72 kernel/(10807:10807): INSERT 122MAMIFEROS;721;"Oveja"
+
+[INFO] 14:58:21:72 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:73 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:73 kernel/(10807:10807): SELECT 012MARINOS;983
+
+[INFO] 14:58:21:73 kernel/(10807:10807): HOLA DESCRIBE
+[INFO] 14:58:21:73 kernel/(10807:10807): INSERT 122MARINOS;983;"Tiburon"
+
+[INFO] 14:58:21:73 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:73 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:73 kernel/(10807:10807): INSERT 118MARINOS;33;"Raya"
+
+[INFO] 14:58:21:73 kernel/(10807:10807): SELECT 008AVES;11
+
+[INFO] 14:58:21:73 kernel/(10807:10807): SELECT 0010AVES;6262
+
+[INFO] 14:58:21:73 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:73 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:73 kernel/(10807:10807): INSERT 121MAMIFEROS;272;"Vaca"
+
+[INFO] 14:58:21:73 kernel/(10807:10807): SELECT 014MAMIFEROS;272
+
+[INFO] 14:58:21:74 kernel/(10807:10807): HOLA DESCRIBE
+[INFO] 14:58:21:74 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:74 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:74 kernel/(10807:10807): SELECT 012MARINOS;310
+
+[INFO] 14:58:21:74 kernel/(10807:10807): INSERT 124MARINOS;983;"Pez globo"
+
+[INFO] 14:58:21:74 kernel/(10807:10807): INSERT 127MAMIFEROS;209;"Hipopotamo"
+
+[INFO] 14:58:21:74 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:75 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:75 kernel/(10807:10807): INSERT 122MARINOS;3103;"Delfin"
+
+[INFO] 14:58:21:75 kernel/(10807:10807): INSERT 122MARINOS;3104;"Delfin"
+
+[INFO] 14:58:21:76 kernel/(10807:10807): INSERT 122MAMIFEROS;239;"Burro"
+
+[INFO] 14:58:21:76 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:76 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:78 kernel/(10807:10807): INSERT 123MAMIFEROS;21;"Caballo"
+
+[INFO] 14:58:21:78 kernel/(10807:10807): SELECT 008AVES;11
+
+[INFO] 14:58:21:78 kernel/(10807:10807): SELECT 013MARINOS;3105
+
+[INFO] 14:58:21:78 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:78 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:79 kernel/(10807:10807): SELECT 0010AVES;1102
+
+[INFO] 14:58:21:79 kernel/(10807:10807): HOLA DESCRIBE
+[INFO] 14:58:21:79 kernel/(10807:10807): INSERT 122MARINOS;3105;"Delfin"
+
+[INFO] 14:58:21:79 kernel/(10807:10807): Script nro 0 salio por fin de quantum
+[INFO] 14:58:21:79 kernel/(10807:10807): Script nro 0 entro a cola EXEC
+[INFO] 14:58:21:79 kernel/(10807:10807): SELECT 011MARINOS;33
+
+[INFO] 14:58:21:81 kernel/(10807:10807): SELECT 014MAMIFEROS;239
+
+[INFO] 14:58:21:81 kernel/(10807:10807): SELECT 013MARINOS;3103
+
+[INFO] 14:58:21:81 kernel/(10807:10807): Script con el path /home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql entro a cola exit
+[INFO] 21:22:11:200 kernel/(20564:20564): memorias agregadas en SC: 
+
+[INFO] 21:22:11:215 kernel/(20564:20564): 0 
+
+[INFO] 21:22:11:215 kernel/(20564:20564): memorias agregadas en EC: 
+
+[INFO] 21:22:11:215 kernel/(20564:20564): memorias agregadas en SHC: 
+
+[INFO] 21:22:36:303 kernel/(20585:20585): memorias agregadas en SC: 
+
+[INFO] 21:22:36:304 kernel/(20585:20585): 0 
+
+[INFO] 21:22:36:304 kernel/(20585:20585): memorias agregadas en EC: 
+
+[INFO] 21:22:36:304 kernel/(20585:20585): memorias agregadas en SHC: 
+
+[INFO] 21:26:17:123 kernel/(20801:20801): memorias agregadas en SC: 
+
+[INFO] 21:26:17:123 kernel/(20801:20801): 0 
+
+[INFO] 21:26:17:123 kernel/(20801:20801): memorias agregadas en EC: 
+
+[INFO] 21:26:17:123 kernel/(20801:20801): memorias agregadas en SHC: 
+
+[INFO] 21:28:18:603 kernel/(20947:20947): Script nro 0 entro a cola EXEC
+[INFO] 21:30:26:46 kernel/(21025:21025): Script nro 0 entro a cola EXEC
+[INFO] 21:32:33:561 kernel/(21164:21164): Script nro 0 entro a cola EXEC
+[INFO] 21:32:33:562 kernel/(21164:21164): memorias agregadas en SC: 
+
+[INFO] 21:32:33:562 kernel/(21164:21164): 0 
+
+[INFO] 21:32:33:562 kernel/(21164:21164): memorias agregadas en EC: 
+
+[INFO] 21:32:33:562 kernel/(21164:21164): 2 
+
+[INFO] 21:32:33:562 kernel/(21164:21164): memorias agregadas en SHC: 
+
+[INFO] 21:33:09:384 kernel/(21222:21222): Script nro 0 entro a cola EXEC
+[INFO] 21:33:09:385 kernel/(21222:21222): La memoria no existe, no se pudo agregar al criterio
+[INFO] 21:33:09:385 kernel/(21222:21222): memorias agregadas en SC: 
+
+[INFO] 21:33:09:385 kernel/(21222:21222): 0 
+
+[INFO] 21:33:09:385 kernel/(21222:21222): memorias agregadas en EC: 
+
+[INFO] 21:33:09:385 kernel/(21222:21222): memorias agregadas en SHC: 
+
+[INFO] 21:36:56:874 kernel/(21474:21474): memorias agregadas en SC: 
+
+[INFO] 21:36:56:906 kernel/(21474:21474): 0 
+
+[INFO] 21:36:56:906 kernel/(21474:21474): memorias agregadas en EC: 
+
+[INFO] 21:36:56:906 kernel/(21474:21474): memorias agregadas en SHC: 
+
+[INFO] 21:40:37:267 kernel/(21656:21656): memorias agregadas en SC: 
+
+[INFO] 21:40:37:267 kernel/(21656:21656): 0 
+
+[INFO] 21:40:37:267 kernel/(21656:21656): memorias agregadas en EC: 
+
+[INFO] 21:40:37:267 kernel/(21656:21656): memorias agregadas en SHC: 
+
+[INFO] 21:42:03:979 kernel/(21760:21760): Script nro 0 entro a cola EXEC
+[INFO] 21:43:51:275 kernel/(21820:21820): Script nro 0 entro a cola EXEC
+[INFO] 21:45:40:927 kernel/(21820:21820): Script nro 0 entro a cola EXEC
+[INFO] 21:46:12:227 kernel/(21820:21820): memorias agregadas en SC: 
+
+[INFO] 21:46:12:228 kernel/(21820:21820): 0 
+
+[INFO] 21:46:12:228 kernel/(21820:21820): 2 
+
+[INFO] 21:46:12:228 kernel/(21820:21820): memorias agregadas en EC: 
+
+[INFO] 21:46:12:228 kernel/(21820:21820): 2 
+
+[INFO] 21:46:12:228 kernel/(21820:21820): memorias agregadas en SHC: 
+
+[INFO] 21:53:36:310 kernel/(22205:22205): Script nro 0 entro a cola EXEC
+[INFO] 21:53:50:17 kernel/(22205:22205): Script nro 0 entro a cola EXEC
+[INFO] 22:05:15:573 kernel/(22571:22571): Script nro 0 entro a cola EXEC
+[INFO] 22:05:25:30 kernel/(22571:22571): Script nro 0 entro a cola EXEC
+[INFO] 22:05:35:789 kernel/(22571:22571): memorias agregadas en SC: 
+
+[INFO] 22:05:35:790 kernel/(22571:22571): 0 
+
+[INFO] 22:05:35:790 kernel/(22571:22571): 2 
+
+[INFO] 22:05:35:790 kernel/(22571:22571): 3 
+
+[INFO] 22:05:35:790 kernel/(22571:22571): memorias agregadas en EC: 
+
+[INFO] 22:05:35:790 kernel/(22571:22571): memorias agregadas en SHC: 
+
