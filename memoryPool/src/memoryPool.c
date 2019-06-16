@@ -41,9 +41,6 @@ int main(void) {
 	inicializar();
 
 
-
-
-
 	segmento *animales = crearSegmento("ANIMALES");
 	segmento *postres = crearSegmento("POSTRES");
 	list_add(tablaSegmentos, animales);
@@ -61,7 +58,6 @@ int main(void) {
 
 
 	mInsert("ANIMALES", 150, "GATO");
-
 
 
 	printf("Timestamp: %ld \n", *(long*)memoria);
@@ -197,30 +193,7 @@ int main(void) {
 			free(buffer);
 
 
-
-
-
-
-
-
-
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -228,6 +201,23 @@ int main(void) {
 }
 
 //AUXILIARES
+
+
+/* No me reconoce la sharedLibrary
+
+void handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
+	int conexionExitosa;
+	int id; //para que no rompa pero ni idea de donde saco esta vaina
+	conexionExitosa = linkClient(&lfsCliente,ipLissandra , puertoLissandra,id);
+
+		if(conexionExitosa !=0){
+			perror("Error al conectarse con LFS");
+		}
+
+		recvData(lfsCliente, &maxValue, sizeof(u_int16_t));
+}
+
+*/
 
 segmento *crearSegmento(char* nombre){
 	segmento *nuevoSegmento = malloc(sizeof(segmento));
@@ -292,11 +282,15 @@ char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
 
 
 void inicializar(){
-	//t_log *logger = init_logger();
+	t_log *logger = init_logger();
 	t_config *configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
+	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
+	int ipFS = config_get_int_value(configuracion,"IP_FS");
+
 	memoria = calloc(1,tamanioMemoria);
 	maxValue = 20;
+	//maxValue = handshakeConLissandra(puertoFS,ipFS);
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
@@ -328,24 +322,6 @@ void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void mSelect(char* nombreTabla,u_int16_t key){
@@ -419,12 +395,6 @@ t_config* read_config() {
  t_log* init_logger() {
 	return log_create("memoryPool.log", "memoryPool", 1, LOG_LEVEL_INFO);
 }
-
-
-
-
-
-
 
 
 

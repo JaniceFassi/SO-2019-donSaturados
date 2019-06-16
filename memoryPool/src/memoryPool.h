@@ -23,6 +23,7 @@
 #include<readline/readline.h>
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
+//#include <socketSaturados.h>
 
 
 
@@ -31,7 +32,7 @@ t_list* tablaSegmentos;
 t_list* tablaPaginas;
 void* memoria;
 int offsetMarco;
-int maxValue;
+u_int16_t maxValue;
 
 
 
