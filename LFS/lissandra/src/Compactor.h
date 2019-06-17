@@ -14,5 +14,7 @@
 #include<commons/config.h>
 #include<readline/readline.h>
 #include "Lissandra.h"
+#include "TADs.h"
 
+void dump();
 #endif /* COMPACTOR_H_ */

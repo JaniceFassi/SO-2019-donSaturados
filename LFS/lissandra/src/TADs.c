@@ -124,7 +124,6 @@ Registry *desconcatParaArch(char *linea){
 //*********************MODIFICADA JANI***********************
 
 char *concatRegistro(Registry *registro){
-
 	char *keys=string_itoa(registro->key);
 	char *time=string_from_format("%ld",registro->timestamp);
 	char *linea=malloc(strlen(time)+strlen(keys)+strlen(registro->value)+1);
@@ -352,19 +351,21 @@ int crearParticiones(metaTabla *tabla){
 }
 
 /*********************NUEVO****************************/
-void nuevoMetaArch(char *path, int size, char *bloques){
+int nuevoMetaArch(char *path, int size, char *bloques){
 	FILE *f=fopen(path,"wb");
 	if(f!=NULL){
 		fclose(f);
+	}else{
+		return 1;
 	}
 	t_config *metaArchs=config_create(path);
-	char *s=malloc(strlen(string_itoa(size))+1);
-	strcpy(s,string_itoa(size));
-	config_set_value(metaArchs,"SIZE",s);
+	char *tamanio=string_itoa(size);
+	config_set_value(metaArchs,"SIZE",tamanio);
 	config_set_value(metaArchs,"BLOCKS",bloques);
 	config_save(metaArchs);
 	config_destroy(metaArchs);
-	free(s);
+	free(tamanio);
+	return 0;
 }
 
 void crearMetaArchivo(char *path, int bloque){
@@ -429,15 +430,22 @@ void borrarMetadataTabla(metaTabla *metadata){
 	free(metadata->nombre);
 	free(metadata);
 }
-void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
+
+void crearMetaLFS(){
 	char *path=nivelMetadata(1);
 	FILE *arch=fopen(path,"wb");
 	fclose(arch);
 	metaLFS =malloc(sizeof(metaFileSystem));
-	metaLFS->cantBloques=cantBloques;
-	metaLFS->tamBloques=size;
-	metaLFS->magicNumber=malloc(strlen(magicNumber)+1);
-	strcpy(metaLFS->magicNumber,magicNumber);
+	printf("Ingrese la cantidad de bloques: ");
+	scanf("%i",&metaLFS->cantBloques);
+	printf("Ingrese el tamaño de los bloques: ");
+	scanf("%i",&metaLFS->tamBloques);
+	printf("Ingrese el magic Number 'Lissandra' : ");
+	char *magic=malloc(15);
+	scanf("%s",magic);
+	metaLFS->magicNumber=malloc(strlen(magic)+1);
+	strcpy(metaLFS->magicNumber,magic);
+	free(magic);
 	t_config *config = config_create(path);
 	char *bloq=string_itoa(metaLFS->cantBloques);
 	char *tam=string_itoa(metaLFS->tamBloques);
@@ -449,8 +457,8 @@ void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
 	free(bloq);
 	free(tam);
 	free(path);
-
 }
+
 void leerMetaLFS(){
 	char *path=nivelMetadata(1);
 	t_config *metadataLFS=config_create(path);
@@ -468,6 +476,105 @@ void borrarMetaLFS(){
 	free(metaLFS->magicNumber);
 	free(metaLFS);
 }
+
+void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
+	t_config *config = init_config();				//Crea una estructura datosConfig en configLissandra, variable global
+	configLissandra=malloc(sizeof(datosConfig));
+	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
+	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
+	strcpy(configLissandra->puntoMontaje,aux);
+
+	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
+	char *aux2=config_get_string_value(config, "IP");
+	configLissandra->Ip=malloc(strlen(aux2)+1);
+	strcpy(configLissandra->Ip,aux2);
+	configLissandra->puerto= config_get_int_value(config, "PORT");
+	configLissandra->id= config_get_int_value(config, "ID");
+	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
+	configLissandra->retardo= config_get_int_value(config, "RETARDO");
+	configLissandra->tamValue= config_get_int_value(config, "TAMVALUE");
+	config_destroy(config);
+}
+
+void borrarDatosConfig(){
+	free(configLissandra->Ip);
+	free(configLissandra->puntoMontaje);
+	free(configLissandra);
+}
+
+void crearConfig(){
+	FILE *config=fopen(pathInicial,"wb");
+	fclose(config);
+
+	configLissandra=malloc(sizeof(datosConfig));
+
+	printf("Ingrese el punto de montaje correspendiente, sin el home/utnso: ");
+	char *path=malloc(100);
+	scanf("%s",path);
+	configLissandra->puntoMontaje=malloc(strlen(path)+1);
+	strcpy(configLissandra->puntoMontaje,path);
+	free(path);
+
+	printf("\nIngrese el tamaño maximo del value: ");
+	scanf("%i",&configLissandra->tamValue);
+
+	printf("\nIngrese el ID de Lissandra: ");
+	scanf("%i",&configLissandra->id);
+
+	printf("\nIngrese el ID de Memoria: ");
+	scanf("%i",&configLissandra->idEsperado);
+
+	printf("Ingrese la IP de Lissandra: ");
+	char *ip=malloc(25);
+	scanf("%s",ip);
+	configLissandra->Ip=malloc(strlen(ip)+1);
+	strcpy(configLissandra->Ip,ip);
+	free(ip);
+
+	printf("\nIngrese el puerto de escucha: ");
+	scanf("%i",&configLissandra->puerto);
+
+	printf("\nIngrese el tiempo para el dump: ");
+	scanf("%i",&configLissandra->tiempoDump);
+
+	printf("\nIngrese el tiempo de retardo: ");
+	scanf("%i",&configLissandra->retardo);
+
+	t_config *lissConfig=config_create(pathInicial);
+
+	config_set_value(lissConfig,"PUNTO_MONTAJE",configLissandra->puntoMontaje);
+
+	char *tamanio=string_itoa(configLissandra->tamValue);
+	config_set_value(lissConfig,"TAMVALUE",tamanio);
+
+	char *id=string_itoa(configLissandra->id);
+	config_set_value(lissConfig,"ID",id);
+
+	char *idEsperado=string_itoa(configLissandra->idEsperado);
+	config_set_value(lissConfig,"ID_ESPERADO",idEsperado);
+
+	config_set_value(lissConfig,"IP",configLissandra->Ip);
+
+	char *puerto=string_itoa(configLissandra->puerto);
+	config_set_value(lissConfig,"PORT",puerto);
+
+	char *tempDump=string_itoa(configLissandra->tiempoDump);
+	config_set_value(lissConfig,"TIEMPO_DUMP",tempDump);
+
+	char *tempRetar=string_itoa(configLissandra->retardo);
+	config_set_value(lissConfig,"RETARDO",tempRetar);
+
+	config_save(lissConfig);
+	config_destroy(lissConfig);
+
+	free(tamanio);
+	free(id);
+	free(idEsperado);
+	free(puerto);
+	free(tempDump);
+	free(tempRetar);
+}
+
 //****************************************************************************************
 //FUNCIONES EXPERIMENTALES DE BITMAPS
 void ocuparBloque(int Nrobloque){
@@ -524,14 +631,14 @@ int cantBloquesLibres(int cantidad){
 /*****************************NUEVOOOOOO*************/
 int largoDeRegistros(t_list *lista){
 	int largo=0;
-	char *linea;
 	void sumarLongitud(Registry *reg){
+		char *linea;
 		linea=concatRegistro(reg);
 		largo+=strlen(linea);			//PREGUNTAR
-		//free(linea);
+		free(linea);
 	}
-	list_iterate(lista,(int*)sumarLongitud);
-	return largo;
+	list_iterate(lista,(void*)sumarLongitud);
+	return largo+1;
 }
 
 int tamanioArchivo(char* path){
@@ -718,7 +825,9 @@ int contarTemporales(char *tabla){
 		if(f!=NULL){
 			fclose(f);
 			cant++;
-		}else{seguir=0;}
+		}else{
+			seguir=0;
+		}
 	}
 	return cant;
 }

@@ -72,7 +72,7 @@ int encontrarRegistroPorKey(t_list *registros,int key);
 t_list* filtrearPorKey(t_list *registros,int key);
 int calcularIndex(t_list *lista,int key);
 
-void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
+void crearMetaLFS();
 char *nivelTablas();
 char *nivelBloques();
 char *nivelParticion(char *tabla, int particion, int modo);
@@ -80,7 +80,10 @@ void leerMetaLFS();
 char *rutaBloqueNro(int nroBloque);
 void borrarMetaLFS();
 char *nivelUnaTabla(char *nombre, int modo);
-void nuevoMetaArch(char *ruta, int largo,char *bloques);
+int nuevoMetaArch(char *ruta, int largo,char *bloques);
+void estructurarConfig();
+void borrarDatosConfig();
+void crearConfig();
 
 //FUNCIONES DE TABLAS
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);

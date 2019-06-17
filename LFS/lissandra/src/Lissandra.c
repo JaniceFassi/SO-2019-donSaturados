@@ -94,15 +94,13 @@ void theStart(){
 	pathInicial="/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config";		//Inicia variable global de path inicial
 	raizDirectorio="/home/utnso";
 	logger = init_logger();													//Inicia el logger global
-	memtable= list_create();												//Inicia la memtable global
 	if(archivoValido(pathInicial)!=0){
 		estructurarConfig();						//Si existe el config en el path inicial crea la estructura, si no crea el config
-	/*}else{
+	}else{
 		crearConfig();
-	}*/
-
-	levantarDirectorio();				//Crea el directorio ya teniendo el archivo config listo
 	}
+	levantarDirectorio();				//Crea el directorio ya teniendo el archivo config listo
+	memtable= list_create();												//Inicia la memtable global
 }
 
 t_log* init_logger() {
@@ -112,148 +110,6 @@ t_log* init_logger() {
 t_config* init_config() {
 	return config_create(pathInicial);
 }
-
-
-void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
-	t_config *config = init_config();				//Crea una estructura datosConfig en configLissandra, variable global
-	configLissandra=malloc(sizeof(datosConfig));
-	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
-	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
-	strcpy(configLissandra->puntoMontaje,aux);
-
-	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
-	char *aux2=config_get_string_value(config, "IP");
-	configLissandra->Ip=malloc(strlen(aux2)+1);
-	strcpy(configLissandra->Ip,aux2);
-	configLissandra->puerto= config_get_int_value(config, "PORT");
-	configLissandra->id= config_get_int_value(config, "ID");
-	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
-	configLissandra->retardo= config_get_int_value(config, "RETARDO");
-	configLissandra->tamValue= config_get_int_value(config, "TAMVALUE");
-	config_destroy(config);
-}
-
-void borrarDatosConfig(){
-	free(configLissandra->Ip);
-	free(configLissandra->puntoMontaje);
-	free(configLissandra);
-}
-
-void crearConfig(){
-	log_info(logger,"No existe el arch config, asi q se crea con los datos del checkpoint 3\n");
-	configLissandra=malloc(sizeof(datosConfig));
-	configLissandra->Ip=malloc(15);
-	strcpy(configLissandra->Ip,"192.3.0.58");
-	configLissandra->puerto=5005;
-	char *aux=malloc(60);
-	strcpy(aux,"/home/utnso/lissandra-checkpoint/");
-	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
-	strcpy(configLissandra->puntoMontaje,aux);
-	free(aux);
-	configLissandra->retardo=100;
-	configLissandra->tamValue=255;
-	configLissandra->tiempoDump=60000;
-	configLissandra->id=1;
-	configLissandra->idEsperado=2;
-
-	FILE* configuracion= fopen(pathInicial,"wb"); //NO SE PORQUE NO ME DEJA CREAR UN ARCHIVO
-	fclose(configuracion);
-
-	t_config *config = init_config();
-
-	char *ip=string_duplicate(configLissandra->Ip);
-	config_set_value(config,"IP",ip);
-
-	char* port = string_itoa(configLissandra->puerto);
-	config_set_value(config,"PORT",port);
-
-	char *punto=string_duplicate(configLissandra->puntoMontaje);
-	config_set_value(config,"PUNTO_MONTAJE",punto);
-
-	char *retardo=string_itoa(configLissandra->retardo);
-	config_set_value(config,"RETARDO",retardo);
-
-	char *tamVal=string_itoa(configLissandra->tamValue);
-	config_set_value(config,"TAMVALUE",tamVal);
-
-	char* tiempoDump = string_from_format("%ld",configLissandra->tiempoDump);
-	config_set_value(config,"TIEMPO_DUMP",tiempoDump);
-
-	char *id=string_itoa(configLissandra->id);
-	config_set_value(config,"ID",id);
-
-	char *idE=string_itoa(configLissandra->idEsperado);
-	config_set_value(config,"ID_ESPERADO",idE);
-
-	config_save(config);
-	config_destroy(config);
-	free(port);
-	free(punto);
-	free(ip);
-	free(retardo);
-	free(tamVal);
-	free(tiempoDump);
-	free(id);
-	free(idE);
-}
-
-
-/*void funMetaLFS(){
-	char *path=malloc(strlen(configLissandra->puntoMontaje)+1);
-	strcpy(path,configLissandra->puntoMontaje);
-	char *meta=malloc(9);
-	strcpy(meta,"METADATA");
-	char *barra=malloc(2);
-	strcpy(barra,"/");
-	int base= strlen(path)+1+strlen(meta)+1;
-	path=realloc(path,base);
-	strcat(path,meta);
-	base+=strlen(barra)+1;
-	path=realloc(path,base);
-	strcat(path,barra);
-	base+=strlen(meta)+1;
-	path=realloc(path,base);
-	strcat(path,meta);
-	char *ext=malloc(5);
-	strcpy(ext,".bin");
-	base+=strlen(ext)+1;
-	path=realloc(path,base);
-	strcat(path,ext);
-	metaLFS=malloc(sizeof(metadataLFS));
-	if(archivoValido(path)==1){								//Si existe el archivo crea el metadato de config
-		t_config *metadata=config_create(path);
-		metaLFS->cantBloques=config_get_int_value(metadata, "BLOCKS");
-		metaLFS->tamBloques=config_get_int_value(metadata, "BLOCK_SIZE");
-		char *aux=config_get_string_value(metadata,"MAGIC_NUMBER");
-		metaLFS->magicNumber=malloc(strlen(aux)+1);
-		strcpy(metaLFS->magicNumber,aux);
-		free(aux);
-		config_destroy(metadata);
-	}else{
-		metaLFS->cantBloques=5192;							//Si no existe el archivo crea todo desde 0 con datos del checkpoint
-		metaLFS->tamBloques=64;
-		metaLFS->magicNumber=malloc(10);
-		strcpy(metaLFS->magicNumber,"LISSANDRA");
-		int metadataF= open(path,O_RDWR); //BINARIO
-		close(metadataF);
-		t_config *metadataC=config_create(path);
-		char* tam;
-		strcpy(tam,string_itoa(metaLFS->tamBloques));
-		config_set_value(metadataC,"BLOCK_SIZE",tam);
-		char* cant;
-		strcpy(cant,string_itoa(metaLFS->cantBloques));
-		config_set_value(metadataC,"BLOCKS",cant);
-		config_set_value(metadataC,"MAGIC_NUMBER",metaLFS->magicNumber);
-		config_save(metadataC);
-		config_destroy(metadataC);
-		free(tam);
-		free(cant);
-	}
-	free(path);
-	free(meta);
-	free(barra);
-	free(ext);
-}*/
 
 char* recibirDeMemoria(u_int16_t sock){
 	char *tam=malloc(3);
@@ -467,58 +323,6 @@ void funcionSenial(int sig){
 
 }
 
-void dump(){
-	t_list *dump=list_duplicate(memtable);
-	list_clean(memtable);
-	int cant=list_size(dump);
-	int largo;
-	int cantTmp=0;
-	char *arrayBlock=malloc(5);
-	while(cant>0){
-		Tabla *dumpTabla=list_get(dump,cant-1);
-		char *path=nivelUnaTabla(dumpTabla->nombre,0);
-		if(folderExist(path)==0){
-			//Calcular el tamaño de dumpT->registros
-			//int cantReg=list_size(dumpTabla->registros); 		se puede sacar?
-			//calcular cant bloques
-			largo=largoDeRegistros(dumpTabla->registros);
-			int bloquesNecesarios=largo/metaLFS->tamBloques;
-			if(largo%metaLFS->tamBloques!=0){
-				bloquesNecesarios++;
-			}
-			if(hayXBloquesLibres(bloquesNecesarios)){
-				//COMPLETAR
-				char *b=string_itoa(obtenerBloqueVacio());
-				strcpy(arrayBlock,b);
-				arrayBlock=ponerSeparador(arrayBlock);
-				if(bloquesNecesarios>1){
-					for(int i =0;i<bloquesNecesarios;i++){
-						b=string_itoa(obtenerBloqueVacio());
-						arrayBlock=realloc(arrayBlock,strlen(b)+strlen(arrayBlock)+1);
-						strcat(arrayBlock,b);
-						arrayBlock=ponerSeparador(arrayBlock);
-					}
-				}
-			}
-			//pedir x cant bloques y guardarlas en un char           SI NO HAY ESPACIO Q PASA?  **PREGUNTAR**
-			cantTmp=contarTemporales(dumpTabla->nombre);
-			char *ruta =nivelParticion(dumpTabla->nombre,0, 1);
-
-			nuevoMetaArch(ruta, largo, arrayBlock );
-			//escribirBloques();
-
-			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);			//ROMPE ACA POR UN FREE
-			free(ruta);
-		}
-		free(path);
-		free(dumpTabla->nombre);
-		dumpTabla=NULL;
-		free(dumpTabla);
-		cant--;
-	}
-	list_destroy(dump);
-}
-
 void theEnd(){
 	if(!list_is_empty(memtable)){
 		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
@@ -527,6 +331,8 @@ void theEnd(){
 	}
 	borrarDatosConfig();
 	borrarMetaLFS();
+	bitarray_destroy(bitmap);
+	close(archivoBitmap);
 	log_destroy(logger);
 }
 
