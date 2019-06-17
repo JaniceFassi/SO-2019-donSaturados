@@ -46,7 +46,6 @@ typedef struct {
 	t_list* tablaPaginas;
 }segmento;
 
-
 typedef struct {
 	int nroMarco; //como dirección lógica y después me desplazo en la memoria
 	int modificado;
@@ -59,7 +58,7 @@ typedef struct {
 
 
 
-void mSelect(char* nombreTabla,u_int16_t key);
+int mSelect(char* nombreTabla,u_int16_t key);
 void mInsert(char* nombreTabla,u_int16_t key,char* valor);
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
 void mDescribe();
@@ -79,6 +78,7 @@ int primerMarcoLibre();
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
 pagina *buscarPaginaConKey(segmento *seg, u_int16_t key);
+pagina *pedirALissandraPagina(char* nombreTabla,u_int16_t key);
 t_log* init_logger();
 t_config* read_config();
 

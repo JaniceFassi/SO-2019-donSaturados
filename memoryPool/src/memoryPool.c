@@ -30,7 +30,11 @@ void* testeandoHilos(void * arg){
 //rta kernel 0 todo bien 1 todo mal
 
 
+typedef struct { //no le des bola a esto
+	u_int16_t key;
+	u_int16_t value;
 
+}paqueteRecibido;
 
 
 
@@ -279,7 +283,17 @@ char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
 	return msj;
 }
 
+/*
+paqueteRecibido desempaquetar(char* paquete){
+	paqueteRecibido nuevo;
 
+	paquete = string_new();
+
+	nuevo.key =  ;
+	nuevo.value;
+}
+
+*/
 
 void inicializar(){
 	t_log *logger = init_logger();
@@ -288,7 +302,7 @@ void inicializar(){
 	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
 	int ipFS = config_get_int_value(configuracion,"IP_FS");
 
-	memoria = calloc(1,tamanioMemoria);
+	memoria = calloc(1,tamanioMemoria); //No me cierra esto.
 	maxValue = 20;
 	//maxValue = handshakeConLissandra(puertoFS,ipFS);
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
@@ -324,7 +338,29 @@ void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 }
 
 
-void mSelect(char* nombreTabla,u_int16_t key){
+//Se puede cambiar a otra cosa que no sea void?
+void* mSelect(char* nombreTabla,u_int16_t key){
+
+	segmento *nuevo = buscarSegmento(nombreTabla);
+	pagina *pNueva;
+	char* relleno = "Soy relleno";
+
+	if(nuevo!= NULL){
+		pNueva = buscarPaginaConKey(nuevo,key);
+		if(pNueva != NULL){
+			return pNueva->nroMarco; //Como saco el value sabiendo el nroMarco?
+		}
+		else{
+			pNueva = pedirALissandraPagina(nombreTabla,key); //Algun dia la haremos y sera hermosa
+			agregarDato(time(NULL),key,relleno,pNueva);
+			return pNueva->nroMarco; //Devuelta, como saco el value?
+		}
+	}
+	else{
+		pNueva = pedirALissandraPagina(nombreTabla,key);
+	}
+
+
 	/*tabla tablaEncontrada = buscarTabla(nombreTabla);{//busca tabla, tabla = segmento
 		if(tablaEncontrada != NULL){
 			pagina pag = buscarPagina(tablaEncontrada, key); //busca la pagina
@@ -341,6 +377,9 @@ void mSelect(char* nombreTabla,u_int16_t key){
 */
 }
 
+pagina *pedirALissandraPagina(char* nombreTabla,u_int16_t key){
+	//Algun dia...
+}
 
 pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
 
@@ -357,6 +396,10 @@ pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
 
 	return list_find(tablaSegmentos, (void *) tieneMismaKey);
 
+	//-------------------------------------------------------------------------------//
+	//Por que se fija en la tablaSegmentos? No deberia hacerlo en seg->tablaPaginas ???
+	//Sino re al pedo pasarle por parametro segmento *seg
+	//-------------------------------------------------------------------------------//
 }
 
 
