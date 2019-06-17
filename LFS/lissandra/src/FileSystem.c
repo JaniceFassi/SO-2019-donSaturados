@@ -62,7 +62,7 @@ int crearNivelMetadata(){
 	free(path);
 	path=nivelMetadata(1);
 	if(archivoValido(path)==0){
-		crearMetaLFS(64,10,"Lissandra");
+		crearMetaLFS(64,20,"Lissandra");
 	}else{
 		leerMetaLFS();
 	}

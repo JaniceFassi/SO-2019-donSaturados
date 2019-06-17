@@ -75,11 +75,12 @@ int calcularIndex(t_list *lista,int key);
 void crearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
 char *nivelTablas();
 char *nivelBloques();
-char *nivelParticion(char *tabla, int particion);
+char *nivelParticion(char *tabla, int particion, int modo);
 void leerMetaLFS();
 char *rutaBloqueNro(int nroBloque);
 void borrarMetaLFS();
 char *nivelUnaTabla(char *nombre, int modo);
+void nuevoMetaArch(char *ruta, int largo,char *bloques);
 
 //FUNCIONES DE TABLAS
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);
@@ -96,6 +97,8 @@ char *extension(char *path,int modo);
 char *ponerBarra(char *linea);
 char *obtenerMontaje();
 char *nivelMetadata(int modo);
+char *concatRegistro(Registry *reg);
+char *ponerSeparador(char *linea);
 
 //FUNCIONES DE CARPETAS
 int crearCarpeta(char* path);
@@ -115,7 +118,8 @@ void escribirReg(char *name,t_list *registros,int cantParticiones);
 int archivoValido(char *path);
 void crearMetaArchivo(char *path, int bloque);
 void borrarMetaArch(metaArch *nuevo);
-int tamArchivo(char* path);
+int tamanioArchivo(char* path);
+int contarTemporales(char *nombre);
 
 //FUNCIONES BITMAPS
 void cargarBitmap();
@@ -124,7 +128,8 @@ char *inicializarArray();
 bool hayXBloquesLibres(int cantidad);
 int cantBloquesLibres(int cantidad);
 int obtenerBloqueVacio();
-void marcarBloqueDesocupado(int Nrobloque);
-void marcarBloqueOcupado(int Nrobloque);
+void desocuparBloque(int Nrobloque);
+void ocuparBloque(int Nrobloque);
+int largoDeRegistros(t_list *lista);
 
 #endif

@@ -11,6 +11,8 @@
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
 
+
+//A REEMPLAZAR
 char *pathFinal(char *nombre, int principal){
 	//0 ES LA CARP PRINCIPAL, 1 ES LA CARP DE LAS TABLAS, 2 PATH DE ARCH, 3 METADATA
 	int base=string_length(configLissandra->puntoMontaje)+string_length(nombre)+1;
@@ -53,6 +55,7 @@ char *pathFinal(char *nombre, int principal){
 	return NULL;
 }
 
+//A REEMPLAZAR
 char *concatExtencion(char *name,int particion, int tipo){//0 es bin, si es 1 es temp
 	char *pathF=pathFinal(name,2);
 	int base=strlen(pathF)+1;
@@ -109,7 +112,6 @@ char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
 		free(punto);
 		return path;
 }
-/////////////////////*************************************************************************
 
 Registry *desconcatParaArch(char *linea){
 	char **subString=string_n_split(linea,3,";");
@@ -117,8 +119,22 @@ Registry *desconcatParaArch(char *linea){
 	long timestamp=atol(subString[0]);
 	Registry *nuevo=createRegistry(key,subString[2],timestamp);
 	return nuevo;
-}//**************************************************************************************
+}
 
+//*********************MODIFICADA JANI***********************
+
+char *concatRegistro(Registry *registro){
+
+	char *keys=string_itoa(registro->key);
+	char *time=string_from_format("%ld",registro->timestamp);
+	char *linea=malloc(strlen(time)+strlen(keys)+strlen(registro->value)+1);
+	strcpy(linea,time);
+	linea=ponerSeparador(linea);
+	strcat(linea,keys);
+	linea=ponerSeparador(linea);
+	strcat(linea, registro->value);
+	return linea;
+}
 
 char *concatParaArchivo(long timestamp,int key,char *value,int opc){
 	//0 para Escribir, 1 para Agregar
@@ -177,6 +193,16 @@ char *ponerBarra(char *linea){
 	linea=realloc(linea,strlen(linea)+strlen(barra)+1);
 	strcat(linea,barra);
 	free(barra);
+	return linea;
+}
+
+/********************NUEVOOO***************************/
+char *ponerSeparador(char *linea){
+	char *separador=malloc(2);
+	strcpy(separador,";");
+	linea=realloc(linea,strlen(linea)+strlen(separador)+1);
+	strcat(linea,separador);
+	free(separador);
 	return linea;
 }
 
@@ -262,12 +288,12 @@ char *nivelUnaTabla(char *nombre, int modo){			//0 carpeta tabla, 1 metaTabla
 	return path;
 }
 
-char *nivelParticion(char *tabla, int particion){		//montaje/TABLAS/TABLA/part.bin
+char *nivelParticion(char *tabla, int particion, int modo){		//montaje/TABLAS/TABLA/part.ext		modo->ext 0 .bin, 1 .tmp, 2 .tmpc
 	char *path=nivelUnaTabla(tabla,2);
 	char *part=string_itoa(particion);
 	path=realloc(path,strlen(path)+strlen(part)+1);
 	strcat(path,part);
-	path=extension(path,0);
+	path=extension(path,modo);
 	free(part);
 	return path;
 }
@@ -310,12 +336,11 @@ int crearParticiones(metaTabla *tabla){
 	int cant=tabla->partitions;
 	char *path;
 	while(cant>0){
-		 int o=cantBloquesLibres(0);
-		path=nivelParticion(tabla->nombre,cant-1);
+		path=nivelParticion(tabla->nombre,cant-1, 0);
 		int bloque=obtenerBloqueVacio();
 		if((arch= fopen(path,"wb"))<0){
 			log_info(logger,"Error al crear la particion %i de la tabla %s\n",tabla->partitions,tabla->nombre);
-			 marcarBloqueDesocupado(bloque);
+			 desocuparBloque(bloque);
 			return 1;
 		}
 		crearMetaArchivo(path,bloque);
@@ -326,17 +351,31 @@ int crearParticiones(metaTabla *tabla){
 	return 0;
 }
 
-void crearMetaArchivo(char *path,int bloque){
-	metaArch *nuevo=malloc(sizeof(metaArch));
-	nuevo->size=0;
-	nuevo->bloques=string_itoa(bloque);
+/*********************NUEVO****************************/
+void nuevoMetaArch(char *path, int size, char *bloques){
+	FILE *f=fopen(path,"wb");
+	if(f!=NULL){
+		fclose(f);
+	}
 	t_config *metaArchs=config_create(path);
-	char* size = string_itoa(nuevo->size);
-	config_set_value(metaArchs,"SIZE",size);
-	config_set_value(metaArchs,"BLOCKS",nuevo->bloques);
+	char *s=malloc(strlen(string_itoa(size))+1);
+	strcpy(s,string_itoa(size));
+	config_set_value(metaArchs,"SIZE",s);
+	config_set_value(metaArchs,"BLOCKS",bloques);
 	config_save(metaArchs);
 	config_destroy(metaArchs);
-	borrarMetaArch(nuevo);
+	free(s);
+}
+
+void crearMetaArchivo(char *path, int bloque){
+	char *blocks=malloc(strlen(string_itoa(bloque))+1);
+	strcpy(blocks,string_itoa(bloque));
+	t_config *metaArchs=config_create(path);
+	char* size = string_itoa(0);
+	config_set_value(metaArchs,"SIZE",size);
+	config_set_value(metaArchs,"BLOCKS",blocks);
+	config_save(metaArchs);
+	config_destroy(metaArchs);
 	free(size);
 }
 
@@ -431,7 +470,7 @@ void borrarMetaLFS(){
 }
 //****************************************************************************************
 //FUNCIONES EXPERIMENTALES DE BITMAPS
-void marcarBloqueOcupado(int Nrobloque){
+void ocuparBloque(int Nrobloque){
 	char*rutaBloque=rutaBloqueNro(Nrobloque);
 //mutex
 	FILE* file = fopen(rutaBloque,"wb");
@@ -442,17 +481,18 @@ void marcarBloqueOcupado(int Nrobloque){
 	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
 //signal
 }
-void marcarBloqueDesocupado(int Nrobloque){
+void desocuparBloque(int Nrobloque){
 	bitarray_clean_bit(bitmap, Nrobloque);
 	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
 }
+
 int obtenerBloqueVacio(){
 	int i = 0;
 	while(i<metaLFS->cantBloques && bitarray_test_bit(bitmap, i)){
 		i++;
 	}
 	if (i < metaLFS->cantBloques){
-		marcarBloqueOcupado(i);
+		ocuparBloque(i);
 		return i;
 	}else{
 		return -1;
@@ -480,24 +520,38 @@ int cantBloquesLibres(int cantidad){
 	}
 	return libres;
 }
-int tamArchivo(char* path){
+
+/*****************************NUEVOOOOOO*************/
+int largoDeRegistros(t_list *lista){
+	int largo=0;
+	char *linea;
+	void sumarLongitud(Registry *reg){
+		linea=concatRegistro(reg);
+		largo+=strlen(linea);			//PREGUNTAR
+		//free(linea);
+	}
+	list_iterate(lista,(int*)sumarLongitud);
+	return largo;
+}
+
+int tamanioArchivo(char* path){
     int fd;
     struct stat fileInfo = {0};
     fd=open(path, O_RDONLY);
     if (fd == -1)
     {
-        perror("Error opening file for writing");
+        perror("Error al abrir el archivo.");
         exit(EXIT_FAILURE);
     }
     if (fstat(fd, &fileInfo) == -1)
     {
-        perror("Error getting the file size");
+        perror("Error al obtener el tamanio.");
         return -1;
     }
 	return fileInfo.st_size;
 	close(fd);
 }
-char *inicializarArray(){
+/*char *inicializarArray(){
 	char array[10];
 	int i=0;
 	char *valor=malloc(2);
@@ -510,7 +564,8 @@ char *inicializarArray(){
 	strcpy(bitmapDatos,array);
 	free(valor);
 	return bitmapDatos;
-}
+}*/																		//BORRAR ESTO
+
 void cargarBitmap(){
 	char *rutaBitmap=nivelMetadata(2);
 	archivoBitmap = open(rutaBitmap, O_RDWR | O_CREAT, S_IRWXU);
@@ -525,6 +580,7 @@ void cargarBitmap(){
 	char* bitArrayMap =  (char *) mmap(NULL, buf.st_size, PROT_WRITE | PROT_READ , MAP_SHARED, archivoBitmap, 0);
 	bitmap = bitarray_create_with_mode(bitArrayMap, buf.st_size, MSB_FIRST);
 }
+
 void mostrarBitmap(){
 	for(int i=0;i<(bitmap->size);i++){
 		if(i%64==0 && i!=0){
@@ -650,6 +706,23 @@ void escribirReg(char *name,t_list *registros,int cantParticiones){
 		size--;
 	}
 }
+
+
+/***********************NUEVOOOOOOOO*********/
+int contarTemporales(char *tabla){
+	int cant=0;
+	int seguir=1;
+	while(seguir==1){
+		char *rutaArch=nivelParticion(tabla,cant,1);
+		FILE *f=fopen(rutaArch,"rb");
+		if(f!=NULL){
+			fclose(f);
+			cant++;
+		}else{seguir=0;}
+	}
+	return cant;
+}
+
 //*************************************************************************************
 /**************************************************************************************************/
 //FUNCIONES ASOCIADAS AL REGISTRO

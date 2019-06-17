@@ -46,9 +46,12 @@ int main(void) {
 	insert("PELICULAS", 10, "Toy Story",10);			// 0
 	insert("PELICULAS", 10, "Harry Potter",10);			// 0
 	create("COMIDAS", "SH", 2, 10000);
-	create("TERMINA", "SH", 4, 10000);
-	create("VIVE", "SH", 2, 10000);
-
+	//create("TERMINA", "SH", 4, 10000);
+	//create("VIVE", "SH", 2, 10000);
+	insert("COMIDAS", 10, "Toy Story",10);			// 0
+	insert("COMIDAS", 10, "Harry Potter",10);			// 0
+	dump();
+	printf("%i",list_size(memtable));
 	//selectS("PELICULAS", 10);				// Harry Potter
 	//selectS("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
@@ -99,7 +102,6 @@ void theStart(){
 	}*/
 
 	levantarDirectorio();				//Crea el directorio ya teniendo el archivo config listo
-	//funMetaLFS();
 	}
 }
 
@@ -469,25 +471,49 @@ void dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
-
+	int largo;
+	int cantTmp=0;
+	char *arrayBlock=malloc(5);
 	while(cant>0){
-		Tabla *dumpT=list_get(dump,cant-1);
-		char *path=nivelUnaTabla(dumpT->nombre,0);
+		Tabla *dumpTabla=list_get(dump,cant-1);
+		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
 			//Calcular el tamaño de dumpT->registros
+			//int cantReg=list_size(dumpTabla->registros); 		se puede sacar?
 			//calcular cant bloques
-			//while(cantBloques>=0)
+			largo=largoDeRegistros(dumpTabla->registros);
+			int bloquesNecesarios=largo/metaLFS->tamBloques;
+			if(largo%metaLFS->tamBloques!=0){
+				bloquesNecesarios++;
+			}
+			if(hayXBloquesLibres(bloquesNecesarios)){
+				//COMPLETAR
+				char *b=string_itoa(obtenerBloqueVacio());
+				strcpy(arrayBlock,b);
+				arrayBlock=ponerSeparador(arrayBlock);
+				if(bloquesNecesarios>1){
+					for(int i =0;i<bloquesNecesarios;i++){
+						b=string_itoa(obtenerBloqueVacio());
+						arrayBlock=realloc(arrayBlock,strlen(b)+strlen(arrayBlock)+1);
+						strcat(arrayBlock,b);
+						arrayBlock=ponerSeparador(arrayBlock);
+					}
+				}
+			}
 			//pedir x cant bloques y guardarlas en un char           SI NO HAY ESPACIO Q PASA?  **PREGUNTAR**
-			//crearMetaArch
-			//escribirBloques(dumpT->nombre,regDepurados,metadata->partitions);
-			//BLOQUES[5]
-			//ESCRIBIR BLOQUES[1]
-			list_destroy_and_destroy_elements(dumpT->registros,(void *)destroyRegistry);
+			cantTmp=contarTemporales(dumpTabla->nombre);
+			char *ruta =nivelParticion(dumpTabla->nombre,0, 1);
+
+			nuevoMetaArch(ruta, largo, arrayBlock );
+			//escribirBloques();
+
+			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);			//ROMPE ACA POR UN FREE
+			free(ruta);
 		}
 		free(path);
-		free(dumpT->nombre);
-		free(dumpT);
-		dumpT=NULL;
+		free(dumpTabla->nombre);
+		dumpTabla=NULL;
+		free(dumpTabla);
 		cant--;
 	}
 	list_destroy(dump);

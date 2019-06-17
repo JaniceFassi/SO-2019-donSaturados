@@ -73,7 +73,7 @@ char *selectS(char* nameTable , u_int16_t key){
 	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 
 	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
-	path=nivelParticion(nameTable,part);
+	path=nivelParticion(nameTable,part, 0);
 	t_list *tmp=list_create();
 	if(archivoValido(path)==1){
 		tmp=leerTodoArchBinario(path);
