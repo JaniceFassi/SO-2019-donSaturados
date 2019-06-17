@@ -32,7 +32,6 @@ void* testeandoHilos(void * arg){
 int main(void) {
 
 
-
 	inicializar();
 
 
@@ -46,15 +45,12 @@ int main(void) {
 	//Pruebas :(
 
 	mInsert("ANIMALES", 150, "GATO");
-	mInsert("ANIMALES", 155, "GATO2");
-
+	mInsert("ANIMALES", 154, "GATO2");
+	mInsert("ANIMALES", 184, "GATO3");
+	mInsert("POSTRES",23,"TORTA");
 	mostrarMemoria();
 
-
-	int pos = hayMarcosLibres();
-	printf("%i n",pos);
-	pos = primerMarcoLibre();
-	printf("%i /n",pos);
+	//FUNCIONAAAAAAAA
 
 
 /*  int sarasa = 10;
@@ -192,18 +188,29 @@ void agregarPagina(segmento *seg, pagina *pag){
 
 int primerMarcoLibre(){
 	int posMarco = 0;
-	if(hayMarcosLibres()!= NULL){
-		posMarco = hayMarcosLibres(); //esta funcion te devuelve la posicion del marco libre
-	}
-	else{
-		//la memoria esta llena todos los marcos ocupados
-		//hacer luego jeje
+	int i=0;
+	marco *unMarco;
+
+	while(i < cantMarcos){
+		unMarco = list_get(tablaMarcos,i);
+		if((unMarco->estaLibre) == 0){
+			unMarco->estaLibre = 1; //Ya lo ocupo desde aca.
+			posMarco = unMarco->nroMarco;
+			return posMarco;
+		}
+		else{
+			i++;
+		}
 	}
 
-	return posMarco;
+	//Faltaria ver que pasa si la memoria esta llena, problema del franco del futuro jjejej
+
 }
 
 int hayMarcosLibres(){
+
+//Por ahora queda sin utilizar.
+
 	int posMarco = 0;
 
 		int primerVacio(marco *unMarco){
@@ -274,6 +281,7 @@ void inicializar(){
 }
 
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
+
 	int offset = offsetMarco*(pag->nroMarco);
 	memcpy(memoria+offset, &timestamp, sizeof(long));
 	offset = offset + sizeof(long);
@@ -281,12 +289,11 @@ void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 	int offset2 = offset + sizeof(u_int16_t);
 	memcpy(memoria+offset2, value, strlen(value)+1);
 	pag->modificado = 1;
-	ocuparMarco(pag->nroMarco);
-
-
 }
 
 void ocuparMarco(int nro){
+
+	//Sin utilizar por ahora.
 
 	int tieneMismoNro(marco *unMarco){
 		if(unMarco->nroMarco == nro){
@@ -317,10 +324,6 @@ pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
 
 	return list_find(seg->tablaPaginas, (void *) tieneMismaKey);
 
-	//-------------------------------------------------------------------------------//
-	//Por que se fija en la tablaSegmentos? No deberia hacerlo en seg->tablaPaginas ???
-	//Sino re al pedo pasarle por parametro segmento *seg //EDIT: LO CAMBIE
-	//-------------------------------------------------------------------------------//
 }
 
 t_config* read_config() {
