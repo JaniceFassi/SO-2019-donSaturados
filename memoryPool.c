@@ -44,12 +44,19 @@ int main(void) {
 
 	//Pruebas :(
 
-	mInsert("ANIMALES", 150, "GATO");
-	mInsert("ANIMALES", 154, "GATO2");
-	mInsert("ANIMALES", 184, "GATO3");
-	mInsert("POSTRES",23,"TORTA");
+	mInsert("ANIMALES", 1, "GATO");
+	mInsert("ANIMALES", 2, "PERRO");
+	mInsert("ANIMALES", 3, "CABALLO");
+	mInsert("ANIMALES",4,"LOBO MARINO");
+	mInsert("POSTRES",5,"TORTA");
 	mostrarMemoria();
 
+	printf("\n");
+	printf("Ahora probamos SELECT: \n");
+
+	mSelect("ANIMALES",1);
+	mSelect("ANIMALES",2);
+	mSelect("POSTRES",5);
 	//FUNCIONAAAAAAAA
 
 
@@ -118,14 +125,13 @@ int main(void) {
 }
 
 
-//------------------AUXILIARES-------------//
+//------------------AUXILIARES----------------//
 
 
 void mostrarMemoria(){
 	int desplazador=0 ,i=0;
 
 		while(i<cantMarcos){
-
 
 			printf("Timestamp: %ld \n", (*(long*)memoria)+desplazador);
 			printf("Key: %d \n", (*(u_int16_t*)(memoria+sizeof(long)))+desplazador);
@@ -241,17 +247,6 @@ char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
 	return msj;
 }
 
-/*
-paqueteRecibido desempaquetar(char* paquete){
-	paqueteRecibido nuevo;
-
-	paquete = string_new();
-
-	nuevo.key =  ;
-	nuevo.value;
-}
-
-*/
 
 void inicializar(){
 	t_log *logger = init_logger();
@@ -282,10 +277,15 @@ void inicializar(){
 
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 
+	//char* nuevaTime = string_new();
+	//char* nuevaKey = string_new();
+
+	//string_append(&nuevaKey,string_itoa(key));
+
 	int offset = offsetMarco*(pag->nroMarco);
 	memcpy(memoria+offset, &timestamp, sizeof(long));
 	offset = offset + sizeof(long);
-	memcpy(memoria+offset, &key, sizeof(u_int16_t));
+	memcpy(memoria+offset, &key,sizeof(u_int16_t));
 	int offset2 = offset + sizeof(u_int16_t);
 	memcpy(memoria+offset2, value, strlen(value)+1);
 	pag->modificado = 1;
@@ -313,8 +313,8 @@ pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
 
 	int tieneMismaKey(pagina *pag){
 			int rta = 0;
-			int offset = (offsetMarco * pag->nroMarco) + sizeof(long);
-			u_int16_t keyPag = *(u_int16_t*) memoria+ offset;
+			u_int16_t offset = (offsetMarco * (pag->nroMarco)) + sizeof(long);
+			u_int16_t keyPag = *(u_int16_t*) (memoria + offset);
 			if(keyPag == key){
 				rta = 1;
 			}
@@ -325,6 +325,13 @@ pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
 	return list_find(seg->tablaPaginas, (void *) tieneMismaKey);
 
 }
+
+char* conseguirValor(pagina* pNueva){
+
+	return (((char*)(memoria + sizeof(long) + sizeof(u_int16_t)))+((pNueva->nroMarco)*offsetMarco));
+}
+
+
 
 t_config* read_config() {
 	return config_create("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
@@ -340,6 +347,7 @@ t_config* read_config() {
 void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 	segmento *seg = buscarSegmento(nombreTabla);
+	long timestampActual;
 
 	if(seg != NULL){
 
@@ -347,15 +355,16 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			if (pag == NULL){
 				pag = crearPagina();
 				agregarPagina(seg,pag);
-
+				timestampActual = time(NULL);
+				agregarDato(timestampActual, key, valor, pag);
+				pag->modificado = 1;
+			}else{
+				agregarDato(time(NULL),key,valor,pag);
 			}
-		long timestampActual = time(NULL);
-		agregarDato(timestampActual, key, valor, pag);
-		pag->modificado = 1;
+
 
 
 	}else{
-
 		seg = crearSegmento(nombreTabla);
 		pagina *pag = crearPagina();
 		//persistir datos a memoria, ya tengo paja
@@ -363,46 +372,31 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 	}
 
-
 }
 
-//Se puede cambiar a otra cosa que no sea void?
-void* mSelect(char* nombreTabla,u_int16_t key){
+
+void mSelect(char* nombreTabla,u_int16_t key){
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
-	pagina *pNueva;
-	char* relleno = "Soy relleno";
 
 	if(nuevo!= NULL){
-		pNueva = buscarPaginaConKey(nuevo,key);
+		pagina* pNueva = buscarPaginaConKey(nuevo,key); //esta maldita fucion no esta bien
 		if(pNueva != NULL){
-			return pNueva->nroMarco; //Como saco el value sabiendo el nroMarco?
+			printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
 		else{
 			pNueva = pedirALissandraPagina(nombreTabla,key); //Algun dia la haremos y sera hermosa
-			agregarDato(time(NULL),key,relleno,pNueva);
-			return pNueva->nroMarco; //Devuelta, como saco el value?
+			agregarDato(time(NULL),key,conseguirValor(pNueva),pNueva);
+		    printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
 	}
 	else{
-		pNueva = pedirALissandraPagina(nombreTabla,key);
+		pagina* pNueva = pedirALissandraPagina(nombreTabla,key);
+		printf("El valor es: %s\n",conseguirValor(pNueva));
 	}
 
+	//Los casos en los que requiera pedir datos a lissandra no funcionan todavia ya que pedirALissandra todavia no esta hecha.
 
-	/*tabla tablaEncontrada = buscarTabla(nombreTabla);{//busca tabla, tabla = segmento
-		if(tablaEncontrada != NULL){
-			pagina pag = buscarPagina(tablaEncontrada, key); //busca la pagina
-
-		}else{
-			pedirleALissandra(nombreTabla, key);
-		}
-		if(pag != NULL){
-			printf("La tabla %s ha sido encontrada y el valor correspondiente a esa key es: %s \n", nombreTabla, pag->valor);
-		}else{
-			pedirleALissandra(nombreTabla, key);
-		}
-	}
-*/
 }
 
 

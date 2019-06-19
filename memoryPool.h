@@ -53,7 +53,7 @@ typedef struct {
 }pagina;
 
 
-void* mSelect(char* nombreTabla,u_int16_t key);
+void mSelect(char* nombreTabla,u_int16_t key);
 void mInsert(char* nombreTabla,u_int16_t key,char* valor);
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
 void mDescribe();
@@ -74,6 +74,7 @@ int primerMarcoLibre();
 int hayMarcosLibres();
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
+char* conseguirValor(pagina* pNueva);
 pagina *buscarPaginaConKey(segmento *seg, u_int16_t key);
 pagina *pedirALissandraPagina(char* nombreTabla,u_int16_t key);
 t_log* init_logger();
