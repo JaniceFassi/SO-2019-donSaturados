@@ -11,29 +11,27 @@
 int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 
 	//Verificar que la tabla exista en el file system.
-	//En caso que no exista, informa el error y continúa su ejecución.
 	char *path=nivelUnaTabla(param_nameTable, 0);
 	if(folderExist(path)==1){
-		log_info(logger,"No se puede hacer el insert porque no existe la tabla %s.", param_nameTable);
+		//En caso que no exista, informa el error y continúa su ejecución.
+		log_error(logger,"No se puede hacer el insert porque no existe la tabla %s.", param_nameTable);
+		perror("No se puede hacer el insert porque no existe la tabla %s.");
 		free(path);
 		return 1;
 	}
 	free(path);
 
 	if(string_length(param_value)+1>configLissandra->tamValue){
-		log_info(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
+		log_error(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
 		return 1;
 	}
-
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
-
 	if(list_is_empty(memtable)){
 		Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
 		list_add(memtable,nueva);
 	}else{
 		//Insertar en la memoria temporal del punto anterior una nueva entrada que contenga los datos enviados en la request.
-
 		Tabla *encontrada= find_tabla_by_name(param_nameTable);
 
 		if(encontrada==NULL){
@@ -59,12 +57,11 @@ char *selectS(char* nameTable , u_int16_t key){
 
 	//Verificar que la tabla exista en el file system.
 	if(folderExist(path)==1){
-		printf("No se puede hacer el select porque no existe la tabla %s.", nameTable);
+		log_error(logger,"No se puede hacer el insert porque no existe la tabla %s.", nameTable);
 		free(path);
 		return valor;
 	}
 	free(path);
-
 	//Obtener la metadata asociada a dicha tabla.
 	metaTabla *metadata= leerMetadataTabla(nameTable);
 
@@ -154,16 +151,14 @@ char *selectS(char* nameTable , u_int16_t key){
 //*****************************************************************************************************
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
 	//Verificar que la tabla no exista en el file system.
-	//Por convención, una tabla existe si ya hay otra con el mismo nombre.
-	//Para dichos nombres de las tablas siempre tomaremos sus valores en UPPERCASE (mayúsculas).
 	//En caso que exista, se guardará el resultado en un archivo .log
 	//y se retorna un error indicando dicho resultado.
-
-	//string_to_upper(nameTable);									************NO FUNCA************
+	char *nombre=string_duplicate(nameTable);
+	string_to_upper(nombre);	//solo funciona si escribis en minuscula
 	char *path=nivelUnaTabla(nameTable, 0);
 
 	if(folderExist(path)==0){
-		log_info(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
+		log_error(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
 		perror("La tabla ya existe.");
 		free(path);
 		return 1;
@@ -171,8 +166,9 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	//Crear el directorio para dicha tabla.
 	if(hayXBloquesLibres(numPartition)){
 		if(crearCarpeta(path)==1){
-			log_info(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
+			log_error(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
 			free(path);
+			//liberar el semaforo de bloques ocupados
 			return 1;
 		}
 		free(path);
@@ -182,59 +178,75 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		//Crear los archivos binarios asociados a cada partición de la tabla con sus bloques
 
 		if(crearParticiones(tabla)==1){
-			log_info(logger,"ERROR AL CREAR LAS PARTICIONES.");
+			log_error(logger,"ERROR AL CREAR LAS PARTICIONES.");
+			//liberar el semaforo de bloques ocupados
 			return 1;
 		}
 	}else{
-		log_info(logger,"No hay %i bloques libres\n",numPartition);
+		log_error(logger,"No hay %i bloques libres\n",numPartition);
+		//liberar el semaforo de bloques ocupados
+		return 1;
 	}
+	list_add(directorio,nameTable);
+	free(nombre);
 	return 0;
 }
 
-t_list *describe(char* nameTable,int variante){//PREGUNTAR
+t_list *describe(char* nameTable,int variante){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
 	t_list *tablas=list_create();
 	if(variante==0){
-		//cuando no tiene el nombre de la tabla
-		//Recorrer el directorio de árboles de tablas
-		//y descubrir cuales son las tablas que dispone el sistema.
-
-		//Leer los archivos Metadata de cada tabla.
-
+		if(list_is_empty(directorio)){
+			log_error(logger,"No hay ninguna tabla cargada en el sistema");
+		}else{
+			//Recorrer el directorio de árboles de tablas
+			//y descubrir cuales son las tablas que dispone el sistema.
+			int cant=list_size(directorio);
+			while(cant>0){
+				char *tabla=list_get(directorio,cant-1);
+				char *path=nivelUnaTabla(tabla,0);
+				if(folderExist(path)==0){
+					free(path);
+					//Leer el archivo Metadata de dicha tabla.
+					metaTabla *metadata= leerMetadataTabla(nameTable);
+					list_add(tablas,metadata);
+				}else{
+					free(path);
+				}
+				cant--;
+			}
+		}
 		//Retornar el contenido de dichos archivos Metadata.
 		return tablas;
 	}else{
 		//Verificar que la tabla exista en el file system.
-		char *path=pathFinal(nameTable,1);
+		char *path=nivelUnaTabla(nameTable,0);
 		if(folderExist(path)==0){
 			free(path);
-			path=pathFinal(nameTable,3);
 			//Leer el archivo Metadata de dicha tabla.
 			metaTabla *metadata= leerMetadataTabla(nameTable);
-			//metadata->nombre=malloc(strlen(nameTable)+1);
-			//strcpy(metadata->nombre,nameTable);
 			list_add(tablas,metadata);
 			//Retornar el contenido del archivo.
-			free(path);
 			return tablas;
 		}else{
-			log_info(logger, "No se puede hacer el describe porque no existe la tabla %s.", nameTable);
+			log_error(logger, "No se puede hacer el describe porque no existe la tabla %s.", nameTable);
 			free(path);
-			return NULL;
+			return tablas;
 		}
-
 	}
 }
 
 void drop(char* nameTable){
 	//Verificar que la tabla exista en el file system.
 
-	char *path=pathFinal(nameTable,1);
+	char *path=nivelUnaTabla(nameTable,0);
 	if(folderExist(path)==0){
-		//Eliminar directorio y todos los archivos de dicha tabla.
+		//eliminar archivos binarios, temporales, tempC y metadata
+		//liberar bloques y aumentar el semaforo contador
+		//sacar la tabla del directorio
+		//Eliminar directorio
 		borrarCarpeta(path);
-
 	}else{
-		log_info(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);
+		log_error(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);
 	}
 	free(path);
 }

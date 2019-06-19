@@ -120,6 +120,23 @@ Registry *desconcatParaArch(char *linea){
 	Registry *nuevo=createRegistry(key,subString[2],timestamp);
 	return nuevo;
 }
+char *array_A_String(char **array,int cantBloques){
+	char *casteo=malloc(2);
+	strcpy(casteo,"[");
+	int i=0;
+	while(i<cantBloques){
+		casteo=realloc(casteo,strlen(casteo)+strlen(array[i])+1);
+		strcat(casteo,array[i]);
+		if(i!=cantBloques-1){
+			casteo=realloc(casteo,strlen(casteo)+2);
+			strcat(casteo,",");
+		}
+		i++;
+	}
+	casteo=realloc(casteo,strlen(casteo)+2);
+	strcat(casteo,"]");
+	return casteo;
+}
 
 //*********************MODIFICADA JANI***********************
 
@@ -351,7 +368,8 @@ int crearParticiones(metaTabla *tabla){
 }
 
 /*********************NUEVO****************************/
-int nuevoMetaArch(char *path, int size, char *bloques){
+int nuevoMetaArch(char *path, int size, char **bloques, int cantBloques){
+	char *bloqCasteado=array_A_String(bloques,cantBloques);
 	FILE *f=fopen(path,"wb");
 	if(f!=NULL){
 		fclose(f);
@@ -361,30 +379,47 @@ int nuevoMetaArch(char *path, int size, char *bloques){
 	t_config *metaArchs=config_create(path);
 	char *tamanio=string_itoa(size);
 	config_set_value(metaArchs,"SIZE",tamanio);
-	config_set_value(metaArchs,"BLOCKS",bloques);
+	config_set_value(metaArchs,"BLOCKS",bloqCasteado);
 	config_save(metaArchs);
 	config_destroy(metaArchs);
 	free(tamanio);
+	free(bloqCasteado);
 	return 0;
 }
 
-void crearMetaArchivo(char *path, int bloque){
-	char *blocks=malloc(strlen(string_itoa(bloque))+1);
-	strcpy(blocks,string_itoa(bloque));
+void crearMetaArchivo(char *path, int nrobloque){
+	char **blocks=malloc(sizeof(int));
+	blocks[0]=string_itoa(nrobloque);
+	char *bloque=array_A_String(blocks,1);
 	t_config *metaArchs=config_create(path);
 	char* size = string_itoa(0);
 	config_set_value(metaArchs,"SIZE",size);
-	config_set_value(metaArchs,"BLOCKS",blocks);
+	config_set_value(metaArchs,"BLOCKS",bloque);
 	config_save(metaArchs);
 	config_destroy(metaArchs);
 	free(size);
+	liberarSubstrings(blocks);
+	free(bloque);
 }
-
+void liberarSubstrings(char **liberar){
+	int i=0;
+	while(liberar[i]!=NULL){
+		free(liberar[i]);
+	}
+	free(liberar);
+}
 void borrarMetaArch(metaArch *archivo){
-	free(archivo->bloques);
+	liberarSubstrings(archivo->bloques);
 	free(archivo);
 }
-
+metaArch *leerMetaArch(char *path){
+	metaArch *nuevo=malloc(sizeof(metaArch));
+	t_config *metaArchs=config_create(path);
+	nuevo->size=config_get_int_value(metaArchs,"SIZE");
+	nuevo->bloques=config_get_array_value(metaArchs,"BLOCKS");
+	config_destroy(metaArchs);
+	return nuevo;
+}
 metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
 	char *path=nivelUnaTabla(nombre,1);
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
@@ -658,20 +693,6 @@ int tamanioArchivo(char* path){
 	return fileInfo.st_size;
 	close(fd);
 }
-/*char *inicializarArray(){
-	char array[10];
-	int i=0;
-	char *valor=malloc(2);
-	strcpy(valor,"0");
-	while(i<10){
-		array[i]=0;
-		i++;
-	}
-	char *bitmapDatos=malloc(sizeof(array));
-	strcpy(bitmapDatos,array);
-	free(valor);
-	return bitmapDatos;
-}*/																		//BORRAR ESTO
 
 void cargarBitmap(){
 	char *rutaBitmap=nivelMetadata(2);

@@ -11,9 +11,9 @@ void dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
-	char *arrayBlock=malloc(5);
 	while(cant>0){
 		Tabla *dumpTabla=list_get(dump,cant-1);
+		char **arrayBlock=malloc(sizeof(int));
 		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
 			//Calcular el tamaño de dumpT->registros
@@ -27,28 +27,32 @@ void dump(){
 			//pedir x cant bloques y guardarlas en un char           SI NO HAY ESPACIO Q PASA?  **PREGUNTAR**
 			if(hayXBloquesLibres(bloquesNecesarios)){
 				//COMPLETAR
-				char *block=string_itoa(obtenerBloqueVacio());
-				strcpy(arrayBlock,block);
-				arrayBlock=ponerSeparador(arrayBlock);
-				if(bloquesNecesarios>1){
-					for(int i =1;i<bloquesNecesarios;i++){
-						block=string_itoa(obtenerBloqueVacio());
-						arrayBlock=realloc(arrayBlock,strlen(block)+strlen(arrayBlock)+1);
-						strcat(arrayBlock,block);
-						arrayBlock=ponerSeparador(arrayBlock);
-					}
+				int i=0;
+				while(i<bloquesNecesarios){
+					arrayBlock[i]=string_itoa(obtenerBloqueVacio());
+					i++;
 				}
 			}
 			//Saca el numero de dump de esa tabla
 			int cantTmp=contarTemporales(dumpTabla->nombre);
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
 
-			nuevoMetaArch(ruta, largo, arrayBlock);
-			//escribirBloques();
+			if(nuevoMetaArch(ruta, largo, arrayBlock,bloquesNecesarios)==1){
+				log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO\n");
+				int i=0;
+				while(arrayBlock[i]!=NULL){
+					desocuparBloque(atoi(arrayBlock[i]));
+					free(arrayBlock[i]);
+					i++;
+				}
+				free(ruta);
+			}
+			//escribirBloquesTemp(dumpTabla->nombre,dumpTabla->registros,arrayBlock);
 
-			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);			//ROMPE ACA POR UN FREE
+			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);//ROMPE ACA POR UN FREE
 			free(ruta);
 		}
+		liberarSubstrings(arrayBlock);
 		free(path);
 		free(dumpTabla->nombre);
 		free(dumpTabla);

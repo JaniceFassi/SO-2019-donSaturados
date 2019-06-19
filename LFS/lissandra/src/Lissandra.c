@@ -101,6 +101,7 @@ void theStart(){
 	}
 	levantarDirectorio();				//Crea el directorio ya teniendo el archivo config listo
 	memtable= list_create();												//Inicia la memtable global
+	directorio=list_create();
 }
 
 t_log* init_logger() {
@@ -222,7 +223,7 @@ void console(){
 			char *valor=selectS(subStrings[1],atoi(subStrings[2]));
 			log_info(logger,valor);
 			printf("%s\n",valor);
-			free(subStrings);
+			liberarSubstrings(subStrings);
 			free(valor);
 		}
 
@@ -271,8 +272,8 @@ void console(){
 	 			free(espacio);
 	 			free(value);
 	 		}
-	 		free(cadena);
- 			free(split);
+	 		liberarSubstrings(cadena);
+	 		liberarSubstrings(split);
 	 	}
 
 	 	if(!strncmp(linea,"CREATE ",7)){
@@ -282,7 +283,7 @@ void console(){
 			}else{
 				printf("No se pudo crear la tablas\n");
 			}
-			free(subStrings);
+			liberarSubstrings(subStrings);
 		}
 
 		if(!strncmp(linea,"DESCRIBE ",9)){
@@ -293,7 +294,7 @@ void console(){
 			}else{
 				tablas=describe(subStrings[1],1);//1 si ponen nombre de Tabla
 			}
-			free(subStrings);
+			liberarSubstrings(subStrings);
 		}
 
 		if(!strncmp(linea,"DROP ",5)){
@@ -303,7 +304,7 @@ void console(){
 			}else{
 				drop(subStrings[1]);
 			}
-			free(subStrings);
+			liberarSubstrings(subStrings);
 		}
 
 		if(!strncmp(linea,"exit",5)){

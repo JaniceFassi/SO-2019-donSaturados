@@ -41,7 +41,7 @@ typedef struct{
 
 typedef struct{
 	u_int16_t size;
-	char *bloques;
+	char **bloques;
 }metaArch;
 
 typedef struct{
@@ -59,6 +59,7 @@ t_bitarray* bitmap;
 int archivoBitmap;
 datosConfig *configLissandra;
 metaFileSystem *metaLFS;
+t_list *directorio;
 /*char *pathConfig;
 */
 //FUNCIONES DE REGISTROS
@@ -80,7 +81,7 @@ void leerMetaLFS();
 char *rutaBloqueNro(int nroBloque);
 void borrarMetaLFS();
 char *nivelUnaTabla(char *nombre, int modo);
-int nuevoMetaArch(char *ruta, int largo,char *bloques);
+int nuevoMetaArch(char *path, int size, char **bloques, int cantBloques);
 void estructurarConfig();
 void borrarDatosConfig();
 void crearConfig();
@@ -102,7 +103,8 @@ char *obtenerMontaje();
 char *nivelMetadata(int modo);
 char *concatRegistro(Registry *reg);
 char *ponerSeparador(char *linea);
-
+char *array_A_String(char **array,int cantBloques);
+void liberarSubstrings(char **liberar);
 //FUNCIONES DE CARPETAS
 int crearCarpeta(char* path);
 int folderExist(char* path);
@@ -119,11 +121,11 @@ int agregarArchBinario(char *path,long timestamp,int key,char *value);
 int eliminarArchivo(char *path);
 void escribirReg(char *name,t_list *registros,int cantParticiones);
 int archivoValido(char *path);
-void crearMetaArchivo(char *path, int bloque);
+void crearMetaArchivo(char *path, int nrobloque);
 void borrarMetaArch(metaArch *nuevo);
 int tamanioArchivo(char* path);
 int contarTemporales(char *nombre);
-
+metaArch *leerMetaArch(char *path);
 //FUNCIONES BITMAPS
 void cargarBitmap();
 void mostrarBitmap();
