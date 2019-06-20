@@ -183,7 +183,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 			return 1;
 		}
 	}else{
-		log_error(logger,"No hay %i bloques libres\n",numPartition);
+		log_error(logger,"No hay %i bloques libres.\n",numPartition);
 		//liberar el semaforo de bloques ocupados
 		return 1;
 	}
@@ -196,7 +196,7 @@ t_list *describe(char* nameTable,int variante){//PREGUNTAR, PORQUE 2 ATRIBUTOS, 
 	t_list *tablas=list_create();
 	if(variante==0){
 		if(list_is_empty(directorio)){
-			log_error(logger,"No hay ninguna tabla cargada en el sistema");
+			log_error(logger,"No hay ninguna tabla cargada en el sistema.");
 		}else{
 			//Recorrer el directorio de árboles de tablas
 			//y descubrir cuales son las tablas que dispone el sistema.

@@ -51,7 +51,6 @@ int main(void) {
 	insert("COMIDAS", 10, "Toy Story",10);			// 0
 	insert("COMIDAS", 10, "Harry Potter",10);			// 0
 	dump();
-	printf("%i",list_size(memtable));
 	//selectS("PELICULAS", 10);				// Harry Potter
 	//selectS("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
@@ -60,10 +59,11 @@ int main(void) {
 	insert("PELICULAS", 4829,"Aladdin",10);				// 5
 	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
 	insert("PELICULAS", 163, "Buscando a dory",1300);	// 1
-	selectS("PELICULAS", 4829);					// Aladdin
+//	selectS("PELICULAS", 4829);					// Aladdin
 	insert("PELICULAS", 3671, "Avatar",1000);			// 1
-	selectS("PELICULAS", 163);					// Buscando a dory
-	selectS("PELICULAS", 3671);					// Avatar
+	//dump();
+	//selectS("PELICULAS", 163);					// Buscando a dory
+	//selectS("PELICULAS", 3671);					// Avatar
 
 	/*************************************************************/
 
@@ -321,7 +321,6 @@ void funcionSenial(int sig){
 	dump();
 	log_info(logger,"Finalizacion de dump");
 	alarm(configLissandra->tiempoDump);
-
 }
 
 void theEnd(){
@@ -336,5 +335,3 @@ void theEnd(){
 	close(archivoBitmap);
 	log_destroy(logger);
 }
-
-

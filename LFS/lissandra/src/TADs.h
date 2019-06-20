@@ -73,6 +73,7 @@ int encontrarRegistroPorKey(t_list *registros,int key);
 t_list* filtrearPorKey(t_list *registros,int key);
 int calcularIndex(t_list *lista,int key);
 
+void oldCrearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
 void crearMetaLFS();
 char *nivelTablas();
 char *nivelBloques();
@@ -81,7 +82,6 @@ void leerMetaLFS();
 char *rutaBloqueNro(int nroBloque);
 void borrarMetaLFS();
 char *nivelUnaTabla(char *nombre, int modo);
-int nuevoMetaArch(char *path, int size, char **bloques, int cantBloques);
 void estructurarConfig();
 void borrarDatosConfig();
 void crearConfig();
@@ -121,7 +121,8 @@ int agregarArchBinario(char *path,long timestamp,int key,char *value);
 int eliminarArchivo(char *path);
 void escribirReg(char *name,t_list *registros,int cantParticiones);
 int archivoValido(char *path);
-void crearMetaArchivo(char *path, int nrobloque);
+//void crearMetaArchivo(char *path, int nrobloque);			ya se puede sacar
+int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
 void borrarMetaArch(metaArch *nuevo);
 int tamanioArchivo(char* path);
 int contarTemporales(char *nombre);
@@ -129,6 +130,9 @@ metaArch *leerMetaArch(char *path);
 //NUEVAS FUNCIONES ARCHIVOS
 void escribirBloque(char *buffer,char **bloques);
 void escribirArchB(char *path,char *buffer);
+t_list *deChar_Registros(char *buffer);
+char *leerArchBinario(char *path,int tamanio);
+t_list *leerBloques(char**bloques,int offset);
 //FUNCIONES BITMAPS
 void cargarBitmap();
 void mostrarBitmap();
@@ -138,6 +142,6 @@ int cantBloquesLibres(int cantidad);
 int obtenerBloqueVacio();
 void desocuparBloque(int Nrobloque);
 void ocuparBloque(int Nrobloque);
-char *largoDeRegistros(t_list *lista);
+char *cadenaDeRegistros(t_list *lista);
 
 #endif

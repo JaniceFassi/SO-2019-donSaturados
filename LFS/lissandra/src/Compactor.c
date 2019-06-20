@@ -11,26 +11,30 @@ void dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
+	char ** arrayBlock;
+	int bloquesNecesarios=0;
 	while(cant>0){
 		Tabla *dumpTabla=list_get(dump,cant-1);
-		char **arrayBlock=malloc(sizeof(int));
+
 		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
-			//Calcular el tamaño de dumpT->registros
-			char *buffer=largoDeRegistros(dumpTabla->registros);
+			//Calcular el tamaño de dumpTabla->registros
+			char *buffer=cadenaDeRegistros(dumpTabla->registros);
 			int largo=strlen(buffer)+1;
 			//calcular cant bloques
-			int bloquesNecesarios=largo/metaLFS->tamBloques;
+			bloquesNecesarios=largo/metaLFS->tamBloques;
 			if(largo%metaLFS->tamBloques!=0){
 				bloquesNecesarios++;
 			}
-			//int cantReg=list_size(dumpTabla->registros); 		se puede sacar?
-			//pedir x cant bloques y guardarlas en un char           SI NO HAY ESPACIO Q PASA?  **PREGUNTAR**
+			arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
+			//pedir x cant bloques y guardarlas en un char
 			if(hayXBloquesLibres(bloquesNecesarios)){
 				//COMPLETAR
 				int i=0;
 				while(i<bloquesNecesarios){
-					arrayBlock[i]=string_itoa(obtenerBloqueVacio());
+					int bloqueVacio=obtenerBloqueVacio();
+					arrayBlock[i]=malloc(strlen(string_itoa(bloqueVacio))+1);
+					strcpy(arrayBlock[i],string_itoa(bloqueVacio));
 					i++;
 				}
 			}
@@ -38,8 +42,8 @@ void dump(){
 			int cantTmp=contarTemporales(dumpTabla->nombre);
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
 
-			if(nuevoMetaArch(ruta, largo, arrayBlock,bloquesNecesarios)==1){
-				log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO\n");
+			if(crearMetaArchivo(ruta, largo, arrayBlock,bloquesNecesarios)==1){
+				log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO.\n");
 				int i=0;
 				while(arrayBlock[i]!=NULL){
 					desocuparBloque(atoi(arrayBlock[i]));
@@ -50,10 +54,13 @@ void dump(){
 			}
 			escribirBloque(buffer,arrayBlock);
 
-			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);//ROMPE ACA POR UN FREE
+			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);
 			free(ruta);
 		}
-		liberarSubstrings(arrayBlock);
+		for(int f=0;f<bloquesNecesarios;f++){
+			free(arrayBlock[f]);
+		}
+		free(arrayBlock);
 		free(path);
 		free(dumpTabla->nombre);
 		free(dumpTabla);

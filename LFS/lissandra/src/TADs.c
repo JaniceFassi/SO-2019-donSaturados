@@ -11,7 +11,6 @@
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
 
-
 //A REEMPLAZAR
 char *pathFinal(char *nombre, int principal){
 	//0 ES LA CARP PRINCIPAL, 1 ES LA CARP DE LAS TABLAS, 2 PATH DE ARCH, 3 METADATA
@@ -138,16 +137,16 @@ char *array_A_String(char **array,int cantBloques){
 	return casteo;
 }
 
-//*********************MODIFICADA JANI***********************
-
 char *concatRegistro(Registry *registro){
 	char *keys=string_itoa(registro->key);
 	char *time=string_from_format("%ld",registro->timestamp);
-	char *linea=malloc(strlen(time)+strlen(keys)+strlen(registro->value)+1);
+	char *linea=malloc(strlen(time)+1);
 	strcpy(linea,time);
 	linea=ponerSeparador(linea);
+	linea=realloc(linea,strlen(linea)+strlen(keys)+1);
 	strcat(linea,keys);
 	linea=ponerSeparador(linea);
+	linea=realloc(linea,strlen(linea)+strlen(registro->value)+1);
 	strcat(linea, registro->value);
 	return linea;
 }
@@ -202,7 +201,6 @@ char *concatParaArchivo(long timestamp,int key,char *value,int opc){
 	return linea;
 }
 
-/***************************************NUEVOS*****************************************************/
 char *ponerBarra(char *linea){
 	char *barra=malloc(2);
 	strcpy(barra,"/");
@@ -212,7 +210,6 @@ char *ponerBarra(char *linea){
 	return linea;
 }
 
-/********************NUEVOOO***************************/
 char *ponerSeparador(char *linea){
 	char *separador=malloc(2);
 	strcpy(separador,";");
@@ -313,6 +310,7 @@ char *nivelParticion(char *tabla, int particion, int modo){		//montaje/TABLAS/TA
 	free(part);
 	return path;
 }
+
 /****************************************************************************************************/
 //FUNCIONES DE CARPETAS
 
@@ -346,7 +344,6 @@ int borrarCarpeta(char *path){//BORRA LA CARPETA
 /***********************************************************************************************/
 //FUNCIONES DE ARCHIVOS
 
-//***************************************************MODIFICADO JANI
 int crearParticiones(metaTabla *tabla){
 	FILE* arch; //BINARIO
 	int cant=tabla->partitions;
@@ -355,20 +352,28 @@ int crearParticiones(metaTabla *tabla){
 		path=nivelParticion(tabla->nombre,cant-1, 0);
 		int bloque=obtenerBloqueVacio();
 		if((arch= fopen(path,"wb"))<0){
-			log_info(logger,"Error al crear la particion %i de la tabla %s\n",tabla->partitions,tabla->nombre);
+			log_info(logger,"Error al crear la particion %i de la tabla %s.\n",tabla->partitions,tabla->nombre);
 			 desocuparBloque(bloque);
 			return 1;
 		}
-		crearMetaArchivo(path,bloque);
+		char **arrayBlock=malloc(sizeof(int));
+		arrayBlock[0]=malloc(strlen(string_itoa(bloque))+1);
+		strcpy(arrayBlock[0],string_itoa(bloque));
+		if(crearMetaArchivo(path, 0,arrayBlock ,1)!=0){
+			//mensaje de error
+		}
+		//crearMetaArchivo(path,bloque);
 		fclose(arch);
 		free(path);
+		free(arrayBlock[0]);
+		free(arrayBlock);
+		//liberarSubstrings(arrayBlock);
 		cant --;
 	}
 	return 0;
 }
 
-/*********************NUEVO****************************/
-int nuevoMetaArch(char *path, int size, char **bloques, int cantBloques){
+int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques){
 	char *bloqCasteado=array_A_String(bloques,cantBloques);
 	FILE *f=fopen(path,"wb");
 	if(f!=NULL){
@@ -387,9 +392,10 @@ int nuevoMetaArch(char *path, int size, char **bloques, int cantBloques){
 	return 0;
 }
 
-void crearMetaArchivo(char *path, int nrobloque){
+/*void crearMetaArchivo(char *path, int nrobloque){						//Desde cero, con size 0 y un solo bloque. Podria sacarse
 	char **blocks=malloc(sizeof(int));
-	blocks[0]=string_itoa(nrobloque);
+	blocks[0]=malloc(strlen(string_itoa(nrobloque))+1);
+	strcpy(blocks[0],string_itoa(nrobloque));
 	char *bloque=array_A_String(blocks,1);
 	t_config *metaArchs=config_create(path);
 	char* size = string_itoa(0);
@@ -400,11 +406,14 @@ void crearMetaArchivo(char *path, int nrobloque){
 	free(size);
 	liberarSubstrings(blocks);
 	free(bloque);
-}
+}*/
+
 void liberarSubstrings(char **liberar){
-	int i=0;
-	while(liberar[i]!=NULL){
-		free(liberar[i]);
+	int i=1;
+	while(liberar[i-1]!=NULL){
+		free(liberar[i-1]);
+		//log_info(logger, "%s",liberar[i]);
+		i++;
 	}
 	free(liberar);
 }
@@ -464,6 +473,24 @@ void borrarMetadataTabla(metaTabla *metadata){
 	free(metadata->consistency);
 	free(metadata->nombre);
 	free(metadata);
+}
+
+void oldCrearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
+	char *path=nivelMetadata(1);
+	FILE *arch=fopen(path,"wb");
+	fclose(arch);
+	metaLFS = malloc(sizeof(metaFileSystem));
+	metaLFS->magicNumber=malloc(strlen(magicNumber)+1);
+	strcpy(metaLFS->magicNumber,magicNumber);
+	metaLFS->cantBloques=cantBloques;
+	metaLFS->tamBloques=size;
+	t_config *config = config_create(path);
+	config_set_value(config, "BLOQUES", string_itoa(metaLFS->cantBloques));
+	config_set_value(config, "TAMANIO", string_itoa(metaLFS->tamBloques));
+	config_set_value(config, "MAGIC_NUMBER", metaLFS->magicNumber);
+	config_save(config);
+	config_destroy(config);
+	free(path);
 }
 
 void crearMetaLFS(){
@@ -609,8 +636,8 @@ void crearConfig(){
 	free(tempDump);
 	free(tempRetar);
 }
-// NUEVAS FUNCIONES DE ARCHIVOS *******************************************************************
 
+// NUEVAS FUNCIONES DE ARCHIVOS *******************************************************************
 void escribirBloque(char *buffer,char **bloques){
 	int nroArray=0;
 	while(strlen(buffer)>metaLFS->tamBloques){
@@ -652,8 +679,79 @@ void escribirArchB(char *path,char *buffer){
 	fclose(bloque);
 }
 
+t_list *leerBloques(char**bloques,int offset){
+	t_list *registrosLeidos=list_create();
+	int blok=0;
+	char *leidoTotal;
+	while(offset>metaLFS->tamBloques){
+		if(bloques[blok]!=NULL){
+			int nroBloq=atoi(bloques[blok]);
+			char *pathB=rutaBloqueNro(nroBloq);
+			char *leido=leerArchBinario(pathB,metaLFS->tamBloques);
+			if(blok==0){
+				leidoTotal=malloc(strlen(leido)+1);
+				strcpy(leidoTotal,leido);
+				free(leido);
+			}else{
+				leidoTotal=realloc(leidoTotal,strlen(leido));
+				strcat(leidoTotal,leido);
+				free(leido);
+			}
+			blok++;
+		}
+	offset-=metaLFS->tamBloques;
+	}
+	if(offset>0){
+		if(bloques[blok]!=NULL){
+			int nroBloq=atoi(bloques[blok]);
+			char *pathB=rutaBloqueNro(nroBloq);
+			char *leido=leerArchBinario(pathB,offset);
+			if(blok==0){
+				leidoTotal=malloc(strlen(leido)+1);
+				strcpy(leidoTotal,leido);
+				free(leido);
+			}else{
+				leidoTotal=realloc(leidoTotal,strlen(leido));
+				strcat(leidoTotal,leido);
+				free(leido);
+			}
+		}
+
+	}
+	return registrosLeidos=deChar_Registros(leidoTotal);//el leidoTotal se libera en la funcion esta
+}
+
+t_list *deChar_Registros(char *buffer){
+	t_list *registros=list_create();
+	while(strlen(buffer)>0){
+		char **substring=string_n_split(buffer,4,";");
+		Registry *nuevo=createRegistry(atoi(substring[1]),substring[2], atol(substring[0]));
+		list_add(registros,nuevo);
+		free(buffer);
+		buffer=malloc(strlen (substring[3])+1);
+		strcpy(buffer,substring[3]);
+		free(substring[0]);    //LO HICE ASI PORQUE NO SE COMO MOD LA FUNCION LIB SUBSTRINGS
+		free(substring[1]);
+		free(substring[2]);
+		free(substring[3]);
+		free(substring);
+	}
+	free(buffer); //no se si esta de mas
+	return registros;
+}
+
+char *leerArchBinario(char *path,int tamanio){
+	FILE *arch;
+	arch=fopen(path,"rb");
+	char *datos=malloc(tamanio);
+	fread(datos, sizeof(char), tamanio, arch);
+	fclose(arch);
+	return datos;
+}
+
 //****************************************************************************************
 //FUNCIONES EXPERIMENTALES DE BITMAPS
+
 void ocuparBloque(int Nrobloque){
 	char*rutaBloque=rutaBloqueNro(Nrobloque);
 //mutex
@@ -705,10 +803,10 @@ int cantBloquesLibres(int cantidad){
 	return libres;
 }
 
-/*****************************NUEVOOOOOO*************/
-char *largoDeRegistros(t_list *lista){
+char *cadenaDeRegistros(t_list *lista){
 	char *buffer;
 	int vacio=0;
+
 	void sumarRegistro(Registry *reg){
 		char *linea;
 		linea=concatRegistro(reg);
@@ -717,12 +815,13 @@ char *largoDeRegistros(t_list *lista){
 			strcpy(buffer,linea);
 			vacio++;
 		}else{
-			buffer=ponerSeparador(buffer);
 			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
 			strcat(buffer,linea);
 		}
-		free(linea);
+		buffer=ponerSeparador(buffer);
+		//free(linea);
 	}
+
 	list_iterate(lista,(void*)sumarRegistro);
 	return buffer;
 }
@@ -776,11 +875,6 @@ void mostrarBitmap(){
 	//size_t i =bitarray_get_max_bit(bitmap);
 }
 
-
-
-
-
-//****************************************************************************************
 int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 1
 	FILE *archB;
 	archB= fopen(path, "rb");
@@ -861,7 +955,7 @@ t_list *leerTodoArchBinario(char *path){
 	free(buffer);
 	return registrosLeidos;
 }
-//***********************************************************************************************
+
 int eliminarArchivo(char *path){
 	if(remove(path)==0){
 		return 0;
@@ -869,7 +963,7 @@ int eliminarArchivo(char *path){
 	printf("Error al intentar borrar archivo");
 	return 1;
 }
-//***************************************MODIFICADO
+
 void escribirReg(char *name,t_list *registros,int cantParticiones){
 	int size=list_size(registros);
 	while(size>0){
@@ -886,8 +980,6 @@ void escribirReg(char *name,t_list *registros,int cantParticiones){
 	}
 }
 
-
-/***********************NUEVOOOOOOOO*********/
 int contarTemporales(char *tabla){
 	int cant=0;
 	int seguir=1;
@@ -905,7 +997,6 @@ int contarTemporales(char *tabla){
 }
 
 //*************************************************************************************
-/**************************************************************************************************/
 //FUNCIONES ASOCIADAS AL REGISTRO
 
 Registry *createRegistry(u_int16_t key, char *val, long time){
@@ -993,8 +1084,10 @@ t_list *regDep(t_list *aDepu){
 	}
 	return depu;
 }
+
 /**************************************************************************************************/
 //FUNCIONES ASOCIADAS A TABLAS
+
 Tabla *find_tabla_by_name(char *name) {
 	int _is_the_one(Tabla *p) {
 
@@ -1031,6 +1124,7 @@ int encontrarRegistroPorKey(t_list *registros,int key){
 		return 0;
 	}
 }
+
 Registry *encontrarKeyDepu(t_list *registros,int key){
 //devuelve 1 cuando no hay registros de esa key, devuelve 0 cuando si hay
 	bool existe(Registry *p) {
