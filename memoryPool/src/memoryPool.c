@@ -49,7 +49,7 @@ int main(void) {
 	mInsert("ANIMALES", 3, "CABALLO");
 	mInsert("ANIMALES",4,"LOBO MARINO");
 	mInsert("POSTRES",5,"TORTA");
-	mostrarMemoria();
+	//mostrarMemoria();
 
 	printf("%i",memoriaLlena());
 
@@ -68,7 +68,7 @@ int main(void) {
 	mInsert("POSTRES",22,"CHOCOLATE");
 	mInsert("COLORES", 12, "ROJO");
 	mSelect("COLORES", 12);
-	mostrarMemoria();
+	//mostrarMemoria();
 
 
 	printf("\n");
@@ -184,6 +184,9 @@ segmento *crearSegmento(char* nombre){
 pagina *crearPagina(){
 	pagina *pag = malloc(sizeof(pagina));
 	pag->nroMarco = primerMarcoLibre();
+	if(pag->nroMarco == -1){
+		printf("No hay espacio para crear una pagina");
+	}
 	return pag;
 }
 
@@ -310,17 +313,17 @@ t_config* read_config() {
  			if((unMarco->estaLibre) == 0){
  				unMarco->estaLibre = 1; //Ya lo ocupo desde aca.
  				posMarco = unMarco->nroMarco;
- 				return posMarco;
+ 				break;
  			}
  			else{
  				i++;
  			}
  		}
- 	}
- 	else{
- 		//hacete un journal
- 	}
 
+ 	}
+ 	//else journal
+
+ 	return posMarco;
  }
 
  void eliminarPaginas(segmento* nuevo){
