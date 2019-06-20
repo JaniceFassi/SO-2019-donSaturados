@@ -33,6 +33,7 @@ t_list* tablaPaginas;
 void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
+int cantMarcos;
 
 
 
@@ -52,13 +53,7 @@ typedef struct {
 }pagina;
 
 
-
-
-
-
-
-
-int mSelect(char* nombreTabla,u_int16_t key);
+void mSelect(char* nombreTabla,u_int16_t key);
 void mInsert(char* nombreTabla,u_int16_t key,char* valor);
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
 void mDescribe();
@@ -70,15 +65,21 @@ void mGossip();
 
 //AUXILIARES
 void inicializar();
+void mostrarMemoria();
 segmento *crearSegmento(char* nombre);
 segmento *buscarSegmento(char* nombre);
 pagina *crearPagina();
 void agregarPagina(segmento *seg, pagina *pag);
 int primerMarcoLibre();
+int hayMarcosLibres();
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
+char* conseguirValor(pagina* pNueva);
 pagina *buscarPaginaConKey(segmento *seg, u_int16_t key);
 pagina *pedirALissandraPagina(char* nombreTabla,u_int16_t key);
+void pedirleCrearTablaAlissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
+void pedirleALissandraQueBorre(char* nombreTabla);
+void liberarMarco(int nroMarco);
 t_log* init_logger();
 t_config* read_config();
 
