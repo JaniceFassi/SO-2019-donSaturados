@@ -126,6 +126,9 @@ void borrarMetaArch(metaArch *nuevo);
 int tamanioArchivo(char* path);
 int contarTemporales(char *nombre);
 metaArch *leerMetaArch(char *path);
+//NUEVAS FUNCIONES ARCHIVOS
+void escribirBloque(char *buffer,char **bloques);
+void escribirArchB(char *path,char *buffer);
 //FUNCIONES BITMAPS
 void cargarBitmap();
 void mostrarBitmap();
@@ -135,6 +138,6 @@ int cantBloquesLibres(int cantidad);
 int obtenerBloqueVacio();
 void desocuparBloque(int Nrobloque);
 void ocuparBloque(int Nrobloque);
-int largoDeRegistros(t_list *lista);
+char *largoDeRegistros(t_list *lista);
 
 #endif

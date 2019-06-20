@@ -17,7 +17,8 @@ void dump(){
 		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
 			//Calcular el tamaño de dumpT->registros
-			int largo=largoDeRegistros(dumpTabla->registros);
+			char *buffer=largoDeRegistros(dumpTabla->registros);
+			int largo=strlen(buffer)+1;
 			//calcular cant bloques
 			int bloquesNecesarios=largo/metaLFS->tamBloques;
 			if(largo%metaLFS->tamBloques!=0){
@@ -47,7 +48,7 @@ void dump(){
 				}
 				free(ruta);
 			}
-			//escribirBloquesTemp(dumpTabla->nombre,dumpTabla->registros,arrayBlock);
+			escribirBloque(buffer,arrayBlock);
 
 			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);//ROMPE ACA POR UN FREE
 			free(ruta);

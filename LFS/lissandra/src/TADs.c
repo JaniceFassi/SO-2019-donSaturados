@@ -609,6 +609,48 @@ void crearConfig(){
 	free(tempDump);
 	free(tempRetar);
 }
+// NUEVAS FUNCIONES DE ARCHIVOS *******************************************************************
+
+void escribirBloque(char *buffer,char **bloques){
+	int nroArray=0;
+	while(strlen(buffer)>metaLFS->tamBloques){
+		char *escribir=string_substring_until(buffer,metaLFS->tamBloques);
+		if(bloques[nroArray]!=NULL){
+			int nroBloq=atoi(bloques[nroArray]);
+			char *pathB=rutaBloqueNro(nroBloq);
+			//escribir el archivo
+			escribirArchB(pathB,escribir);
+			free(pathB);
+		}else{
+			//error
+		}
+		char *auxilar=string_substring_from(buffer,metaLFS->tamBloques);
+		free(buffer);
+		buffer=malloc(strlen(auxilar)+1);
+		strcpy(buffer,auxilar);
+		free(auxilar);
+		nroArray++;
+	}
+	if(strlen(buffer)>0){
+		if(bloques[nroArray]!=NULL){
+			int nroBloq=atoi(bloques[nroArray]);
+			char *pathB=rutaBloqueNro(nroBloq);
+			//escribir el archivo
+			escribirArchB(pathB,buffer);
+			free(pathB);
+		}else{
+			//error
+		}
+	}
+	free(buffer);
+}
+
+void escribirArchB(char *path,char *buffer){
+	FILE *bloque=fopen(path,"wb");
+	fwrite(path,sizeof(char),strlen(path)+1,bloque);
+	fflush(bloque);
+	fclose(bloque);
+}
 
 //****************************************************************************************
 //FUNCIONES EXPERIMENTALES DE BITMAPS
@@ -664,16 +706,25 @@ int cantBloquesLibres(int cantidad){
 }
 
 /*****************************NUEVOOOOOO*************/
-int largoDeRegistros(t_list *lista){
-	int largo=0;
-	void sumarLongitud(Registry *reg){
+char *largoDeRegistros(t_list *lista){
+	char *buffer;
+	int vacio=0;
+	void sumarRegistro(Registry *reg){
 		char *linea;
 		linea=concatRegistro(reg);
-		largo+=strlen(linea);			//PREGUNTAR
+		if(vacio==0){
+			buffer=malloc(strlen(linea)+1);
+			strcpy(buffer,linea);
+			vacio++;
+		}else{
+			buffer=ponerSeparador(buffer);
+			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
+			strcat(buffer,linea);
+		}
 		free(linea);
 	}
-	list_iterate(lista,(void*)sumarLongitud);
-	return largo+1;
+	list_iterate(lista,(void*)sumarRegistro);
+	return buffer;
 }
 
 int tamanioArchivo(char* path){
