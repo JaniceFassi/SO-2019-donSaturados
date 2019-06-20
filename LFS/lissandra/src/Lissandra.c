@@ -51,7 +51,7 @@ int main(void) {
 	insert("COMIDAS", 10, "Toy Story",10);			// 0
 	insert("COMIDAS", 10, "Harry Potter",10);			// 0
 	dump();
-	//selectS("PELICULAS", 10);				// Harry Potter
+	selectS("PELICULAS", 10);				// Harry Potter
 	//selectS("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
 	//selectS("PELICULAS", 13535);					// Titanic

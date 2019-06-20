@@ -46,7 +46,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 }
 
 
-char *selectS(char* nameTable , u_int16_t key){
+char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE UNIFICAR TODO EN UNA FUNCION, PERO POR AHORA ROMPE EN ARCHIVO VALIDO DEL .BIN (EL .TMP LO LEE BIEN)
 	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
 	Registry *obtenidoMem;
@@ -70,10 +70,12 @@ char *selectS(char* nameTable , u_int16_t key){
 	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 
 	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
-	path=nivelParticion(nameTable,part, 0);
+	path=nivelParticion(nameTable,part, 1);
 	t_list *tmp=list_create();
 	if(archivoValido(path)==1){
-		tmp=leerTodoArchBinario(path);
+		metaArch *archivoAbierto=leerMetaArch(path);
+		tmp=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
+		//tmp=leerTodoArchBinario(path);
 		if(list_is_empty(tmp)){
 			obtenidoTmp=NULL;
 		}else{
@@ -87,13 +89,13 @@ char *selectS(char* nameTable , u_int16_t key){
 	}else{
 		list_destroy(tmp);
 	}
-
 	free(path);
-	path=concatExtencion(nameTable,part,0);
+
+	path=nivelParticion(nameTable, part, 0);
 	t_list *bin=list_create();
 	if(archivoValido(path)==1){
-		bin=leerTodoArchBinario(path);
-
+		metaArch *archivoAbierto=leerMetaArch(path);
+		bin=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
 		if(list_is_empty(bin)){
 			obtenidoPart=NULL;
 		}else{

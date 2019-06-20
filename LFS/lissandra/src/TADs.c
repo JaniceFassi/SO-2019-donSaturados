@@ -674,7 +674,7 @@ void escribirBloque(char *buffer,char **bloques){
 
 void escribirArchB(char *path,char *buffer){
 	FILE *bloque=fopen(path,"wb");
-	fwrite(path,sizeof(char),strlen(path)+1,bloque);
+	fwrite(buffer,strlen(buffer)+1,sizeof(char),bloque);
 	fflush(bloque);
 	fclose(bloque);
 }
@@ -728,12 +728,14 @@ t_list *deChar_Registros(char *buffer){
 		Registry *nuevo=createRegistry(atoi(substring[1]),substring[2], atol(substring[0]));
 		list_add(registros,nuevo);
 		free(buffer);
-		buffer=malloc(strlen (substring[3])+1);
-		strcpy(buffer,substring[3]);
+		if(substring[3]!=NULL){
+			buffer=malloc(strlen(substring[3])+1);
+			strcpy(buffer,substring[3]);
+			free(substring[3]);
+		}
 		free(substring[0]);    //LO HICE ASI PORQUE NO SE COMO MOD LA FUNCION LIB SUBSTRINGS
 		free(substring[1]);
 		free(substring[2]);
-		free(substring[3]);
 		free(substring);
 	}
 	free(buffer); //no se si esta de mas
@@ -744,7 +746,7 @@ char *leerArchBinario(char *path,int tamanio){
 	FILE *arch;
 	arch=fopen(path,"rb");
 	char *datos=malloc(tamanio);
-	fread(datos, sizeof(char), tamanio, arch);
+	fread(datos, tamanio, sizeof(char), arch);
 	fclose(arch);
 	return datos;
 }
