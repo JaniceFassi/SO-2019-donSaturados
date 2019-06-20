@@ -51,6 +51,8 @@ int main(void) {
 	mInsert("POSTRES",5,"TORTA");
 	mostrarMemoria();
 
+	printf("%i",memoriaLlena());
+
 	printf("\n");
 	printf("Ahora probamos SELECT: \n");
 
@@ -65,6 +67,11 @@ int main(void) {
 	mInsert("POSTRES",10,"HELADO");
 	mInsert("POSTRES",22,"CHOCOLATE");
 	mostrarMemoria();
+
+	printf("\n");
+
+	printf("%i",memoriaLlena());
+
 	//FUNCIONAAAAAAAA
 
 
@@ -205,38 +212,37 @@ int primerMarcoLibre(){
 	int i=0;
 	marco *unMarco;
 
-	while(i < cantMarcos){
-		unMarco = list_get(tablaMarcos,i);
-		if((unMarco->estaLibre) == 0){
-			unMarco->estaLibre = 1; //Ya lo ocupo desde aca.
-			posMarco = unMarco->nroMarco;
-			return posMarco;
-		}
-		else{
-			i++;
-		}
-	}
+	if(memoriaLlena()){ //Si la memoria no esta llena puede asignar un marco
 
+		while(i < cantMarcos){
+			unMarco = list_get(tablaMarcos,i);
+			if((unMarco->estaLibre) == 0){
+				unMarco->estaLibre = 1; //Ya lo ocupo desde aca.
+				posMarco = unMarco->nroMarco;
+				return posMarco;
+			}
+			else{
+				i++;
+			}
+		}
+
+	}
+	else{
+		//hacete un journal
+	}
 	//Faltaria ver que pasa si la memoria esta llena, problema del franco del futuro jjejej
 
 }
 
-int hayMarcosLibres(){
 
-//Por ahora queda sin utilizar.
+int memoriaLlena(){ //Devuelve 0 si esta llena
 
-	int posMarco = 0;
+	int algunoLibre(marco* unMarco){
+		return unMarco->estaLibre == 0;
+	}
 
-		int primerVacio(marco *unMarco){
-			if(unMarco->estaLibre == 0){
-				posMarco = unMarco->nroMarco;
-				return true; //es medio rancio eso pero necesito que me modifique el posMarco
-			}
-		}
+	return list_any_satisfy(tablaMarcos,(void*)algunoLibre);
 
-		list_find(tablaMarcos,(void*)primerVacio);
-
-		return posMarco;
 }
 
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
@@ -294,19 +300,6 @@ void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 	pag->modificado = 1;
 }
 
-void ocuparMarco(int nro){
-
-	//Sin utilizar por ahora.
-
-	int tieneMismoNro(marco *unMarco){
-		if(unMarco->nroMarco == nro){
-			unMarco->estaLibre = 1;
-		}
-		return unMarco->nroMarco == nro;
-	}
-
-	list_find(tablaMarcos,(void*)tieneMismoNro);
-}
 
 pagina *pedirALissandraPagina(char* nombreTabla,u_int16_t key){
 	//Algun dia...
