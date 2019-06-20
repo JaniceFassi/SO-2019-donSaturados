@@ -61,11 +61,13 @@ int main(void) {
 	mSelect("POSTRES",5);
 
 	printf("\n");
-	printf("Ahora probamos DROP: \n");
+	//printf("Ahora probamos DROP: \n");
 
-	mDrop("ANIMALES");
+	//mDrop("ANIMALES");
 	mInsert("POSTRES",10,"HELADO");
 	mInsert("POSTRES",22,"CHOCOLATE");
+	mInsert("COLORES", 12, "ROJO");
+	mSelect("COLORES", 12);
 	mostrarMemoria();
 
 
@@ -363,9 +365,9 @@ void mostrarMemoria(){
 
 		while(i<cantMarcos){
 
-			printf("Timestamp: %ld \n", (*(long*)memoria)+desplazador);
-			printf("Key: %d \n", (*(u_int16_t*)(memoria+sizeof(long)))+desplazador);
-			printf("Value: %s \n", ((char*)(memoria + sizeof(long) + sizeof(u_int16_t)))+desplazador);
+			printf("Timestamp: %ld \n", *(long*)((memoria) + desplazador));
+			printf("Key: %d \n", *(u_int16_t*)((memoria)+ sizeof(long) + desplazador));
+			printf("Value: %s \n", (char*)((memoria) + sizeof(long) + sizeof(u_int16_t)+desplazador));
 
 			desplazador += offsetMarco;
 			i++;
@@ -424,10 +426,12 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 	}else{
 		seg = crearSegmento(nombreTabla);
+		list_add(tablaSegmentos, seg);
 		pagina *pag = crearPagina();
-		//persistir datos a memoria, ya tengo paja
-		agregarPagina(seg, pag);
-
+		agregarPagina(seg,pag);
+		timestampActual = time(NULL);
+		agregarDato(timestampActual, key, valor, pag);
+		pag->modificado = 1;
 	}
 
 }
