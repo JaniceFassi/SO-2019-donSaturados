@@ -80,6 +80,10 @@ void pedirleCrearTablaAlissandra(char* nombretrable,char*criterio,u_int16_t nroP
 void pedirleALissandraQueBorre(char* nombreTabla);
 void liberarMarco(int nroMarco);
 int memoriaLlena();
+void eliminarPaginas(segmento* nuevo);
+int conseguirIndexSeg(segmento* nuevo);
+void paginaDestroy(pagina* pagParaDestruir);
+void segmentoDestroy(segmento* segParaDestruir);
 t_log* init_logger();
 t_config* read_config();
 

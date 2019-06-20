@@ -68,6 +68,7 @@ int main(void) {
 	mInsert("POSTRES",22,"CHOCOLATE");
 	mostrarMemoria();
 
+
 	printf("\n");
 
 	printf("%i",memoriaLlena());
@@ -336,6 +337,60 @@ void pedirleALissandraQueBorre(char* nombreTabla){
 
 }
 
+int conseguirIndexSeg(segmento* nuevo){
+
+	int index=0;
+
+	while(1==1){
+		segmento* aux = list_get(tablaSegmentos,index);
+		if(string_equals_ignore_case(aux->nombreTabla,nuevo->nombreTabla)){
+			return index;
+		}
+		else{
+			index++;
+		}
+	}
+	//Siempre va a terminar en el RETURN ya que si llegamos a esta funcion es porque existe el segmento SI o SI
+}
+
+
+void paginaDestroy(pagina* pagParaDestruir){
+	//free(pagParaDestruir->modificado); CREO que no hacen falta
+	//free(pagParaDestruir->nroMarco);
+	free(pagParaDestruir);
+}
+
+void segmentoDestroy(segmento* segParaDestruir){
+	//list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
+	free(segParaDestruir->nombreTabla);
+	free(segParaDestruir);
+}
+
+void eliminarPaginas(segmento* nuevo){
+
+	int index = conseguirIndexSeg(nuevo);
+	int cantDePaginas = list_size(nuevo->tablaPaginas);
+
+	for(int i=0;i<cantDePaginas;i++){
+
+		pagina* pagAEliminar = list_get(nuevo->tablaPaginas,i);
+		liberarMarco(pagAEliminar->nroMarco);
+		//hacer los destroy y free
+	}
+
+	//list_destroy_and_destroy_elements(nuevo->tablaPaginas,(void*)paginaDestroy);
+	//list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
+
+	//Estos dos conchudos no funcionan, en especifico seg y pag Destoy
+
+}
+
+void liberarMarco(int nroMarcoALiberar){
+	marco* nuevo = list_get(tablaMarcos,nroMarcoALiberar);
+	nuevo->estaLibre = 0;
+}
+
+
 t_config* read_config() {
 	return config_create("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
 }
@@ -420,31 +475,13 @@ void mDescribe(){
 
 }
 
-void eliminarPaginas(t_list *tablaPaginas){
-
-	int cantDePaginas = list_size(tablaPaginas);
-
-	for(int i=0;i<cantDePaginas;i++){
-
-		pagina* pagAEliminar = list_get(tablaPaginas,i);
-		liberarMarco(pagAEliminar->nroMarco);
-		//hacer los destroy y free
-	}
-
-}
-
-void liberarMarco(int nroMarcoALiberar){
-	marco* nuevo = list_get(tablaMarcos,nroMarcoALiberar);
-	nuevo->estaLibre = 0;
-}
-
 void mDrop(char* nombreTabla){
 
 	segmento* nuevo = buscarSegmento(nombreTabla);
 
 	if(nuevo != NULL){
 
-		eliminarPaginas(nuevo->tablaPaginas); //hacer
+		eliminarPaginas(nuevo); //hacer
 		//Eliminar pagina por pagina de la memoria recorriendola
 		//hacer free en las listas
 
