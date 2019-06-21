@@ -52,18 +52,18 @@ int main(void) {
 	insert("COMIDAS", 10, "Harry Potter",10);			// 0
 	dump();
 	selectS("PELICULAS", 10);				// Harry Potter
-	//selectS("PELICULAS", 163);					// Nemo
+	selectS("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
-	//selectS("PELICULAS", 13535);					// Titanic
+	selectS("PELICULAS", 13535);					// Titanic
 	insert("PELICULAS", 922, "Ratatouille",18);			// 2
 	insert("PELICULAS", 4829,"Aladdin",10);				// 5
 	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
 	insert("PELICULAS", 163, "Buscando a dory",1300);	// 1
-//	selectS("PELICULAS", 4829);					// Aladdin
+	selectS("PELICULAS", 4829);					// Aladdin
 	insert("PELICULAS", 3671, "Avatar",1000);			// 1
 	//dump();
-	//selectS("PELICULAS", 163);					// Buscando a dory
-	//selectS("PELICULAS", 3671);					// Avatar
+	selectS("PELICULAS", 163);					// Buscando a dory
+	selectS("PELICULAS", 3671);					// Avatar
 
 	/*************************************************************/
 

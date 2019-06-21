@@ -70,27 +70,39 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 
 	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
-	path=nivelParticion(nameTable,part, 1);
 	t_list *tmp=list_create();
-	if(archivoValido(path)==1){
-		metaArch *archivoAbierto=leerMetaArch(path);
-		tmp=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-		//tmp=leerTodoArchBinario(path);
-		if(list_is_empty(tmp)){
-			obtenidoTmp=NULL;
-		}else{
-			if(encontrarKeyDepu(tmp,key)!=NULL){
-				obtenidoTmp=encontrarKeyDepu(tmp,key);
-				list_add(obtenidos,obtenidoTmp);
+	int cantDumps=0;
+	while(cantDumps>=0){
+		t_list *aux;
+		path=nivelParticion(nameTable,cantDumps, 1);
+		if(archivoValido(path)==1){
+			metaArch *archivoAbierto=leerMetaArch(path);
+			aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
+			//tmp=leerTodoArchBinario(path);
+			if(list_is_empty(aux)){
+				list_destroy(aux);
 			}else{
-				obtenidoTmp=NULL;
+				list_add_all(tmp,aux);
+				list_destroy(aux);
 			}
+		cantDumps++;
+		borrarMetaArch(archivoAbierto);
+		}else{
+			cantDumps=-1;
 		}
-	}else{
-		list_destroy(tmp);
+		free(path);
 	}
-	free(path);
-
+	if(list_is_empty(tmp)){
+		obtenidoTmp=NULL;
+		list_destroy(tmp);
+	}else{
+		if(encontrarKeyDepu(tmp,key)!=NULL){
+			obtenidoTmp=encontrarKeyDepu(tmp,key);
+			list_add(obtenidos,obtenidoTmp);
+		}else{
+			obtenidoTmp=NULL;
+		}
+	}
 	path=nivelParticion(nameTable, part, 0);
 	t_list *bin=list_create();
 	if(archivoValido(path)==1){
@@ -98,6 +110,7 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 		bin=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
 		if(list_is_empty(bin)){
 			obtenidoPart=NULL;
+			list_destroy(bin);
 		}else{
 			if(encontrarKeyDepu(bin,key)!=NULL){
 				obtenidoPart=encontrarKeyDepu(bin,key);
@@ -106,6 +119,7 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 				obtenidoPart=NULL;
 			}
 		}
+		borrarMetaArch(archivoAbierto);
 	}else{
 		list_destroy(bin);
 	}
@@ -135,13 +149,13 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 		strcpy(valor,final->value);
 	}
 		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
-	//free(metadata->nombre);
-	free(metadata->consistency);
-	free(metadata->nombre);
-	free(metadata);
-
-	if(!list_is_empty(bin)){
-		list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
+	borrarMetadataTabla(metadata);
+	if(bin==NULL){
+		list_destroy(bin);
+	}else{
+		if(!list_is_empty(bin)){
+			list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
+		}
 	}
 	if(!list_is_empty(tmp)){
 		list_destroy_and_destroy_elements(tmp,(void *)destroyRegistry);

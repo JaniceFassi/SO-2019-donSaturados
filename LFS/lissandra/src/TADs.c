@@ -680,7 +680,7 @@ void escribirArchB(char *path,char *buffer){
 }
 
 t_list *leerBloques(char**bloques,int offset){
-	t_list *registrosLeidos=list_create();
+	t_list *registrosLeidos=NULL;
 	int blok=0;
 	char *leidoTotal;
 	while(offset>metaLFS->tamBloques){
@@ -738,7 +738,6 @@ t_list *deChar_Registros(char *buffer){
 		free(substring[2]);
 		free(substring);
 	}
-	free(buffer); //no se si esta de mas
 	return registros;
 }
 
@@ -817,10 +816,10 @@ char *cadenaDeRegistros(t_list *lista){
 			strcpy(buffer,linea);
 			vacio++;
 		}else{
+			buffer=ponerSeparador(buffer);
 			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
 			strcat(buffer,linea);
 		}
-		buffer=ponerSeparador(buffer);
 		//free(linea);
 	}
 

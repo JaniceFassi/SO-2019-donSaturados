@@ -33,8 +33,7 @@ void dump(){
 				int i=0;
 				while(i<bloquesNecesarios){
 					int bloqueVacio=obtenerBloqueVacio();
-					arrayBlock[i]=malloc(strlen(string_itoa(bloqueVacio))+1);
-					strcpy(arrayBlock[i],string_itoa(bloqueVacio));
+					arrayBlock[i]=string_itoa(bloqueVacio);
 					i++;
 				}
 			}
