@@ -681,6 +681,39 @@ void escribirArchB(char *path,char *buffer){
 
 t_list *leerBloques(char**bloques,int offset){
 	t_list *registrosLeidos=NULL;
+	int cant=0;
+	int bytesALeer=0;
+	char *leidoTotal;
+	if(offset>0){
+	while(bloques[cant]!=NULL){		//Calcula la cantidad de bloques
+		cant++;
+	}
+	for(int blok=0;blok<cant;blok++){
+		if(offset<=metaLFS->tamBloques){		//Define el tamanio a leer
+			bytesALeer=offset;
+		}else{
+			bytesALeer=metaLFS->tamBloques;
+		}
+		if(bloques[blok]!=NULL){
+			int nroBloq=atoi(bloques[blok]);
+			char *pathB=rutaBloqueNro(nroBloq);
+			char *leido=leerArchBinario(pathB,bytesALeer);
+			if(blok==0){
+				leidoTotal=malloc(strlen(leido)+1);
+				strcpy(leidoTotal,leido);
+				free(leido);
+			}else{
+				leidoTotal=realloc(leidoTotal,strlen(leidoTotal)+strlen(leido)+1);
+				strcat(leidoTotal,leido);
+				offset-=strlen(leido);
+				free(leido);
+			}
+		}
+	}
+	}
+	return registrosLeidos=deChar_Registros(leidoTotal);				//el leidoTotal se libera en la funcion esta
+
+	/*t_list *registrosLeidos=NULL;
 	int blok=0;
 	char *leidoTotal;
 	while(offset>metaLFS->tamBloques){
@@ -718,7 +751,7 @@ t_list *leerBloques(char**bloques,int offset){
 		}
 
 	}
-	return registrosLeidos=deChar_Registros(leidoTotal);//el leidoTotal se libera en la funcion esta
+	return registrosLeidos=deChar_Registros(leidoTotal);//el leidoTotal se libera en la funcion esta*/
 }
 
 t_list *deChar_Registros(char *buffer){
@@ -744,7 +777,7 @@ t_list *deChar_Registros(char *buffer){
 char *leerArchBinario(char *path,int tamanio){
 	FILE *arch;
 	arch=fopen(path,"rb");
-	char *datos=malloc(tamanio);
+	char *datos=malloc(tamanio+1);
 	fread(datos, tamanio, sizeof(char), arch);
 	fclose(arch);
 	return datos;
@@ -981,11 +1014,11 @@ void escribirReg(char *name,t_list *registros,int cantParticiones){
 	}
 }
 
-int contarTemporales(char *tabla){
+int contarArchivos(char *tabla, int modo){		//0 .bin, 1 .tmp, 2 .tmpc
 	int cant=0;
 	int seguir=1;
 	while(seguir==1){
-		char *rutaArch=nivelParticion(tabla,cant,1);
+		char *rutaArch=nivelParticion(tabla,cant,modo);
 		FILE *f=fopen(rutaArch,"rb");
 		if(f!=NULL){
 			fclose(f);
@@ -1035,7 +1068,7 @@ int calcularIndex(t_list *lista,int key){
 	return index;
 }
 
-Registry *getList(){
+Registry *getMemtable(){
 
 	Registry *data = malloc(sizeof(Registry));
 	data= list_get(memtable,0);
@@ -1043,7 +1076,8 @@ Registry *getList(){
 	return data;
 
 }
-Registry *keyConMayorTime(t_list *registros){
+
+Registry *regConMayorTime(t_list *registros){			//Devuelve el registro que tenga el mayor timestamp indiferente de la key
 	Registry *mayor=NULL;
 		void comparar(Registry *comparar){
 			if(mayor==NULL){
@@ -1066,8 +1100,8 @@ t_list *regDep(t_list *aDepu){
 		if(list_is_empty(depu)){
 			list_add(depu,nuevo);
 		}else{
-			if(encontrarKeyDepu(depu,nuevo->key)!=NULL){
-				Registry *viejo=encontrarKeyDepu(depu,nuevo->key);
+			if(primerRegistroConKey(depu,nuevo->key)!=NULL){
+				Registry *viejo=primerRegistroConKey(depu,nuevo->key);
 				if(viejo->timestamp <= nuevo->timestamp){
 					int index= calcularIndex(depu,viejo->key);
 					list_replace_and_destroy_element(depu, index-1, nuevo, (void*)destroyRegistry);
@@ -1113,21 +1147,21 @@ void liberarTabla(Tabla *self){
 	list_destroy_and_destroy_elements(self->registros,(void*)destroyRegistry);
 	free(self);
 }
-int encontrarRegistroPorKey(t_list *registros,int key){
-//devuelve 1 cuando no hay registros de esa key, devuelve 0 cuando si hay
+int existeKeyEnRegistros(t_list *registros,int key){		//Devuelve 0 cuando no hay registros de esa key, devuelve 1 cuando si hay
+
 	bool existe(Registry *p) {
 		return p->key == key;
 	}
 
 	if(list_is_empty(list_find(registros, (void*) existe))){
-		return 1;
-	}else{
 		return 0;
+	}else{
+		return 1;
 	}
 }
 
-Registry *encontrarKeyDepu(t_list *registros,int key){
-//devuelve 1 cuando no hay registros de esa key, devuelve 0 cuando si hay
+Registry *primerRegistroConKey(t_list *registros,int key){				//DEVUELVE EL PRIMERO QUE ENCUENTRA
+
 	bool existe(Registry *p) {
 		return p->key == key;
 	}

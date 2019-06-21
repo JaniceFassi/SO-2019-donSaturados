@@ -46,6 +46,96 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 }
 
 
+void escanearArchivo(char *path, t_list *obtenidos){
+	if(archivoValido(path)==1){
+		t_list *aux;
+		metaArch *archivoAbierto=leerMetaArch(path);
+		aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
+		if(list_is_empty(aux)){
+			list_destroy(aux);
+		}else{
+			list_add_all(obtenidos,aux);
+			list_destroy(aux);
+		}
+	}
+}
+
+char *newSelect(char *nameTable, u_int16_t key){
+	char *path=nivelUnaTabla(nameTable, 0);
+	char *valor=NULL;
+	Registry *obtenido;
+	t_list *obtenidos=list_create();
+
+	//Verificar que la tabla exista en el file system.
+	if(folderExist(path)==1){
+		log_error(logger,"No se puede hacer el insert porque no existe la tabla %s.", nameTable);
+		free(path);
+		return valor;
+	}
+	free(path);
+
+	//Obtener la metadata asociada a dicha tabla.
+	metaTabla *metadata= leerMetadataTabla(nameTable);
+
+	//Calcular cual es la partición que contiene dicho KEY.
+	int part=key % metadata->partitions;
+	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
+
+	//Escanear la partición objetivo (modo 0)
+	path=nivelParticion(nameTable, part, 0);
+	escanearArchivo(path,obtenidos);
+	free(path);
+
+	//Escanear todos los archivos temporales (modo 1)
+	int cantDumps=contarArchivos(nameTable, 1);
+	int i=0;
+	while(i<cantDumps){
+		path=nivelParticion(nameTable,cantDumps-1, 1);
+		escanearArchivo(path, obtenidos);
+		free(path);
+		i++;
+	}
+
+	//Escanear los .tmpc si es necesario (modo 2)
+
+	int cantTmpc=contarArchivos(nameTable, 2);
+	i=0;
+	while(i<cantTmpc){
+		path=nivelParticion(nameTable,cantTmpc-1, 1);
+		escanearArchivo(path, obtenidos);
+		free(path);
+		i++;
+	}
+
+	//Escanear la memtable
+	t_list *aux=list_create();
+	if(!list_is_empty(memtable)){
+		Tabla *encontrada= find_tabla_by_name(nameTable);
+		if(encontrada!=NULL){
+			aux=filtrearPorKey(encontrada->registros,key);
+			list_add_all(obtenidos,aux);
+		}
+	}
+
+	//Comparar los timestamps
+	if(!list_is_empty(obtenidos)){
+		if(existeKeyEnRegistros(obtenidos,key)==1){
+			obtenidos=filtrearPorKey(obtenidos,key);
+			obtenido=regConMayorTime(obtenidos);
+		}else{
+			obtenido=NULL;
+			//informar que no existe y retornar null
+		}
+		valor=malloc(strlen(obtenido->value)+1);
+		strcpy(valor,obtenido->value);
+		log_info(logger, valor);
+	}
+	if(valor==NULL){
+		log_info(logger,"No se ha encontrado el valor.");
+	}
+	return valor;
+}
+
 char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE UNIFICAR TODO EN UNA FUNCION, PERO POR AHORA ROMPE EN ARCHIVO VALIDO DEL .BIN (EL .TMP LO LEE BIEN)
 	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
@@ -71,14 +161,14 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 
 	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
 	t_list *tmp=list_create();
-	int cantDumps=0;
-	while(cantDumps>=0){
+	int cantDumps=contarArchivos(nameTable, 1);
+	int i=0;
+	while(i<cantDumps){
 		t_list *aux;
-		path=nivelParticion(nameTable,cantDumps, 1);
+		path=nivelParticion(nameTable,cantDumps-1, 1);
 		if(archivoValido(path)==1){
 			metaArch *archivoAbierto=leerMetaArch(path);
 			aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-			//tmp=leerTodoArchBinario(path);
 			if(list_is_empty(aux)){
 				list_destroy(aux);
 			}else{
@@ -87,17 +177,17 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 			}
 		cantDumps++;
 		borrarMetaArch(archivoAbierto);
-		}else{
+		}/*else{
 			cantDumps=-1;
-		}
+		}*/
 		free(path);
 	}
 	if(list_is_empty(tmp)){
 		obtenidoTmp=NULL;
 		list_destroy(tmp);
 	}else{
-		if(encontrarKeyDepu(tmp,key)!=NULL){
-			obtenidoTmp=encontrarKeyDepu(tmp,key);
+		if(primerRegistroConKey(tmp,key)!=NULL){
+			obtenidoTmp=primerRegistroConKey(tmp,key);
 			list_add(obtenidos,obtenidoTmp);
 		}else{
 			obtenidoTmp=NULL;
@@ -112,8 +202,8 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 			obtenidoPart=NULL;
 			list_destroy(bin);
 		}else{
-			if(encontrarKeyDepu(bin,key)!=NULL){
-				obtenidoPart=encontrarKeyDepu(bin,key);
+			if(primerRegistroConKey(bin,key)!=NULL){
+				obtenidoPart=primerRegistroConKey(bin,key);
 				list_add(obtenidos,obtenidoPart);
 			}else{
 				obtenidoPart=NULL;
@@ -133,7 +223,7 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 			if(list_is_empty(aux)){
 				obtenidoMem=NULL;
 			}else{
-				obtenidoMem=keyConMayorTime(aux);
+				obtenidoMem=regConMayorTime(aux);
 				list_add(obtenidos,obtenidoMem);
 			}
 		}
@@ -144,7 +234,7 @@ char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE
 		valor=NULL;
 		return valor;
 	}else{
-		Registry *final=keyConMayorTime(obtenidos);
+		Registry *final=regConMayorTime(obtenidos);
 		valor=malloc(strlen(final->value)+1);
 		strcpy(valor,final->value);
 	}

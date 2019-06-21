@@ -65,11 +65,11 @@ t_list *directorio;
 //FUNCIONES DE REGISTROS
 void destroyRegistry(Registry *self);
 Registry *createRegistry(u_int16_t key, char *val, long time);
-Registry *getList();
+Registry *getMemtable();
 void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);
-Registry *encontrarKeyDepu(t_list *registros,int key);
-Registry *keyConMayorTime(t_list *registros);
-int encontrarRegistroPorKey(t_list *registros,int key);
+Registry *primerRegistroConKey(t_list *registros,int key);
+Registry *regConMayorTime(t_list *registros);
+int existeKeyEnRegistros(t_list *registros,int key);
 t_list* filtrearPorKey(t_list *registros,int key);
 int calcularIndex(t_list *lista,int key);
 
@@ -125,7 +125,7 @@ int archivoValido(char *path);
 int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
 void borrarMetaArch(metaArch *nuevo);
 int tamanioArchivo(char* path);
-int contarTemporales(char *nombre);
+int contarArchivos(char *nombre, int modo);
 metaArch *leerMetaArch(char *path);
 //NUEVAS FUNCIONES ARCHIVOS
 void escribirBloque(char *buffer,char **bloques);

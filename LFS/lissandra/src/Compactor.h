@@ -16,5 +16,5 @@
 #include "Lissandra.h"
 #include "TADs.h"
 
-void dump();
+int dump();
 #endif /* COMPACTOR_H_ */

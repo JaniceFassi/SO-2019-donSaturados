@@ -44,26 +44,29 @@ int main(void) {
 	create("PELICULAS", "SC", 5, 10000);
 	insert("PELICULAS", 163, "Nemo", 100);				// 3
 	insert("PELICULAS", 10, "Toy Story",10);			// 0
-	insert("PELICULAS", 10, "Harry Potter",10);			// 0
+	insert("PELICULAS", 10, "Harry Potter",16);			// 0
+	insert("PELICULAS", 10, "La cenicienta",10);			// 0
+	insert("PELICULAS", 10, "Monsters inc.",10);			// 0
 	create("COMIDAS", "SH", 2, 10000);
 	//create("TERMINA", "SH", 4, 10000);
 	//create("VIVE", "SH", 2, 10000);
 	insert("COMIDAS", 10, "Toy Story",10);			// 0
 	insert("COMIDAS", 10, "Harry Potter",10);			// 0
-	dump();
-	selectS("PELICULAS", 10);				// Harry Potter
-	selectS("PELICULAS", 163);					// Nemo
+//	selectS("PELICULAS",10);
+	//dump();
+	newSelect("PELICULAS", 10);				// Harry Potter
+	//selectS("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
-	selectS("PELICULAS", 13535);					// Titanic
+	//selectS("PELICULAS", 13535);					// Titanic
 	insert("PELICULAS", 922, "Ratatouille",18);			// 2
 	insert("PELICULAS", 4829,"Aladdin",10);				// 5
 	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
 	insert("PELICULAS", 163, "Buscando a dory",1300);	// 1
-	selectS("PELICULAS", 4829);					// Aladdin
+	//selectS("PELICULAS", 4829);					// Aladdin
 	insert("PELICULAS", 3671, "Avatar",1000);			// 1
-	//dump();
-	selectS("PELICULAS", 163);					// Buscando a dory
-	selectS("PELICULAS", 3671);					// Avatar
+	dump();
+	newSelect("PELICULAS", 163);					// Buscando a dory
+	//selectS("PELICULAS", 3671);					// Avatar
 
 	/*************************************************************/
 
