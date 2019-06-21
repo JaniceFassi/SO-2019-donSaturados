@@ -445,7 +445,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 	segmento *nuevo = buscarSegmento(nombreTabla);
 
 	if(nuevo!= NULL){
-		pagina* pNueva = buscarPaginaConKey(nuevo,key); //esta maldita fucion no esta bien
+		pagina* pNueva = buscarPaginaConKey(nuevo,key); 
 		if(pNueva != NULL){
 			printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
@@ -460,7 +460,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 		printf("El valor es: %s\n",conseguirValor(pNueva));
 	}
 
-	//Los casos en los que requiera pedir datos a lissandra no funcionan todavia ya que pedirALissandra todavia no esta hecha.
+	//Los casos en los que requiera pedir datos a lissandra no funcionan ya que pedirALissandra todavia no esta hecha.
 
 }
 
