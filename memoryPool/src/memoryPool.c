@@ -304,7 +304,7 @@ t_config* read_config() {
 
  void eliminarPaginas(segmento* nuevo){
 
- 	int index = conseguirIndexSeg(nuevo);
+ 	//int index = conseguirIndexSeg(nuevo);
  	int cantDePaginas = list_size(nuevo->tablaPaginas);
 
  	for(int i=0;i<cantDePaginas;i++){
