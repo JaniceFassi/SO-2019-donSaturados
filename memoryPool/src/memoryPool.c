@@ -15,6 +15,9 @@ void* recibirOperacion(void * arg){
 
 	char* buffer = malloc(sizeof(char));
 	recv(cli, buffer, sizeof(char), NULL);
+	//1byteop
+	//2bytes tamanioop
+	//linea con ;
 
 	int sarlompa = atoi(buffer);
 
@@ -65,9 +68,33 @@ int main(void) {
 
 	inicializar();
 
-	char* ip = "127.0.0.1";
+	mInsert("ANIMALES", 1, "GATO");
+	mInsert("ANIMALES", 2, "PERRO");
+	mInsert("ANIMALES", 3, "CABALLO");
+	mInsert("ANIMALES",4,"LOBO MARINO");
+	mInsert("POSTRES",5,"TORTA");
+	//mostrarMemoria();
+	/*printf("%i",memoriaLlena());
+	printf("\n");
+	printf("Ahora probamos SELECT: \n");
+
+	mSelect("ANIMALES",1);
+	mSelect("ANIMALES",2);
+	mSelect("POSTRES",5);
+	*/printf("\n");
+	printf("Ahora probamos DROP: \n");
+
+	mDrop("ANIMALES");
+	mInsert("POSTRES",10,"HELADO");
+	mInsert("POSTRES",22,"CHOCOLATE");
+	mInsert("COLORES", 12, "ROJO");
+	mInsert("COLORES", 5, "AMARILLO");
+	mostrarMemoria();
+
+/*char* ip = "127.0.0.1";
 	u_int16_t port = htons(9000);
 	u_int16_t server;
+
 
 	createServer(ip, port, &server);
 
@@ -78,15 +105,13 @@ int main(void) {
 	acceptConexion(server, cliente, 1);
 
 	printf("Se conecto un cliente\n");
-
-
 	pthread_t unHilo;
 	pthread_create(&unHilo, NULL, recibirOperacion, &cliente);
 	pthread_join(unHilo, NULL);
 
 
 
-
+*/
 
 
 
@@ -214,17 +239,10 @@ t_config* read_config() {
 
  char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
  	char* msj;
- 	msj = string_new();
- 	string_append(&msj,string_itoa(operacion));
- 	string_append(&msj, ";");
- 	string_append(&msj,string_itoa(strlen(value)));
- 	string_append(&msj, ";");
- 	string_append(&msj, string_itoa(timestamp));
- 	string_append(&msj, ";");
- 	string_append(&msj, string_itoa(key));
- 	string_append(&msj, ";");
- 	string_append(&msj, value);
-
+ 	msj = malloc(sizeof(long)+sizeof(u_int16_t)+strlen(value)+1);
+ 	msj = string_from_format("%s;%s;%s",timestamp, key, value);
+ 	//sacar tamanio
+ 	//concatenar operacion y tamanio del mensaje
  	return msj;
  }
 
@@ -302,19 +320,12 @@ t_config* read_config() {
  	return posMarco;
  }
 
- void eliminarPaginas(segmento* nuevo){
+ void eliminarSegmento(segmento* nuevo){
 
- 	//int index = conseguirIndexSeg(nuevo);
- 	int cantDePaginas = list_size(nuevo->tablaPaginas);
+ 	int index = conseguirIndexSeg(nuevo);
 
- 	for(int i=0;i<cantDePaginas;i++){
-
- 		pagina* pagAEliminar = list_get(nuevo->tablaPaginas,i);
- 		liberarMarco(pagAEliminar->nroMarco);
- 		//hacer los destroy y free
- 	}
 	//list_destroy_and_destroy_elements(nuevo->tablaPaginas,(void*)paginaDestroy);
- 	//list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
+ 	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
 
  	//Estos dos conchudos no funcionan, en especifico seg y pag Destoy
 
@@ -326,14 +337,12 @@ t_config* read_config() {
  }
 
  void paginaDestroy(pagina* pagParaDestruir){
- 	//free(pagParaDestruir->modificado); CREO que no hacen falta
- 	//free(pagParaDestruir->nroMarco);
+	liberarMarco(pagParaDestruir->nroMarco);
  	free(pagParaDestruir);
  }
 
  void segmentoDestroy(segmento* segParaDestruir){
- 	//list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
- 	free(segParaDestruir->nombreTabla);
+	 list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
  	free(segParaDestruir);
  }
 
@@ -362,20 +371,20 @@ char* conseguirValor(pagina* pNueva){
 
 
 
-int conseguirIndexSeg(segmento* nuevo){ //FUncion util para cuando haces los free del drop
+int conseguirIndexSeg(segmento* nuevo){ //Funcion util para cuando haces los free del drop
 
 	int index=0;
 
-	while(1==1){
+	while(index < nuevo->tablaPaginas->elements_count +1){
 		segmento* aux = list_get(tablaSegmentos,index);
 		if(string_equals_ignore_case(aux->nombreTabla,nuevo->nombreTabla)){
-			return index;
+			break;
 		}
 		else{
 			index++;
 		}
 	}
-	//Siempre va a terminar en el RETURN ya que si llegamos a esta funcion es porque existe el segmento SI o SI
+	return index;
 }
 
 
@@ -460,7 +469,7 @@ void mDrop(char* nombreTabla){
 
 	if(nuevo != NULL){
 
-		eliminarPaginas(nuevo); //hacer
+		eliminarSegmento(nuevo); //hacer
 		//Eliminar pagina por pagina de la memoria recorriendola
 		//hacer free en las listas
 
