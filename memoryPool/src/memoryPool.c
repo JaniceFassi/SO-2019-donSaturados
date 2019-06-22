@@ -9,23 +9,54 @@
  */
 
 #include "memoryPool.h"
-/*
-void* testeandoHilos(void * arg){
 
-	int *sarlompa = (int *) arg;
+void* recibirOperacion(void * arg){
+	int cli = *(int*) arg;
 
-	printf("hola soy un hilo \n");
-	printf("%d\n", *sarlompa);
+	char* buffer = malloc(sizeof(char));
+	recv(cli, buffer, sizeof(char), NULL);
 
-	int *numero = (int *)malloc(sizeof(int));
-	*numero = 15;
+	int sarlompa = atoi(buffer);
+
+	//printf("hola soy un hilo \n");
+	switch (sarlompa) {
+				case 0:
+					printf("select\n");
+					break;
+				case 1:
+					printf("insert\n");
+					break;
+				case 2:
+					printf("create\n");
+				break;
+
+				case 3:
+					printf("describe\n");
+					break;
+
+				case 4:
+					printf("drop\n");
+					break;
+				case 5:
+					printf("journal\n");
+					break;
+
+				case 6:
+					printf("gossip\n");
+					break;
 
 
-	return numero;
+				}
+	char* rta = "4";
+	send(cli, rta, strlen(rta), 0);
+	printf("La rta fue %s \n", rta);
+
+	return NULL;
 }
 
 
-*/
+
+
 
 //rta kernel 0 todo bien 1 todo mal
 
@@ -34,90 +65,34 @@ int main(void) {
 
 	inicializar();
 
+	char* ip = "127.0.0.1";
+	u_int16_t port = htons(9000);
+	u_int16_t server;
 
-	segmento *animales = crearSegmento("ANIMALES");
-	segmento *postres = crearSegmento("POSTRES");
-	list_add(tablaSegmentos, animales);
-	list_add(tablaSegmentos, postres);
+	createServer(ip, port, &server);
 
+	listenForClients(server, 100);
 
+	u_int16_t *cliente;
 
-	//Pruebas :(
+	acceptConexion(server, cliente, 1);
 
-	mInsert("ANIMALES", 1, "GATO");
-	mInsert("ANIMALES", 2, "PERRO");
-	mInsert("ANIMALES", 3, "CABALLO");
-	mInsert("ANIMALES",4,"LOBO MARINO");
-	mInsert("POSTRES",5,"TORTA");
-	//mostrarMemoria();
+	printf("Se conecto un cliente\n");
 
-	printf("%i",memoriaLlena());
-
-	printf("\n");
-	printf("Ahora probamos SELECT: \n");
-
-	mSelect("ANIMALES",1);
-	mSelect("ANIMALES",2);
-	mSelect("POSTRES",5);
-
-	printf("\n");
-	//printf("Ahora probamos DROP: \n");
-
-	//mDrop("ANIMALES");
-	mInsert("POSTRES",10,"HELADO");
-	mInsert("POSTRES",22,"CHOCOLATE");
-	mInsert("COLORES", 12, "ROJO");
-	mSelect("COLORES", 12);
-	//mostrarMemoria();
-
-
-	printf("\n");
-
-	printf("%i",memoriaLlena());
-
-	//FUNCIONAAAAAAAA
-
-
-/*  int sarasa = 10;
-	int *resultado;
 
 	pthread_t unHilo;
-	pthread_create(&unHilo, NULL, testeandoHilos, &sarasa);
-	pthread_join(unHilo, (void*)&resultado);
-
-	//printf("El puntero del hilo es %d \n\n\n", *resultado);
+	pthread_create(&unHilo, NULL, recibirOperacion, &cliente);
+	pthread_join(unHilo, NULL);
 
 
 
-			switch (op) {
-			case 0:
-				printf("select");
-				break;
-			case 1:
-				printf("insert");
-				break;
-			case 2:
-				printf("create");
-				//mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion);
-			break;
-
-			case 3:
-				mDescribe();
-				break;
-
-			case 4:
-				mDrop();
-				break;
-			case 5:
-				mJournal();
-				break;
-
-			case 6:
-				mGossip();
-				break;
 
 
-			}
+
+
+
+
+	/*
 
 
 
@@ -134,8 +109,9 @@ int main(void) {
 
 			free(buffer);
 
-
 */
+
+
 
 
 
@@ -147,13 +123,13 @@ int main(void) {
 //-------------------------------------------------------//
 
 void inicializar(){
-	t_log *logger = init_logger();
+	//t_log *logger = init_logger();
 	t_config *configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
-	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
-	int ipFS = config_get_int_value(configuracion,"IP_FS");
+	//int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
+	//int ipFS = config_get_int_value(configuracion,"IP_FS");
 
-	memoria = calloc(1,tamanioMemoria); //Modifique el tamanio para que sea un multiplo offsetMarco, 5 marcos por ahora.
+	memoria = calloc(1,tamanioMemoria);
 	maxValue = 20;
 	//maxValue = handshakeConLissandra(puertoFS,ipFS);
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
