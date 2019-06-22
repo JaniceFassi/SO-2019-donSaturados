@@ -24,13 +24,12 @@
 #include<readline/readline.h>
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
-#include <socketSaturados.h>
+//#include <socketSaturados.h>
 
 
 //VARIABLES GLOBALES
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
-t_list* tablaPaginas;
 void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
@@ -63,6 +62,10 @@ void mDrop(char* nombreTabla);
 void mJournal();
 void mGossip();
 
+void finalizar();
+void eliminarMarcos();
+void marcoDestroy(marco *unMarco);
+
 //AUXILIARES DE ARRANQUE
 void inicializar();
 t_log* init_logger();
@@ -84,7 +87,7 @@ int memoriaLlena();
 int primerMarcoLibre();
 void liberarMarco(int nroMarco);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
-void eliminarPaginas(segmento* nuevo);
+void eliminarSegmento(segmento* nuevo);
 void paginaDestroy(pagina* pagParaDestruir);
 void segmentoDestroy(segmento* segParaDestruir);
 

@@ -14,7 +14,7 @@ void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
 
 	char* buffer = malloc(sizeof(char));
-	recv(cli, buffer, sizeof(char), NULL);
+	//recv(cli, buffer, sizeof(char), NULL);
 	//1byteop
 	//2bytes tamanioop
 	//linea con ;
@@ -61,7 +61,7 @@ void* recibirOperacion(void * arg){
 
 
 
-//rta kernel 0 todo bien 1 todo mal
+//rta kernel 0 todo bien, 1 todo mal, 2 memoria esta full
 
 int main(void) {
 
@@ -74,14 +74,14 @@ int main(void) {
 	mInsert("ANIMALES",4,"LOBO MARINO");
 	mInsert("POSTRES",5,"TORTA");
 	//mostrarMemoria();
-	/*printf("%i",memoriaLlena());
+	printf("%i",memoriaLlena());
 	printf("\n");
 	printf("Ahora probamos SELECT: \n");
 
 	mSelect("ANIMALES",1);
 	mSelect("ANIMALES",2);
 	mSelect("POSTRES",5);
-	*/printf("\n");
+	printf("\n");
 	printf("Ahora probamos DROP: \n");
 
 	mDrop("ANIMALES");
@@ -138,7 +138,7 @@ int main(void) {
 
 
 
-
+	finalizar();
 
 	return EXIT_SUCCESS;
 }
@@ -172,6 +172,8 @@ void inicializar(){
 			unMarco->estaLibre = 0;
 			list_add(tablaMarcos, unMarco);
 		}
+
+	config_destroy(configuracion);
 }
 
 segmento *crearSegmento(char* nombre){
@@ -324,10 +326,8 @@ t_config* read_config() {
 
  	int index = conseguirIndexSeg(nuevo);
 
-	//list_destroy_and_destroy_elements(nuevo->tablaPaginas,(void*)paginaDestroy);
  	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
 
- 	//Estos dos conchudos no funcionan, en especifico seg y pag Destoy
 
  }
 
@@ -343,6 +343,7 @@ t_config* read_config() {
 
  void segmentoDestroy(segmento* segParaDestruir){
 	 list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
+	free(segParaDestruir->nombreTabla);
  	free(segParaDestruir);
  }
 
@@ -387,6 +388,40 @@ int conseguirIndexSeg(segmento* nuevo){ //Funcion util para cuando haces los fre
 	return index;
 }
 
+void eliminarMarcos(){
+		list_destroy_and_destroy_elements(tablaMarcos,(void*)marcoDestroy);
+
+}
+
+void marcoDestroy(marco *unMarco){
+	free(unMarco);
+}
+
+void finalizar(){
+	free(memoria);
+	for(int i = 0; i<tablaSegmentos->elements_count; i++){
+		segmento *seg = list_get(tablaSegmentos, i);
+		eliminarSegmento(seg);
+
+	}
+
+	eliminarMarcos();
+	free(tablaSegmentos);
+	free(tablaMarcos);
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 //-------------------------------------//
 //---------------API------------------//
@@ -395,11 +430,12 @@ int conseguirIndexSeg(segmento* nuevo){ //Funcion util para cuando haces los fre
 void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 	segmento *seg = buscarSegmento(nombreTabla);
+	pagina *pag;
 	long timestampActual;
 
 	if(seg != NULL){
 
-		pagina *pag = buscarPaginaConKey(seg, key);
+		pag = buscarPaginaConKey(seg, key);
 			if (pag == NULL){
 				pag = crearPagina();
 				agregarPagina(seg,pag);
@@ -422,15 +458,18 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		pag->modificado = 1;
 	}
 
+
+
 }
 
 
 void mSelect(char* nombreTabla,u_int16_t key){
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
+	pagina* pNueva;
 
 	if(nuevo!= NULL){
-		pagina* pNueva = buscarPaginaConKey(nuevo,key); //esta maldita fucion no esta bien
+		pNueva = buscarPaginaConKey(nuevo,key); //esta maldita fucion no esta bien
 		if(pNueva != NULL){
 			printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
@@ -441,7 +480,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 		}
 	}
 	else{
-		pagina* pNueva = pedirALissandraPagina(nombreTabla,key);
+		pNueva = pedirALissandraPagina(nombreTabla,key);
 		printf("El valor es: %s\n",conseguirValor(pNueva));
 	}
 
