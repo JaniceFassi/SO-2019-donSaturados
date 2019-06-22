@@ -10,106 +10,35 @@
 
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
-
-//A REEMPLAZAR
-char *pathFinal(char *nombre, int principal){
-	//0 ES LA CARP PRINCIPAL, 1 ES LA CARP DE LAS TABLAS, 2 PATH DE ARCH, 3 METADATA
-	int base=string_length(configLissandra->puntoMontaje)+string_length(nombre)+1;
-	char *pathF=malloc(base);
-	strcpy(pathF,configLissandra->puntoMontaje);
-
-	if(principal==0){
-		strcat(pathF,nombre);
-		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/nombre
-	}
-
-	char tab[]="TABLAS/";
-	base+=string_length(tab)+1;
-	pathF=realloc(pathF,base);
-	strcat(pathF,tab);
-	strcat(pathF,nombre);
-
-	if(principal==1){
-		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/Tablas/nombre
-	}
-
-	char barra[]="/";
-	base +=string_length(barra)+1;
-	pathF=realloc(pathF,base);
-	strcat(pathF,barra);
-
-	if(principal==2){
-		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/Tablas/nombre/
-	}
-
-	char metadata[]="METADATA";
-	base += string_length(metadata)+1;
-	pathF=realloc(pathF,base);
-
-	if(principal==3){
-		strcat(pathF,metadata);
-		return pathF;				// /home/utnso/tp-2019-1c-donSaturados/LFS/Tablas/nombre/METADATA
-	}
-	free(pathF);
-	return NULL;
-}
-
-//A REEMPLAZAR
-char *concatExtencion(char *name,int particion, int tipo){//0 es bin, si es 1 es temp
-	char *pathF=pathFinal(name,2);
-	int base=strlen(pathF)+1;
-	char *part=string_itoa(particion);
-	base+=strlen(part)+1;
-	pathF=realloc(pathF,base);
-	strcat(pathF,part);
-	free(part);
-	if(tipo==0){
-		char *extencion= malloc(5);
-		strcpy(extencion, ".bin");
-		base+=strlen(extencion)+1;
-		pathF=realloc(pathF,base);
-		strcat(pathF,extencion);
-		free(extencion);
-
-	}else{
-		char *extencion= malloc(6);
-		strcpy(extencion, ".temp");
-		base+=strlen(extencion)+1;
-		pathF=realloc(pathF,base);
-		strcat(pathF,extencion);
-		free(extencion);
-	}
-	return pathF;
-}
 char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
 	char *punto=malloc(2);
 	strcpy(punto,".");
 	path=realloc(path,strlen(path)+strlen(punto)+1);
-		strcat(path,punto);
+	strcat(path,punto);
 
-		if(modo==0){
-			char *bin=malloc(4);
-			strcpy(bin,"bin");
-			path=realloc(path,strlen(path)+strlen(bin)+1);
-			strcat(path,bin);
-			free(bin);
-		}
-		if(modo==1){
-			char *tmp=malloc(4);
-			strcpy(tmp,"tmp");
-			path=realloc(path,strlen(path)+strlen(tmp)+1);
-			strcat(path,tmp);
-			free(tmp);
-		}
-		if(modo==2){
-			char *tmpc=malloc(5);
-			strcpy(tmpc,"tmpc");
-			path=realloc(path,strlen(path)+strlen(tmpc)+1);
-			strcat(path,tmpc);
-			free(tmpc);
-		}
-		free(punto);
-		return path;
+	if(modo==0){
+		char *bin=malloc(4);
+		strcpy(bin,"bin");
+		path=realloc(path,strlen(path)+strlen(bin)+1);
+		strcat(path,bin);
+		free(bin);
+	}
+	if(modo==1){
+		char *tmp=malloc(4);
+		strcpy(tmp,"tmp");
+		path=realloc(path,strlen(path)+strlen(tmp)+1);
+		strcat(path,tmp);
+		free(tmp);
+	}
+	if(modo==2){
+		char *tmpc=malloc(5);
+		strcpy(tmpc,"tmpc");
+		path=realloc(path,strlen(path)+strlen(tmpc)+1);
+		strcat(path,tmpc);
+		free(tmpc);
+	}
+	free(punto);
+	return path;
 }
 
 Registry *desconcatParaArch(char *linea){
@@ -148,6 +77,8 @@ char *concatRegistro(Registry *registro){
 	linea=ponerSeparador(linea);
 	linea=realloc(linea,strlen(linea)+strlen(registro->value)+1);
 	strcat(linea, registro->value);
+	free(keys);
+	free(time);
 	return linea;
 }
 
@@ -467,6 +398,7 @@ metaTabla *leerMetadataTabla(char *nombre){
 	nuevo->nombre=malloc(strlen(nombre)+1);
 	strcpy(nuevo->nombre,nombre);
 	config_destroy(metaTab);
+	free(path);
 	return nuevo;
 }
 void borrarMetadataTabla(metaTabla *metadata){
@@ -538,6 +470,22 @@ void borrarMetaLFS(){
 	free(metaLFS->magicNumber);
 	free(metaLFS);
 }
+
+void escanearArchivo(char *path, t_list *obtenidos){
+	if(archivoValido(path)==1){
+		t_list *aux;
+		metaArch *archivoAbierto=leerMetaArch(path);
+		aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
+		if(list_is_empty(aux)){
+			list_destroy(aux);
+		}else{
+			list_add_all(obtenidos,aux);
+			list_destroy(aux);
+		}
+		borrarMetaArch(archivoAbierto);
+	}
+}
+
 
 void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
 	t_config *config = init_config();				//Crea una estructura datosConfig en configLissandra, variable global
@@ -685,15 +633,15 @@ t_list *leerBloques(char**bloques,int offset){
 	int bytesALeer=0;
 	char *leidoTotal;
 	if(offset>0){
-	while(bloques[cant]!=NULL){		//Calcula la cantidad de bloques
-		cant++;
-	}
-	for(int blok=0;blok<cant;blok++){
-		if(offset<=metaLFS->tamBloques){		//Define el tamanio a leer
-			bytesALeer=offset;
-		}else{
-			bytesALeer=metaLFS->tamBloques;
+		while(bloques[cant]!=NULL){		//Calcula la cantidad de bloques
+			cant++;
 		}
+		for(int blok=0;blok<cant;blok++){
+			if(offset<=metaLFS->tamBloques){		//Define el tamanio a leer
+				bytesALeer=offset;
+			}else{
+				bytesALeer=metaLFS->tamBloques;
+			}
 		if(bloques[blok]!=NULL){
 			int nroBloq=atoi(bloques[blok]);
 			char *pathB=rutaBloqueNro(nroBloq);
@@ -708,10 +656,11 @@ t_list *leerBloques(char**bloques,int offset){
 				offset-=strlen(leido);
 				free(leido);
 			}
+			free(pathB);
 		}
 	}
 	}
-	return registrosLeidos=deChar_Registros(leidoTotal);				//el leidoTotal se libera en la funcion esta
+	return registrosLeidos=deChar_Registros(leidoTotal);//el leidoTotal se libera en la funcion esta
 
 	/*t_list *registrosLeidos=NULL;
 	int blok=0;
@@ -853,7 +802,7 @@ char *cadenaDeRegistros(t_list *lista){
 			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
 			strcat(buffer,linea);
 		}
-		//free(linea);
+		free(linea);
 	}
 
 	list_iterate(lista,(void*)sumarRegistro);
@@ -1026,6 +975,7 @@ int contarArchivos(char *tabla, int modo){		//0 .bin, 1 .tmp, 2 .tmpc
 		}else{
 			seguir=0;
 		}
+		free(rutaArch);
 	}
 	return cant;
 }

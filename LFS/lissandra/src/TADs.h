@@ -121,6 +121,7 @@ int agregarArchBinario(char *path,long timestamp,int key,char *value);
 int eliminarArchivo(char *path);
 void escribirReg(char *name,t_list *registros,int cantParticiones);
 int archivoValido(char *path);
+void escanearArchivo(char *path, t_list *obtenidos);
 //void crearMetaArchivo(char *path, int nrobloque);			ya se puede sacar
 int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
 void borrarMetaArch(metaArch *nuevo);

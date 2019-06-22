@@ -11,16 +11,15 @@ int dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
-	char ** arrayBlock;
 	int bloquesNecesarios=0;
-	int largo;
+	int largo=0;
 	while(cant>0){
 		Tabla *dumpTabla=list_get(dump,cant-1);
-		largo=0;
 		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
 			//Calcular el tamaño de dumpTabla->registros
 			char *buffer=cadenaDeRegistros(dumpTabla->registros);
+			char **arrayBlock;
 			largo=strlen(buffer)+1;
 			//calcular cant bloques
 			bloquesNecesarios=largo/metaLFS->tamBloques;
@@ -50,20 +49,17 @@ int dump(){
 				int i=0;
 				while(arrayBlock[i]!=NULL){
 					desocuparBloque(atoi(arrayBlock[i]));
-					free(arrayBlock[i]);
 					i++;
 				}
-				free(ruta);
 			}
-			escribirBloque(buffer,arrayBlock);
-
-			list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);
+			escribirBloque(buffer,arrayBlock);//aca se libera el buffer
+			for(int f=0;f<bloquesNecesarios;f++){
+				free(arrayBlock[f]);
+			}
+			free(arrayBlock);
 			free(ruta);
 		}
-		for(int f=0;f<bloquesNecesarios;f++){
-			free(arrayBlock[f]);
-		}
-		free(arrayBlock);
+		list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);
 		free(path);
 		free(dumpTabla->nombre);
 		free(dumpTabla);
@@ -71,4 +67,9 @@ int dump(){
 	}
 	list_destroy(dump);
 	return 0;
-}
+}/*
+void compactar(char *nombreTabla){
+	log_info(logger,"Se empezo a hacer el dump de la tabla %s",nombreTabla);
+	char *path=nivelUnaTabla(nombreTabla,0);
+	folderExist(path);
+}*/

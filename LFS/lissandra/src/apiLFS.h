@@ -21,12 +21,10 @@
 }op_code;*/
 
 //FUNCIONES API
-void escanearArchivo(char *path, t_list *obtenidos);
 void drop(char* nameTable);
 t_list *describe(char* nameTable,int variante);
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction);
-char *selectS(char* nameTable, u_int16_t key);
 int insert(char* nameTable, u_int16_t key, char *value, long timestamp);
-char *newSelect(char *nameTable, u_int16_t key);
+char *lSelect(char *nameTable, u_int16_t key);
 
 #endif /* APILFS_H_ */

@@ -45,35 +45,19 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	return 0;
 }
 
-
-void escanearArchivo(char *path, t_list *obtenidos){
-	if(archivoValido(path)==1){
-		t_list *aux;
-		metaArch *archivoAbierto=leerMetaArch(path);
-		aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-		if(list_is_empty(aux)){
-			list_destroy(aux);
-		}else{
-			list_add_all(obtenidos,aux);
-			list_destroy(aux);
-		}
-	}
-}
-
-char *newSelect(char *nameTable, u_int16_t key){
+char *lSelect(char *nameTable, u_int16_t key){
 	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
-	Registry *obtenido;
 	t_list *obtenidos=list_create();
 
 	//Verificar que la tabla exista en el file system.
 	if(folderExist(path)==1){
 		log_error(logger,"No se puede hacer el insert porque no existe la tabla %s.", nameTable);
 		free(path);
+		list_destroy(obtenidos);
 		return valor;
 	}
 	free(path);
-
 	//Obtener la metadata asociada a dicha tabla.
 	metaTabla *metadata= leerMetadataTabla(nameTable);
 
@@ -87,7 +71,7 @@ char *newSelect(char *nameTable, u_int16_t key){
 	free(path);
 
 	//Escanear todos los archivos temporales (modo 1)
-	int cantDumps=contarArchivos(nameTable, 1);
+	int cantDumps=contarArchivos(nameTable, 1); //PREGUNTAR DILEMA
 	int i=0;
 	while(i<cantDumps){
 		path=nivelParticion(nameTable,cantDumps-1, 1);
@@ -95,7 +79,6 @@ char *newSelect(char *nameTable, u_int16_t key){
 		free(path);
 		i++;
 	}
-
 	//Escanear los .tmpc si es necesario (modo 2)
 
 	int cantTmpc=contarArchivos(nameTable, 2);
@@ -108,161 +91,45 @@ char *newSelect(char *nameTable, u_int16_t key){
 	}
 
 	//Escanear la memtable
-	t_list *aux=list_create();
+	t_list *aux;
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name(nameTable);
 		if(encontrada!=NULL){
 			aux=filtrearPorKey(encontrada->registros,key);
-			list_add_all(obtenidos,aux);
+			list_add_all(aux,obtenidos);
 		}
 	}
-
 	//Comparar los timestamps
-	if(!list_is_empty(obtenidos)){
-		if(existeKeyEnRegistros(obtenidos,key)==1){
-			obtenidos=filtrearPorKey(obtenidos,key);
-			obtenido=regConMayorTime(obtenidos);
+	if(!list_is_empty(aux)){
+		if(existeKeyEnRegistros(aux,key)==1){
+			t_list *filtrada;
+			Registry *obtenido;
+			filtrada=filtrearPorKey(aux,key);
+			obtenido=regConMayorTime(filtrada);
+			valor=malloc(strlen(obtenido->value)+1);
+			strcpy(valor,obtenido->value);
+			log_info(logger, valor);
 		}else{
-			obtenido=NULL;
-			//informar que no existe y retornar null
-		}
-		valor=malloc(strlen(obtenido->value)+1);
-		strcpy(valor,obtenido->value);
-		log_info(logger, valor);
-	}
-	if(valor==NULL){
-		log_info(logger,"No se ha encontrado el valor.");
-	}
-	return valor;
-}
-
-char *selectS(char* nameTable , u_int16_t key){		//HAY QUE ENCONTRAR LA FORMA DE UNIFICAR TODO EN UNA FUNCION, PERO POR AHORA ROMPE EN ARCHIVO VALIDO DEL .BIN (EL .TMP LO LEE BIEN)
-	char *path=nivelUnaTabla(nameTable, 0);
-	char *valor=NULL;
-	Registry *obtenidoMem;
-	Registry *obtenidoPart;
-	Registry *obtenidoTmp;
-	//Registry *obtenidoTmpC;
-	t_list *obtenidos=list_create();
-
-	//Verificar que la tabla exista en el file system.
-	if(folderExist(path)==1){
-		log_error(logger,"No se puede hacer el insert porque no existe la tabla %s.", nameTable);
-		free(path);
-		return valor;
-	}
-	free(path);
-	//Obtener la metadata asociada a dicha tabla.
-	metaTabla *metadata= leerMetadataTabla(nameTable);
-
-	//Calcular cual es la partición que contiene dicho KEY.
-	int part=key % metadata->partitions;
-	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
-
-	//Escanear la partición objetivo (modo 0), y todos los archivos temporales (modo 1)
-	t_list *tmp=list_create();
-	int cantDumps=contarArchivos(nameTable, 1);
-	int i=0;
-	while(i<cantDumps){
-		t_list *aux;
-		path=nivelParticion(nameTable,cantDumps-1, 1);
-		if(archivoValido(path)==1){
-			metaArch *archivoAbierto=leerMetaArch(path);
-			aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-			if(list_is_empty(aux)){
-				list_destroy(aux);
-			}else{
-				list_add_all(tmp,aux);
-				list_destroy(aux);
-			}
-		cantDumps++;
-		borrarMetaArch(archivoAbierto);
-		}/*else{
-			cantDumps=-1;
-		}*/
-		free(path);
-	}
-	if(list_is_empty(tmp)){
-		obtenidoTmp=NULL;
-		list_destroy(tmp);
-	}else{
-		if(primerRegistroConKey(tmp,key)!=NULL){
-			obtenidoTmp=primerRegistroConKey(tmp,key);
-			list_add(obtenidos,obtenidoTmp);
-		}else{
-			obtenidoTmp=NULL;
+			log_info(logger,"No se ha encontrado el valor.");
 		}
 	}
-	path=nivelParticion(nameTable, part, 0);
-	t_list *bin=list_create();
-	if(archivoValido(path)==1){
-		metaArch *archivoAbierto=leerMetaArch(path);
-		bin=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-		if(list_is_empty(bin)){
-			obtenidoPart=NULL;
-			list_destroy(bin);
-		}else{
-			if(primerRegistroConKey(bin,key)!=NULL){
-				obtenidoPart=primerRegistroConKey(bin,key);
-				list_add(obtenidos,obtenidoPart);
-			}else{
-				obtenidoPart=NULL;
-			}
-		}
-		borrarMetaArch(archivoAbierto);
-	}else{
-		list_destroy(bin);
-	}
-	free(path);
-	//y la memoria temporal de dicha tabla (si existe) buscando la key deseada.
-	t_list *aux=list_create();
-	if(!list_is_empty(memtable)){
-		Tabla *encontrada= find_tabla_by_name(nameTable);
-		if(encontrada!=NULL){
-			aux=filtrearPorKey(encontrada->registros,key);
-			if(list_is_empty(aux)){
-				obtenidoMem=NULL;
-			}else{
-				obtenidoMem=regConMayorTime(aux);
-				list_add(obtenidos,obtenidoMem);
-			}
-		}
-	}else{
-		obtenidoMem=NULL;
-	}
-	if(list_is_empty(obtenidos)){
-		valor=NULL;
-		return valor;
-	}else{
-		Registry *final=regConMayorTime(obtenidos);
-		valor=malloc(strlen(final->value)+1);
-		strcpy(valor,final->value);
-	}
-		//Encontradas las entradas para dicha Key, se retorna el valor con el Timestamp más grande.
+	//FALTA LIBERAR EL METATABLA
 	borrarMetadataTabla(metadata);
-	if(bin==NULL){
-		list_destroy(bin);
-	}else{
-		if(!list_is_empty(bin)){
-			list_destroy_and_destroy_elements(bin,(void *)destroyRegistry);
-		}
-	}
-	if(!list_is_empty(tmp)){
-		list_destroy_and_destroy_elements(tmp,(void *)destroyRegistry);
-	}
+	//FALTA LIBERAR LA LISTA AUXILIAR
 	list_destroy(aux);
-	log_info(logger,valor);
+	//FALTA LIBERAR LA LISTA DE OBTENIDOS Y TODOS LOS REGISTROS DE AHI DENTRO
+	list_destroy_and_destroy_elements(obtenidos,(void *)destroyRegistry);
 	return valor;
 }
+
 //*****************************************************************************************************
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
+	char *nombre=string_duplicate(nameTable);
+	string_to_upper(nombre);	//solo funciona si escribis en minuscula
+	char *path=nivelUnaTabla(nombre, 0);
 	//Verificar que la tabla no exista en el file system.
 	//En caso que exista, se guardará el resultado en un archivo .log
 	//y se retorna un error indicando dicho resultado.
-	char *nombre=string_duplicate(nameTable);
-	string_to_upper(nombre);	//solo funciona si escribis en minuscula
-	char *path=nivelUnaTabla(nameTable, 0);
-
 	if(folderExist(path)==0){
 		log_error(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
 		perror("La tabla ya existe.");
@@ -272,15 +139,14 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	//Crear el directorio para dicha tabla.
 	if(hayXBloquesLibres(numPartition)){
 		if(crearCarpeta(path)==1){
-			log_error(logger,"ERROR AL CREAR LA TABLA %s.",nameTable);
+			log_error(logger,"ERROR AL CREAR LA TABLA %s.",nombre);
 			free(path);
 			//liberar el semaforo de bloques ocupados
 			return 1;
 		}
-		free(path);
 		//Crear el archivo Metadata asociado al mismo.
 		//Grabar en dicho archivo los parámetros pasados por el request.
-		metaTabla *tabla=crearMetadataTabla(nameTable,consistency,numPartition,timeCompaction);
+		metaTabla *tabla=crearMetadataTabla(nombre,consistency,numPartition,timeCompaction);
 		//Crear los archivos binarios asociados a cada partición de la tabla con sus bloques
 
 		if(crearParticiones(tabla)==1){
@@ -288,13 +154,14 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 			//liberar el semaforo de bloques ocupados
 			return 1;
 		}
+		borrarMetadataTabla(tabla);
 	}else{
 		log_error(logger,"No hay %i bloques libres.\n",numPartition);
 		//liberar el semaforo de bloques ocupados
 		return 1;
 	}
-	list_add(directorio,nameTable);
-	free(nombre);
+	list_add(directorio,nombre);
+	free(path);
 	return 0;
 }
 
