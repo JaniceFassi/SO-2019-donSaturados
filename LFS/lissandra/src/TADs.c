@@ -951,8 +951,8 @@ void escribirReg(char *name,t_list *registros,int cantParticiones){
 	int size=list_size(registros);
 	while(size>0){
 		Registry *nuevo=list_get(registros, size-1);
-		int part=nuevo->key % cantParticiones;
-		char *path=concatExtencion(name,part,1);
+		//int part=nuevo->key % cantParticiones;
+		char *path=extension(name,1);
 		if(archivoValido(path)!=0){
 			agregarArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
 		}else{

@@ -13,61 +13,43 @@ int main(void) {
 
 	theStart();
 
+	u_int16_t socket_client;
 
-/*	u_int16_t socket_client;
+/*
+    // ****************PARA USAR TIEMPO DEL DUMP*************
 
-	//CREACION DE LA CARPETA PRINCIPAL DE TABLAS
-
-
-
-	// ****************PARA USAR TIEMPO DEL DUMP*************
-
-	//
-	//alarm(timeDump);
-    //signal(SIGALRM, funcionSenial);
-
-	char *path=pathFinal("TABLAS",0);	//DEVUELVE EL PATH HASTA LA CARPETA TABLAS
-
-	if(folderExist(path)!=0){		//SI NO EXISTE LA CARPETA TABLAS DEL FILESYSTEM LA CREA
-		if(crearCarpeta(path)!=0){
-			free(path);
-			theEnd();
-			return 1;
-		}
-		log_info(logger,"\nSe ha creado la carpeta principal.");
-	}
-
-	free(path);
+	alarm(timeDump);
+    signal(SIGALRM, funcionSenial);
 
 	// ***************PARA USAR LA FUNCION PURA****************/
 
 	create("PELICULAS", "SC", 5, 10000);
-	insert("PELICULAS", 163, "Nemo", 100);				// 3
-	insert("PELICULAS", 10, "Toy Story",10);			// 0
+	insert("PELICULAS", 163, "Nemo", 10);				// 3
+/*	insert("PELICULAS", 10, "Toy Story",10);			// 0
 	insert("PELICULAS", 10, "Harry Potter",16);			// 0
 	insert("PELICULAS", 10, "La cenicienta",10);			// 0
 	insert("PELICULAS", 10, "Monsters inc.",10);			// 0
 	create("COMIDAS", "SH", 2, 10000);
-	//create("TERMINA", "SH", 4, 10000);
-	//create("VIVE", "SH", 2, 10000);
+	create("TERMINA", "SH", 4, 10000);
+	create("VIVE", "SH", 2, 10000);
 	insert("COMIDAS", 10, "Toy Story",10);			// 0
 	insert("COMIDAS", 10, "Harry Potter",10);			// 0
-//	selectS("PELICULAS",10);
-	//dump();
+	selectS("PELICULAS",10);
+	dump();
 	newSelect("PELICULAS", 10);				// Harry Potter
-	//selectS("PELICULAS", 163);					// Nemo
+	selectS("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
-	//selectS("PELICULAS", 13535);					// Titanic
+	selectS("PELICULAS", 13535);					// Titanic
 	insert("PELICULAS", 922, "Ratatouille",18);			// 2
 	insert("PELICULAS", 4829,"Aladdin",10);				// 5
 	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
 	insert("PELICULAS", 163, "Buscando a dory",1300);	// 1
-	//selectS("PELICULAS", 4829);					// Aladdin
+	selectS("PELICULAS", 4829);					// Aladdin
 	insert("PELICULAS", 3671, "Avatar",1000);			// 1
 	dump();
 	newSelect("PELICULAS", 163);					// Buscando a dory
-	//selectS("PELICULAS", 3671);					// Avatar
-
+	selectS("PELICULAS", 3671);					// Avatar
+*/
 	/*************************************************************/
 
 	/****************PARA USAR LA CONSOLA******************/
@@ -77,25 +59,28 @@ int main(void) {
 
 	/****************PARA USAR CONEXIONES******************/
 
-	//connectMemory(&socket_client);
+	connectMemory(&socket_client);
 
-	//int i=0;
-	//while(i<5){
-	/*char *buffer=malloc(2);
+	int i=0;
+	while(i<2){
+	char *buffer=malloc(2);
 	int recibidos=recvData(socket_client,buffer,1);
-
-	exec_api(atoi(buffer),socket_client);
-	free(buffer);*/
-	//i++;
-	//}
+	int header=atoi(buffer);
+	exec_api(header,socket_client);
+	free(buffer);
+	i++;
+	}
 
 	theEnd();
 	return EXIT_SUCCESS;
 }
 
 void theStart(){
-	pathInicial="/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config";		//Inicia variable global de path inicial
-	raizDirectorio="/home/utnso";
+
+	pathInicial=malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config")+1);		//Inicia variable global de path inicial
+	strcpy(pathInicial,"/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
+	raizDirectorio=malloc(strlen("/home/utnso")+1);
+	strcpy(raizDirectorio,"/home/utnso");
 	logger = init_logger();													//Inicia el logger global
 	if(archivoValido(pathInicial)!=0){
 		estructurarConfig();						//Si existe el config en el path inicial crea la estructura, si no crea el config
@@ -124,7 +109,6 @@ char* recibirDeMemoria(u_int16_t sock){
 	recvData(sock,buffer,((atoi(tam))));
 
 	free(tam);
-	log_info(logger,buffer);
 	return buffer;
 }
 
@@ -134,55 +118,74 @@ void exec_api(op_code mode,u_int16_t sock){
 	char **subCadena;
 
 	switch(mode){
+	char *respuesta;
 	case 0:								//orden: tabla, key
 
 		log_info(logger,"\nSELECT");
 		buffer=recibirDeMemoria(sock);
-		log_info(logger,buffer);
 		subCadena=string_split(buffer, ";");
-		log_info(logger,subCadena[0]);
-		log_info(logger,subCadena[1]);
-		/*char *valor=selectS(subCadena[0],atoi(subCadena[1]));
-		printf("\n%s",valor);
-		log_info(logger,valor);*/
+
+		int keyBuscada=atoi(subCadena[1]);
+		char *valor=lSelect(subCadena[0],keyBuscada);
+
+		if(valor==NULL){
+			respuesta=string_from_format("01");
+		}else
+		{
+			if(strlen(valor)<10){
+				respuesta=string_from_format("0000%i%s",strlen(valor),valor);
+			}else{
+				if(configLissandra->tamValue<100){
+					respuesta=string_from_format("000%i",valor);
+				}
+			}
+		}
+		sendData(sock,respuesta,strlen(respuesta));
+		free(valor);
 		break;
 
 	case 1:
 		log_info(logger,"\nINSERT");	//Este es el insert que viene con el timestamp
 		buffer=recibirDeMemoria(sock);	//orden: tabla, key, value, timestamp
-		log_info(logger,buffer);
 		subCadena=string_split(buffer, ";");
-		log_info(logger,subCadena[0]);
-		log_info(logger,subCadena[1]);
-		log_info(logger,subCadena[2]);
-		log_info(logger,subCadena[3]);
-		insert(subCadena[0], atoi(subCadena[1]),subCadena[2],atol(subCadena[3]));
-
+		int key=atoi(subCadena[1]);
+		long time=atol(subCadena[3]);
+		if(insert(subCadena[0], key,subCadena[2],time)==1){
+			respuesta=string_from_format("11");
+		}else
+		{
+			respuesta=string_from_format("10");
+		}
+		sendData(sock,respuesta,strlen(respuesta));
 		break;
 
 	case 2:
 		log_info(logger,"\nCREATE");	//orden: tabla, consistencia, particiones, tiempoCompactacion
 		buffer=recibirDeMemoria(sock);
-		log_info(logger,buffer);
 		subCadena=string_split(buffer, ";");
-		log_info(logger,subCadena[0]);
-		log_info(logger,subCadena[1]);
-		log_info(logger,subCadena[2]);
-		log_info(logger,subCadena[3]);
-		create(subCadena[0],subCadena[1],atoi(subCadena[2]),atol(subCadena[3]));
+		int part=atoi(subCadena[2]);
+		int timeCompact=atol(subCadena[3]);
+		if(create(subCadena[0],subCadena[1],part,timeCompact)==1){
+			respuesta=string_from_format("21");
+		}else
+		{
+			respuesta=string_from_format("20");
+		}
+		sendData(sock,respuesta,strlen(respuesta));
 		break;
 
 	case 3:
 		log_info(logger,"\nDESCRIBE");	//orden: tabla
 		buffer=recibirDeMemoria(sock);
-		log_info(logger,buffer);
+
 		//completar
+
+
 		break;
 
 	case 4:
 		log_info(logger,"\nDROP");		//orden: tabla
 		buffer=recibirDeMemoria(sock);
-		log_info(logger,buffer);
 
 		//drop(buffer);
 		break;
@@ -190,9 +193,11 @@ void exec_api(op_code mode,u_int16_t sock){
 	default:
 		log_info(logger,"\nOTRO");
 		break;
+
+	free(respuesta);
 	}
 	free(buffer);
-	//free(subCadena);
+	liberarSubstrings(subCadena);
 }
 
 void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
@@ -209,9 +214,19 @@ void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 
 	if(acceptConexion( server, socket_client,configLissandra->idEsperado)!=0){
 		log_info(logger, "\nError en el acept.");
-	}else{
+	}else
+	{
 		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
-		//aca deberia mandar el tamaño maximo del valor
+		char *maxValue=malloc(4);
+		if(configLissandra->tamValue<10){
+			strcpy(maxValue,string_from_format("00%i",configLissandra->tamValue));
+		}else{
+			if(configLissandra->tamValue<100){
+				strcpy(maxValue,string_from_format("0%i",configLissandra->tamValue));
+			}
+		}
+		sendData(*socket_client,maxValue,3);
+		free(maxValue);
 	}
 }
 
@@ -223,7 +238,7 @@ void console(){
 		if(!strncmp(linea,"SELECT ",7))
 		{
 			char **subStrings= string_n_split(linea,3," ");
-			char *valor=selectS(subStrings[1],atoi(subStrings[2]));
+			char *valor=lSelect(subStrings[1],atoi(subStrings[2]));
 			log_info(logger,valor);
 			printf("%s\n",valor);
 			liberarSubstrings(subStrings);
@@ -334,6 +349,8 @@ void theEnd(){
 	}
 	borrarDatosConfig();
 	borrarMetaLFS();
+	free(pathInicial);
+	free(raizDirectorio);
 	bitarray_destroy(bitmap);
 	close(archivoBitmap);
 	log_destroy(logger);
