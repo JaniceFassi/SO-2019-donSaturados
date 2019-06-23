@@ -288,8 +288,10 @@ int crearParticiones(metaTabla *tabla){
 			return 1;
 		}
 		char **arrayBlock=malloc(sizeof(int));
-		arrayBlock[0]=malloc(strlen(string_itoa(bloque))+1);
-		strcpy(arrayBlock[0],string_itoa(bloque));
+		char *casteo=string_itoa(bloque);
+		arrayBlock[0]=malloc(strlen(casteo)+1);
+		strcpy(arrayBlock[0],casteo);
+		free(casteo);
 		if(crearMetaArchivo(path, 0,arrayBlock ,1)!=0){
 			//mensaje de error
 		}

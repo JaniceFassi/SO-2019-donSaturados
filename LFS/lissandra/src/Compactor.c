@@ -6,63 +6,78 @@
  */
 
 #include "Compactor.h"
+int pedirBloques(int cantidad, char **array){
+	if(!hayXBloquesLibres(cantidad)){
+		//COMPLETAR
+		log_info(logger,"No hay suficientes bloques como para realizar el dump, se perderán los datos de la memtable.");
+		return 1;
+	}
+	int i=0;
+	while(i<cantidad){
+		int bloqueVacio=obtenerBloqueVacio();
+		array[i]=string_itoa(bloqueVacio);
+		i++;
+	}
+	return 0;
+}
+void liberarArraydeBloques(char **array){
+	int i=0;
+	while(array[i]!=NULL){
+		desocuparBloque(atoi(array[i]));
+		free(array[i]);
+		i++;
+	}
+}
+int escribirParticion(char *path,t_list *lista){
+	char *buffer=cadenaDeRegistros(lista);
+	int largo=strlen(buffer)+1;
+	//calcular cant bloques
+	int bloquesNecesarios=largo/metaLFS->tamBloques;
+	if(largo%metaLFS->tamBloques!=0){
+		bloquesNecesarios++;
+	}
+	char **arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
+	//pedir x cant bloques y guardarlas en un char
+	if(pedirBloques(bloquesNecesarios,arrayBlock)==1){
+		log_error(logger,"error al pedir los bloques necesarios");
+		return 1;
+	}
 
+	if(crearMetaArchivo(path, largo, arrayBlock,bloquesNecesarios)==1){
+		log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO.\n");
+		liberarArraydeBloques(arrayBlock);
+		free(arrayBlock);
+		return 1;
+	}
+
+	escribirBloque(buffer,arrayBlock);//aca se libera el buffer
+
+	for(int f=0;f<bloquesNecesarios;f++){
+		free(arrayBlock[f]);
+	}
+	free(arrayBlock);
+
+	return 0;
+}
 int dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
-	int bloquesNecesarios=0;
-	int largo=0;
 	while(cant>0){
 		Tabla *dumpTabla=list_get(dump,cant-1);
 		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
 			//Calcular el tamaño de dumpTabla->registros
-			char *buffer=cadenaDeRegistros(dumpTabla->registros);
-			char **arrayBlock;
-			largo=strlen(buffer)+1;
-			//calcular cant bloques
-			bloquesNecesarios=largo/metaLFS->tamBloques;
-			if(largo%metaLFS->tamBloques!=0){
-				bloquesNecesarios++;
-			}
-			arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
-
-			//pedir x cant bloques y guardarlas en un char
-			if(!hayXBloquesLibres(bloquesNecesarios)){
-				//COMPLETAR
-				log_info(logger,"No hay suficientes bloques como para realizar el dump, se perderán los datos de la memtable.");
-				return 1;
-			}
-			int i=0;
-			while(i<bloquesNecesarios){
-				int bloqueVacio=obtenerBloqueVacio();
-				arrayBlock[i]=string_itoa(bloqueVacio);
-				i++;
-			}
-
-			//Saca el numero de dump de esa tabla
 			int cantTmp=contarArchivos(dumpTabla->nombre, 1);
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
-			if(crearMetaArchivo(ruta, largo, arrayBlock,bloquesNecesarios)==1){
-				log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO.\n");
-				int i=0;
-				while(arrayBlock[i]!=NULL){
-					desocuparBloque(atoi(arrayBlock[i]));
-					i++;
-				}
+			if(escribirParticion(ruta,dumpTabla->registros)==1){
+				log_error(logger,"error al escribir el dump");
+				return 1;
 			}
-			escribirBloque(buffer,arrayBlock);//aca se libera el buffer
-			for(int f=0;f<bloquesNecesarios;f++){
-				free(arrayBlock[f]);
-			}
-			free(arrayBlock);
 			free(ruta);
 		}
-		list_destroy_and_destroy_elements(dumpTabla->registros,(void *)destroyRegistry);
+		liberarTabla(dumpTabla);
 		free(path);
-		free(dumpTabla->nombre);
-		free(dumpTabla);
 		cant--;
 	}
 	list_destroy(dump);
@@ -99,8 +114,10 @@ int renombrarTemp_TempC(char *path){
 	strcat(pathC,"c");
 	if(rename(path,pathC)!=0){
 		log_error(logger,"No se pudo renombrar el archivo");
+		free(pathC);
 		return 1;
 	}
+	free(pathC);
 	return 0;
 }
 
@@ -114,46 +131,6 @@ t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart){
 		}
 	list_iterate(lista,(void *)numParticion);
 	return nueva;
-}
-
-int escribirParticion(char *path,t_list *lista){
-	char *buffer=cadenaDeRegistros(lista);
-	char **arrayBlock;
-	int largo=strlen(buffer)+1;
-	//calcular cant bloques
-	int bloquesNecesarios=largo/metaLFS->tamBloques;
-	if(largo%metaLFS->tamBloques!=0){
-		bloquesNecesarios++;
-	}
-	arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
-
-	//pedir x cant bloques y guardarlas en un char
-	if(!hayXBloquesLibres(bloquesNecesarios)){
-		//COMPLETAR
-		log_info(logger,"No hay suficientes bloques como para realizar el dump, se perderán los datos de la memtable.");
-		return 1;
-	}
-	int i=0;
-	while(i<bloquesNecesarios){
-		int bloqueVacio=obtenerBloqueVacio();
-		arrayBlock[i]=string_itoa(bloqueVacio);
-		i++;
-	}
-
-	if(crearMetaArchivo(path, largo, arrayBlock,bloquesNecesarios)==1){
-		log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO.\n");
-		int i=0;
-		while(arrayBlock[i]!=NULL){
-			desocuparBloque(atoi(arrayBlock[i]));
-			i++;
-		}
-	}
-	escribirBloque(buffer,arrayBlock);//aca se libera el buffer
-	for(int f=0;f<bloquesNecesarios;f++){
-		free(arrayBlock[f]);
-	}
-	free(arrayBlock);
-	return 0;
 }
 
 void compactar(char *nombreTabla){
@@ -174,9 +151,10 @@ void compactar(char *nombreTabla){
 	int contador=0;
 	while(cantTemp>contador){
 		char *arch=nivelParticion(nombreTabla,contador,1);
-//semaforos
+		//semaforos
 		if(renombrarTemp_TempC(arch)==1){
 			log_error(logger,"No se puede hacer la compactacion por que no se pudo renombrar");
+			free(arch);
 			return;
 		}
 		free(arch);
@@ -186,21 +164,25 @@ void compactar(char *nombreTabla){
 	metaTabla *metadata=leerMetadataTabla(nombreTabla);
 	t_list *todosLosRegistros=list_create();
 	contador=0;
-	//leer binarios
-	while(metadata->partitions>contador){
-		char *archB=nivelParticion(nombreTabla,contador,0);
-		escanearArchivo(archB,todosLosRegistros);
-		liberarParticion(archB);
-		free(archB);
-		contador++;
-	}
-	//leerTempc
-	contador=0;
-	while(cantTemp>contador){
-		char *archT=nivelParticion(nombreTabla,contador,2);
-		escanearArchivo(archT,todosLosRegistros);
-		liberarParticion(archT);
-		free(archT);
+	int cantMax=metadata->partitions;
+	int binario=0;
+	while(cantMax>contador){
+		char *arch;
+		if(binario==0){
+			//leer binarios
+			arch=nivelParticion(nombreTabla,contador,0);
+			if(contador+1==cantMax){
+				contador=0;
+				cantMax=cantTemp;
+				binario++;
+			}
+		}else{
+			//leerTempc
+			arch=nivelParticion(nombreTabla,contador,2);
+		}
+		escanearArchivo(arch,todosLosRegistros);
+		liberarParticion(arch);
+		free(arch);
 		contador++;
 	}
 	contador=0;
