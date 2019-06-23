@@ -68,13 +68,18 @@ int main(void) {
 
 	inicializar();
 
+	segmento *animales = crearSegmento("ANIMALES");
+	segmento *postres = crearSegmento("POSTRES");
+	list_add(tablaSegmentos, animales);
+	list_add(tablaSegmentos, postres);
+
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "CABALLO");
 	mInsert("ANIMALES",4,"LOBO MARINO");
 	mInsert("POSTRES",5,"TORTA");
-	//mostrarMemoria();
-	printf("%i",memoriaLlena());
+	mostrarMemoria();
+	printf("Estado memoria: %i",memoriaLlena());
 	printf("\n");
 	printf("Ahora probamos SELECT: \n");
 
@@ -88,8 +93,8 @@ int main(void) {
 	mInsert("POSTRES",10,"HELADO");
 	mInsert("POSTRES",22,"CHOCOLATE");
 	mInsert("COLORES", 12, "ROJO");
-	mInsert("COLORES", 5, "AMARILLO");
 	mostrarMemoria();
+	printf("Estado memoria: %i",memoriaLlena());
 
 /*char* ip = "127.0.0.1";
 	u_int16_t port = htons(9000);
@@ -138,7 +143,7 @@ int main(void) {
 
 
 
-	finalizar();
+	//finalizar();
 
 	return EXIT_SUCCESS;
 }
@@ -160,6 +165,7 @@ void inicializar(){
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
+	listaDeUsos = list_create();
 
 	//handshake lissandra para que nos de el maxvalue
 
@@ -191,6 +197,10 @@ pagina *crearPagina(){
 		printf("No hay espacio para crear una pagina");
 	}
 	return pag;
+}
+
+void agregarSegmento(segmento* nuevo){
+	list_add(tablaSegmentos,nuevo);
 }
 
 void agregarPagina(segmento *seg, pagina *pag){
@@ -249,7 +259,7 @@ t_config* read_config() {
  }
 
 
- /* No me reconoce la sharedLibrary
+
 
  void handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
  	int conexionExitosa;
@@ -263,7 +273,7 @@ t_config* read_config() {
  		recvData(lfsCliente, &maxValue, sizeof(u_int16_t));
  }
 
- */
+
 
 
  void pedirleCrearTablaAlissandra(char* nombretabla,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion){}
@@ -293,7 +303,6 @@ t_config* read_config() {
  	memcpy(memoria+offset, &key,sizeof(u_int16_t));
  	int offset2 = offset + sizeof(u_int16_t);
  	memcpy(memoria+offset2, value, strlen(value)+1);
- 	pag->modificado = 1;
  }
 
 
@@ -317,7 +326,9 @@ t_config* read_config() {
  		}
 
  	}
- 	//else journal
+ 	else{
+ 		posMarco = LRU();
+ 	}
 
  	return posMarco;
  }
@@ -326,7 +337,14 @@ t_config* read_config() {
 
  	int index = conseguirIndexSeg(nuevo);
 
- 	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
+ 	int cantDePaginas = list_size(nuevo->tablaPaginas);
+
+ 	for(int i=0;i<cantDePaginas;i++){
+ 		pagina* pagAEliminar = list_get(nuevo->tablaPaginas,i);
+ 		liberarMarco(pagAEliminar->nroMarco);
+ 	}
+
+ 	//list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
 
 
  }
@@ -342,10 +360,39 @@ t_config* read_config() {
  }
 
  void segmentoDestroy(segmento* segParaDestruir){
-	 list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
+    list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
 	free(segParaDestruir->nombreTabla);
  	free(segParaDestruir);
  }
+
+
+ int LRU(){
+	 int i=0,menor;
+	 ultimoUso* aux= list_get(listaDeUsos,0); //el primer elemento
+	 menor = aux->posicionDeUso;
+
+	 if(listaDeUsos != NULL){ //es decir, si la lista de usos esta vacia
+		 while(aux = list_get(listaDeUsos,i)){
+			 if(menor > aux->posicionDeUso){
+				 menor = aux->posicionDeUso;
+			 }else{
+				 i++;
+			 }
+		 }
+	 }
+	 else{
+		 //hacer journal por memoria llena de flags modificados
+	 }
+
+	 liberarMarco(aux->nroMarco);
+
+	 return aux->nroMarco;
+
+	 //Esta funcion lee de una lista cual fue el marco que hace mas tiempo que no se usa
+	 //lo libera y devuelve su posicion para que sea asignado a otra pagina
+
+ }
+
 
  ////AUXILIARES SECUNDARIAS////
 
@@ -415,14 +462,6 @@ void finalizar(){
 
 
 
-
-
-
-
-
-
-
-
 //-------------------------------------//
 //---------------API------------------//
 //-----------------------------------//
@@ -444,6 +483,8 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				pag->modificado = 1;
 			}else{
 				agregarDato(time(NULL),key,valor,pag);
+				pag->modificado = 1;
+				//eliminar de la listaDeUsos
 			}
 
 
@@ -469,18 +510,20 @@ void mSelect(char* nombreTabla,u_int16_t key){
 	pagina* pNueva;
 
 	if(nuevo!= NULL){
-		pNueva = buscarPaginaConKey(nuevo,key); //esta maldita fucion no esta bien
+		pNueva = buscarPaginaConKey(nuevo,key);
 		if(pNueva != NULL){
 			printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
 		else{
 			pNueva = pedirALissandraPagina(nombreTabla,key); //Algun dia la haremos y sera hermosa
-			agregarDato(time(NULL),key,conseguirValor(pNueva),pNueva);
+			agregarPagina(nuevo,pNueva);
+			agregarDato(time(NULL),key,conseguirValor(pNueva),pNueva); // LRU
 		    printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
 	}
 	else{
-		pNueva = pedirALissandraPagina(nombreTabla,key);
+
+		pNueva = pedirALissandraPagina(nombreTabla,key); //LRU
 		printf("El valor es: %s\n",conseguirValor(pNueva));
 	}
 

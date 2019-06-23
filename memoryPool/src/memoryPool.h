@@ -24,12 +24,13 @@
 #include<readline/readline.h>
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
-//#include <socketSaturados.h>
+#include <socketSaturados.h>
 
 
 //VARIABLES GLOBALES
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
+t_list* listaDeUsos;
 void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
@@ -52,6 +53,11 @@ typedef struct {
 	int modificado;
 }pagina;
 
+//ESTRUCTURA LRU
+typedef struct{
+	int nroMarco;
+	int posicionDeUso;
+}ultimoUso;
 
 //API
 void mSelect(char* nombreTabla,u_int16_t key);
@@ -72,6 +78,7 @@ t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
 pagina* crearPagina();
+void agregarSegmento(segmento* nuevo);
 void agregarPagina(segmento *seg, pagina *pag);
 pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
@@ -90,6 +97,7 @@ void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
 void eliminarSegmento(segmento* nuevo);
 void paginaDestroy(pagina* pagParaDestruir);
 void segmentoDestroy(segmento* segParaDestruir);
+int LRU();
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
