@@ -1054,9 +1054,7 @@ t_list *regDep(t_list *aDepu){
 				Registry *viejo=primerRegistroConKey(depu,nuevo->key);
 				if(viejo->timestamp <= nuevo->timestamp){
 					int index= calcularIndex(depu,viejo->key);
-					list_replace_and_destroy_element(depu, index-1, nuevo, (void*)destroyRegistry);
-				}else{
-					list_remove_and_destroy_element(aDepu, cant-1, (void*)destroyRegistry);
+					list_replace(depu, index-1, nuevo);
 				}
 			}else{
 				list_add(depu,nuevo);

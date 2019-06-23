@@ -17,4 +17,5 @@
 #include "TADs.h"
 
 int dump();
+void compactar(char *nombreTabla);
 #endif /* COMPACTOR_H_ */
