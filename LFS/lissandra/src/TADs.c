@@ -209,7 +209,9 @@ t_list *deChar_Registros(char *buffer){
 	t_list *registros=list_create();
 	while(strlen(buffer)>0){
 		char **substring=string_n_split(buffer,4,";");
-		Registry *nuevo=createRegistry(atoi(substring[1]),substring[2], atol(substring[0]));
+		int key=atoi(substring[1]);
+		long time=atol(substring[0]);
+		Registry *nuevo=createRegistry(key,substring[2], time);
 		list_add(registros,nuevo);
 		free(buffer);
 		if(substring[3]!=NULL){
@@ -447,12 +449,14 @@ void escanearArchivo(char *path, t_list *obtenidos){//no deberia ser int?
 	if(archivoValido(path)==1){
 		t_list *aux;
 		metaArch *archivoAbierto=leerMetaArch(path);
-		aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-		if(list_is_empty(aux)){
-			list_destroy(aux);
-		}else{
-			list_add_all(obtenidos,aux);
-			list_destroy(aux);
+		if(archivoAbierto->size>0){
+			aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
+			if(list_is_empty(aux)){
+				list_destroy(aux);
+			}else{
+				list_add_all(obtenidos,aux);
+				list_destroy(aux);
+			}
 		}
 		borrarMetaArch(archivoAbierto);
 	}

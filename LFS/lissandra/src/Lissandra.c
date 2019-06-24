@@ -25,30 +25,26 @@ int main(void) {
 
 	create("PELICULAS", "SC", 5, 10000);
 	insert("PELICULAS", 163, "Nemo", 10);				// 3
-/*	insert("PELICULAS", 10, "Toy Story",10);			// 0
+	insert("PELICULAS", 10, "Toy Story",10);			// 0
 	insert("PELICULAS", 10, "Harry Potter",16);			// 0
 	insert("PELICULAS", 10, "La cenicienta",10);			// 0
 	insert("PELICULAS", 10, "Monsters inc.",10);			// 0
-	create("COMIDAS", "SH", 2, 10000);
-	create("TERMINA", "SH", 4, 10000);
-	create("VIVE", "SH", 2, 10000);
-	insert("COMIDAS", 10, "Toy Story",10);			// 0
-	insert("COMIDAS", 10, "Harry Potter",10);			// 0
-	selectS("PELICULAS",10);
+	char *v=lSelect("PELICULAS",163);
+	free(v);
 	dump();
-	newSelect("PELICULAS", 10);				// Harry Potter
-	selectS("PELICULAS", 163);					// Nemo
+/*
+	lSelect("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
-	selectS("PELICULAS", 13535);					// Titanic
+	lSelect("PELICULAS", 13535);					// Titanic
 	insert("PELICULAS", 922, "Ratatouille",18);			// 2
 	insert("PELICULAS", 4829,"Aladdin",10);				// 5
 	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
 	insert("PELICULAS", 163, "Buscando a dory",1300);	// 1
-	selectS("PELICULAS", 4829);					// Aladdin
+	lSelect("PELICULAS", 4829);					// Aladdin
 	insert("PELICULAS", 3671, "Avatar",1000);			// 1
 	dump();
-	newSelect("PELICULAS", 163);					// Buscando a dory
-	selectS("PELICULAS", 3671);					// Avatar
+	lSelect("PELICULAS", 163);					// Buscando a dory
+	lSelect("PELICULAS", 3671);					// Avatar
 */
 	/*************************************************************/
 
@@ -59,17 +55,20 @@ int main(void) {
 
 	/****************PARA USAR CONEXIONES******************/
 
-	connectMemory(&socket_client);
+	//connectMemory(&socket_client);
 
 	int i=0;
-	while(i<2){
+	int recibidos=0;
+	int header=0;
+
+	/*while(i<2){
 	char *buffer=malloc(2);
-	int recibidos=recvData(socket_client,buffer,1);
-	int header=atoi(buffer);
+	recibidos=recvData(socket_client,buffer,1);
+	header=atoi(buffer);
 	exec_api(header,socket_client);
 	free(buffer);
 	i++;
-	}
+	}*/
 
 	theEnd();
 	return EXIT_SUCCESS;
@@ -136,11 +135,12 @@ void exec_api(op_code mode,u_int16_t sock){
 				respuesta=string_from_format("0000%i%s",strlen(valor),valor);
 			}else{
 				if(configLissandra->tamValue<100){
-					respuesta=string_from_format("000%i",valor);
+					respuesta=string_from_format("000%i%s",strlen(valor),valor);
 				}
 			}
 		}
 		sendData(sock,respuesta,strlen(respuesta));
+		free(respuesta);
 		free(valor);
 		break;
 
@@ -157,6 +157,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			respuesta=string_from_format("10");
 		}
 		sendData(sock,respuesta,strlen(respuesta));
+		free(respuesta);
 		break;
 
 	case 2:
@@ -172,6 +173,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			respuesta=string_from_format("20");
 		}
 		sendData(sock,respuesta,strlen(respuesta));
+		free(respuesta);
 		break;
 
 	case 3:
@@ -194,7 +196,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		log_info(logger,"\nOTRO");
 		break;
 
-	free(respuesta);
+
 	}
 	free(buffer);
 	liberarSubstrings(subCadena);
@@ -216,13 +218,13 @@ void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 		log_info(logger, "\nError en el acept.");
 	}else
 	{
+		char *maxValue;
 		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
-		char *maxValue=malloc(4);
 		if(configLissandra->tamValue<10){
-			strcpy(maxValue,string_from_format("00%i",configLissandra->tamValue));
+			maxValue=string_from_format("00%i",configLissandra->tamValue);
 		}else{
 			if(configLissandra->tamValue<100){
-				strcpy(maxValue,string_from_format("0%i",configLissandra->tamValue));
+				maxValue=string_from_format("0%i",configLissandra->tamValue);
 			}
 		}
 		sendData(*socket_client,maxValue,3);

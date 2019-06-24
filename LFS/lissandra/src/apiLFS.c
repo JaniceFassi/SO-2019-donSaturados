@@ -52,7 +52,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 
 	//Verificar que la tabla exista en el file system.
 	if(folderExist(path)==1){
-		log_error(logger,"No se puede hacer el insert porque no existe la tabla %s.", nameTable);
+		log_error(logger,"No se puede hacer el select porque no existe la tabla %s.", nameTable);
 		free(path);
 		list_destroy(obtenidos);
 		return valor;
@@ -109,6 +109,8 @@ char *lSelect(char *nameTable, u_int16_t key){
 			valor=malloc(strlen(obtenido->value)+1);
 			strcpy(valor,obtenido->value);
 			log_info(logger, valor);
+			//FALTA LIBERAR LA FILTRADA
+			list_destroy_and_destroy_elements(filtrada, (void*)destroyRegistry);
 		}else{
 			log_info(logger,"No se ha encontrado el valor.");
 		}
@@ -134,6 +136,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		log_error(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
 		perror("La tabla ya existe.");
 		free(path);
+		free(nombre);
 		return 1;
 	}
 	//Crear el directorio para dicha tabla.
