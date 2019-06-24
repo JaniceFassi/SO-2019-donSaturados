@@ -7,7 +7,6 @@
  */
 #include "TADs.h"
 
-
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
 char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
@@ -40,14 +39,6 @@ char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
 	free(punto);
 	return path;
 }
-
-Registry *desconcatParaArch(char *linea){
-	char **subString=string_n_split(linea,3,";");
-	int key=atoi(subString[1]);
-	long timestamp=atol(subString[0]);
-	Registry *nuevo=createRegistry(key,subString[2],timestamp);
-	return nuevo;
-}
 char *array_A_String(char **array,int cantBloques){
 	char *casteo=malloc(2);
 	strcpy(casteo,"[");
@@ -67,69 +58,31 @@ char *array_A_String(char **array,int cantBloques){
 }
 
 char *concatRegistro(Registry *registro){
-	char *keys=string_itoa(registro->key);
-	char *time=string_from_format("%ld",registro->timestamp);
-	char *linea=malloc(strlen(time)+1);
-	strcpy(linea,time);
-	linea=ponerSeparador(linea);
-	linea=realloc(linea,strlen(linea)+strlen(keys)+1);
-	strcat(linea,keys);
-	linea=ponerSeparador(linea);
-	linea=realloc(linea,strlen(linea)+strlen(registro->value)+1);
-	strcat(linea, registro->value);
-	free(keys);
-	free(time);
+	char *linea=string_from_format("%ld;%i;%s",registro->timestamp,registro->key,registro->value);
 	return linea;
 }
 
-char *concatParaArchivo(long timestamp,int key,char *value,int opc){
-	//0 para Escribir, 1 para Agregar
+char *cadenaDeRegistros(t_list *lista){
+	char *buffer;
+	int vacio=0;
 
-	char *separador=";";
-	char *salto="\n";
-	int base;
-
-	char *keys=string_itoa(key);
-	char *time=string_from_format("%ld",timestamp);
-	char *linea;
-
-	if(opc==0){
-		base=strlen(time)+1;
-		linea=malloc(base);
-		strcpy(linea,time);
-
-	}else{
-		base=strlen(salto)+1;
-		char *linea=malloc(base);
-		strcpy(linea,salto);
-		base+=strlen(time)+1;
-		linea=realloc(linea,base);
-		string_append(&linea,time);
+	void sumarRegistro(Registry *reg){
+		char *linea;
+		linea=concatRegistro(reg);
+		if(vacio==0){
+			buffer=malloc(strlen(linea)+1);
+			strcpy(buffer,linea);
+			vacio++;
+		}else{
+			buffer=ponerSeparador(buffer);
+			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
+			strcat(buffer,linea);
+		}
+		free(linea);
 	}
-	free(time);
 
-	base +=strlen(separador)+1;
-	linea=realloc(linea,base);
-	string_append(&linea,separador);
-
-	base +=strlen(keys)+1;
-	linea=realloc(linea,base);
-	string_append(&linea,keys);
-	free(keys);
-
-	base +=strlen(separador)+1;
-	linea=realloc(linea,base);
-	string_append(&linea,separador);
-
-	base +=strlen(value)+1;
-	linea=realloc(linea,base);
-	string_append(&linea,value);
-
-	base +=strlen(salto)+1;
-	linea=realloc(linea,base);
-	string_append(&linea,salto);
-
-	return linea;
+	list_iterate(lista,(void*)sumarRegistro);
+	return buffer;
 }
 
 char *ponerBarra(char *linea){
@@ -241,468 +194,15 @@ char *nivelParticion(char *tabla, int particion, int modo){		//montaje/TABLAS/TA
 	free(part);
 	return path;
 }
-
 /****************************************************************************************************/
-//FUNCIONES DE CARPETAS
-
-int crearCarpeta(char* path){//CREA LA CARPETA
-	if(mkdir(path,0777)<0){
-		printf("No se pudo crear la Carpeta\n");
-			return 1;
-	}
-	return 0;
-}
-
-int folderExist(char* path){ //Verifica si existe la carpeta, si no existe devuelve 1
-
-	struct stat st = {0};
-	if (stat(path, &st) == -1){
-		//printf("No existe la Carpeta\n");
-		return 1;
-	}
-	return 0;
-}
-
-int borrarCarpeta(char *path){//BORRA LA CARPETA
-
-	if(rmdir(path)<0){
-		printf("No se pudo borrar la Carpeta\n");
-		return 1;
-	}
-	return 0;
-}
-
-/***********************************************************************************************/
-//FUNCIONES DE ARCHIVOS
-
-int crearParticiones(metaTabla *tabla){
-	FILE* arch; //BINARIO
-	int cant=tabla->partitions;
-	char *path;
-	while(cant>0){
-		path=nivelParticion(tabla->nombre,cant-1, 0);
-		int bloque=obtenerBloqueVacio();
-		if((arch= fopen(path,"wb"))<0){
-			log_info(logger,"Error al crear la particion %i de la tabla %s.\n",tabla->partitions,tabla->nombre);
-			 desocuparBloque(bloque);
-			return 1;
-		}
-		char **arrayBlock=malloc(sizeof(int));
-		char *casteo=string_itoa(bloque);
-		arrayBlock[0]=malloc(strlen(casteo)+1);
-		strcpy(arrayBlock[0],casteo);
-		free(casteo);
-		if(crearMetaArchivo(path, 0,arrayBlock ,1)!=0){
-			//mensaje de error
-		}
-		//crearMetaArchivo(path,bloque);
-		fclose(arch);
-		free(path);
-		free(arrayBlock[0]);
-		free(arrayBlock);
-		//liberarSubstrings(arrayBlock);
-		cant --;
-	}
-	return 0;
-}
-
-int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques){
-	char *bloqCasteado=array_A_String(bloques,cantBloques);
-	FILE *f=fopen(path,"wb");
-	if(f!=NULL){
-		fclose(f);
-	}else{
-		return 1;
-	}
-	t_config *metaArchs=config_create(path);
-	char *tamanio=string_itoa(size);
-	config_set_value(metaArchs,"SIZE",tamanio);
-	config_set_value(metaArchs,"BLOCKS",bloqCasteado);
-	config_save(metaArchs);
-	config_destroy(metaArchs);
-	free(tamanio);
-	free(bloqCasteado);
-	return 0;
-}
-
-/*void crearMetaArchivo(char *path, int nrobloque){						//Desde cero, con size 0 y un solo bloque. Podria sacarse
-	char **blocks=malloc(sizeof(int));
-	blocks[0]=malloc(strlen(string_itoa(nrobloque))+1);
-	strcpy(blocks[0],string_itoa(nrobloque));
-	char *bloque=array_A_String(blocks,1);
-	t_config *metaArchs=config_create(path);
-	char* size = string_itoa(0);
-	config_set_value(metaArchs,"SIZE",size);
-	config_set_value(metaArchs,"BLOCKS",bloque);
-	config_save(metaArchs);
-	config_destroy(metaArchs);
-	free(size);
-	liberarSubstrings(blocks);
-	free(bloque);
-}*/
-
-void liberarSubstrings(char **liberar){
-	int i=1;
-	while(liberar[i-1]!=NULL){
-		free(liberar[i-1]);
-		//log_info(logger, "%s",liberar[i]);
-		i++;
-	}
-	free(liberar);
-}
-void borrarMetaArch(metaArch *archivo){
-	liberarSubstrings(archivo->bloques);
-	free(archivo);
-}
-metaArch *leerMetaArch(char *path){
-	metaArch *nuevo=malloc(sizeof(metaArch));
-	t_config *metaArchs=config_create(path);
-	nuevo->size=config_get_int_value(metaArchs,"SIZE");
-	nuevo->bloques=config_get_array_value(metaArchs,"BLOCKS");
-	config_destroy(metaArchs);
+//FUNCIONES DE DESCONCATENAR
+Registry *desconcatParaArch(char *linea){
+	char **subString=string_n_split(linea,3,";");
+	int key=atoi(subString[1]);
+	long timestamp=atol(subString[0]);
+	Registry *nuevo=createRegistry(key,subString[2],timestamp);
+	liberarSubstrings(subString);
 	return nuevo;
-}
-metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
-	char *path=nivelUnaTabla(nombre,1);
-	metaTabla *nuevo=malloc(sizeof(metaTabla));
-	nuevo->compaction_time=timeCompaction;
-	nuevo->consistency= malloc(strlen(consistency)+1);
-	strcpy(nuevo->consistency,consistency);
-	nuevo->partitions= numPartition;
-	nuevo->nombre=malloc(strlen(nombre)+1);
-	strcpy(nuevo->nombre,nombre);
-	FILE* metadata= fopen(path,"wb"); //BINARIO
-	fclose(metadata);
-	t_config *metaTab=config_create(path);
-	config_set_value(metaTab,"CONSISTENCY",nuevo->consistency);
-	char* cantParticiones = string_itoa(nuevo->partitions);
-	config_set_value(metaTab,"PARTITIONS",cantParticiones);
-	char* tiempoCompact = string_from_format("%ld",nuevo->compaction_time);
-	config_set_value(metaTab,"COMPACTION_TIME",tiempoCompact);
-	config_save(metaTab);
-	config_destroy(metaTab);
-
-	free(cantParticiones);
-	free(tiempoCompact);
-	free(path);
-	return nuevo;
-}
-
-metaTabla *leerMetadataTabla(char *nombre){
-	char *path=nivelUnaTabla(nombre,1);
-	t_config *metaTab=config_create(path);
-	metaTabla *nuevo=malloc(sizeof(metaTabla));
-	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
-	char *aux=config_get_string_value(metaTab, "CONSISTENCY");
-	nuevo->consistency=malloc(string_length(aux)+1);
-	strcpy(nuevo->consistency,aux);
-	nuevo->partitions= config_get_int_value(metaTab, "PARTITIONS");
-	nuevo->nombre=malloc(strlen(nombre)+1);
-	strcpy(nuevo->nombre,nombre);
-	config_destroy(metaTab);
-	free(path);
-	return nuevo;
-}
-void borrarMetadataTabla(metaTabla *metadata){
-	free(metadata->consistency);
-	free(metadata->nombre);
-	free(metadata);
-}
-
-void oldCrearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
-	char *path=nivelMetadata(1);
-	FILE *arch=fopen(path,"wb");
-	fclose(arch);
-	metaLFS = malloc(sizeof(metaFileSystem));
-	metaLFS->magicNumber=malloc(strlen(magicNumber)+1);
-	strcpy(metaLFS->magicNumber,magicNumber);
-	metaLFS->cantBloques=cantBloques;
-	metaLFS->tamBloques=size;
-	t_config *config = config_create(path);
-	config_set_value(config, "BLOQUES", string_itoa(metaLFS->cantBloques));
-	config_set_value(config, "TAMANIO", string_itoa(metaLFS->tamBloques));
-	config_set_value(config, "MAGIC_NUMBER", metaLFS->magicNumber);
-	config_save(config);
-	config_destroy(config);
-	free(path);
-}
-
-void crearMetaLFS(){
-	char *path=nivelMetadata(1);
-	FILE *arch=fopen(path,"wb");
-	fclose(arch);
-	metaLFS =malloc(sizeof(metaFileSystem));
-	printf("Ingrese la cantidad de bloques: ");
-	scanf("%i",&metaLFS->cantBloques);
-	printf("Ingrese el tamaño de los bloques: ");
-	scanf("%i",&metaLFS->tamBloques);
-	printf("Ingrese el magic Number 'Lissandra' : ");
-	char *magic=malloc(15);
-	scanf("%s",magic);
-	metaLFS->magicNumber=malloc(strlen(magic)+1);
-	strcpy(metaLFS->magicNumber,magic);
-	free(magic);
-	t_config *config = config_create(path);
-	char *bloq=string_itoa(metaLFS->cantBloques);
-	char *tam=string_itoa(metaLFS->tamBloques);
-	config_set_value(config, "BLOQUES", bloq);
-	config_set_value(config, "TAMANIO", tam);
-	config_set_value(config, "MAGIC_NUMBER", metaLFS->magicNumber);
-	config_save(config);
-	config_destroy(config);
-	free(bloq);
-	free(tam);
-	free(path);
-}
-
-void leerMetaLFS(){
-	char *path=nivelMetadata(1);
-	t_config *metadataLFS=config_create(path);
-	metaLFS=malloc(sizeof(metaFileSystem));
-	metaLFS->tamBloques=config_get_int_value(metadataLFS, "TAMANIO");
-	char *magicN=config_get_string_value(metadataLFS, "MAGIC_NUMBER");
-	metaLFS->magicNumber=malloc(string_length(magicN)+1);
-	strcpy(metaLFS->magicNumber,magicN);
-	metaLFS->cantBloques= config_get_int_value(metadataLFS, "BLOQUES");
-	config_destroy(metadataLFS);
-	free(path);
-}
-
-void borrarMetaLFS(){
-	free(metaLFS->magicNumber);
-	free(metaLFS);
-}
-
-void escanearArchivo(char *path, t_list *obtenidos){
-	if(archivoValido(path)==1){
-		t_list *aux;
-		metaArch *archivoAbierto=leerMetaArch(path);
-		aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-		if(list_is_empty(aux)){
-			list_destroy(aux);
-		}else{
-			list_add_all(obtenidos,aux);
-			list_destroy(aux);
-		}
-		borrarMetaArch(archivoAbierto);
-	}
-}
-
-
-void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
-	t_config *config = init_config();				//Crea una estructura datosConfig en configLissandra, variable global
-	configLissandra=malloc(sizeof(datosConfig));
-	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
-	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
-	strcpy(configLissandra->puntoMontaje,aux);
-
-	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
-	char *aux2=config_get_string_value(config, "IP");
-	configLissandra->Ip=malloc(strlen(aux2)+1);
-	strcpy(configLissandra->Ip,aux2);
-	configLissandra->puerto= config_get_int_value(config, "PORT");
-	configLissandra->id= config_get_int_value(config, "ID");
-	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
-	configLissandra->retardo= config_get_int_value(config, "RETARDO");
-	configLissandra->tamValue= config_get_int_value(config, "TAMVALUE");
-	config_destroy(config);
-}
-
-void borrarDatosConfig(){
-	free(configLissandra->Ip);
-	free(configLissandra->puntoMontaje);
-	free(configLissandra);
-}
-
-void crearConfig(){
-	FILE *config=fopen(pathInicial,"wb");
-	fclose(config);
-
-	configLissandra=malloc(sizeof(datosConfig));
-
-	printf("Ingrese el punto de montaje correspendiente, sin el home/utnso: ");
-	char *path=malloc(100);
-	scanf("%s",path);
-	configLissandra->puntoMontaje=malloc(strlen(path)+1);
-	strcpy(configLissandra->puntoMontaje,path);
-	free(path);
-
-	printf("\nIngrese el tamaño maximo del value: ");
-	scanf("%i",&configLissandra->tamValue);
-
-	printf("\nIngrese el ID de Lissandra: ");
-	scanf("%i",&configLissandra->id);
-
-	printf("\nIngrese el ID de Memoria: ");
-	scanf("%i",&configLissandra->idEsperado);
-
-	printf("Ingrese la IP de Lissandra: ");
-	char *ip=malloc(25);
-	scanf("%s",ip);
-	configLissandra->Ip=malloc(strlen(ip)+1);
-	strcpy(configLissandra->Ip,ip);
-	free(ip);
-
-	printf("\nIngrese el puerto de escucha: ");
-	scanf("%i",&configLissandra->puerto);
-
-	printf("\nIngrese el tiempo para el dump: ");
-	scanf("%i",&configLissandra->tiempoDump);
-
-	printf("\nIngrese el tiempo de retardo: ");
-	scanf("%i",&configLissandra->retardo);
-
-	t_config *lissConfig=config_create(pathInicial);
-
-	config_set_value(lissConfig,"PUNTO_MONTAJE",configLissandra->puntoMontaje);
-
-	char *tamanio=string_itoa(configLissandra->tamValue);
-	config_set_value(lissConfig,"TAMVALUE",tamanio);
-
-	char *id=string_itoa(configLissandra->id);
-	config_set_value(lissConfig,"ID",id);
-
-	char *idEsperado=string_itoa(configLissandra->idEsperado);
-	config_set_value(lissConfig,"ID_ESPERADO",idEsperado);
-
-	config_set_value(lissConfig,"IP",configLissandra->Ip);
-
-	char *puerto=string_itoa(configLissandra->puerto);
-	config_set_value(lissConfig,"PORT",puerto);
-
-	char *tempDump=string_itoa(configLissandra->tiempoDump);
-	config_set_value(lissConfig,"TIEMPO_DUMP",tempDump);
-
-	char *tempRetar=string_itoa(configLissandra->retardo);
-	config_set_value(lissConfig,"RETARDO",tempRetar);
-
-	config_save(lissConfig);
-	config_destroy(lissConfig);
-
-	free(tamanio);
-	free(id);
-	free(idEsperado);
-	free(puerto);
-	free(tempDump);
-	free(tempRetar);
-}
-
-// NUEVAS FUNCIONES DE ARCHIVOS *******************************************************************
-void escribirBloque(char *buffer,char **bloques){
-	int nroArray=0;
-	while(strlen(buffer)>metaLFS->tamBloques){
-		char *escribir=string_substring_until(buffer,metaLFS->tamBloques);
-		if(bloques[nroArray]!=NULL){
-			int nroBloq=atoi(bloques[nroArray]);
-			char *pathB=rutaBloqueNro(nroBloq);
-			//escribir el archivo
-			escribirArchB(pathB,escribir);
-			free(pathB);
-		}else{
-			//error
-		}
-		char *auxilar=string_substring_from(buffer,metaLFS->tamBloques);
-		free(buffer);
-		buffer=malloc(strlen(auxilar)+1);
-		strcpy(buffer,auxilar);
-		free(auxilar);
-		nroArray++;
-	}
-	if(strlen(buffer)>0){
-		if(bloques[nroArray]!=NULL){
-			int nroBloq=atoi(bloques[nroArray]);
-			char *pathB=rutaBloqueNro(nroBloq);
-			//escribir el archivo
-			escribirArchB(pathB,buffer);
-			free(pathB);
-		}else{
-			//error
-		}
-	}
-	free(buffer);
-}
-
-void escribirArchB(char *path,char *buffer){
-	FILE *bloque=fopen(path,"wb");
-	fwrite(buffer,strlen(buffer)+1,sizeof(char),bloque);
-	fflush(bloque);
-	fclose(bloque);
-}
-
-t_list *leerBloques(char**bloques,int offset){
-	t_list *registrosLeidos=NULL;
-	int cant=0;
-	int bytesALeer=0;
-	char *leidoTotal;
-	if(offset>0){
-		while(bloques[cant]!=NULL){		//Calcula la cantidad de bloques
-			cant++;
-		}
-		for(int blok=0;blok<cant;blok++){
-			if(offset<=metaLFS->tamBloques){		//Define el tamanio a leer
-				bytesALeer=offset;
-			}else{
-				bytesALeer=metaLFS->tamBloques;
-			}
-		if(bloques[blok]!=NULL){
-			int nroBloq=atoi(bloques[blok]);
-			char *pathB=rutaBloqueNro(nroBloq);
-			char *leido=leerArchBinario(pathB,bytesALeer);
-			if(blok==0){
-				leidoTotal=malloc(strlen(leido)+1);
-				strcpy(leidoTotal,leido);
-				free(leido);
-			}else{
-				leidoTotal=realloc(leidoTotal,strlen(leidoTotal)+strlen(leido)+1);
-				strcat(leidoTotal,leido);
-				offset-=strlen(leido);
-				free(leido);
-			}
-			free(pathB);
-		}
-	}
-	}
-	return registrosLeidos=deChar_Registros(leidoTotal);//el leidoTotal se libera en la funcion esta
-
-	/*t_list *registrosLeidos=NULL;
-	int blok=0;
-	char *leidoTotal;
-	while(offset>metaLFS->tamBloques){
-		if(bloques[blok]!=NULL){
-			int nroBloq=atoi(bloques[blok]);
-			char *pathB=rutaBloqueNro(nroBloq);
-			char *leido=leerArchBinario(pathB,metaLFS->tamBloques);
-			if(blok==0){
-				leidoTotal=malloc(strlen(leido)+1);
-				strcpy(leidoTotal,leido);
-				free(leido);
-			}else{
-				leidoTotal=realloc(leidoTotal,strlen(leido));
-				strcat(leidoTotal,leido);
-				free(leido);
-			}
-			blok++;
-		}
-	offset-=metaLFS->tamBloques;
-	}
-	if(offset>0){
-		if(bloques[blok]!=NULL){
-			int nroBloq=atoi(bloques[blok]);
-			char *pathB=rutaBloqueNro(nroBloq);
-			char *leido=leerArchBinario(pathB,offset);
-			if(blok==0){
-				leidoTotal=malloc(strlen(leido)+1);
-				strcpy(leidoTotal,leido);
-				free(leido);
-			}else{
-				leidoTotal=realloc(leidoTotal,strlen(leido));
-				strcat(leidoTotal,leido);
-				free(leido);
-			}
-		}
-
-	}
-	return registrosLeidos=deChar_Registros(leidoTotal);//el leidoTotal se libera en la funcion esta*/
 }
 
 t_list *deChar_Registros(char *buffer){
@@ -725,6 +225,333 @@ t_list *deChar_Registros(char *buffer){
 	return registros;
 }
 
+/****************************************************************************************************/
+//FUNCIONES DE CARPETAS
+
+int crearCarpeta(char* path){//CREA LA CARPETA
+	if(mkdir(path,0777)<0){
+		printf("No se pudo crear la Carpeta\n");
+			return 1;
+	}
+	return 0;
+}
+
+int folderExist(char* path){ //Verifica si existe la carpeta, si no existe devuelve 1
+	struct stat st = {0};
+	if (stat(path, &st) == -1){
+		return 1;
+	}
+	return 0;
+}
+
+int borrarCarpeta(char *path){//BORRA LA CARPETA
+	if(rmdir(path)<0){
+		printf("No se pudo borrar la Carpeta\n");
+		return 1;
+	}
+	return 0;
+}
+
+/***********************************************************************************************/
+//FUNCIONES DE ARCHIVOS
+
+int crearParticiones(metaTabla *tabla){
+	int cant=tabla->partitions;
+	while(cant>0){
+		char *path=nivelParticion(tabla->nombre,cant-1, 0);
+		int bloque=obtenerBloqueVacio();
+		char **arrayBlock=malloc(sizeof(int));
+		char *casteo=string_itoa(bloque);
+		arrayBlock[0]=malloc(strlen(casteo)+1);
+		strcpy(arrayBlock[0],casteo);
+		free(casteo);
+		if(crearMetaArchivo(path, 0,arrayBlock ,1)!=0){
+			log_info(logger,"Error al crear la particion %i de la tabla %s.\n",tabla->partitions,tabla->nombre);
+			 desocuparBloque(bloque);
+				free(path);
+				free(arrayBlock[0]);
+				free(arrayBlock);
+			 return 1;
+		}
+		free(path);
+		free(arrayBlock[0]);
+		free(arrayBlock);
+		//liberarSubstrings(arrayBlock);
+		cant --;
+	}
+	return 0;
+}
+
+int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques){
+	char *bloqCasteado=array_A_String(bloques,cantBloques);
+	FILE *f=fopen(path,"wb");
+
+	if(f==NULL){
+		free(bloqCasteado);
+		return 1;
+	}
+	fclose(f);
+
+	t_config *metaArchs=config_create(path);
+	char *tamanio=string_itoa(size);
+
+	config_set_value(metaArchs,"SIZE",tamanio);
+	config_set_value(metaArchs,"BLOCKS",bloqCasteado);
+
+	config_save(metaArchs);
+	config_destroy(metaArchs);
+
+	free(tamanio);
+	free(bloqCasteado);
+	return 0;
+}
+
+metaArch *leerMetaArch(char *path){
+	metaArch *nuevo=malloc(sizeof(metaArch));
+	t_config *metaArchs=config_create(path);
+	nuevo->size=config_get_int_value(metaArchs,"SIZE");
+	nuevo->bloques=config_get_array_value(metaArchs,"BLOCKS");
+	config_destroy(metaArchs);
+	return nuevo;
+}
+
+metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
+	char *path=nivelUnaTabla(nombre,1);
+	metaTabla *nuevo=malloc(sizeof(metaTabla));
+
+	nuevo->compaction_time=timeCompaction;
+	nuevo->consistency= malloc(strlen(consistency)+1);
+	strcpy(nuevo->consistency,consistency);
+	nuevo->partitions= numPartition;
+	nuevo->nombre=malloc(strlen(nombre)+1);
+	strcpy(nuevo->nombre,nombre);
+
+	FILE* metadata= fopen(path,"wb"); //BINARIO
+	fclose(metadata);
+
+	t_config *metaTab=config_create(path);
+	config_set_value(metaTab,"CONSISTENCY",nuevo->consistency);
+	char* cantParticiones = string_itoa(nuevo->partitions);
+	config_set_value(metaTab,"PARTITIONS",cantParticiones);
+	char* tiempoCompact = string_from_format("%ld",nuevo->compaction_time);
+	config_set_value(metaTab,"COMPACTION_TIME",tiempoCompact);
+
+	config_save(metaTab);
+	config_destroy(metaTab);
+
+	free(cantParticiones);
+	free(tiempoCompact);
+	free(path);
+	return nuevo;
+}
+
+metaTabla *leerMetadataTabla(char *nombre){
+	char *path=nivelUnaTabla(nombre,1);
+	t_config *metaTab=config_create(path);
+	metaTabla *nuevo=malloc(sizeof(metaTabla));
+
+	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
+	char *aux=config_get_string_value(metaTab, "CONSISTENCY");
+	nuevo->consistency=malloc(string_length(aux)+1);
+	strcpy(nuevo->consistency,aux);
+	nuevo->partitions= config_get_int_value(metaTab, "PARTITIONS");
+	nuevo->nombre=malloc(strlen(nombre)+1);
+	strcpy(nuevo->nombre,nombre);
+
+	config_destroy(metaTab);
+	free(path);
+	return nuevo;
+}
+
+void oldCrearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
+	char *path=nivelMetadata(1);
+
+	FILE *arch=fopen(path,"wb");
+	fclose(arch);
+
+	metaLFS = malloc(sizeof(metaFileSystem));
+
+	metaLFS->magicNumber=malloc(strlen(magicNumber)+1);
+	strcpy(metaLFS->magicNumber,magicNumber);
+	metaLFS->cantBloques=cantBloques;
+	metaLFS->tamBloques=size;
+
+	t_config *config = config_create(path);
+
+	char *casteoCant=string_itoa(metaLFS->cantBloques);
+	config_set_value(config, "BLOQUES", casteoCant);
+	char *casteoTam=string_itoa(metaLFS->tamBloques);
+	config_set_value(config, "TAMANIO", casteoTam);
+	config_set_value(config, "MAGIC_NUMBER", metaLFS->magicNumber);
+
+	config_save(config);
+	config_destroy(config);
+	free(casteoCant);
+	free(casteoTam);
+	free(path);
+}
+
+void crearMetaLFS(){
+	char *path=nivelMetadata(1);
+	FILE *arch=fopen(path,"wb");
+	fclose(arch);
+
+	metaLFS =malloc(sizeof(metaFileSystem));
+
+	printf("Ingrese la cantidad de bloques: ");
+	int aux;
+	scanf("%i",&aux);
+	metaLFS->cantBloques=aux;
+	printf("Ingrese el tamaño de los bloques: ");
+	aux=0;
+	scanf("%i",&aux);
+	metaLFS->tamBloques=aux;
+	printf("Ingrese el magic Number 'Lissandra' : ");
+	char *magic=malloc(15);
+	scanf("%s",magic);
+	metaLFS->magicNumber=malloc(strlen(magic)+1);
+	strcpy(metaLFS->magicNumber,magic);
+	free(magic);
+
+	t_config *config = config_create(path);
+
+	char *bloq=string_itoa(metaLFS->cantBloques);
+	char *tam=string_itoa(metaLFS->tamBloques);
+	config_set_value(config, "BLOQUES", bloq);
+	config_set_value(config, "TAMANIO", tam);
+	config_set_value(config, "MAGIC_NUMBER", metaLFS->magicNumber);
+
+	config_save(config);
+	config_destroy(config);
+	free(bloq);
+	free(tam);
+	free(path);
+}
+
+void leerMetaLFS(){
+	char *path=nivelMetadata(1);
+	t_config *metadataLFS=config_create(path);
+
+	metaLFS=malloc(sizeof(metaFileSystem));
+	metaLFS->tamBloques=config_get_int_value(metadataLFS, "TAMANIO");
+	char *magicN=config_get_string_value(metadataLFS, "MAGIC_NUMBER");
+	metaLFS->magicNumber=malloc(string_length(magicN)+1);
+	strcpy(metaLFS->magicNumber,magicN);
+	metaLFS->cantBloques= config_get_int_value(metadataLFS, "BLOQUES");
+
+	config_destroy(metadataLFS);
+	free(path);
+}
+
+void escanearArchivo(char *path, t_list *obtenidos){//no deberia ser int?
+	if(archivoValido(path)==1){
+		t_list *aux;
+		metaArch *archivoAbierto=leerMetaArch(path);
+		aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
+		if(list_is_empty(aux)){
+			list_destroy(aux);
+		}else{
+			list_add_all(obtenidos,aux);
+			list_destroy(aux);
+		}
+		borrarMetaArch(archivoAbierto);
+	}
+}
+
+void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
+	t_config *config = init_config();				//Crea una estructura datosConfig en configLissandra, variable global
+
+	configLissandra=malloc(sizeof(datosConfig));
+	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
+	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
+	strcpy(configLissandra->puntoMontaje,aux);
+	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
+	char *aux2=config_get_string_value(config, "IP");
+	configLissandra->Ip=malloc(strlen(aux2)+1);
+	strcpy(configLissandra->Ip,aux2);
+	configLissandra->puerto= config_get_int_value(config, "PORT");
+	configLissandra->id= config_get_int_value(config, "ID");
+	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
+	configLissandra->retardo= config_get_int_value(config, "RETARDO");
+	configLissandra->tamValue= config_get_int_value(config, "TAMVALUE");
+
+	config_destroy(config);
+}
+
+void crearConfig(){
+	FILE *config=fopen(pathInicial,"wb");
+	fclose(config);
+
+	configLissandra=malloc(sizeof(datosConfig));
+
+	printf("Ingrese el punto de montaje correspendiente, sin el home/utnso: ");
+	char *path=malloc(100);
+	scanf("%s",path);
+	configLissandra->puntoMontaje=malloc(strlen(path)+1);
+	strcpy(configLissandra->puntoMontaje,path);
+	free(path);
+	printf("\nIngrese el tamaño maximo del value: ");
+	int aux;
+	scanf("%i",&aux);
+	configLissandra->tamValue=aux;
+	printf("\nIngrese el ID de Lissandra: ");
+	scanf("%i",&configLissandra->id);
+	printf("\nIngrese el ID de Memoria: ");
+	scanf("%i",&configLissandra->idEsperado);
+	printf("Ingrese la IP de Lissandra: ");
+	char *ip=malloc(25);
+	scanf("%s",ip);
+	configLissandra->Ip=malloc(strlen(ip)+1);
+	strcpy(configLissandra->Ip,ip);
+	free(ip);
+	aux=0;
+	printf("\nIngrese el puerto de escucha: ");
+	scanf("%i",&aux);
+	configLissandra->puerto=aux;
+	aux=0;
+	printf("\nIngrese el tiempo para el dump: ");
+	scanf("%i",&aux);
+	configLissandra->tiempoDump=aux;
+	aux=0;
+	printf("\nIngrese el tiempo de retardo: ");
+	scanf("%i",&aux);
+	configLissandra->retardo=aux;
+
+	t_config *lissConfig=config_create(pathInicial);
+
+	config_set_value(lissConfig,"PUNTO_MONTAJE",configLissandra->puntoMontaje);
+	char *tamanio=string_itoa(configLissandra->tamValue);
+	config_set_value(lissConfig,"TAMVALUE",tamanio);
+	char *id=string_itoa(configLissandra->id);
+	config_set_value(lissConfig,"ID",id);
+	char *idEsperado=string_itoa(configLissandra->idEsperado);
+	config_set_value(lissConfig,"ID_ESPERADO",idEsperado);
+	config_set_value(lissConfig,"IP",configLissandra->Ip);
+	char *puerto=string_itoa(configLissandra->puerto);
+	config_set_value(lissConfig,"PORT",puerto);
+	char *tempDump=string_itoa(configLissandra->tiempoDump);
+	config_set_value(lissConfig,"TIEMPO_DUMP",tempDump);
+	char *tempRetar=string_itoa(configLissandra->retardo);
+	config_set_value(lissConfig,"RETARDO",tempRetar);
+
+	config_save(lissConfig);
+	config_destroy(lissConfig);
+
+	free(tamanio);
+	free(id);
+	free(idEsperado);
+	free(puerto);
+	free(tempDump);
+	free(tempRetar);
+}
+
+void escribirArchB(char *path,char *buffer){
+	FILE *bloque=fopen(path,"wb");
+	fwrite(buffer,strlen(buffer)+1,sizeof(char),bloque);
+	fflush(bloque);
+	fclose(bloque);
+}
+
 char *leerArchBinario(char *path,int tamanio){
 	FILE *arch;
 	arch=fopen(path,"rb");
@@ -732,132 +559,6 @@ char *leerArchBinario(char *path,int tamanio){
 	fread(datos, tamanio, sizeof(char), arch);
 	fclose(arch);
 	return datos;
-}
-
-//****************************************************************************************
-//FUNCIONES EXPERIMENTALES DE BITMAPS
-
-void ocuparBloque(int Nrobloque){
-	char*rutaBloque=rutaBloqueNro(Nrobloque);
-//mutex
-	FILE* file = fopen(rutaBloque,"wb");
-	fflush(file);
-	fclose(file);
-	free(rutaBloque);
-	bitarray_set_bit(bitmap, Nrobloque);
-	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
-//signal
-}
-void desocuparBloque(int Nrobloque){
-	bitarray_clean_bit(bitmap, Nrobloque);
-	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
-}
-
-int obtenerBloqueVacio(){
-	int i = 0;
-	while(i<metaLFS->cantBloques && bitarray_test_bit(bitmap, i)){
-		i++;
-	}
-	if (i < metaLFS->cantBloques){
-		ocuparBloque(i);
-		return i;
-	}else{
-		return -1;
-	}
-}
-bool hayXBloquesLibres(int cantidad){
-	//BLOQUEO BINARIO
-	int libres = 0;
-	libres= cantBloquesLibres(cantidad);
-	return libres>=cantidad;
-}
-int cantBloquesLibres(int cantidad){
-	int cont=0;
-	int libres=0;
-	while(cont<metaLFS->cantBloques){
-		if(!bitarray_test_bit(bitmap, cont)){
-			libres++;
-		}
-		if(cantidad!=0){
-			if(libres>=cantidad ){
-				break;
-			}
-		}
-		cont++;
-	}
-	return libres;
-}
-
-char *cadenaDeRegistros(t_list *lista){
-	char *buffer;
-	int vacio=0;
-
-	void sumarRegistro(Registry *reg){
-		char *linea;
-		linea=concatRegistro(reg);
-		if(vacio==0){
-			buffer=malloc(strlen(linea)+1);
-			strcpy(buffer,linea);
-			vacio++;
-		}else{
-			buffer=ponerSeparador(buffer);
-			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
-			strcat(buffer,linea);
-		}
-		free(linea);
-	}
-
-	list_iterate(lista,(void*)sumarRegistro);
-	return buffer;
-}
-
-int tamanioArchivo(char* path){
-    int fd;
-    struct stat fileInfo = {0};
-    fd=open(path, O_RDONLY);
-    if (fd == -1)
-    {
-        perror("Error al abrir el archivo.");
-        exit(EXIT_FAILURE);
-    }
-    if (fstat(fd, &fileInfo) == -1)
-    {
-        perror("Error al obtener el tamanio.");
-        return -1;
-    }
-	return fileInfo.st_size;
-	close(fd);
-}
-
-void cargarBitmap(){
-	char *rutaBitmap=nivelMetadata(2);
-	archivoBitmap = open(rutaBitmap, O_RDWR | O_CREAT, S_IRWXU);
-	int cantBytes=metaLFS->cantBloques/8;
-	if(metaLFS->cantBloques%8!=0){
-		cantBytes++;
-	}
-	struct stat buf;
-	lseek(archivoBitmap, cantBytes, SEEK_SET);
-	write(archivoBitmap, "", 1);
-	fstat(archivoBitmap,&buf);
-	char* bitArrayMap =  (char *) mmap(NULL, buf.st_size, PROT_WRITE | PROT_READ , MAP_SHARED, archivoBitmap, 0);
-	bitmap = bitarray_create_with_mode(bitArrayMap, buf.st_size, MSB_FIRST);
-}
-
-void mostrarBitmap(){
-	for(int i=0;i<(bitmap->size);i++){
-		if(i%64==0 && i!=0){
-			printf("\n");
-		}
-		printf("%d",bitarray_test_bit(bitmap,i));
-	}
-	printf("\n");
-	if(hayXBloquesLibres(10)){
-		printf("SI\n");
-	}else{
-		printf("NO\n");
-	}
-	//size_t i =bitarray_get_max_bit(bitmap);
 }
 
 int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 1
@@ -868,100 +569,15 @@ int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 
 		char *buffer=NULL;
 		getline(&buffer,&t,archB);
 		if(strlen(buffer)>0){
+			free(buffer);
+			fclose(archB); //NO SE SI LIBERE BIEN
 			return 1;
 		}
 		free(buffer);
+		fclose(archB);
 		return 0;
 	}else{
 		return 0;
-	}
-}
-
-int  escribirArchBinario(char *path,long timestamp,int key,char *value){
-
-	char *linea=concatParaArchivo(timestamp,key,value,0);
-	int base=strlen(linea)+1;
-
-	FILE* particion=fopen(path,"wb");
-	if(particion== NULL){
-		printf("No se pudo abrir el archivo para escribir");
-		return 1;
-	}
-
-	fwrite(linea,1,base,particion);
-
-	fclose(particion);
-	free(linea);
-
-	return 0;
-}
-
-int  agregarArchBinario(char *path,long timestamp,int key,char *value){
-
-	char *linea=concatParaArchivo(timestamp,key,value,1);
-	int base=strlen(linea)+1;
-
-	FILE* particion=fopen(path,"ab+");
-	if(particion== NULL){
-		printf("No se pudo abrir el archivo para escribir");
-		return 1;
-	}
-
-	fwrite(linea,1,base,particion);
-
-	fclose(particion);
-	free(linea);
-
-	return 0;
-}
-//**********************************************FALTA MODIFICAR
-t_list *leerTodoArchBinario(char *path){
-	t_list *registrosLeidos=list_create();
-
-	FILE* particion=fopen(path,"rb");
-	if(particion== NULL){
-		printf("Error al abrir el archivo para leer");
-		return registrosLeidos;
-	}
-
-	size_t t = 1000;
-
-	char *buffer=NULL;
-
-	while(!feof(particion)){
-		getline(&buffer,&t,particion);
-		printf("%s",buffer);
-		if(strlen(buffer)>0){
-			list_add(registrosLeidos,desconcatParaArch(buffer));
-		}
-		buffer=NULL;
-	}
-
-	free(buffer);
-	return registrosLeidos;
-}
-
-int eliminarArchivo(char *path){
-	if(remove(path)==0){
-		return 0;
-	}
-	printf("Error al intentar borrar archivo");
-	return 1;
-}
-
-void escribirReg(char *name,t_list *registros,int cantParticiones){
-	int size=list_size(registros);
-	while(size>0){
-		Registry *nuevo=list_get(registros, size-1);
-		//int part=nuevo->key % cantParticiones;
-		char *path=extension(name,1);
-		if(archivoValido(path)!=0){
-			agregarArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
-		}else{
-			escribirArchBinario(path,nuevo->timestamp,nuevo->key,nuevo->value);
-		}
-		free(path);
-		size--;
 	}
 }
 
@@ -980,6 +596,225 @@ int contarArchivos(char *tabla, int modo){		//0 .bin, 1 .tmp, 2 .tmpc
 		free(rutaArch);
 	}
 	return cant;
+}
+
+int escribirParticion(char *path,t_list *lista){
+	char *buffer=cadenaDeRegistros(lista);
+	int largo=strlen(buffer)+1;
+	//calcular cant bloques
+	int bloquesNecesarios=largo/metaLFS->tamBloques;
+	if(largo%metaLFS->tamBloques!=0){
+		bloquesNecesarios++;
+	}
+	char **arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
+	//pedir x cant bloques y guardarlas en un char
+	if(pedirBloques(bloquesNecesarios,arrayBlock)==1){
+		log_error(logger,"error al pedir los bloques necesarios");
+		free(buffer);
+		free(arrayBlock);
+		return 1;
+	}
+
+	if(crearMetaArchivo(path, largo, arrayBlock,bloquesNecesarios)==1){
+		log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO.\n");
+		liberarArraydeBloques(arrayBlock);
+		free(arrayBlock);
+		free(buffer);
+		return 1;
+	}
+
+	escribirBloque(buffer,arrayBlock);//aca se libera el buffer
+
+	for(int f=0;f<bloquesNecesarios;f++){
+		free(arrayBlock[f]);
+	}
+	free(arrayBlock);
+
+	return 0;
+}
+
+int renombrarTemp_TempC(char *path){
+	char *pathC=string_duplicate(path);
+	pathC=realloc(pathC,strlen(pathC)+2);
+	strcat(pathC,"c");
+	if(rename(path,pathC)!=0){
+		log_error(logger,"No se pudo renombrar el archivo");
+		free(pathC);
+		return 1;
+	}
+	free(pathC);
+	return 0;
+}
+
+//****************************************************************************************
+//FUNCIONES DE BLOQUES
+void escribirBloque(char *buffer,char **bloques){
+	int nroArray=0;
+	while(strlen(buffer)>metaLFS->tamBloques){
+		char *escribir=string_substring_until(buffer,metaLFS->tamBloques);
+		int nroBloq=atoi(bloques[nroArray]);
+		char *pathB=rutaBloqueNro(nroBloq);
+		//escribir el archivo
+		escribirArchB(pathB,escribir);
+		free(escribir);
+		free(pathB);
+		char *auxilar=string_substring_from(buffer,metaLFS->tamBloques);
+		free(buffer);
+		buffer=malloc(strlen(auxilar)+1);
+		strcpy(buffer,auxilar);
+		free(auxilar);
+		nroArray++;
+	}
+	if(strlen(buffer)>0){
+		int nroBloq=atoi(bloques[nroArray]);
+		char *pathB=rutaBloqueNro(nroBloq);
+		//escribir el archivo
+		escribirArchB(pathB,buffer);
+		free(buffer);
+		free(pathB);
+	}
+}
+
+t_list *leerBloques(char**bloques,int offset){
+	t_list *registrosLeidos=NULL;
+	int cant=0;
+	char *leidoTotal;
+	if(offset>0){
+		while(bloques[cant]!=NULL){		//Calcula la cantidad de bloques
+			cant++;
+		}
+
+		for(int blok=0;blok<cant;blok++){
+			int bytesALeer=0;
+
+			if(offset<=metaLFS->tamBloques){		//Define el tamanio a leer
+				bytesALeer=offset;
+			}else{
+				bytesALeer=metaLFS->tamBloques;
+			}
+
+			int nroBloq=atoi(bloques[blok]);
+			char *pathB=rutaBloqueNro(nroBloq);
+			char *leido=leerArchBinario(pathB,bytesALeer);
+
+			if(blok==0){
+				leidoTotal=malloc(strlen(leido)+1);
+				strcpy(leidoTotal,leido);
+				offset-=strlen(leido);
+				free(leido);
+			}else{
+				leidoTotal=realloc(leidoTotal,strlen(leidoTotal)+strlen(leido)+1);
+				strcat(leidoTotal,leido);
+				offset-=strlen(leido);
+				free(leido);
+			}
+			free(pathB);
+		}
+	}
+	return registrosLeidos=deChar_Registros(leidoTotal);//el leidoTotal se libera en la funcion esta
+}
+
+void ocuparBloque(int Nrobloque){
+	char*rutaBloque=rutaBloqueNro(Nrobloque);
+//mutex
+	FILE* file = fopen(rutaBloque,"wb");
+	fflush(file);
+	fclose(file);
+	free(rutaBloque);
+	bitarray_set_bit(bitmap, Nrobloque);
+	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
+//signal
+}
+
+void desocuparBloque(int Nrobloque){
+	bitarray_clean_bit(bitmap, Nrobloque);
+	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
+}
+
+int obtenerBloqueVacio(){
+	int i = 0;
+	while(i<metaLFS->cantBloques && bitarray_test_bit(bitmap, i)){
+		i++;
+	}
+	if (i < metaLFS->cantBloques){
+		ocuparBloque(i);
+		return i;
+	}else{
+		return -1;
+	}
+}
+
+bool hayXBloquesLibres(int cantidad){
+	//BLOQUEO BINARIO
+	int libres = 0;
+	libres= cantBloquesLibres(cantidad);
+	return libres>=cantidad;
+}
+
+int cantBloquesLibres(int cantidad){
+	int cont=0;
+	int libres=0;
+	while(cont<metaLFS->cantBloques){
+		if(!bitarray_test_bit(bitmap, cont)){
+			libres++;
+		}
+		if(cantidad!=0){
+			if(libres>=cantidad ){
+				break;
+			}
+		}
+		cont++;
+	}
+	return libres;
+}
+
+int pedirBloques(int cantidad, char **array){
+	if(!hayXBloquesLibres(cantidad)){
+		//COMPLETAR
+		log_info(logger,"No hay suficientes bloques como para realizar el dump, se perderán los datos de la memtable.");
+		return 1;
+	}
+	int i=0;
+	while(i<cantidad){
+		int bloqueVacio=obtenerBloqueVacio();
+		array[i]=string_itoa(bloqueVacio);
+		i++;
+	}
+	return 0;
+}
+
+//****************************************************************************************
+//FUNCIONES DE BITMAP
+
+void cargarBitmap(){
+	char *rutaBitmap=nivelMetadata(2);
+	archivoBitmap = open(rutaBitmap, O_RDWR | O_CREAT, S_IRWXU);
+	int cantBytes=metaLFS->cantBloques/8;
+	if(metaLFS->cantBloques%8!=0){
+		cantBytes++;
+	}
+	struct stat buf;
+	lseek(archivoBitmap, cantBytes, SEEK_SET);
+	write(archivoBitmap, "", 1);
+	fstat(archivoBitmap,&buf);
+	char* bitArrayMap =  (char *) mmap(NULL, buf.st_size, PROT_WRITE | PROT_READ , MAP_SHARED, archivoBitmap, 0);
+	bitmap = bitarray_create_with_mode(bitArrayMap, buf.st_size, MSB_FIRST);
+	free(rutaBitmap);
+}
+
+void mostrarBitmap(){
+	for(int i=0;i<(bitmap->size);i++){
+		if(i%64==0 && i!=0){
+			printf("\n");
+		}
+		printf("%d",bitarray_test_bit(bitmap,i));
+	}
+	printf("\n");
+	if(hayXBloquesLibres(10)){
+		printf("SI\n");
+	}else{
+		printf("NO\n");
+	}
 }
 
 //*************************************************************************************
@@ -1003,13 +838,6 @@ void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time){
 	list_add(name->registros,nuevo);
 }
 
-void destroyRegistry(Registry *self) {
-
-    free(self->value);
-    free(self);
-
-}
-
 int calcularIndex(t_list *lista,int key){
 	int index=0;
 	bool encontrar(Registry *es){
@@ -1018,15 +846,6 @@ int calcularIndex(t_list *lista,int key){
 	}
 	list_iterate(lista, (void*) encontrar);
 	return index;
-}
-
-Registry *getMemtable(){
-
-	Registry *data = malloc(sizeof(Registry));
-	data= list_get(memtable,0);
-
-	return data;
-
 }
 
 Registry *regConMayorTime(t_list *registros){			//Devuelve el registro que tenga el mayor timestamp indiferente de la key
@@ -1043,6 +862,7 @@ Registry *regConMayorTime(t_list *registros){			//Devuelve el registro que tenga
         list_iterate(registros, (void*) comparar);
 	return mayor;
 }
+
 t_list *regDep(t_list *aDepu){
 	t_list *depu=list_create();
 	int cant=list_size(aDepu);
@@ -1063,11 +883,22 @@ t_list *regDep(t_list *aDepu){
 			}
 
 		}
-
 		nuevo=NULL;
 		cant--;
 	}
 	return depu;
+}
+
+t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart){
+	t_list *nueva=list_create();
+		void numParticion(Registry *compara){
+			int resto= compara->key % cantPart;
+			if(resto==particion){
+				list_add(nueva,compara);
+			}
+		}
+	list_iterate(lista,(void *)numParticion);
+	return nueva;
 }
 
 /**************************************************************************************************/
@@ -1092,11 +923,6 @@ Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time){
 	return nueva;
 }
 
-void liberarTabla(Tabla *self){
-	free(self->nombre);
-	list_destroy_and_destroy_elements(self->registros,(void*)destroyRegistry);
-	free(self);
-}
 int existeKeyEnRegistros(t_list *registros,int key){		//Devuelve 0 cuando no hay registros de esa key, devuelve 1 cuando si hay
 
 	bool existe(Registry *p) {
@@ -1124,4 +950,94 @@ t_list* filtrearPorKey(t_list *registros,int key){
 		return reg->key == key;
 	}
 	return list_filter(registros, (void*) misma_key);
+}
+/***********************************************************************************************/
+//FUNCIONES QUE LIBERAN MEMORIA
+
+void liberarSubstrings(char **liberar){
+	int i=1;
+	while(liberar[i-1]!=NULL){
+		free(liberar[i-1]);
+		//log_info(logger, "%s",liberar[i]);
+		i++;
+	}
+	free(liberar);
+}
+
+void borrarMetaArch(metaArch *archivo){
+	liberarSubstrings(archivo->bloques);
+	free(archivo);
+}
+
+int eliminarArchivo(char *path){
+	if(remove(path)==0){
+		return 0;
+	}
+	printf("Error al intentar borrar archivo");
+	return 1;
+}
+
+void borrarDatosConfig(){
+	free(configLissandra->Ip);
+	free(configLissandra->puntoMontaje);
+	free(configLissandra);
+}
+
+void borrarMetaLFS(){
+	free(metaLFS->magicNumber);
+	free(metaLFS);
+}
+
+void borrarMetadataTabla(metaTabla *metadata){
+	free(metadata->consistency);
+	free(metadata->nombre);
+	free(metadata);
+}
+
+void destroyRegistry(Registry *self) {
+    free(self->value);
+    free(self);
+
+}
+
+void liberarTabla(Tabla *self){
+	free(self->nombre);
+	list_destroy_and_destroy_elements(self->registros,(void*)destroyRegistry);
+	free(self);
+}
+
+void liberarArraydeBloques(char **array){
+	int i=0;
+	while(array[i]!=NULL){
+		desocuparBloque(atoi(array[i]));
+		free(array[i]);
+		i++;
+	}
+}
+
+void limpiarArchivo(char* pathArchivo){
+	   FILE* fd;
+	   fd = fopen(pathArchivo,"wb");
+	   fclose(fd);
+}
+void limpiarBloque(char* nroBloque){
+	char* pathBloque=rutaBloqueNro(atoi(nroBloque));
+	limpiarArchivo(pathBloque);
+	desocuparBloque(atoi(nroBloque));
+	free(pathBloque);
+}
+
+void liberarParticion(char *path){
+	if(archivoValido(path)==1){
+		metaArch *archivoAbierto=leerMetaArch(path);
+		int cantBloques=0;
+		while(archivoAbierto->bloques[cantBloques]!=NULL){
+			limpiarBloque(archivoAbierto->bloques[cantBloques]);
+			cantBloques++;
+		}
+		borrarMetaArch(archivoAbierto);
+		eliminarArchivo(path);
+	}else{
+		eliminarArchivo(path);
+	}
 }

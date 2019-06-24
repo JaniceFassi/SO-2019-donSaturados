@@ -6,59 +6,6 @@
  */
 
 #include "Compactor.h"
-int pedirBloques(int cantidad, char **array){
-	if(!hayXBloquesLibres(cantidad)){
-		//COMPLETAR
-		log_info(logger,"No hay suficientes bloques como para realizar el dump, se perderán los datos de la memtable.");
-		return 1;
-	}
-	int i=0;
-	while(i<cantidad){
-		int bloqueVacio=obtenerBloqueVacio();
-		array[i]=string_itoa(bloqueVacio);
-		i++;
-	}
-	return 0;
-}
-void liberarArraydeBloques(char **array){
-	int i=0;
-	while(array[i]!=NULL){
-		desocuparBloque(atoi(array[i]));
-		free(array[i]);
-		i++;
-	}
-}
-int escribirParticion(char *path,t_list *lista){
-	char *buffer=cadenaDeRegistros(lista);
-	int largo=strlen(buffer)+1;
-	//calcular cant bloques
-	int bloquesNecesarios=largo/metaLFS->tamBloques;
-	if(largo%metaLFS->tamBloques!=0){
-		bloquesNecesarios++;
-	}
-	char **arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
-	//pedir x cant bloques y guardarlas en un char
-	if(pedirBloques(bloquesNecesarios,arrayBlock)==1){
-		log_error(logger,"error al pedir los bloques necesarios");
-		return 1;
-	}
-
-	if(crearMetaArchivo(path, largo, arrayBlock,bloquesNecesarios)==1){
-		log_info(logger,"ERROR AL CREAR LA METADATA DEL ARCHIVO.\n");
-		liberarArraydeBloques(arrayBlock);
-		free(arrayBlock);
-		return 1;
-	}
-
-	escribirBloque(buffer,arrayBlock);//aca se libera el buffer
-
-	for(int f=0;f<bloquesNecesarios;f++){
-		free(arrayBlock[f]);
-	}
-	free(arrayBlock);
-
-	return 0;
-}
 int dump(){
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
@@ -72,6 +19,9 @@ int dump(){
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
 			if(escribirParticion(ruta,dumpTabla->registros)==1){
 				log_error(logger,"error al escribir el dump");
+				free(ruta);
+				free(path);
+				list_destroy_and_destroy_elements(dump,(void *)liberarTabla);
 				return 1;
 			}
 			free(ruta);
@@ -82,55 +32,6 @@ int dump(){
 	}
 	list_destroy(dump);
 	return 0;
-}
-void limpiarArchivo(char* pathArchivo){
-	   FILE* fd;
-	   fd = fopen((char*)pathArchivo,"wb");
-	   fclose(fd);
-}
-void limpiarBloque(char* nroBloque){
-	char* pathBloque=rutaBloqueNro(atoi(nroBloque));
-	limpiarArchivo(pathBloque);
-	desocuparBloque(atoi(nroBloque));
-	free(pathBloque);
-}
-
-void liberarParticion(char *path){
-	if(archivoValido(path)==1){
-		metaArch *archivoAbierto=leerMetaArch(path);
-		int cantBloques=0;
-		while(archivoAbierto->bloques[cantBloques]!=NULL){
-			limpiarBloque(archivoAbierto->bloques[cantBloques]);
-		}
-		borrarMetaArch(archivoAbierto);
-		eliminarArchivo(path);
-	}else{
-		eliminarArchivo(path);
-	}
-}
-int renombrarTemp_TempC(char *path){
-	char *pathC=string_duplicate(path);
-	pathC=realloc(pathC,strlen(pathC)+2);
-	strcat(pathC,"c");
-	if(rename(path,pathC)!=0){
-		log_error(logger,"No se pudo renombrar el archivo");
-		free(pathC);
-		return 1;
-	}
-	free(pathC);
-	return 0;
-}
-
-t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart){
-	t_list *nueva=list_create();
-		void numParticion(Registry *compara){
-			int resto= compara->key % cantPart;
-			if(resto==particion){
-				list_add(nueva,compara);
-			}
-		}
-	list_iterate(lista,(void *)numParticion);
-	return nueva;
 }
 
 void compactar(char *nombreTabla){
@@ -166,6 +67,7 @@ void compactar(char *nombreTabla){
 	contador=0;
 	int cantMax=metadata->partitions;
 	int binario=0;
+	//leer Arch
 	while(cantMax>contador){
 		char *arch;
 		if(binario==0){
@@ -193,6 +95,11 @@ void compactar(char *nombreTabla){
 		char *archP=nivelParticion(nombreTabla,contador,0);
 		if(escribirParticion(archP,particion)==1){
 			log_error(logger,"Error a la hora de escribir la compactacion");
+			free(archP);
+			list_destroy(particion);
+			borrarMetadataTabla(metadata);
+			list_destroy(depurado);
+			list_destroy_and_destroy_elements(todosLosRegistros,(void *)destroyRegistry);
 			return;
 		}
 		free(archP);

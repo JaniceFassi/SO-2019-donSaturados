@@ -60,51 +60,41 @@ int archivoBitmap;
 datosConfig *configLissandra;
 metaFileSystem *metaLFS;
 t_list *directorio;
-/*char *pathConfig;
-*/
+
 //FUNCIONES DE REGISTROS
-void destroyRegistry(Registry *self);
 Registry *createRegistry(u_int16_t key, char *val, long time);
-Registry *getMemtable();
 void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);
 Registry *primerRegistroConKey(t_list *registros,int key);
 Registry *regConMayorTime(t_list *registros);
 int existeKeyEnRegistros(t_list *registros,int key);
 t_list* filtrearPorKey(t_list *registros,int key);
 int calcularIndex(t_list *lista,int key);
-
-void oldCrearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
-void crearMetaLFS();
-char *nivelTablas();
-char *nivelBloques();
-char *nivelParticion(char *tabla, int particion, int modo);
-void leerMetaLFS();
-char *rutaBloqueNro(int nroBloque);
-void borrarMetaLFS();
-char *nivelUnaTabla(char *nombre, int modo);
-void estructurarConfig();
-void borrarDatosConfig();
-void crearConfig();
+t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart);//NUEVA FUNCION
 
 //FUNCIONES DE TABLAS
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);
 Tabla *find_tabla_by_name(char *name);
-void liberarTabla(Tabla *self);
 t_list *regDep(t_list *aDepu);
 
 //FUNCIONES DE CONCATENAR
-char *pathFinal(char *nombre, int principal);
-char *concatParaArchivo(long timestamp,int key,char *value,int opc);
-Registry *desconcatParaArch(char *linea);
-char *concatExtencion(char *name,int particion, int tipo);
 char *extension(char *path,int modo);
 char *ponerBarra(char *linea);
+char *nivelTablas();
+char *nivelBloques();
+char *rutaBloqueNro(int nroBloque);
+char *nivelParticion(char *tabla, int particion, int modo);
 char *obtenerMontaje();
+char *nivelUnaTabla(char *nombre, int modo);
 char *nivelMetadata(int modo);
 char *concatRegistro(Registry *reg);
 char *ponerSeparador(char *linea);
 char *array_A_String(char **array,int cantBloques);
-void liberarSubstrings(char **liberar);
+char *cadenaDeRegistros(t_list *lista);
+
+//FUNCIONES QUE DESCONCATENAN
+t_list *deChar_Registros(char *buffer);
+Registry *desconcatParaArch(char *linea);
+
 //FUNCIONES DE CARPETAS
 int crearCarpeta(char* path);
 int folderExist(char* path);
@@ -114,35 +104,47 @@ int borrarCarpeta(char *path);
 int crearParticiones(metaTabla *tabla);
 metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction);
 metaTabla *leerMetadataTabla(char *nombre);
-void borrarMetadataTabla(metaTabla *metadata);
-int escribirArchBinario(char *path,long timestamp,int key,char *value);
-t_list *leerTodoArchBinario(char *path);
-int agregarArchBinario(char *path,long timestamp,int key,char *value);
-int eliminarArchivo(char *path);
-void escribirReg(char *name,t_list *registros,int cantParticiones);
 int archivoValido(char *path);
 void escanearArchivo(char *path, t_list *obtenidos);
-//void crearMetaArchivo(char *path, int nrobloque);			ya se puede sacar
 int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
-void borrarMetaArch(metaArch *nuevo);
-int tamanioArchivo(char* path);
 int contarArchivos(char *nombre, int modo);
+void crearConfig();
 metaArch *leerMetaArch(char *path);
-//NUEVAS FUNCIONES ARCHIVOS
-void escribirBloque(char *buffer,char **bloques);
 void escribirArchB(char *path,char *buffer);
-t_list *deChar_Registros(char *buffer);
 char *leerArchBinario(char *path,int tamanio);
-t_list *leerBloques(char**bloques,int offset);
-//FUNCIONES BITMAPS
-void cargarBitmap();
-void mostrarBitmap();
-char *inicializarArray();
+void oldCrearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber);
+void crearMetaLFS();
+void leerMetaLFS();
+void estructurarConfig();
+int renombrarTemp_TempC(char *path);//NUEVA FUNCION
+int escribirParticion(char *path,t_list *lista);//NUEVA FUNCION
+
+//FUNCIONES DE BLOQUES
 bool hayXBloquesLibres(int cantidad);
 int cantBloquesLibres(int cantidad);
 int obtenerBloqueVacio();
 void desocuparBloque(int Nrobloque);
 void ocuparBloque(int Nrobloque);
-char *cadenaDeRegistros(t_list *lista);
+void escribirBloque(char *buffer,char **bloques);
+t_list *leerBloques(char**bloques,int offset);
+int pedirBloques(int cantidad, char **array);//NUEVO
+
+//FUNCIONES BITMAPS
+void cargarBitmap();
+void mostrarBitmap();
+
+//FUNCIONES QUE LIBERAN MEMORIA
+void borrarMetaArch(metaArch *nuevo);
+int eliminarArchivo(char *path);
+void liberarSubstrings(char **liberar);
+void borrarMetadataTabla(metaTabla *metadata);
+void borrarDatosConfig();
+void borrarMetaLFS();
+void liberarTabla(Tabla *self);
+void destroyRegistry(Registry *self);
+void liberarParticion(char *path);//NUEVO
+void limpiarBloque(char* nroBloque);//NUEVO
+void limpiarArchivo(char* pathArchivo);//NUEVO
+void liberarArraydeBloques(char **array);//NUEVO
 
 #endif
