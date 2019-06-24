@@ -68,6 +68,8 @@ int main(void) {
 
 	inicializar();
 
+	/*
+
 	segmento *animales = crearSegmento("ANIMALES");
 	segmento *postres = crearSegmento("POSTRES");
 	list_add(tablaSegmentos, animales);
@@ -95,6 +97,25 @@ int main(void) {
 	mInsert("COLORES", 12, "ROJO");
 	mostrarMemoria();
 	printf("Estado memoria: %i",memoriaLlena());
+
+	*/
+
+	int resultado = 15;
+
+	posMarcoUsado* p1 = crearPosMarcoUsado(0,8);
+	posMarcoUsado* p2 = crearPosMarcoUsado(1,2);
+	posMarcoUsado* p3 = crearPosMarcoUsado(2,3);
+	posMarcoUsado* p4 = crearPosMarcoUsado(3,10);
+
+	agregarPosMarcoUsado(p1);
+	agregarPosMarcoUsado(p2);
+	agregarPosMarcoUsado(p3);
+	agregarPosMarcoUsado(p4);
+
+	resultado = LRU();
+
+	printf("El marco mas viejo es: %i",resultado);
+
 
 /*char* ip = "127.0.0.1";
 	u_int16_t port = htons(9000);
@@ -366,27 +387,46 @@ t_config* read_config() {
  }
 
 
- int LRU(){
-	 int i=0,menor;
-	 ultimoUso* aux= list_get(listaDeUsos,0); //el primer elemento
-	 menor = aux->posicionDeUso;
+ posMarcoUsado* crearPosMarcoUsado(int nroMarco,int pos){
+	 posMarcoUsado* nuevo = malloc(sizeof(posMarcoUsado));
+	 nuevo->nroMarco = nroMarco;
+	 nuevo->posicionDeUso = pos;
+	 return nuevo;
+ }
 
-	 if(listaDeUsos != NULL){ //es decir, si la lista de usos esta vacia
-		 while(aux = list_get(listaDeUsos,i)){
+ void agregarPosMarcoUsado(posMarcoUsado* nuevo){
+	 list_add(listaDeUsos,nuevo);
+ }
+
+ int LRU(){
+
+	 int i=0,menor,tamLista,nroMarcoAborrar;
+	 posMarcoUsado* aux= list_get(listaDeUsos,0);
+	 tamLista = list_size(listaDeUsos);
+
+
+	 if(tamLista != 0){ //es decir, si la lista de usos esta vacia
+		 menor = aux->posicionDeUso;
+		 nroMarcoAborrar= aux->nroMarco;
+
+		 while(i<tamLista){
+			 aux = list_get(listaDeUsos,i);
 			 if(menor > aux->posicionDeUso){
 				 menor = aux->posicionDeUso;
+				 nroMarcoAborrar = aux->nroMarco;
 			 }else{
 				 i++;
 			 }
 		 }
 	 }
 	 else{
+		 printf("hacete un jorunal \n");
 		 //hacer journal por memoria llena de flags modificados
 	 }
 
-	 liberarMarco(aux->nroMarco);
+	 //liberarMarco(aux->nroMarco); ////////////
 
-	 return aux->nroMarco;
+	 return nroMarcoAborrar;
 
 	 //Esta funcion lee de una lista cual fue el marco que hace mas tiempo que no se usa
 	 //lo libera y devuelve su posicion para que sea asignado a otra pagina

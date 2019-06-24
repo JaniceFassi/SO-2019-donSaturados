@@ -57,7 +57,7 @@ typedef struct {
 typedef struct{
 	int nroMarco;
 	int posicionDeUso;
-}ultimoUso;
+}posMarcoUsado;
 
 //API
 void mSelect(char* nombreTabla,u_int16_t key);
@@ -78,8 +78,10 @@ t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
 pagina* crearPagina();
+posMarcoUsado* crearPosMarcoUsado(int nroMarco,int pos);
 void agregarSegmento(segmento* nuevo);
 void agregarPagina(segmento *seg, pagina *pag);
+void agregarPosMarcoUsado(posMarcoUsado* nuevo);
 pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
 
