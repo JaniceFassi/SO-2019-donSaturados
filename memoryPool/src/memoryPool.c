@@ -322,6 +322,9 @@ t_config* read_config() {
  	for(int i=0;i<cantDePaginas;i++){
  		pagina* pagAEliminar = list_get(nuevo->tablaPaginas,i);
  		liberarMarco(pagAEliminar->nroMarco);
+ 		if((pagAEliminar->modificado)==0){
+ 			eliminarDeListaUsos(pagAEliminar->nroMarco);
+ 		}
  	}
 
  	//list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
