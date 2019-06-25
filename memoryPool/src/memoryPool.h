@@ -35,6 +35,7 @@ void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
 int cantMarcos;
+int posicionUltimoUso; // Lo usa el LRU
 
 
 //ESTRUCTURA MEMORIA
@@ -87,7 +88,7 @@ segmento* buscarSegmento(char* nombre);
 
 //AUXILIARES PARA LISSANDRA O KERNEL
 char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
-pagina* pedirALissandraPagina(char* nombreTabla,u_int16_t key);
+char* pedirALissandraPagina(char* nombreTabla,u_int16_t key); //Devuelve el value
 void pedirleCrearTablaAlissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
 void pedirleALissandraQueBorre(char* nombreTabla);
 
@@ -100,6 +101,8 @@ void eliminarSegmento(segmento* nuevo);
 void paginaDestroy(pagina* pagParaDestruir);
 void segmentoDestroy(segmento* segParaDestruir);
 int LRU();
+void agregarListaUsos(int nroMarco);
+void eliminarDeListaUsos(int nroMarcoAEliminar);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);

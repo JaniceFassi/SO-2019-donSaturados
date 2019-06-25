@@ -68,7 +68,7 @@ int main(void) {
 
 	inicializar();
 
-	/*
+
 
 	segmento *animales = crearSegmento("ANIMALES");
 	segmento *postres = crearSegmento("POSTRES");
@@ -98,8 +98,9 @@ int main(void) {
 	mostrarMemoria();
 	printf("Estado memoria: %i",memoriaLlena());
 
-	*/
 
+
+	/*
 	int resultado = 15;
 
 	posMarcoUsado* p1 = crearPosMarcoUsado(0,8);
@@ -116,52 +117,7 @@ int main(void) {
 
 	printf("El marco mas viejo es: %i",resultado);
 
-
-/*char* ip = "127.0.0.1";
-	u_int16_t port = htons(9000);
-	u_int16_t server;
-
-
-	createServer(ip, port, &server);
-
-	listenForClients(server, 100);
-
-	u_int16_t *cliente;
-
-	acceptConexion(server, cliente, 1);
-
-	printf("Se conecto un cliente\n");
-	pthread_t unHilo;
-	pthread_create(&unHilo, NULL, recibirOperacion, &cliente);
-	pthread_join(unHilo, NULL);
-
-
-
-*/
-
-
-
-
-
-	/*
-
-
-
-			if(bytesRecibidos<=0){
-				perror("Fallo la conexion\n");
-				return 1;
-			}
-
-			nuevoBuffer[bytesRecibidos]='\0';
-			//printf("\nRecibi %d bytes con %s\n", bytesRecibidos, buffer);
-			printf("\nEl mensaje es %s", nuevoBuffer);
-
-
-
-			free(buffer);
-
-*/
-
+	*/
 
 
 	//finalizar();
@@ -179,6 +135,8 @@ void inicializar(){
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
 	//int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
 	//int ipFS = config_get_int_value(configuracion,"IP_FS");
+
+	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
 
 	memoria = calloc(1,tamanioMemoria);
 	maxValue = 20;
@@ -301,7 +259,7 @@ t_config* read_config() {
 
  void pedirleALissandraQueBorre(char* nombreTabla){}
 
- pagina *pedirALissandraPagina(char* nombreTabla,u_int16_t key){}
+ char* pedirALissandraPagina(char* nombreTabla,u_int16_t key){}
 
 
  ////MANEJAR MEMORIA////
@@ -345,10 +303,11 @@ t_config* read_config() {
  				i++;
  			}
  		}
-
  	}
  	else{
+ 		//Habria que hacer un if para ver si esta llena pero CON FLAGS en ese caso JOURNAL
  		posMarco = LRU();
+ 		unMarco->estaLibre = 1;
  	}
 
  	return posMarco;
@@ -356,7 +315,7 @@ t_config* read_config() {
 
  void eliminarSegmento(segmento* nuevo){
 
- 	int index = conseguirIndexSeg(nuevo);
+ 	int index = conseguirIndexSeg(nuevo); //se usa para el free
 
  	int cantDePaginas = list_size(nuevo->tablaPaginas);
 
@@ -424,7 +383,7 @@ t_config* read_config() {
 		 //hacer journal por memoria llena de flags modificados
 	 }
 
-	 //liberarMarco(aux->nroMarco); ////////////
+	 liberarMarco(aux->nroMarco);
 
 	 return nroMarcoAborrar;
 
@@ -433,6 +392,27 @@ t_config* read_config() {
 
  }
 
+ void agregarAListaUsos(int nroMarco){
+ 	posMarcoUsado* nuevo = crearPosMarcoUsado(nroMarco,posicionUltimoUso);
+ 	posicionUltimoUso++;
+ 	list_add(listaDeUsos,nuevo);
+ }
+
+
+ void eliminarDeListaUsos(int nroMarcoAEliminar){
+
+ 	int index=0;
+
+ 	int tieneMismoNro(posMarcoUsado* p){
+ 		if((p->nroMarco) != nroMarcoAEliminar) index++;
+ 		return (p->nroMarco) == nroMarcoAEliminar;
+ 	}
+
+ 	posMarcoUsado* nuevo = list_find(listaDeUsos,(void*)tieneMismoNro);
+
+ 	list_remove(listaDeUsos,index);
+
+ }
 
  ////AUXILIARES SECUNDARIAS////
 
@@ -506,6 +486,8 @@ void finalizar(){
 //---------------API------------------//
 //-----------------------------------//
 
+
+
 void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 	segmento *seg = buscarSegmento(nombreTabla);
@@ -524,10 +506,8 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			}else{
 				agregarDato(time(NULL),key,valor,pag);
 				pag->modificado = 1;
-				//eliminar de la listaDeUsos
+				eliminarDeListaUsos(pag->nroMarco);
 			}
-
-
 
 	}else{
 		seg = crearSegmento(nombreTabla);
@@ -539,15 +519,13 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		pag->modificado = 1;
 	}
 
-
-
 }
-
 
 void mSelect(char* nombreTabla,u_int16_t key){
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
 	pagina* pNueva;
+	char* valorPagNueva;
 
 	if(nuevo!= NULL){
 		pNueva = buscarPaginaConKey(nuevo,key);
@@ -555,16 +533,24 @@ void mSelect(char* nombreTabla,u_int16_t key){
 			printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
 		else{
-			pNueva = pedirALissandraPagina(nombreTabla,key); //Algun dia la haremos y sera hermosa
+			pNueva = crearPagina();
+			valorPagNueva = pedirALissandraPagina(nombreTabla,key); //Algun dia la haremos y sera hermosa
+			pNueva->modificado = 0;
 			agregarPagina(nuevo,pNueva);
-			agregarDato(time(NULL),key,conseguirValor(pNueva),pNueva); // LRU
+			agregarDato(time(NULL),key,valorPagNueva,pNueva);
+			agregarAListaUsos(pNueva->nroMarco);
 		    printf("El valor es: %s\n",conseguirValor(pNueva));
 		}
 	}
 	else{
-
-		pNueva = pedirALissandraPagina(nombreTabla,key); //LRU
-		printf("El valor es: %s\n",conseguirValor(pNueva));
+		nuevo = crearSegmento(nombreTabla);
+		pNueva = crearPagina();
+		valorPagNueva = pedirALissandraPagina(nombreTabla,key);
+		pNueva->modificado = 0;
+		agregarPagina(nuevo,pNueva);
+		agregarDato(time(NULL),key,valorPagNueva,pNueva);
+		agregarAListaUsos(pNueva->nroMarco);
+		printf("El valor es: %s\n",valorPagNueva);
 	}
 
 	//Los casos en los que requiera pedir datos a lissandra no funcionan ya que pedirALissandra todavia no esta hecha.
