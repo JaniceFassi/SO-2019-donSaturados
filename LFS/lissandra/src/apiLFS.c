@@ -32,7 +32,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 		list_add(memtable,nueva);
 	}else{
 		//Insertar en la memoria temporal del punto anterior una nueva entrada que contenga los datos enviados en la request.
-		Tabla *encontrada= find_tabla_by_name(param_nameTable);
+		Tabla *encontrada= find_tabla_by_name_in(param_nameTable, memtable);
 
 		if(encontrada==NULL){
 			Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
@@ -93,7 +93,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 	//Escanear la memtable
 	t_list *aux;
 	if(!list_is_empty(memtable)){
-		Tabla *encontrada= find_tabla_by_name(nameTable);
+		Tabla *encontrada= find_tabla_by_name_in(nameTable, memtable);
 		if(encontrada!=NULL){
 			aux=filtrearPorKey(encontrada->registros,key);
 			list_add_all(aux,obtenidos);
@@ -160,6 +160,8 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		borrarMetadataTabla(tabla);
 	}else{
 		log_error(logger,"No hay %i bloques libres.\n",numPartition);
+		free(path);
+		free(nombre);
 		//liberar el semaforo de bloques ocupados
 		return 1;
 	}
@@ -211,18 +213,61 @@ t_list *describe(char* nameTable,int variante){//PREGUNTAR, PORQUE 2 ATRIBUTOS, 
 	}
 }
 
-void drop(char* nameTable){
+int drop(char* nameTable){
 	//Verificar que la tabla exista en el file system.
 
 	char *path=nivelUnaTabla(nameTable,0);
 	if(folderExist(path)==0){
-		//eliminar archivos binarios, temporales, tempC y metadata
-		//liberar bloques y aumentar el semaforo contador
-		//sacar la tabla del directorio
-		//Eliminar directorio
+		//eliminar archivos binarios con sus respectivos bloques
+		int cantBins=contarArchivos(nameTable, 0);
+		int i=0;
+		while(i<cantBins){
+			path=nivelParticion(nameTable,i, 0);
+			liberarParticion(path);
+			free(path);
+			i++;
+		}
+		//eliminar archivos temporales con sus respectivos bloques
+		int cantDumps=contarArchivos(nameTable, 1);
+		i=0;
+		while(i<cantDumps){
+			path=nivelParticion(nameTable,i, 1);
+			liberarParticion(path);
+			free(path);
+			i++;
+		}
+		//eliminar archivos tempC con sus respectivos bloques
+		int cantTmpc=contarArchivos(nameTable, 2);
+		i=0;
+		while(i<cantTmpc){
+			path=nivelParticion(nameTable,i, 2);
+			liberarParticion(path);
+			free(path);
+			i++;
+		}
+		 //eliminar archivo metadata
+		path=nivelUnaTabla(nameTable,1);
+		remove(path);
+		free(path);
+		//aumentar el semaforo contador
+
+		//sacar la tabla del directorio					ESTO ME ROMPE
+		/*
+		Tabla *aEliminar=find_tabla_by_name_in(nameTable,directorio);
+		int index=calcularIndexTab(aEliminar,directorio);
+		list_remove_and_destroy_element(directorio,index,(void*)liberarTabla);
+		*/
+
+		//Eliminar carpeta
+		path=nivelUnaTabla(nameTable,0);
 		borrarCarpeta(path);
+		free(path);
 	}else{
 		log_error(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);
+		free(path);
+		free(nameTable);
+		return 1;
 	}
-	free(path);
+	free(nameTable);
+	return 0;
 }

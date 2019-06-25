@@ -23,15 +23,17 @@ int main(void) {
 
 	// ***************PARA USAR LA FUNCION PURA****************/
 
-	create("PELICULAS", "SC", 5, 10000);
-	insert("PELICULAS", 163, "Nemo", 10);				// 3
-	insert("PELICULAS", 10, "Toy Story",10);			// 0
-	insert("PELICULAS", 10, "Harry Potter",16);			// 0
-	insert("PELICULAS", 10, "La cenicienta",10);			// 0
-	insert("PELICULAS", 10, "Monsters inc.",10);			// 0
-	char *v=lSelect("PELICULAS",163);
-	free(v);
-	dump();
+
+	create("P", "SC", 3, 10000);
+	//lSelect("PELICULAS", 0);
+	//insert("PELICULAS", 163, "Nemo", 10);				// 3
+	//insert("PELICULAS", 10, "Toy Story",10);			// 0
+	//insert("PELICULAS", 10, "Harry Potter",16);			// 0
+	//insert("PELICULAS", 10, "La cenicienta",10);			// 0
+	//insert("PELICULAS", 10, "Monsters inc.",10);			// 0
+	//char *v=lSelect("PELICULAS",163);
+	//free(v);
+	//dump();
 /*
 	lSelect("PELICULAS", 163);					// Nemo
 	insert("PELICULAS", 13535, "Titanic",20);			// 0
@@ -50,7 +52,7 @@ int main(void) {
 
 	/****************PARA USAR LA CONSOLA******************/
 
-	//console();
+	console();
 	//free(valor);
 
 	/****************PARA USAR CONEXIONES******************/
@@ -241,8 +243,9 @@ void console(){
 		{
 			char **subStrings= string_n_split(linea,3," ");
 			char *valor=lSelect(subStrings[1],atoi(subStrings[2]));
-			log_info(logger,valor);
-			printf("%s\n",valor);
+			if(valor!=NULL){
+				log_info(logger,valor);
+			}
 			liberarSubstrings(subStrings);
 			free(valor);
 		}
@@ -263,9 +266,9 @@ void console(){
 	 			timestamp= time(NULL);
 	 			printf("%s",split[3]);
 	 			if(insert(split[1],key,split[3],timestamp)==0){
-	 				printf("Se realizo el insert\n");			//Calculo el timestamp y el value es la cadena completa
+	 				printf("Se realizo el insert.\n");			//Calculo el timestamp y el value es la cadena completa
 	 			}else{
-	 				printf("No se pudo realizar el insert\n");
+	 				printf("No se pudo realizar el insert.\n");
 	 			}
 	 		}else{
 	 			int base= string_length(cadena[0])+1;
@@ -284,9 +287,9 @@ void console(){
 	 			}
 
 	 			if(insert(split[1],key,value,timestamp)==0){
-	 				printf("Se realizo el insert\n");
+	 				printf("Se realizo el insert.\n");
 	 			}else{
-	 				printf("No se pudo realizar el insert\n");
+	 				printf("No se pudo realizar el insert.\n");
 	 			}
 
 	 			free(espacio);
@@ -299,9 +302,9 @@ void console(){
 	 	if(!strncmp(linea,"CREATE ",7)){
 			char **subStrings= string_n_split(linea,5," ");
 			if(create(subStrings[1],subStrings[2],atoi(subStrings[3]),atol(subStrings[4]))==0){
-				printf("se pudo crear la tabla\n");
+				printf("Se ha creado la tabla %s.\n",subStrings[1]);
 			}else{
-				printf("No se pudo crear la tablas\n");
+				printf("No se pudo crear la tabla %s.\n",subStrings[1]);
 			}
 			liberarSubstrings(subStrings);
 		}
@@ -322,9 +325,16 @@ void console(){
 			if(subStrings[1]==NULL){
 				log_info(logger,"No se ingreso el nombre de la tabla.");
 			}else{
-				drop(subStrings[1]);
+				if(drop(subStrings[1])==0){
+					log_info(logger,"Se elimino la tabla.");
+				}else
+				{
+					log_info(logger,"No se pudo eliminar correctamente la tabla.");
+				}
 			}
-			liberarSubstrings(subStrings);
+			free(subStrings[0]);
+			free(subStrings[1]);
+			free(subStrings);
 		}
 
 		if(!strncmp(linea,"exit",5)){

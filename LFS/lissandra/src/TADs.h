@@ -68,13 +68,14 @@ Registry *primerRegistroConKey(t_list *registros,int key);
 Registry *regConMayorTime(t_list *registros);
 int existeKeyEnRegistros(t_list *registros,int key);
 t_list* filtrearPorKey(t_list *registros,int key);
-int calcularIndex(t_list *lista,int key);
+int calcularIndexReg(t_list *lista,int key);
 t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart);//NUEVA FUNCION
 
 //FUNCIONES DE TABLAS
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);
-Tabla *find_tabla_by_name(char *name);
+Tabla *find_tabla_by_name_in(char *name, t_list *l);
 t_list *regDep(t_list *aDepu);
+int calcularIndexTab(Tabla *t,t_list *l);
 
 //FUNCIONES DE CONCATENAR
 char *extension(char *path,int modo);

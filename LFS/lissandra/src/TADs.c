@@ -842,7 +842,7 @@ void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time){
 	list_add(name->registros,nuevo);
 }
 
-int calcularIndex(t_list *lista,int key){
+int calcularIndexReg(t_list *lista,int key){
 	int index=0;
 	bool encontrar(Registry *es){
 		index++;
@@ -879,7 +879,7 @@ t_list *regDep(t_list *aDepu){
 			if(primerRegistroConKey(depu,nuevo->key)!=NULL){
 				Registry *viejo=primerRegistroConKey(depu,nuevo->key);
 				if(viejo->timestamp <= nuevo->timestamp){
-					int index= calcularIndex(depu,viejo->key);
+					int index= calcularIndexReg(depu,viejo->key);
 					list_replace(depu, index-1, nuevo);
 				}
 			}else{
@@ -908,14 +908,14 @@ t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart){
 /**************************************************************************************************/
 //FUNCIONES ASOCIADAS A TABLAS
 
-Tabla *find_tabla_by_name(char *name) {
+Tabla *find_tabla_by_name_in(char *name,t_list *l) {
 	int _is_the_one(Tabla *p) {
 
 		return string_equals_ignore_case(p->nombre, name);
 
 	}
 
-	return list_find(memtable, (void*) _is_the_one);
+	return list_find(l, (void*) _is_the_one);
 }
 
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time){
@@ -955,6 +955,17 @@ t_list* filtrearPorKey(t_list *registros,int key){
 	}
 	return list_filter(registros, (void*) misma_key);
 }
+
+int calcularIndexTab(Tabla *tabla,t_list *lista){
+	int index=0;
+	bool encontrar(Tabla *es){
+		index++;
+		return string_equals_ignore_case(es->nombre,tabla->nombre);
+	}
+	list_iterate(lista, (void*) encontrar);
+	return index;
+}
+
 /***********************************************************************************************/
 //FUNCIONES QUE LIBERAN MEMORIA
 
