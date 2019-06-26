@@ -15,7 +15,6 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	if(folderExist(path)==1){
 		//En caso que no exista, informa el error y continúa su ejecución.
 		log_error(logger,"No se puede hacer el insert porque no existe la tabla %s.", param_nameTable);
-		perror("No se puede hacer el insert porque no existe la tabla %s.");
 		free(path);
 		return 1;
 	}
@@ -91,7 +90,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 	}
 
 	//Escanear la memtable
-	t_list *aux;
+	t_list *aux=list_create();
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name_in(nameTable, memtable);
 		if(encontrada!=NULL){
@@ -111,6 +110,9 @@ char *lSelect(char *nameTable, u_int16_t key){
 			log_info(logger, valor);
 			//FALTA LIBERAR LA FILTRADA
 			list_destroy_and_destroy_elements(filtrada, (void*)destroyRegistry);
+
+			//FALTA LIBERAR LA LISTA DE OBTENIDOS Y TODOS LOS REGISTROS DE AHI DENTRO
+			list_destroy_and_destroy_elements(obtenidos,(void *)destroyRegistry);
 		}else{
 			log_info(logger,"No se ha encontrado el valor.");
 		}
@@ -122,8 +124,6 @@ char *lSelect(char *nameTable, u_int16_t key){
 	borrarMetadataTabla(metadata);
 	//FALTA LIBERAR LA LISTA AUXILIAR
 	list_destroy(aux);
-	//FALTA LIBERAR LA LISTA DE OBTENIDOS Y TODOS LOS REGISTROS DE AHI DENTRO
-	list_destroy_and_destroy_elements(obtenidos,(void *)destroyRegistry);
 	return valor;
 }
 
@@ -137,7 +137,6 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	//y se retorna un error indicando dicho resultado.
 	if(folderExist(path)==0){
 		log_error(logger, "No se puede hacer el create porque ya existe la tabla %s.",nameTable);
-		perror("La tabla ya existe.");
 		free(path);
 		free(nombre);
 		return 1;
@@ -145,7 +144,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	//Crear el directorio para dicha tabla.
 	if(hayXBloquesLibres(numPartition)){
 		if(crearCarpeta(path)==1){
-			log_error(logger,"ERROR AL CREAR LA TABLA %s.",nombre);
+			log_error(logger,"ERROR AL CREAR LA CARPETA %s.",nombre);
 			free(path);
 			//liberar el semaforo de bloques ocupados
 			return 1;
@@ -254,7 +253,7 @@ int drop(char* nameTable){
 		//aumentar el semaforo contador
 
 		//sacar la tabla del directorio
-		int index=calcularIndexTabPorNombre(nameTable,directorio);
+		int index=calcularIndexTabPorNombre(nameTable,directorio);			//	NO CALCULA BIEN EL INDEX
 		list_remove(directorio,index);
 
 		//Eliminar carpeta
@@ -263,7 +262,6 @@ int drop(char* nameTable){
 
 	}else{
 		log_error(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);
-		free(path);
 		free(pathFolder);
 		return 1;
 	}

@@ -19,22 +19,26 @@ int main(void) {
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
 	//alarm(configLissandra->tiempoDump);
+	//alarm(5);
     //signal(SIGALRM, funcionSenial);
 
 	// ***************PARA USAR LA FUNCION PURA****************/
-
-
-	create("P", "SC", 3, 10000);
-	//lSelect("P", 3);
+    create("P", "SC", 3, 10000);
+    //dump();
+    dump();
+	lSelect("P", 3);
 	insert("P", 3, "Nemo", 10);
-	insert("P", 3, "Toy Story",10);
-	//lSelect("P", 3);
-	//insert("P", 3, "Harry Potter",10);
-	//dump();
-	insert("P", 3, "Bichos",11);
+	dump();
+	lSelect("P", 3);
+	insert("P", 3, "Toy Story",11);
+	lSelect("P", 3);
+	insert("P", 3, "Harry Potter",10);
+	lSelect("P", 3);
+	insert("P", 3, "Bichos",12);
+	insert("P", 3, "Dory",12);
+	char *valorcito=lSelect("P",3);
+	free(valorcito);
 	drop("P");
-	//char *valorcito=lSelect("P",3);
-	//free(valorcito);
 /*	//compactar("P");
 	//insert("P", 3, "Monsters inc.",10);
 	//insert("PELICULAS", 10, "Harry Potter",16);			// 0
@@ -61,7 +65,7 @@ int main(void) {
 
 	/****************PARA USAR LA CONSOLA******************/
 
-	//console();
+	console();
 	//free(valor);
 
 	/****************PARA USAR CONEXIONES******************/
@@ -274,7 +278,8 @@ void console(){
 		if(!strncmp(linea,"SELECT ",7))
 		{
 			char **subStrings= string_n_split(linea,3," ");
-			char *valor=lSelect(subStrings[1],atoi(subStrings[2]));
+			u_int16_t k=atoi(subStrings[2]);
+			char *valor=lSelect(subStrings[1],k);
 			liberarSubstrings(subStrings);
 			free(valor);
 		}
@@ -293,11 +298,7 @@ void console(){
 
 	 		if(timestamp==0){									//NO TIENE TIMESTAMP
 	 			timestamp= time(NULL);
-	 			if(insert(split[1],key,split[3],timestamp)==0){
-	 				printf("Se realizo el insert.\n");			//Calculo el timestamp y el value es la cadena completa
-	 			}else{
-	 				printf("No se pudo realizar el insert.\n");
-	 			}
+	 			insert(split[1],key,split[3],timestamp);	//Calculo el timestamp y el value es la cadena completa
 	 		}else{
 	 			int base= string_length(cadena[0])+1;
 	 			char *value=malloc(base);
@@ -314,12 +315,7 @@ void console(){
 	 				strcat(value,cadena[i]);
 	 			}
 
-	 			if(insert(split[1],key,value,timestamp)==0){
-	 				printf("Se realizo el insert.\n");
-	 			}else{
-	 				printf("No se pudo realizar el insert.\n");
-	 			}
-
+	 			insert(split[1],key,value,timestamp);
 	 			free(espacio);
 	 			free(value);
 	 		}
@@ -357,7 +353,7 @@ void console(){
 				log_info(logger,"No se ingreso el nombre de la tabla.");
 			}else{
 				if(drop(subStrings[1])==0){
-					log_info(logger,"Se elimino la tabla.");
+					log_info(logger,"Se elimino la tabla %s.",subStrings[1]);
 				}else
 				{
 					log_info(logger,"No se pudo eliminar correctamente la tabla.");
