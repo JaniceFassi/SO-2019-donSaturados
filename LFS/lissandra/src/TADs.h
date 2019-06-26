@@ -119,7 +119,7 @@ void crearMetaLFS();
 void leerMetaLFS();
 void estructurarConfig();
 int renombrarTemp_TempC(char *path);//NUEVA FUNCION
-int escribirParticion(char *path,t_list *lista);//NUEVA FUNCION
+int escribirParticion(char *path,t_list *lista,int modo);//NUEVA FUNCION
 
 //FUNCIONES DE BLOQUES
 bool hayXBloquesLibres(int cantidad);
@@ -148,5 +148,5 @@ void liberarParticion(char *path);//NUEVO
 void limpiarBloque(char* nroBloque);//NUEVO
 void limpiarArchivo(char* pathArchivo);//NUEVO
 void liberarArraydeBloques(char **array);//NUEVO
-
+void liberarDirectorio();
 #endif

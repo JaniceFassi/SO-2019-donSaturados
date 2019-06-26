@@ -17,7 +17,7 @@ int dump(){
 			//Calcular el tamaño de dumpTabla->registros
 			int cantTmp=contarArchivos(dumpTabla->nombre, 1);
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
-			if(escribirParticion(ruta,dumpTabla->registros)==1){
+			if(escribirParticion(ruta,dumpTabla->registros,0)==1){
 				log_error(logger,"error al escribir el dump");
 				free(ruta);
 				free(path);
@@ -74,7 +74,7 @@ void compactar(char *nombreTabla){
 			//leer binarios
 			arch=nivelParticion(nombreTabla,contador,0);
 			if(contador+1==cantMax){
-				contador=0;
+				contador=-1;
 				cantMax=cantTemp;
 				binario++;
 			}
@@ -93,7 +93,7 @@ void compactar(char *nombreTabla){
 	while(contador<metadata->partitions){
 		t_list *particion=filtrarPorParticion(depurado,contador,metadata->partitions);
 		char *archP=nivelParticion(nombreTabla,contador,0);
-		if(escribirParticion(archP,particion)==1){
+		if(escribirParticion(archP,particion,1)==1){
 			log_error(logger,"Error a la hora de escribir la compactacion");
 			free(archP);
 			list_destroy(particion);

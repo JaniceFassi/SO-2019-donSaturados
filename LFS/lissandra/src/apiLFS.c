@@ -171,9 +171,9 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	return 0;
 }
 
-t_list *describe(char* nameTable,int variante){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
+t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
 	t_list *tablas=list_create();
-	if(variante==0){
+	if(nameTable==NULL){
 		if(list_is_empty(directorio)){
 			log_error(logger,"No hay ninguna tabla cargada en el sistema.");
 		}else{
@@ -182,15 +182,11 @@ t_list *describe(char* nameTable,int variante){//PREGUNTAR, PORQUE 2 ATRIBUTOS, 
 			int cant=list_size(directorio);
 			while(cant>0){
 				char *tabla=list_get(directorio,cant-1);
-				char *path=nivelUnaTabla(tabla,0);
-				if(folderExist(path)==0){
-					free(path);
-					//Leer el archivo Metadata de dicha tabla.
-					metaTabla *metadata= leerMetadataTabla(nameTable);
-					list_add(tablas,metadata);
-				}else{
-					free(path);
+				t_list *aux=describe(tabla);
+				if(!list_is_empty(aux)){
+					list_add_all(tablas,aux);
 				}
+				list_destroy(aux);
 				cant--;
 			}
 		}

@@ -239,6 +239,23 @@ void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 		free(maxValue);
 	}
 }
+void mostrarDescribe(t_list *lista){
+	void mostrarD(metaTabla *describe){
+		char *nombre=string_from_format("**Nombre de la TABLA: %s",describe->nombre);
+		printf("%s \n",nombre);
+		char *consistencia=string_from_format("CONSISTENCY= %s",describe->consistency);
+		printf("%s \n",consistencia);
+		char *particiones=string_from_format("PARTITIONS= %i",describe->partitions);
+		printf("%s \n",particiones);
+		char *compactacionT=string_from_format("TIME_COMPACTION= %ld",describe->compaction_time);
+		printf("%s \n",compactacionT);
+		free(nombre);
+		free(consistencia);
+		free(particiones);
+		free(compactacionT);
+	}
+	list_iterate(lista,(void *)mostrarD);
+}
 
 void console(){
 	char* linea;
@@ -315,13 +332,16 @@ void console(){
 			liberarSubstrings(subStrings);
 		}
 
-		if(!strncmp(linea,"DESCRIBE ",9)){
+		if(!strncmp(linea,"DESCRIBE",8)){
 			char **subStrings= string_n_split(linea,2," ");
 			t_list *tablas;
-			if(subStrings[1]==NULL){
-				tablas=describe(subStrings[1],0);// 0 si no ponen nombre de una Tabla
+			tablas=describe(subStrings[1]);
+			if(list_is_empty(tablas)){
+				printf("No se encontraron descripciones de la/s tablas\n");
+				list_destroy(tablas);
 			}else{
-				tablas=describe(subStrings[1],1);//1 si ponen nombre de Tabla
+				mostrarDescribe(tablas);
+				list_destroy_and_destroy_elements(tablas,(void *)borrarMetadataTabla);
 			}
 			liberarSubstrings(subStrings);
 		}
@@ -353,10 +373,10 @@ void console(){
 }
 
 void funcionSenial(int sig){
-	log_info(logger,"Comienzo de dump");
 	dump();
-	log_info(logger,"Finalizacion de dump");
-	alarm(configLissandra->tiempoDump);
+	alarm(100);
+    signal(SIGALRM, funcionSenial);
+	return;
 }
 
 void theEnd(){
@@ -365,6 +385,7 @@ void theEnd(){
 	}else{
 		list_destroy(memtable);
 	}
+	liberarDirectorio();
 	borrarDatosConfig();
 	borrarMetaLFS();
 	free(pathInicial);

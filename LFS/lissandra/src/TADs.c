@@ -602,13 +602,26 @@ int contarArchivos(char *tabla, int modo){		//0 .bin, 1 .tmp, 2 .tmpc
 	return cant;
 }
 
-int escribirParticion(char *path,t_list *lista){
-	char *buffer=cadenaDeRegistros(lista);
-	int largo=strlen(buffer)+1;
+int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
+	char *buffer=NULL;
+	int largo;
 	//calcular cant bloques
-	int bloquesNecesarios=largo/metaLFS->tamBloques;
-	if(largo%metaLFS->tamBloques!=0){
-		bloquesNecesarios++;
+	int bloquesNecesarios;
+	if(list_is_empty(lista)){
+		if(modo==0){
+			log_info(logger,"No hay nada para escrbir");
+			return 0;
+		}
+		largo=0;
+		bloquesNecesarios=1;
+	}else{
+		buffer=cadenaDeRegistros(lista);
+		largo=strlen(buffer)+1;
+		//calcular cant bloques
+		bloquesNecesarios=largo/metaLFS->tamBloques;
+		if(largo%metaLFS->tamBloques!=0){
+			bloquesNecesarios++;
+		}
 	}
 	char **arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
 	//pedir x cant bloques y guardarlas en un char
@@ -627,11 +640,14 @@ int escribirParticion(char *path,t_list *lista){
 		return 1;
 	}
 
-	escribirBloque(buffer,arrayBlock);//aca se libera el buffer
+	if(largo!=0){
+		escribirBloque(buffer,arrayBlock);//aca se libera el buffer
+	}
 
 	for(int f=0;f<bloquesNecesarios;f++){
 		free(arrayBlock[f]);
 	}
+
 	free(arrayBlock);
 
 	return 0;
@@ -1066,3 +1082,12 @@ void liberarParticion(char *path){
 		eliminarArchivo(path);
 	}
 }
+
+void liberarDirectorio(){
+	void liberarString(char *nombre){
+		free(nombre);
+	}
+	list_iterate(directorio,(void *)liberarString);
+	list_destroy(directorio);
+}
+
