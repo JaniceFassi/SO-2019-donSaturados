@@ -959,13 +959,23 @@ t_list* filtrearPorKey(t_list *registros,int key){
 int calcularIndexTab(Tabla *tabla,t_list *lista){
 	int index=0;
 	bool encontrar(Tabla *es){
-		index++;
 		return string_equals_ignore_case(es->nombre,tabla->nombre);
+		index++;
 	}
 	list_iterate(lista, (void*) encontrar);
 	return index;
 }
 
+int calcularIndexTabPorNombre(char *name,t_list *lista){
+	int index=0;
+	bool encontrar(char *comparar){
+		return string_equals_ignore_case(comparar,name);
+		index++;
+	}
+	list_iterate(lista, (void*) encontrar);
+	free(name);
+	return index;
+}
 /***********************************************************************************************/
 //FUNCIONES QUE LIBERAN MEMORIA
 

@@ -167,6 +167,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	}
 	list_add(directorio,nombre);
 	free(path);
+	free(nombre);
 	return 0;
 }
 
@@ -221,6 +222,7 @@ int drop(char* nameTable){
 		//eliminar archivos binarios con sus respectivos bloques
 		int cantBins=contarArchivos(nameTable, 0);
 		int i=0;
+		free(path);
 		while(i<cantBins){
 			path=nivelParticion(nameTable,i, 0);
 			liberarParticion(path);
@@ -251,12 +253,10 @@ int drop(char* nameTable){
 		free(path);
 		//aumentar el semaforo contador
 
-		//sacar la tabla del directorio					ESTO ME ROMPE
-		/*
-		Tabla *aEliminar=find_tabla_by_name_in(nameTable,directorio);
-		int index=calcularIndexTab(aEliminar,directorio);
-		list_remove_and_destroy_element(directorio,index,(void*)liberarTabla);
-		*/
+		//sacar la tabla del directorio
+
+		int index=calcularIndexTabPorNombre(nameTable,directorio);
+		list_remove(directorio,index);
 
 		//Eliminar carpeta
 		path=nivelUnaTabla(nameTable,0);
@@ -268,6 +268,5 @@ int drop(char* nameTable){
 		free(nameTable);
 		return 1;
 	}
-	free(nameTable);
 	return 0;
 }

@@ -26,8 +26,14 @@ int main(void) {
 
 	create("P", "SC", 3, 10000);
 	//lSelect("PELICULAS", 0);
-	//insert("PELICULAS", 163, "Nemo", 10);				// 3
-	//insert("PELICULAS", 10, "Toy Story",10);			// 0
+	insert("P", 3, "Nemo", 10);
+	insert("P", 3, "Toy Story",10);
+	insert("P", 3, "Harry Potter",10);
+	insert("P", 3, "Bichos",10);
+
+	lSelect("P",3);
+	//compactar("P");
+	//insert("P", 3, "Monsters inc.",10);
 	//insert("PELICULAS", 10, "Harry Potter",16);			// 0
 	//insert("PELICULAS", 10, "La cenicienta",10);			// 0
 	//insert("PELICULAS", 10, "Monsters inc.",10);			// 0
