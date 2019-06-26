@@ -7,6 +7,7 @@
 
 #include "Compactor.h"
 int dump(){
+	log_info(logger,"dump");
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
 	int cant=list_size(dump);
@@ -21,12 +22,12 @@ int dump(){
 				log_error(logger,"error al escribir el dump");
 				free(ruta);
 				free(path);
-				list_destroy_and_destroy_elements(dump,(void *)liberarTabla);
+				list_destroy(dump);//_and_destroy_elements(dump,(void *)liberarTabla);
 				return 1;
 			}
 			free(ruta);
 		}
-		liberarTabla(dumpTabla);
+		//liberarTabla(dumpTabla);
 		free(path);
 		cant--;
 	}

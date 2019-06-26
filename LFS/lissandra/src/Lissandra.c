@@ -15,24 +15,27 @@ int main(void) {
 
 	u_int16_t socket_client;
 
-/*
+
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
-	alarm(timeDump);
-    signal(SIGALRM, funcionSenial);
+	//alarm(configLissandra->tiempoDump);
+    //signal(SIGALRM, funcionSenial);
 
 	// ***************PARA USAR LA FUNCION PURA****************/
 
 
 	create("P", "SC", 3, 10000);
-	//lSelect("PELICULAS", 0);
+	//lSelect("P", 3);
 	insert("P", 3, "Nemo", 10);
 	insert("P", 3, "Toy Story",10);
-	insert("P", 3, "Harry Potter",10);
-	insert("P", 3, "Bichos",10);
-
-	lSelect("P",3);
-	//compactar("P");
+	//lSelect("P", 3);
+	//insert("P", 3, "Harry Potter",10);
+	//dump();
+	insert("P", 3, "Bichos",11);
+	drop("P");
+	//char *valorcito=lSelect("P",3);
+	//free(valorcito);
+/*	//compactar("P");
 	//insert("P", 3, "Monsters inc.",10);
 	//insert("PELICULAS", 10, "Harry Potter",16);			// 0
 	//insert("PELICULAS", 10, "La cenicienta",10);			// 0
@@ -58,7 +61,7 @@ int main(void) {
 
 	/****************PARA USAR LA CONSOLA******************/
 
-	console();
+	//console();
 	//free(valor);
 
 	/****************PARA USAR CONEXIONES******************/
@@ -196,8 +199,14 @@ void exec_api(op_code mode,u_int16_t sock){
 	case 4:
 		log_info(logger,"\nDROP");		//orden: tabla
 		buffer=recibirDeMemoria(sock);
-
-		//drop(buffer);
+		if(drop(buffer)==1){
+			respuesta=string_from_format("41");
+		}else
+		{
+			respuesta=string_from_format("40");
+		}
+		sendData(sock,respuesta,strlen(respuesta));
+		free(respuesta);
 		break;
 
 	default:
@@ -266,9 +275,6 @@ void console(){
 		{
 			char **subStrings= string_n_split(linea,3," ");
 			char *valor=lSelect(subStrings[1],atoi(subStrings[2]));
-			if(valor!=NULL){
-				log_info(logger,valor);
-			}
 			liberarSubstrings(subStrings);
 			free(valor);
 		}
@@ -287,7 +293,6 @@ void console(){
 
 	 		if(timestamp==0){									//NO TIENE TIMESTAMP
 	 			timestamp= time(NULL);
-	 			printf("%s",split[3]);
 	 			if(insert(split[1],key,split[3],timestamp)==0){
 	 				printf("Se realizo el insert.\n");			//Calculo el timestamp y el value es la cadena completa
 	 			}else{
@@ -324,10 +329,10 @@ void console(){
 
 	 	if(!strncmp(linea,"CREATE ",7)){
 			char **subStrings= string_n_split(linea,5," ");
-			if(create(subStrings[1],subStrings[2],atoi(subStrings[3]),atol(subStrings[4]))==0){
-				printf("Se ha creado la tabla %s.\n",subStrings[1]);
-			}else{
-				printf("No se pudo crear la tabla %s.\n",subStrings[1]);
+			u_int16_t particiones=atoi(subStrings[3]);
+			long timeCompaction=atol(subStrings[4]);
+			if(create(subStrings[1],subStrings[2],particiones,timeCompaction)!=0){
+				log_info(logger,"No se pudo crear la tabla %s.",subStrings[1]);
 			}
 			liberarSubstrings(subStrings);
 		}
@@ -365,7 +370,7 @@ void console(){
 
 		if(!strncmp(linea,"exit",5)){
 			free(linea);
-			theEnd();
+			//theEnd();
 			break;
 		}
 		free(linea);

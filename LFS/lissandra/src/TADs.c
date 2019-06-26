@@ -989,7 +989,7 @@ int calcularIndexTabPorNombre(char *name,t_list *lista){
 		index++;
 	}
 	list_iterate(lista, (void*) encontrar);
-	free(name);
+	//free(name);
 	return index;
 }
 /***********************************************************************************************/

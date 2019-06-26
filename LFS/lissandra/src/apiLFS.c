@@ -114,6 +114,9 @@ char *lSelect(char *nameTable, u_int16_t key){
 		}else{
 			log_info(logger,"No se ha encontrado el valor.");
 		}
+	}else
+	{
+		log_info(logger,"No se ha encontrado el valor.");
 	}
 	//FALTA LIBERAR EL METATABLA
 	borrarMetadataTabla(metadata);
@@ -167,6 +170,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	}
 	list_add(directorio,nombre);
 	free(path);
+	log_info(logger,"Se ha creado la tabla %s.",nombre);
 	free(nombre);
 	return 0;
 }
@@ -213,12 +217,12 @@ t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE 
 int drop(char* nameTable){
 	//Verificar que la tabla exista en el file system.
 
-	char *path=nivelUnaTabla(nameTable,0);
-	if(folderExist(path)==0){
+	char *pathFolder=nivelUnaTabla(nameTable,0);
+	char *path;
+	if(folderExist(pathFolder)==0){
 		//eliminar archivos binarios con sus respectivos bloques
 		int cantBins=contarArchivos(nameTable, 0);
 		int i=0;
-		free(path);
 		while(i<cantBins){
 			path=nivelParticion(nameTable,i, 0);
 			liberarParticion(path);
@@ -250,18 +254,17 @@ int drop(char* nameTable){
 		//aumentar el semaforo contador
 
 		//sacar la tabla del directorio
-
 		int index=calcularIndexTabPorNombre(nameTable,directorio);
 		list_remove(directorio,index);
 
 		//Eliminar carpeta
-		path=nivelUnaTabla(nameTable,0);
-		borrarCarpeta(path);
-		free(path);
+		borrarCarpeta(pathFolder);
+		free(pathFolder);
+
 	}else{
 		log_error(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);
 		free(path);
-		free(nameTable);
+		free(pathFolder);
 		return 1;
 	}
 	return 0;
