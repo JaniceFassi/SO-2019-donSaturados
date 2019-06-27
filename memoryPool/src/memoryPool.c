@@ -70,57 +70,9 @@ int main(void) {
 
 
 
-	segmento *animales = crearSegmento("ANIMALES");
-	segmento *postres = crearSegmento("POSTRES");
-	list_add(tablaSegmentos, animales);
-	list_add(tablaSegmentos, postres);
-
-	mInsert("ANIMALES", 1, "GATO");
-	mInsert("ANIMALES", 2, "PERRO");
-	mInsert("ANIMALES", 3, "CABALLO");
-	mInsert("ANIMALES",4,"LOBO MARINO");
-	mInsert("POSTRES",5,"TORTA");
-	mostrarMemoria();
-	printf("Estado memoria: %i",memoriaLlena());
-	printf("\n");
-	printf("Ahora probamos SELECT: \n");
-
-	mSelect("ANIMALES",1);
-	mSelect("ANIMALES",2);
-	mSelect("POSTRES",5);
-	printf("\n");
-	printf("Ahora probamos DROP: \n");
-
-	mDrop("ANIMALES");
-	mInsert("POSTRES",10,"HELADO");
-	mInsert("POSTRES",22,"CHOCOLATE");
-	mInsert("COLORES", 12, "ROJO");
-	mostrarMemoria();
-	printf("Estado memoria: %i",memoriaLlena());
-
-
-
-	/*
-	int resultado = 15;
-
-	posMarcoUsado* p1 = crearPosMarcoUsado(0,8);
-	posMarcoUsado* p2 = crearPosMarcoUsado(1,2);
-	posMarcoUsado* p3 = crearPosMarcoUsado(2,3);
-	posMarcoUsado* p4 = crearPosMarcoUsado(3,10);
-
-	agregarPosMarcoUsado(p1);
-	agregarPosMarcoUsado(p2);
-	agregarPosMarcoUsado(p3);
-	agregarPosMarcoUsado(p4);
-
-	resultado = LRU();
-
-	printf("El marco mas viejo es: %i",resultado);
-
-	*/
-
 
 	//finalizar();
+	//se rompe al destruir segmentos pero antes no pasaba ??????
 
 	return EXIT_SUCCESS;
 }
@@ -242,7 +194,7 @@ t_config* read_config() {
 
  void handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
  	int conexionExitosa;
- 	int id; //para que no rompa pero ni idea de donde saco esta vaina
+ 	int id = 1;
  	conexionExitosa = linkClient(&lfsCliente,ipLissandra , puertoLissandra,id);
 
  		if(conexionExitosa !=0){
@@ -317,17 +269,7 @@ t_config* read_config() {
 
  	int index = conseguirIndexSeg(nuevo); //se usa para el free
 
- 	int cantDePaginas = list_size(nuevo->tablaPaginas);
-
- 	for(int i=0;i<cantDePaginas;i++){
- 		pagina* pagAEliminar = list_get(nuevo->tablaPaginas,i);
- 		liberarMarco(pagAEliminar->nroMarco);
- 		if((pagAEliminar->modificado)==0){
- 			eliminarDeListaUsos(pagAEliminar->nroMarco);
- 		}
- 	}
-
- 	//list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
+ 	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
 
 
  }
@@ -338,6 +280,9 @@ t_config* read_config() {
  }
 
  void paginaDestroy(pagina* pagParaDestruir){
+	if((pagParaDestruir->modificado)==0){
+	  	eliminarDeListaUsos(pagParaDestruir->nroMarco);
+	 }
 	liberarMarco(pagParaDestruir->nroMarco);
  	free(pagParaDestruir);
  }
@@ -446,7 +391,7 @@ int conseguirIndexSeg(segmento* nuevo){ //Funcion util para cuando haces los fre
 
 	int index=0;
 
-	while(index < nuevo->tablaPaginas->elements_count +1){
+	while(index < (tablaSegmentos->elements_count)){
 		segmento* aux = list_get(tablaSegmentos,index);
 		if(string_equals_ignore_case(aux->nombreTabla,nuevo->nombreTabla)){
 			break;
@@ -468,17 +413,15 @@ void marcoDestroy(marco *unMarco){
 }
 
 void finalizar(){
-	free(memoria);
-	for(int i = 0; i<tablaSegmentos->elements_count; i++){
+
+	for(int i = 0; i<(tablaSegmentos->elements_count); i++){
 		segmento *seg = list_get(tablaSegmentos, i);
 		eliminarSegmento(seg);
-
 	}
-
-	eliminarMarcos();
 	free(tablaSegmentos);
+	eliminarMarcos();
 	free(tablaMarcos);
-
+	free(memoria);
 
 }
 
