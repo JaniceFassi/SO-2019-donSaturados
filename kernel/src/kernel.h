@@ -21,11 +21,14 @@
 #include<commons/collections/list.h>
 #include<commons/collections/queue.h>
 #include<socketSaturados.h>
+#include<pthread.h>
+#include<semaphore.h>
 
 t_log* logger;
 t_config* config;
 t_log* init_logger(void);
 t_config* read_config(void);
+int quantum;
 
 // lista de memorias que me van a pasar
 struct memoria{
@@ -59,12 +62,14 @@ t_queue *exec;
 t_queue *myExit;
 
 struct metadataTabla{
-	u_int16_t key;
+	char *table;
 	char *consistency;
+	u_int16_t numPart;
+	u_int16_t compTime;
 };
 
 t_list *listaMetadata;
-
+int terminaHilo=0;
 int main();
 void run(char * path);
 int parsear(char *linea);
@@ -87,7 +92,10 @@ bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio);
 struct memoria * buscarMemoria(u_int16_t id);
 void pruebas();
 void mostrarResultados();
-struct metadataTabla * buscarMetadataTabla(char* key);
+struct metadataTabla * buscarMetadataTabla(char* table);
+void destruir();
+void moverAcola(t_queue * a,t_queue *b);
+void metrics();
 
 #endif /*KERNEL_H_*/
 
