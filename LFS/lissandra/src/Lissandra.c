@@ -26,17 +26,17 @@ int main(void) {
     create("P", "SC", 3, 10000);
     //dump();
     dump();
-	lSelect("P", 3);
+//	lSelect("P", 3);							//Ningun valor
 	insert("P", 3, "Nemo", 10);
+	lSelect("P", 3);							//Nemo
 	dump();
-	lSelect("P", 3);
 	insert("P", 3, "Toy Story",11);
-	lSelect("P", 3);
+	lSelect("P", 3);							//Toy Story
 	insert("P", 3, "Harry Potter",10);
-	lSelect("P", 3);
-	insert("P", 3, "Bichos",12);
+	lSelect("P", 3);							//Toy Story
+	insert("P", 3, "Bichos",13);
 	insert("P", 3, "Dory",12);
-	char *valorcito=lSelect("P",3);
+	char *valorcito=lSelect("P",3);				//Dory
 	free(valorcito);
 	drop("P");
 /*	//compactar("P");

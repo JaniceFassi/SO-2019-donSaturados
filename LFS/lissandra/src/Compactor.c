@@ -18,6 +18,8 @@ int dump(){
 			//Calcular el tamaño de dumpTabla->registros
 			int cantTmp=contarArchivos(dumpTabla->nombre, 1);
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
+			//Registry *reg=list_get(dumpTabla->registros,0);
+			//log_info(logger,"%s",reg->value);
 			if(escribirParticion(ruta,dumpTabla->registros,0)==1){
 				log_error(logger,"error al escribir el dump");
 				free(ruta);

@@ -109,8 +109,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 			strcpy(valor,obtenido->value);
 			log_info(logger, valor);
 			//FALTA LIBERAR LA FILTRADA
-			list_destroy_and_destroy_elements(filtrada, (void*)destroyRegistry);
-
+			list_destroy(filtrada);
 			//FALTA LIBERAR LA LISTA DE OBTENIDOS Y TODOS LOS REGISTROS DE AHI DENTRO
 			list_destroy_and_destroy_elements(obtenidos,(void *)destroyRegistry);
 		}else{

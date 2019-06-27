@@ -65,7 +65,6 @@ char *concatRegistro(Registry *registro){
 char *cadenaDeRegistros(t_list *lista){
 	char *buffer;
 	int vacio=0;
-
 	void sumarRegistro(Registry *reg){
 		char *linea;
 		linea=concatRegistro(reg);
@@ -75,7 +74,7 @@ char *cadenaDeRegistros(t_list *lista){
 			vacio++;
 		}else{
 			buffer=ponerSeparador(buffer);
-			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
+			buffer=realloc(buffer,strlen(buffer)+1);
 			strcat(buffer,linea);
 		}
 		free(linea);
@@ -207,21 +206,24 @@ Registry *desconcatParaArch(char *linea){
 
 t_list *deChar_Registros(char *buffer){
 	t_list *registros=list_create();
-	while(strlen(buffer)>0){
+	bool seguir=1;
+	while(seguir){
 		char **substring=string_n_split(buffer,4,";");
 		int key=atoi(substring[1]);
 		long time=atol(substring[0]);
 		Registry *nuevo=createRegistry(key,substring[2], time);
 		list_add(registros,nuevo);
 		free(buffer);
+		free(substring[0]);    //LO HICE ASI PORQUE NO SE COMO MOD LA FUNCION LIB SUBSTRINGS
+		free(substring[1]);
+		free(substring[2]);
+		seguir=0;
 		if(substring[3]!=NULL){
 			buffer=malloc(strlen(substring[3])+1);
 			strcpy(buffer,substring[3]);
 			free(substring[3]);
+			seguir=1;
 		}
-		free(substring[0]);    //LO HICE ASI PORQUE NO SE COMO MOD LA FUNCION LIB SUBSTRINGS
-		free(substring[1]);
-		free(substring[2]);
 		free(substring);
 	}
 	return registros;
@@ -615,6 +617,8 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 		largo=0;
 		bloquesNecesarios=1;
 	}else{
+		//Registry *reg=list_get(lista,0);
+		//log_info(logger,"%s",reg->value);
 		buffer=cadenaDeRegistros(lista);
 		largo=strlen(buffer)+1;
 		//calcular cant bloques
