@@ -28,7 +28,7 @@ int main(void) {
 	m1->estado=1;// inicia disponible
 	list_add(memorias,m1);
 	list_add(criterioSC,m1);
-	/*int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
+	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	pthread_t hilos[limiteProcesamiento];
 	int i=0;
 	while(i<limiteProcesamiento){
@@ -40,22 +40,22 @@ int main(void) {
 	// aca deberia poder conocer el resto de las memorias
 	// ademas deberia hacer un describe de las tablas actuales
 	pruebas();
-	//apiKernel();*/
+	//apiKernel();
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_1.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_1.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_2.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/películas.lql");
-/*
+
 	i=0;
 	while(i<limiteProcesamiento){
 		pthread_join(hilos[i], NULL);
 		i++;
-	}*/
+	}
 //	parsear("DESCRIBE");
 //	parsear("DESCRIBE tablita");
 
-	ejecutarScripts();
+	//ejecutarScripts();
 	mostrarResultados();
 	destruir();
 	//char *linea=readline(">");
@@ -156,19 +156,25 @@ void ejecutarScripts(){
 	int resultado=0;
 	while(terminaHilo==0){
 		if(!queue_is_empty(ready)){
+			// sem1 wait
 			struct script *execNuevo = queue_pop(ready);
 			queue_push(exec,execNuevo);
+			// sem1 signal
 			log_info(logger,"Script nro %i entro a cola EXEC",execNuevo->id);
 			if(execNuevo->modoOp==1){// es para scripts de una sola linea introducidos desde consola
 				resultado=parsear(execNuevo->input);
 				if(resultado!=0){
+					//sem1 wait
 					queue_pop(exec);
 					execNuevo->estado=1;//fallo
 					queue_push(myExit,execNuevo);
+					//sem1 signal
 				}
 				else{
+					//sem1 wait
 					queue_pop(exec);
 					queue_push(myExit,execNuevo);
+					//sem1 signal
 				}
 			}
 			else{
@@ -189,9 +195,11 @@ void ejecutarScripts(){
 				do{
 					resultado=parsear(linea);
 					if(resultado!=0){
+						//sem1 wait
 						queue_pop(exec);
 						execNuevo->estado=1;//fallo
 						queue_push(myExit,execNuevo);
+						//sem1 signal
 					}
 					lineasEjecutadas++;
 					execNuevo->lineasLeidas++;
@@ -199,30 +207,34 @@ void ejecutarScripts(){
 				free(linea);
 				if(!feof(f)){
 					if(lineasEjecutadas>=quantum && resultado==0){
+						//sem1 wait
 						queue_pop(exec);
-						log_info(logger,"Script nro %i salio por fin de quantum",execNuevo->id);
 						queue_push(ready,execNuevo);
+						//sem1 signal
+						log_info(logger,"Script nro %i salio por fin de quantum",execNuevo->id);
 					}
 					else{
 						log_info(logger,"El script fallo");
 					}
 				}
 				else{
+					//sem1 wait
 					queue_pop(exec);
 					queue_push(myExit,execNuevo);
+					//sem1 signal
 					log_info(logger,"Script con el path %s entro a cola exit",execNuevo->input);
 				}
 				fclose(f);
 
 			}
 		}
-		if(queue_size(myExit)==3){
+		if(queue_size(myExit)==1){
 				terminaHilo=1;
 			}
 	}
 }
 FILE* avanzarLineas(int num,FILE * fp){
-	int conta=num-1;
+	int conta=num;
 	fseek(fp, 0, SEEK_SET);
 	while (conta>0){
 		if(fgetc (fp) == '\n'){
@@ -288,7 +300,7 @@ int mySelect(char * table, char *key){
 	char *msj=string_from_format("%s%s",tamanioYop,linea);
 
 	log_info(logger,"SELECT %s",msj);
-
+/*
 	//aca fijandome la tabla deberia elegir la memoria adecuada
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	metadata = buscarMetadataTabla(table);
@@ -305,7 +317,7 @@ int mySelect(char * table, char *key){
 	if(atoi(resultado)!=0){
 		return -1;
 	}
-	free(memAsignada);
+	free(memAsignada);*/
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -325,6 +337,8 @@ int insert(char* table ,char* key ,char* value){
 	}
 	char*msj=string_from_format("%s%s",tamanioYop,linea);
 
+	log_info(logger,"INSERT %s",msj);
+/*
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	metadata = buscarMetadataTabla(table);
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
@@ -340,9 +354,8 @@ int insert(char* table ,char* key ,char* value){
 	if(atoi(resultado)!=0){
 		return -1;
 	}
-	log_info(logger,"INSERT %s",msj);
 
-	free(memAsignada);
+	free(memAsignada);*/
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -361,8 +374,11 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 		tamanioYop=string_from_format("%i0%i",op,len);
 	}
 	char*msj=string_from_format("%s%s",tamanioYop,linea);
+
+	log_info(logger,"CREATE %s",msj);
+
 	//tengo que hacer la metadata de la tabla? o despues con el describe? quedaria inconsistente hasta que lo hagan
-	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+/*	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 	memAsignada= asignarMemoriaSegunCriterio(consistency);
 
 	int sock = conexionMemoria(memAsignada->puerto);
@@ -376,9 +392,7 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 		return -1;
 	}
 
-	log_info(logger,"CREATE %s",msj);
-
-	free(memAsignada);
+	free(memAsignada);*/
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -405,6 +419,8 @@ int describe(char *table){
 		msj=string_from_format("%i%i%s",op,tamanio,table);
 	}
 
+	log_info(logger,"DESCRIBE %s",msj);
+/*
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 	memAsignada= verMemoriaLibre(memorias);
 
@@ -412,7 +428,7 @@ int describe(char *table){
 
 	sendData(sock,msj,strlen(msj)+1);
 
-	log_info(logger,"DESCRIBE %s",msj);
+
 
 	char *resultado=malloc(2);
 	recvData(sock,resultado,1);
@@ -429,24 +445,26 @@ int describe(char *table){
 		char *t=malloc(3);
 		recvData(sock,t,2);
 		char *buffer=malloc(atoi(t)+1);
-		recvData(sock,buffer,t);
-
+		recvData(sock,buffer,atoi(t));
+		//REVISAR
 		struct metadataTabla *metadata;//= malloc(sizeof(struct metadataTabla));
 		char ** split = string_split(buffer,";");
 		metadata->table=split[0];
 		metadata->consistency=split[1];
 		metadata->numPart=atoi(split[2]);
 		metadata->compTime=atoi(split[3]);
-
+		// sem2 wait?
+		list_add(listaMetadata,metadata);
+		// sem2 signal?
 		free(t);
 		free(buffer);
 		i++;
 	}
-
-	free(resultado);
-	free(tamanioRespuesta);
+*/
+//	free(resultado);
+//	free(tamanioRespuesta);
 	free(msj);
-	free(memAsignada);
+//	free(memAsignada);
 	return 0;
 }
 
@@ -466,6 +484,8 @@ int drop(char*table){
 
 	char * resultado=malloc(2);
 	recvData(sock,&resultado,1);
+
+	// deberia borrar la metadata de la tabla? (iria un semaforo)
 
 	if(atoi(resultado)!=0){
 		return -1;
@@ -493,7 +513,9 @@ int add(char* memory , char* consistency){
 			return -1;
 		}
 		else{
+			// semN wait (pongo N xq no se si poner un semaforo para cada lista o con poner una sirve)
 			list_add(criterioSC,memoria);
+			// semN signal
 			return 0;
 		}
 	}
