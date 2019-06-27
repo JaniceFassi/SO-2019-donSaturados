@@ -70,8 +70,7 @@ int main(void) {
 
 
 
-
-	//finalizar();
+	finalizar();
 	//se rompe al destruir segmentos pero antes no pasaba ??????
 
 	return EXIT_SUCCESS;
@@ -420,7 +419,7 @@ void finalizar(){
 	}
 	free(tablaSegmentos);
 	eliminarMarcos();
-	free(tablaMarcos);
+
 	free(memoria);
 
 }
