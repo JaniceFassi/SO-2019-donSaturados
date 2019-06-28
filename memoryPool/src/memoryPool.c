@@ -727,10 +727,14 @@ void mJournal(){
 			long timestamp = conseguirTimestamp(pag);
 			u_int16_t key = conseguirKey(pag);
 			char* value = conseguirValue(pag);
+			char* datos = formatearInsert(seg->nombreTabla, timestamp, key, value);
+			char* paquete = empaquetar(1, datos);
+			//enviarALFS el paquete
 
 
 		}
 	}
+	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 }
 
 void mGossip(){
