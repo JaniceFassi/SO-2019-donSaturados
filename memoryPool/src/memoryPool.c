@@ -106,7 +106,9 @@ void* recibirOperacion(void * arg){
 
 
 
+void recibirRespuesta(){
 
+}
 
 
 
@@ -130,6 +132,8 @@ int main(void) {
 	mInsert("ANIMALES", 2, "COCODRILO");
 	mInsert("POSTRES",5,"HELADO");
 	mostrarMemoria();
+	long timestamp = time(NULL);
+	printf("TIMESTAMP; %ld \n", timestamp);
 
 
 
@@ -334,7 +338,7 @@ t_config* read_config() {
 	return paquete;
 }
 
-/*
+
 
  void handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
  	int conexionExitosa;
@@ -348,7 +352,7 @@ t_config* read_config() {
  		recvData(lfsCliente, &maxValue, sizeof(u_int16_t));
  }
 
-*/
+
  char* selectLissandra(char* nombreTabla,u_int16_t key){
 	 char* datos = formatearSelect(nombreTabla, key);
 	 char* paqueteListo = empaquetar(0, datos);
@@ -364,7 +368,6 @@ t_config* read_config() {
 
 	 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 	 char* paqueteListo = empaquetar(1, datos);
-	 printf("Paquete: %s \n", paqueteListo);
 	 //enviar paquete y recibir rta
 
 	 return 0;
@@ -512,7 +515,14 @@ t_config* read_config() {
  	list_remove(listaDeUsos,index);
 
  }
+ bool estaModificada(pagina *pag){
+ 	bool res = false;
+ 	if(pag->modificado == 1){
+ 		res = true;
+ 	}
 
+ 	return res;
+ }
  //---------------------------------------------------------//
  //------------AUXILIARES SECUNDARIAS Y BORRADO------------//
  //-------------------------------------------------------//
@@ -723,14 +733,7 @@ void mDrop(char* nombreTabla){
 	dropLissandra(nombreTabla);
 
 }
-bool estaModificada(pagina *pag){
-	bool res = false;
-	if(pag->modificado == 1){
-		res = true;
-	}
 
-	return res;
-}
 
 void mJournal(){
 
@@ -751,6 +754,7 @@ void mJournal(){
 
 
 		}
+		list_destroy(paginasMod);
 	}
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 }
