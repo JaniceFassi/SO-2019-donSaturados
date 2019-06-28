@@ -660,7 +660,9 @@ void mSelect(char* nombreTabla,u_int16_t key){
 	char* valorPagNueva;
 
 	if(nuevo!= NULL){
+
 		pNueva = buscarPaginaConKey(nuevo,key);
+
 		if(pNueva != NULL){
 			printf("El valor es: %s\n",conseguirValor(pNueva));
 		}

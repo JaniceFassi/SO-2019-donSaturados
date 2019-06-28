@@ -21,10 +21,10 @@
 }op_code;*/
 
 //FUNCIONES API
-void drop(char* nameTable);
-t_list *describe(char* nameTable,int variante);
+int drop(char* nameTable);
+t_list *describe(char* nameTable);
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction);
-char *selectS(char* nameTable, u_int16_t key);
 int insert(char* nameTable, u_int16_t key, char *value, long timestamp);
+char *lSelect(char *nameTable, u_int16_t key);
 
 #endif /* APILFS_H_ */

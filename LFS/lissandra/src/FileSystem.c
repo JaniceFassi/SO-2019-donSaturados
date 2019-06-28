@@ -9,19 +9,18 @@
 
 void levantarDirectorio(){
 	if(crearMontaje()==0){
-		//log_info(logger,"Se ha creado el montaje.");
+		log_info(logger,"Se ha creado el montaje.");
 	}
 
 	if(crearNivelMetadata()==0){
-		//log_info(logger,"Se ha creado el nivel Metadata.");
+		log_info(logger,"Se ha creado el nivel Metadata.");
 	}
 	if(crearNivelTablas()==0){
-		//log_info(logger,"Se ha creado el nivel Tablas.");
+		log_info(logger,"Se ha creado el nivel Tablas.");
 	}
 	if(crearNivelBloques()==0){
-		//log_info(logger,"Se ha creado el nivel Bloques.");
+		log_info(logger,"Se ha creado el nivel Bloques.");
 	}
-
 }
 
 int crearMontaje(){
@@ -55,23 +54,21 @@ int crearMontaje(){
 int crearNivelMetadata(){
 	char *path=nivelMetadata(0);
 	if(folderExist(path)!=1){
-		//log_info(logger,"La carpeta Metadata ya existe.");
+		log_info(logger,"La carpeta Metadata ya existe.");
 	}else{
 		crearCarpeta(path);
 	}
 	free(path);
 	path=nivelMetadata(1);
 	if(archivoValido(path)==0){
-		crearMetaLFS(64,10,"Lissandra");
+		//crearMetaLFS();
+		oldCrearMetaLFS(32,10,"Lissandra");
 	}else{
 		leerMetaLFS();
 	}
 	free(path);
-	path=nivelMetadata(2);
+	cargarBitmap();
 
-	//crear el archivo bitmap
-
-	free(path);
 	return 0;
 }
 
