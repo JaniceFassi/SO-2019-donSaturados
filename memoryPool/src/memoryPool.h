@@ -17,6 +17,7 @@
 #include <string.h>
 #include <time.h>
 
+
 #include<commons/log.h>
 #include<commons/string.h>
 #include<commons/config.h>
@@ -29,11 +30,12 @@
 //VARIABLES GLOBALES
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
-t_list* tablaPaginas;
+t_list* listaDeUsos;
 void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
 int cantMarcos;
+int posicionUltimoUso; // Lo usa el LRU
 
 
 //ESTRUCTURA MEMORIA
@@ -52,15 +54,24 @@ typedef struct {
 	int modificado;
 }pagina;
 
+//ESTRUCTURA LRU
+typedef struct{
+	int nroMarco;
+	int posicionDeUso;
+}posMarcoUsado;
 
 //API
 void mSelect(char* nombreTabla,u_int16_t key);
 void mInsert(char* nombreTabla,u_int16_t key,char* valor);
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
-void mDescribe();
+void mDescribe(char* nombreTabla);
 void mDrop(char* nombreTabla);
 void mJournal();
 void mGossip();
+
+void finalizar();
+void eliminarMarcos();
+void marcoDestroy(marco *unMarco);
 
 //AUXILIARES DE ARRANQUE
 void inicializar();
@@ -68,28 +79,41 @@ t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
 pagina* crearPagina();
+posMarcoUsado* crearPosMarcoUsado(int nroMarco,int pos);
+void agregarSegmento(segmento* nuevo);
 void agregarPagina(segmento *seg, pagina *pag);
+void agregarPosMarcoUsado(posMarcoUsado* nuevo);
 pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
 
 //AUXILIARES PARA LISSANDRA O KERNEL
-char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
-pagina* pedirALissandraPagina(char* nombreTabla,u_int16_t key);
-void pedirleCrearTablaAlissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
-void pedirleALissandraQueBorre(char* nombreTabla);
+char* empaquetar(int operacion, char* paquete);
+char* formatearSelect(char* nombreTabla, u_int16_t key);
+char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* value);
+char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion);
+char* selectLissandra(char* nombreTabla,u_int16_t key); //Devuelve el value
+int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value);
+void createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
+void dropLissandra(char* nombreTabla);
 
 //MANEJAR MEMORIA
 int memoriaLlena();
 int primerMarcoLibre();
 void liberarMarco(int nroMarco);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
-void eliminarPaginas(segmento* nuevo);
+void eliminarSegmento(segmento* nuevo);
 void paginaDestroy(pagina* pagParaDestruir);
 void segmentoDestroy(segmento* segParaDestruir);
+int LRU();
+void agregarListaUsos(int nroMarco);
+void eliminarDeListaUsos(int nroMarcoAEliminar);
+bool estaModificada(pagina *pag);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
 char* conseguirValor(pagina* pNueva);
+long conseguirTimestamp(pagina *pag);
+u_int16_t conseguirKey(pagina *pag);
 void mostrarMemoria();
 
 #endif /* MEMORYPOOL_H_ */
