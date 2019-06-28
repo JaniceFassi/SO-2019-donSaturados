@@ -134,7 +134,7 @@ int main(void) {
 	mostrarMemoria();
 	long timestamp = time(NULL);
 	printf("TIMESTAMP; %ld \n", timestamp);
-
+	mSelect("ANIMALES", 2);
 
 
 	/* PASAR A FUNCIONES SHARED
@@ -368,6 +368,7 @@ t_config* read_config() {
 
 	 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 	 char* paqueteListo = empaquetar(1, datos);
+	 printf("EL PAQUETE ES: %s\n", paqueteListo);
 	 //enviar paquete y recibir rta
 
 	 return 0;
@@ -544,17 +545,17 @@ void mostrarMemoria(){
 }
 
 
-char* conseguirValor(pagina* pNueva){
+void* conseguirValor(pagina* pNueva){
 
-	return (((char*)(memoria + sizeof(long) + sizeof(u_int16_t)))+((pNueva->nroMarco)*offsetMarco));
+	return ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco);
 }
 
-long conseguirTimestamp(pagina *pag){
-	return *(long*)((memoria) + offsetMarco*pag->nroMarco);
+void *conseguirTimestamp(pagina *pag){
+	return ((memoria) + offsetMarco*pag->nroMarco);
 }
 
-u_int16_t conseguirKey(pagina *pag){
-	return *(u_int16_t*)((memoria) + sizeof(long) + offsetMarco*pag->nroMarco);
+void *conseguirKey(pagina *pag){
+	return ((memoria) + sizeof(long) + offsetMarco*pag->nroMarco);
 }
 
 
@@ -675,7 +676,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 		pNueva = buscarPaginaConKey(nuevo,key);
 
 		if(pNueva != NULL){
-			printf("El valor es: %s\n",conseguirValor(pNueva));
+			printf("El valor es: %s\n",(char*)conseguirValor(pNueva));
 		}
 		else{
 			pNueva = crearPagina();
@@ -684,7 +685,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 			agregarPagina(nuevo,pNueva);
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
 			agregarAListaUsos(pNueva->nroMarco);
-		    printf("El valor es: %s\n",conseguirValor(pNueva));
+		    printf("El valor es: %s\n",(char*)conseguirValor(pNueva));
 		}
 	}
 	else{
@@ -747,9 +748,9 @@ void mJournal(){
 
 		for(int j=0; j<(paginasMod->elements_count); j++){
 			pagina *pag = list_get(paginasMod, j);
-			long timestamp = conseguirTimestamp(pag);
-			u_int16_t key = conseguirKey(pag);
-			char* value = conseguirValor(pag);
+			long timestamp = *(long*)conseguirTimestamp(pag);
+			u_int16_t key = *(u_int16_t*)conseguirKey(pag);
+			char* value = (char*)conseguirValor(pag);
 			insertLissandra(nombreSegmento, timestamp, key, value);
 
 

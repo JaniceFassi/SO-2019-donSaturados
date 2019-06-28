@@ -111,9 +111,9 @@ bool estaModificada(pagina *pag);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
-char* conseguirValor(pagina* pNueva);
-long conseguirTimestamp(pagina *pag);
-u_int16_t conseguirKey(pagina *pag);
+void* conseguirValor(pagina* pNueva);
+void* conseguirTimestamp(pagina *pag);
+void* conseguirKey(pagina *pag);
 void mostrarMemoria();
 
 #endif /* MEMORYPOOL_H_ */
