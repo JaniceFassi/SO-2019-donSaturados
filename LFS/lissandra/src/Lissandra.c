@@ -19,54 +19,12 @@ int main(void) {
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
 	//alarm(configLissandra->tiempoDump);
-	//alarm(5);
-    //signal(SIGALRM, funcionSenial);
-
-	// ***************PARA USAR LA FUNCION PURA****************/
-    create("P", "SC", 3, 10000);
-    //dump();
-    dump();
-//	lSelect("P", 3);							//Ningun valor
-	insert("P", 3, "Nemo", 10);
-	lSelect("P", 3);							//Nemo
-	dump();
-	insert("P", 3, "Toy Story",11);
-	lSelect("P", 3);							//Toy Story
-	insert("P", 3, "Harry Potter",10);
-	lSelect("P", 3);							//Toy Story
-	insert("P", 3, "Bichos",13);
-	insert("P", 3, "Dory",12);
-	char *valorcito=lSelect("P",3);				//Dory
-	free(valorcito);
-	drop("P");
-/*	//compactar("P");
-	//insert("P", 3, "Monsters inc.",10);
-	//insert("PELICULAS", 10, "Harry Potter",16);			// 0
-	//insert("PELICULAS", 10, "La cenicienta",10);			// 0
-	//insert("PELICULAS", 10, "Monsters inc.",10);			// 0
-	//char *v=lSelect("PELICULAS",163);
-	//free(v);
-	//dump();
-/*
-	lSelect("PELICULAS", 163);					// Nemo
-	insert("PELICULAS", 13535, "Titanic",20);			// 0
-	lSelect("PELICULAS", 13535);					// Titanic
-	insert("PELICULAS", 922, "Ratatouille",18);			// 2
-	insert("PELICULAS", 4829,"Aladdin",10);				// 5
-	insert("PELICULAS", 2516, "Godzilla",1300);			// 1
-	insert("PELICULAS", 163, "Buscando a dory",1300);	// 1
-	lSelect("PELICULAS", 4829);					// Aladdin
-	insert("PELICULAS", 3671, "Avatar",1000);			// 1
-	dump();
-	lSelect("PELICULAS", 163);					// Buscando a dory
-	lSelect("PELICULAS", 3671);					// Avatar
-*/
-	/*************************************************************/
+	alarm(100);
+    signal(SIGALRM, funcionSenial);
 
 	/****************PARA USAR LA CONSOLA******************/
 
 	console();
-	//free(valor);
 
 	/****************PARA USAR CONEXIONES******************/
 
@@ -217,7 +175,6 @@ void exec_api(op_code mode,u_int16_t sock){
 		log_info(logger,"\nOTRO");
 		break;
 
-
 	}
 	free(buffer);
 	liberarSubstrings(subCadena);
@@ -352,10 +309,7 @@ void console(){
 			if(subStrings[1]==NULL){
 				log_info(logger,"No se ingreso el nombre de la tabla.");
 			}else{
-				if(drop(subStrings[1])==0){
-					log_info(logger,"Se elimino la tabla %s.",subStrings[1]);
-				}else
-				{
+				if(drop(subStrings[1])!=0){
 					log_info(logger,"No se pudo eliminar correctamente la tabla.");
 				}
 			}

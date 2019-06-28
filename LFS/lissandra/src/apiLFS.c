@@ -73,30 +73,34 @@ char *lSelect(char *nameTable, u_int16_t key){
 	int cantDumps=contarArchivos(nameTable, 1); //PREGUNTAR DILEMA
 	int i=0;
 	while(i<cantDumps){
-		path=nivelParticion(nameTable,cantDumps-1, 1);
+		path=nivelParticion(nameTable,i, 1);
 		escanearArchivo(path, obtenidos);
 		free(path);
 		i++;
 	}
 	//Escanear los .tmpc si es necesario (modo 2)
 
-	int cantTmpc=contarArchivos(nameTable, 2);
+	int cantTmpc=contarArchivos(nameTable ,2);
 	i=0;
 	while(i<cantTmpc){
-		path=nivelParticion(nameTable,cantTmpc-1, 1);
+		path=nivelParticion(nameTable,i, 1);
 		escanearArchivo(path, obtenidos);
 		free(path);
 		i++;
 	}
 
 	//Escanear la memtable
-	t_list *aux=list_create();
+	t_list *aux;
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name_in(nameTable, memtable);
 		if(encontrada!=NULL){
 			aux=filtrearPorKey(encontrada->registros,key);
 			list_add_all(aux,obtenidos);
 		}
+	}else
+	{
+		aux=list_create();
+		list_add_all(aux,obtenidos);
 	}
 	//Comparar los timestamps
 	if(!list_is_empty(aux)){
@@ -110,8 +114,6 @@ char *lSelect(char *nameTable, u_int16_t key){
 			log_info(logger, valor);
 			//FALTA LIBERAR LA FILTRADA
 			list_destroy(filtrada);
-			//FALTA LIBERAR LA LISTA DE OBTENIDOS Y TODOS LOS REGISTROS DE AHI DENTRO
-			list_destroy_and_destroy_elements(obtenidos,(void *)destroyRegistry);
 		}else{
 			log_info(logger,"No se ha encontrado el valor.");
 		}
@@ -123,6 +125,8 @@ char *lSelect(char *nameTable, u_int16_t key){
 	borrarMetadataTabla(metadata);
 	//FALTA LIBERAR LA LISTA AUXILIAR
 	list_destroy(aux);
+	//FALTA LIBERAR LA LISTA DE OBTENIDOS Y TODOS LOS REGISTROS DE AHI DENTRO
+	list_destroy_and_destroy_elements(obtenidos,(void *)destroyRegistry);
 	return valor;
 }
 
@@ -167,9 +171,8 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		return 1;
 	}
 	list_add(directorio,nombre);
-	free(path);
 	log_info(logger,"Se ha creado la tabla %s.",nombre);
-	free(nombre);
+	free(path);
 	return 0;
 }
 
@@ -247,17 +250,19 @@ int drop(char* nameTable){
 		}
 		 //eliminar archivo metadata
 		path=nivelUnaTabla(nameTable,1);
-		remove(path);
+		eliminarArchivo(path);
 		free(path);
 		//aumentar el semaforo contador
 
 		//sacar la tabla del directorio
 		int index=calcularIndexTabPorNombre(nameTable,directorio);			//	NO CALCULA BIEN EL INDEX
-		list_remove(directorio,index);
+		char *tabla=list_remove(directorio,index);
+		free(tabla);
 
 		//Eliminar carpeta
 		borrarCarpeta(pathFolder);
 		free(pathFolder);
+		log_info(logger,"Se ha eliminado la tabla %s",nameTable);
 
 	}else{
 		log_error(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);

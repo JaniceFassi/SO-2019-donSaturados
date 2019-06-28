@@ -74,7 +74,7 @@ char *cadenaDeRegistros(t_list *lista){
 			vacio++;
 		}else{
 			buffer=ponerSeparador(buffer);
-			buffer=realloc(buffer,strlen(buffer)+1);
+			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
 			strcat(buffer,linea);
 		}
 		free(linea);
@@ -553,7 +553,7 @@ void crearConfig(){
 
 void escribirArchB(char *path,char *buffer){
 	FILE *bloque=fopen(path,"wb");
-	fwrite(buffer,strlen(buffer)+1,sizeof(char),bloque);
+	fwrite(buffer,1,strlen(buffer)*sizeof(char)+1,bloque);
 	fflush(bloque);
 	fclose(bloque);
 }
@@ -561,8 +561,8 @@ void escribirArchB(char *path,char *buffer){
 char *leerArchBinario(char *path,int tamanio){
 	FILE *arch;
 	arch=fopen(path,"rb");
-	char *datos=malloc(tamanio+1);
-	fread(datos, tamanio, sizeof(char), arch);
+	char *datos=malloc(tamanio);
+	fread(datos, 1, tamanio*sizeof(char)+1, arch);
 	fclose(arch);
 	return datos;
 }
@@ -620,7 +620,7 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 		//Registry *reg=list_get(lista,0);
 		//log_info(logger,"%s",reg->value);
 		buffer=cadenaDeRegistros(lista);
-		largo=strlen(buffer)+1;
+		largo=strlen(buffer);
 		//calcular cant bloques
 		bloquesNecesarios=largo/metaLFS->tamBloques;
 		if(largo%metaLFS->tamBloques!=0){
@@ -988,14 +988,16 @@ int calcularIndexTab(Tabla *tabla,t_list *lista){
 
 int calcularIndexTabPorNombre(char *name,t_list *lista){
 	int index=0;
+	char *nombre;
 	bool encontrar(char *comparar){
+
 		return string_equals_ignore_case(comparar,name);
 		index++;
 	}
-	list_iterate(lista, (void*) encontrar);
-	//free(name);
+	list_iterate(directorio, (void*) encontrar);
 	return index;
 }
+
 /***********************************************************************************************/
 //FUNCIONES QUE LIBERAN MEMORIA
 
