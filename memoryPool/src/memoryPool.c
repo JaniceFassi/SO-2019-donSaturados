@@ -125,6 +125,7 @@ int main(void) {
 	mostrarMemoria();
 
 	mJournal();
+	sleep(2);
 	mInsert("ANIMALES", 1, "PERRO");
 	mInsert("ANIMALES", 2, "COCODRILO");
 	mInsert("POSTRES",5,"HELADO");
@@ -333,7 +334,7 @@ t_config* read_config() {
 	return paquete;
 }
 
-
+/*
 
  void handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
  	int conexionExitosa;
@@ -347,7 +348,7 @@ t_config* read_config() {
  		recvData(lfsCliente, &maxValue, sizeof(u_int16_t));
  }
 
-
+*/
  char* selectLissandra(char* nombreTabla,u_int16_t key){
 	 char* datos = formatearSelect(nombreTabla, key);
 	 char* paqueteListo = empaquetar(0, datos);
@@ -536,14 +537,14 @@ void mostrarMemoria(){
 char* conseguirValor(pagina* pNueva){
 
 	return (((char*)(memoria + sizeof(long) + sizeof(u_int16_t)))+((pNueva->nroMarco)*offsetMarco));
-}//Consigue el value de una pagina especifica
+}
 
 long conseguirTimestamp(pagina *pag){
-	return (long*)(memoria + offsetMarco*pag->nroMarco);
+	return *(long*)((memoria) + offsetMarco*pag->nroMarco);
 }
 
 u_int16_t conseguirKey(pagina *pag){
-	return (u_int16_t*)(memoria + sizeof(long) + offsetMarco*pag->nroMarco);
+	return *(u_int16_t*)((memoria) + sizeof(long) + offsetMarco*pag->nroMarco);
 }
 
 
