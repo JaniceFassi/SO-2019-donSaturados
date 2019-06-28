@@ -19,22 +19,22 @@ int main(void) {
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
 	//alarm(configLissandra->tiempoDump);
-	alarm(100);
-    signal(SIGALRM, funcionSenial);
+	//alarm(100);
+    //signal(SIGALRM, funcionSenial);
 
 	/****************PARA USAR LA CONSOLA******************/
 
-	console();
+	//console();
 
 	/****************PARA USAR CONEXIONES******************/
 
-	//connectMemory(&socket_client);
+	/*connectMemory(&socket_client);
 
 	int i=0;
 	int recibidos=0;
 	int header=0;
 
-	/*while(i<2){
+	while(i<3){
 	char *buffer=malloc(2);
 	recibidos=recvData(socket_client,buffer,1);
 	header=atoi(buffer);
@@ -42,6 +42,21 @@ int main(void) {
 	free(buffer);
 	i++;
 	}*/
+
+	/****************PARA USAR FUNCIONES PURAS******************/
+
+	create("TAB","SC",3,3000);
+	insert("TAB",0,"gato",10);
+	insert("TAB",0,"perro",11);
+	dump();
+	insert("TAB",0,"pez",12);
+	dump();
+	insert("TAB",0,"pato",10);
+//	compactar("TAB");
+	//insert("TAB",0,"pollo",4);
+	char *r=lSelect("TAB",0);
+	free(r);
+
 
 	theEnd();
 	return EXIT_SUCCESS;
@@ -76,8 +91,13 @@ char* recibirDeMemoria(u_int16_t sock){
 	char *tam=malloc(3);
 	char * buffer;
 	recvData(sock,tam,2);
+	int tamanio=atoi(tam);
 
-	buffer=malloc(atoi(tam));
+	if(tamanio==0){
+		free(tam);
+		return NULL;
+	}
+	buffer=malloc(tamanio);
 	recvData(sock,buffer,((atoi(tam))));
 
 	free(tam);
@@ -217,7 +237,8 @@ void exec_api(op_code mode,u_int16_t sock){
 			free(paquete);
 			free(canTablas);
 		}
-
+		sendData(sock,respuesta,strlen(respuesta));
+		free(respuesta);
 		break;
 
 	case 4:
@@ -234,12 +255,12 @@ void exec_api(op_code mode,u_int16_t sock){
 		break;
 
 	default:
-		log_info(logger,"\nOTRO");
+		log_info(logger,"\nAPI INVALIDA");
 		break;
 
 	}
 	free(buffer);
-	liberarSubstrings(subCadena);
+	liberarSubstrings(subCadena);			//NO SIEMPRE HAY QUE LIBERAR SUBSTRINGS
 }
 
 void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
@@ -265,6 +286,9 @@ void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
 		}else{
 			if(configLissandra->tamValue<100){
 				maxValue=string_from_format("0%i",configLissandra->tamValue);
+			}
+			else{
+			maxValue=string_from_format("%i",configLissandra->tamValue);
 			}
 		}
 		sendData(*socket_client,maxValue,3);

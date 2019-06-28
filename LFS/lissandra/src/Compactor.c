@@ -7,16 +7,20 @@
 
 #include "Compactor.h"
 int dump(){
+
+	//ACA IRIA EL WAIT MUTEX DE LA MEMTABLE
 	t_list *dump=list_duplicate(memtable);
 	list_clean(memtable);
+	//ACA IRIA EL SIGNAL MUTEX DE LA MEMTABLE
+
 	int cant=list_size(dump);
 	while(cant>0){
 		Tabla *dumpTabla=list_get(dump,cant-1);
 		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
-			//Calcular el tamaño de dumpTabla->registros
 			int cantTmp=contarArchivos(dumpTabla->nombre, 1);
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
+
 			if(escribirParticion(ruta,dumpTabla->registros,0)==1){
 				log_error(logger,"error al escribir el dump");
 				free(ruta);
@@ -44,9 +48,9 @@ void compactar(char *nombreTabla){
 	}
 	free(path);
 	int cantTemp=contarArchivos(nombreTabla,1);
-	//cambiar nombre de temp a tempc
+	//Cambiar nombre de tmp a tmpc
 	if(cantTemp==0){
-		log_info(logger,"No hay datos para la compactacion de %s",nombreTabla);
+		log_info(logger,"No hay datos para la compactacion de %s.",nombreTabla);
 		return;
 	}
 	int contador=0;
@@ -54,7 +58,7 @@ void compactar(char *nombreTabla){
 		char *arch=nivelParticion(nombreTabla,contador,1);
 		//semaforos
 		if(renombrarTemp_TempC(arch)==1){
-			log_error(logger,"No se puede hacer la compactacion por que no se pudo renombrar");
+			log_error(logger,"No se puede hacer la compactacion porque no se pudo renombrar los temporales.");
 			free(arch);
 			return;
 		}

@@ -214,7 +214,7 @@ t_list *deChar_Registros(char *buffer){
 		Registry *nuevo=createRegistry(key,substring[2], time);
 		list_add(registros,nuevo);
 		free(buffer);
-		free(substring[0]);    //LO HICE ASI PORQUE NO SE COMO MOD LA FUNCION LIB SUBSTRINGS
+		free(substring[0]);
 		free(substring[1]);
 		free(substring[2]);
 		seguir=0;
@@ -571,18 +571,17 @@ int archivoValido(char *path){				//Devuelve 0 esta vacio o si no existe, si no 
 	FILE *archB;
 	archB= fopen(path, "rb");
 	if(archB!=NULL){
-		size_t t = 1000;
-		char *buffer=NULL;
-		getline(&buffer,&t,archB);
-		if(strlen(buffer)>0){
-			free(buffer);
-			fclose(archB); //NO SE SI LIBERE BIEN
+		fseek(archB, 0, SEEK_END);
+		if (ftell(archB) == 0 ){
+			fclose(archB);
+			return 0;
+		}
+		else{
+			fclose(archB);
 			return 1;
 		}
-		free(buffer);
-		fclose(archB);
-		return 0;
-	}else{
+	}
+	else {
 		return 0;
 	}
 }
@@ -607,28 +606,28 @@ int contarArchivos(char *tabla, int modo){		//0 .bin, 1 .tmp, 2 .tmpc
 int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 	char *buffer=NULL;
 	int largo;
-	//calcular cant bloques
 	int bloquesNecesarios;
+
 	if(list_is_empty(lista)){
 		if(modo==0){
-			log_info(logger,"No hay nada para escrbir");
+			log_info(logger,"No hay nada para escrbir.");
 			return 0;
 		}
 		largo=0;
 		bloquesNecesarios=1;
 	}else{
-		//Registry *reg=list_get(lista,0);
-		//log_info(logger,"%s",reg->value);
 		buffer=cadenaDeRegistros(lista);
 		largo=strlen(buffer);
-		//calcular cant bloques
+
+		//Calcular cant bloques
 		bloquesNecesarios=largo/metaLFS->tamBloques;
 		if(largo%metaLFS->tamBloques!=0){
 			bloquesNecesarios++;
 		}
 	}
 	char **arrayBlock=malloc(sizeof(int)*bloquesNecesarios);
-	//pedir x cant bloques y guardarlas en un char
+
+	//Pedir x cant bloques y guardarlas en un char
 	if(pedirBloques(bloquesNecesarios,arrayBlock)==1){
 		log_error(logger,"error al pedir los bloques necesarios");
 		free(buffer);
@@ -661,8 +660,9 @@ int renombrarTemp_TempC(char *path){
 	char *pathC=string_duplicate(path);
 	pathC=realloc(pathC,strlen(pathC)+2);
 	strcat(pathC,"c");
+
 	if(rename(path,pathC)!=0){
-		log_error(logger,"No se pudo renombrar el archivo");
+		log_error(logger,"No se pudo renombrar el archivo.");
 		free(pathC);
 		return 1;
 	}
