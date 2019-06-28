@@ -83,7 +83,36 @@ char* recibirDeMemoria(u_int16_t sock){
 	free(tam);
 	return buffer;
 }
-
+char *empaquetarDescribe(t_list *lista){
+	char *paquete=NULL;
+	void concatDescribe(metaTabla *describe){
+		char *linea=string_from_format("%s;%s;%i;%ld",describe->nombre,describe->consistency,describe->partitions,describe->compaction_time);
+		char *aux;
+			int tam=strlen(linea)+1;
+			if(tam<10){
+				aux=string_from_format("00%i%s",tam,linea);
+			}else{
+				if(tam<100){
+					aux=string_from_format("0%i%s",tam,linea);
+				}else{
+					aux=string_from_format("%i%s",tam,linea);
+				}
+			}
+		if(paquete==NULL){
+			paquete=string_from_format("%s",aux);
+		}else{
+			char *viejo=malloc(strlen(paquete)+1);
+			strcpy(viejo,paquete);
+			free(paquete);
+			paquete=string_from_format("%s;%s",viejo,aux);
+			free(viejo);
+		}
+		free(aux);
+		free(linea);
+	}
+	list_iterate(lista,(void*)concatDescribe);
+	return paquete;
+}
 void exec_api(op_code mode,u_int16_t sock){
 
 	char *buffer;
@@ -109,6 +138,8 @@ void exec_api(op_code mode,u_int16_t sock){
 			}else{
 				if(configLissandra->tamValue<100){
 					respuesta=string_from_format("000%i%s",strlen(valor),valor);
+				}else{
+					respuesta=string_from_format("00%i%s",strlen(valor),valor);
 				}
 			}
 		}
@@ -152,9 +183,40 @@ void exec_api(op_code mode,u_int16_t sock){
 	case 3:
 		log_info(logger,"\nDESCRIBE");	//orden: tabla
 		buffer=recibirDeMemoria(sock);
-
-		//completar
-
+		t_list *tabla;
+		if(buffer==NULL){
+			tabla=describe(NULL);
+		}else{
+			tabla=describe(buffer);
+		}
+		if(list_is_empty(tabla)){
+			respuesta=string_from_format("31");
+		}else{
+			char *paquete=empaquetarDescribe(tabla);
+			int cantT=list_size(tabla);
+			char *canTablas;
+			if(cantT<10){
+				canTablas=string_from_format("0%i",cantT);
+			}else{
+				canTablas=string_itoa(cantT);
+			}
+			int tamTotal=strlen(paquete)+1+strlen(canTablas);
+			if(tamTotal<10){
+				respuesta=string_from_format("30000%i%s%s",tamTotal,canTablas,paquete);
+			}else{
+				if(tamTotal<100){
+					respuesta=string_from_format("3000%i%s%s",tamTotal,canTablas,paquete);
+				}else{
+					if(tamTotal<1000){
+						respuesta=string_from_format("300%i%s%s",tamTotal,canTablas,paquete);
+					}else{
+						respuesta=string_from_format("30%i%s%s",tamTotal,canTablas,paquete);
+					}
+				}
+			}
+			free(paquete);
+			free(canTablas);
+		}
 
 		break;
 
