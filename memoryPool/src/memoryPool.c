@@ -52,19 +52,19 @@ void* recibirOperacion(void * arg){
 				case 0:
 					nombreTabla = desempaquetado[0];
 					key = atoi(desempaquetado[1]);
-					//mSelect(nombreTabla, key);
-					printf("select\n");
+					mSelect(nombreTabla, key);
 					break;
 
 				case 1:
+					//acá hay que ver porque lfs sí manda el timestamp pero kernel no
+					//quizás con el id de cliente?
 					nombreTabla = desempaquetado[0];
-					timestamp = atol(desempaquetado[1]);
-					key = atoi(desempaquetado[2]);
-					value = desempaquetado[3];
-
-					//mInsert(nombreTabla, key, value);
-					printf("insert\n");
+					//timestamp = atol(desempaquetado[1]);
+					key = atoi(desempaquetado[1]);
+					value = desempaquetado[2];
+					mInsert(nombreTabla, key, value);
 					break;
+
 				case 2:
 					nombreTabla = desempaquetado[0];
 					consistencia = desempaquetado[1];
@@ -83,8 +83,7 @@ void* recibirOperacion(void * arg){
 
 				case 4:
 					nombreTabla = desempaquetado[0];
-					//mDrop(nombreTabla);
-					printf("drop\n");
+					mDrop(nombreTabla);
 					break;
 
 				case 5:
@@ -114,6 +113,66 @@ int main(void) {
 
 
 	inicializar();
+	segmento *animales = crearSegmento("ANIMALES");
+	segmento *postres = crearSegmento("POSTRES");
+	list_add(tablaSegmentos, animales);
+	list_add(tablaSegmentos, postres);
+
+	mInsert("ANIMALES", 1, "GATO");
+	mInsert("ANIMALES", 2, "MONO");
+	mInsert("ANIMALES", 3, "CABALLO");
+	mInsert("ANIMALES",4,"LOBO MARINO");
+	mInsert("POSTRES",5,"TORTA");
+	mostrarMemoria();
+
+	struct sockaddr_in direccionServidor;
+	direccionServidor.sin_family=AF_INET;
+	direccionServidor.sin_addr.s_addr = inet_addr("127.0.0.1");
+	direccionServidor.sin_port=htons(9500);
+
+	int servidor = socket(AF_INET,SOCK_STREAM,0);
+
+		if(servidor==-1){
+				perror("Error al crear socket\n");
+				return 1;
+			}
+
+		int activado=1;
+
+		if(setsockopt(servidor, SOL_SOCKET, SO_REUSEADDR, (void*)&activado, (socklen_t)sizeof(activado))==-1){
+				perror("Error al setear el socket\n");
+				return 1;
+			}
+
+			//INICIO DEL SERVIDOR
+		if(bind(servidor, (void*) &direccionServidor, sizeof(direccionServidor))!=0){
+				perror("Fallo el bind\n");
+				return 1;
+			}
+
+
+		listen(servidor,100);
+		printf("Servidor escuchando\n");
+
+		struct sockaddr_in kernelCliente;
+
+		unsigned int tamanioDireccion=sizeof(kernelCliente);
+
+		for(int i =0; i <1; i++){
+
+		int cliente = accept(servidor, (void*) &kernelCliente, (socklen_t*)&tamanioDireccion);
+		if(cliente<0){
+				perror("error en accept");
+			}
+
+		printf("Se conecto un cliente\n");
+
+
+		pthread_t unHilo;
+		pthread_create(&unHilo, NULL, recibirOperacion, &cliente);
+		pthread_join(unHilo, NULL);
+
+		}
 
 
 
