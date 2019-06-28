@@ -25,14 +25,14 @@
 	mSelect("ANIMALES",2);
 	mSelect("POSTRES",5);
 	printf("\n");
-	//printf("Ahora probamos DROP: \n");
+	printf("Ahora probamos DROP: \n");
 
-	//mDrop("ANIMALES");
-	//mInsert("POSTRES",10,"HELADO");
-	//mInsert("POSTRES",22,"CHOCOLATE");
-	//mInsert("COLORES", 12, "ROJO");
-	//mostrarMemoria();
-	//printf("Estado memoria: %i",memoriaLlena());
+	mDrop("ANIMALES");
+	mInsert("POSTRES",10,"HELADO");
+	mInsert("POSTRES",22,"CHOCOLATE");
+	mInsert("COLORES", 12, "ROJO");
+	mostrarMemoria();
+	printf("Estado memoria: %i",memoriaLlena());
 
 
 

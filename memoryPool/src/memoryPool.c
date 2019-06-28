@@ -14,33 +14,40 @@ void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
 
 	char* buffer = malloc(sizeof(char));
-	//recv(cli, buffer, sizeof(char), NULL);
+	recv(cli, buffer, sizeof(char), NULL);
 	//1byteop
 	//2bytes tamanioop
 	//linea con ;
 
 	int operacion = atoi(buffer);
-	char* desempaquetado;
+	printf("Operacion %d \n", operacion);
+
+	char** desempaquetado;
 	if(operacion !=5 && operacion !=6){
-		char* tamanioPaq = malloc(sizeof(char)*3);
+		char* tamanioPaq = malloc(sizeof(char)*2);
 
-		recv(cli,tamanioPaq, sizeof(char)*3, NULL);
+		recv(cli,tamanioPaq, sizeof(char)*2, NULL);
+		printf("Tamanio paquete %s \n", tamanioPaq);
 
-		char* paquete = malloc(atoi(tamanioPaq));
+		int tamanio = atoi(tamanioPaq);
+		char* paquete = malloc(tamanio);
 
-		recv(cli, paquete, sizeof(paquete), NULL);
+		recv(cli, paquete, tamanio, NULL);
+		printf("Paquete %s \n", paquete);
 
-		desempaquetado = string_n_split(paquete, 4, ";");
+
+		desempaquetado = string_n_split(paquete, 5, ";");
 
 	}
 	char* nombreTabla;
 	u_int16_t key;
 	char* value;
+	long timestamp;
 	char* consistencia;
 	int particiones;
 	long tiempoCompactacion;
 
-	//printf("hola soy un hilo \n");
+
 	switch (operacion) {
 				case 0:
 					nombreTabla = desempaquetado[0];
@@ -51,8 +58,10 @@ void* recibirOperacion(void * arg){
 
 				case 1:
 					nombreTabla = desempaquetado[0];
-					key = atoi(desempaquetado[1]);
-					value = desempaquetado[2];
+					timestamp = atol(desempaquetado[1]);
+					key = atoi(desempaquetado[2]);
+					value = desempaquetado[3];
+
 					//mInsert(nombreTabla, key, value);
 					printf("insert\n");
 					break;
@@ -94,6 +103,7 @@ void* recibirOperacion(void * arg){
 
 	return NULL;
 }
+
 
 
 
@@ -214,26 +224,39 @@ t_config* read_config() {
 	return log_create("memoryPool.log", "memoryPool", 1, LOG_LEVEL_INFO);
 }
 
-////AUX PARA LISSANDRA O KERNEL////
+
+
+ //-----------------------------------------------------------//
+ //------------------AUXILIARES DE LFS/KERNEL----------------//
+ //---------------------------------------------------------//
+
 
  char* empaquetar(int operacion, char* paquete){
- 	char* msj;
+	 char* empaquetar(int operacion, char* paquete){
+	 char* msj;
+	 int tamanioPaquete = strlen(paquete)+1;
+	 char* tamanioFormateado;
+	 if(tamanioPaquete>10){
+	 	tamanioFormateado = string_from_format("%i%i", operacion, tamanioPaquete);
+	 }else{
+	 	tamanioFormateado = string_from_format("%i0%i", operacion, tamanioPaquete);
+	 }
 
- 	msj = string_from_format("%s%s%s", string_itoa(operacion), string_itoa(strlen(paquete)+1), paquete);
-
- 	return msj;
+	 msj = string_from_format("%s%s", tamanioFormateado, paquete);
+ 	 return msj;
+	 }
  }
 
-char* formatearSelect(char* nombreTabla, u_int16_t key){
+ char* formatearSelect(char* nombreTabla, u_int16_t key){
 	char* paquete = string_from_format("%s;%s", nombreTabla, string_itoa(key));
 	return paquete;
 }
-char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* value){
+ char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* value){
 	char* paquete = string_from_format("%s;%s;%s;%s", nombreTabla, string_itoa(timestamp), string_itoa(key), value);
 	return paquete;
 }
 
-char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion){
+ char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion){
 	char* paquete= string_from_format("%s;%s;%s;%s", nombreTabla, consistencia, string_itoa(particiones), string_itoa(tiempoCompactacion));
 	return paquete;
 }
@@ -255,14 +278,35 @@ char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, lo
 
 
 
- void pedirleCrearTablaAlissandra(char* nombretabla,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion){}
+ void pedirleCrearTablaAlissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
+	 char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
+	 char* paqueteListo = empaquetar(2, datos);
+	 //enviar paqueteListo
+	 //recibir rta
+ }
 
- void pedirleALissandraQueBorre(char* nombreTabla){}
+ void pedirleALissandraQueBorre(char* nombreTabla){
+	 char* paqueteListo = empaquetar(4, nombreTabla);
+	 //enviar paqueteListo
+	 //recibir rta
+ }
 
- char* pedirALissandraPagina(char* nombreTabla,u_int16_t key){}
+ char* pedirALissandraPagina(char* nombreTabla,u_int16_t key){
+	 char* datos = formatearSelect(nombreTabla, key);
+	 char* paqueteListo = empaquetar(0, datos);
+	 //enviar
+	 //recibir value
+	 //insertar el value
+	 //responder a kernel
+	 char* valueRecibido;
+	 return valueRecibido;
+ }
 
 
- ////MANEJAR MEMORIA////
+ //---------------------------------------------------------//
+ //------------------MANEJO DE MEMORIA---------------------//
+ //-------------------------------------------------------//
+
 
  int memoriaLlena(){ //Devuelve 0 si esta llena
 
@@ -313,32 +357,10 @@ char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, lo
  	return posMarco;
  }
 
- void eliminarSegmento(segmento* nuevo){
-
- 	int index = conseguirIndexSeg(nuevo); //se usa para el free
-
- 	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
-
-
- }
 
  void liberarMarco(int nroMarcoALiberar){
  	marco* nuevo = list_get(tablaMarcos,nroMarcoALiberar);
  	nuevo->estaLibre = 0;
- }
-
- void paginaDestroy(pagina* pagParaDestruir){
-	if((pagParaDestruir->modificado)==0){
-	  	eliminarDeListaUsos(pagParaDestruir->nroMarco);
-	 }
-	liberarMarco(pagParaDestruir->nroMarco);
- 	free(pagParaDestruir);
- }
-
- void segmentoDestroy(segmento* segParaDestruir){
-    list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
-	free(segParaDestruir->nombreTabla);
- 	free(segParaDestruir);
  }
 
 
@@ -410,7 +432,10 @@ char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, lo
 
  }
 
- ////AUXILIARES SECUNDARIAS////
+ //---------------------------------------------------------//
+ //------------AUXILIARES SECUNDARIAS Y BORRADO------------//
+ //-------------------------------------------------------//
+
 
 void mostrarMemoria(){
 	int desplazador=0 ,i=0;
@@ -450,6 +475,30 @@ int conseguirIndexSeg(segmento* nuevo){
 	}
 	return index;
 }
+
+void eliminarSegmento(segmento* nuevo){
+
+	int index = conseguirIndexSeg(nuevo); //se usa para el free
+
+	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
+
+
+}
+
+void paginaDestroy(pagina* pagParaDestruir){
+	if((pagParaDestruir->modificado)==0){
+	  	eliminarDeListaUsos(pagParaDestruir->nroMarco);
+	 }
+	liberarMarco(pagParaDestruir->nroMarco);
+	free(pagParaDestruir);
+}
+
+void segmentoDestroy(segmento* segParaDestruir){
+   list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
+	free(segParaDestruir->nombreTabla);
+	free(segParaDestruir);
+}
+
 
 void eliminarMarcos(){
 		list_destroy_and_destroy_elements(tablaMarcos,(void*)marcoDestroy);
