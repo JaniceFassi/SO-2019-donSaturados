@@ -91,9 +91,10 @@ char* empaquetar(int operacion, char* paquete);
 char* formatearSelect(char* nombreTabla, u_int16_t key);
 char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* value);
 char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion);
-char* pedirALissandraPagina(char* nombreTabla,u_int16_t key); //Devuelve el value
-void pedirleCrearTablaAlissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
-void pedirleALissandraQueBorre(char* nombreTabla);
+char* selectLissandra(char* nombreTabla,u_int16_t key); //Devuelve el value
+int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value);
+void createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
+void dropLissandra(char* nombreTabla);
 
 //MANEJAR MEMORIA
 int memoriaLlena();

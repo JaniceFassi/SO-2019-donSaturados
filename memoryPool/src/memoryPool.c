@@ -16,7 +16,7 @@ void* recibirOperacion(void * arg){
 	char* buffer = malloc(sizeof(char));
 	recv(cli, buffer, sizeof(char), NULL);
 	//1byteop
-	//2bytes tamanioop
+	//3bytes tamanioop
 	//linea con ;
 
 	int operacion = atoi(buffer);
@@ -26,7 +26,7 @@ void* recibirOperacion(void * arg){
 	if(operacion !=5 && operacion !=6){
 		char* tamanioPaq = malloc(sizeof(char)*2);
 
-		recv(cli,tamanioPaq, sizeof(char)*2, NULL);
+		recv(cli,tamanioPaq, sizeof(char)*3, NULL);
 		printf("Tamanio paquete %s \n", tamanioPaq);
 
 		int tamanio = atoi(tamanioPaq);
@@ -121,10 +121,14 @@ int main(void) {
 
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "MONO");
-	mInsert("POSTRES",5,"TORTA");
+	mInsert("POSTRES",5,"FLAN");
 	mostrarMemoria();
 
-
+	mJournal();
+	mInsert("ANIMALES", 1, "PERRO");
+	mInsert("ANIMALES", 2, "COCODRILO");
+	mInsert("POSTRES",5,"HELADO");
+	mostrarMemoria();
 
 
 
@@ -295,19 +299,24 @@ t_config* read_config() {
 
 
  char* empaquetar(int operacion, char* paquete){
-	 char* empaquetar(int operacion, char* paquete){
+
 	 char* msj;
 	 int tamanioPaquete = strlen(paquete)+1;
 	 char* tamanioFormateado;
-	 if(tamanioPaquete>10){
-	 	tamanioFormateado = string_from_format("%i%i", operacion, tamanioPaquete);
-	 }else{
+	 if(tamanioPaquete<10){
+		 	tamanioFormateado = string_from_format("%i00%i", operacion, tamanioPaquete);
+		 }
+	 if(tamanioPaquete>=10 && tamanioPaquete<100){
 	 	tamanioFormateado = string_from_format("%i0%i", operacion, tamanioPaquete);
+	 }
+	 if(tamanioPaquete>=100){
+		tamanioFormateado = string_from_format("%i%i", operacion, tamanioPaquete);
+
 	 }
 
 	 msj = string_from_format("%s%s", tamanioFormateado, paquete);
  	 return msj;
-	 }
+
  }
 
  char* formatearSelect(char* nombreTabla, u_int16_t key){
@@ -339,22 +348,7 @@ t_config* read_config() {
  }
 
 
-
-
- void pedirleCrearTablaAlissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
-	 char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
-	 char* paqueteListo = empaquetar(2, datos);
-	 //enviar paqueteListo
-	 //recibir rta
- }
-
- void pedirleALissandraQueBorre(char* nombreTabla){
-	 char* paqueteListo = empaquetar(4, nombreTabla);
-	 //enviar paqueteListo
-	 //recibir rta
- }
-
- char* pedirALissandraPagina(char* nombreTabla,u_int16_t key){
+ char* selectLissandra(char* nombreTabla,u_int16_t key){
 	 char* datos = formatearSelect(nombreTabla, key);
 	 char* paqueteListo = empaquetar(0, datos);
 	 //enviar
@@ -363,6 +357,29 @@ t_config* read_config() {
 	 //responder a kernel
 	 char* valueRecibido;
 	 return valueRecibido;
+ }
+
+ int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value){
+
+	 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
+	 char* paqueteListo = empaquetar(1, datos);
+	 printf("Paquete: %s \n", paqueteListo);
+	 //enviar paquete y recibir rta
+
+	 return 0;
+ }
+
+ void createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
+	 char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
+	 char* paqueteListo = empaquetar(2, datos);
+	 //enviar paqueteListo
+	 //recibir rta
+ }
+
+ void dropLissandra(char* nombreTabla){
+	 char* paqueteListo = empaquetar(4, nombreTabla);
+	 //enviar paqueteListo
+	 //recibir rta
  }
 
 
@@ -649,7 +666,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 		}
 		else{
 			pNueva = crearPagina();
-			valorPagNueva = pedirALissandraPagina(nombreTabla,key); //Algun dia la haremos y sera hermosa
+			valorPagNueva = selectLissandra(nombreTabla,key); //Algun dia la haremos y sera hermosa
 			pNueva->modificado = 0;
 			agregarPagina(nuevo,pNueva);
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
@@ -660,7 +677,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 	else{
 		nuevo = crearSegmento(nombreTabla);
 		pNueva = crearPagina();
-		valorPagNueva = pedirALissandraPagina(nombreTabla,key);
+		valorPagNueva = selectLissandra(nombreTabla,key);
 		pNueva->modificado = 0;
 		agregarPagina(nuevo,pNueva);
 		agregarDato(time(NULL),key,valorPagNueva,pNueva);
@@ -674,7 +691,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
 
-	pedirleCrearTablaAlissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
+	createLissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
 
 	//El enunciado solo dice que le informe a lissandra, no dice nada de guardar la tabla en memoria
 	//Habria que modificar empaquetar para poder mandar criterio,nroParticiones y tiempoCompactacion
@@ -700,7 +717,7 @@ void mDrop(char* nombreTabla){
 		eliminarSegmento(nuevo);
 
 	}
-	pedirleALissandraQueBorre(nombreTabla);
+	dropLissandra(nombreTabla);
 
 }
 bool estaModificada(pagina *pag){
@@ -726,10 +743,8 @@ void mJournal(){
 			pagina *pag = list_get(paginasMod, j);
 			long timestamp = conseguirTimestamp(pag);
 			u_int16_t key = conseguirKey(pag);
-			char* value = conseguirValue(pag);
-			char* datos = formatearInsert(seg->nombreTabla, timestamp, key, value);
-			char* paquete = empaquetar(1, datos);
-			//enviarALFS el paquete
+			char* value = conseguirValor(pag);
+			insertLissandra(nombreSegmento, timestamp, key, value);
 
 
 		}
