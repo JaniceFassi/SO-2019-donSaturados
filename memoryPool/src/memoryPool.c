@@ -19,40 +19,78 @@ void* recibirOperacion(void * arg){
 	//2bytes tamanioop
 	//linea con ;
 
-	int sarlompa = atoi(buffer);
+	int operacion = atoi(buffer);
+	char* desempaquetado;
+	if(operacion !=5 && operacion !=6){
+		char* tamanioPaq = malloc(sizeof(char)*3);
+
+		recv(cli,tamanioPaq, sizeof(char)*3, NULL);
+
+		char* paquete = malloc(atoi(tamanioPaq));
+
+		recv(cli, paquete, sizeof(paquete), NULL);
+
+		desempaquetado = string_n_split(paquete, 4, ";");
+
+	}
+	char* nombreTabla;
+	u_int16_t key;
+	char* value;
+	char* consistencia;
+	int particiones;
+	long tiempoCompactacion;
 
 	//printf("hola soy un hilo \n");
-	switch (sarlompa) {
+	switch (operacion) {
 				case 0:
+					nombreTabla = desempaquetado[0];
+					key = atoi(desempaquetado[1]);
+					//mSelect(nombreTabla, key);
 					printf("select\n");
 					break;
+
 				case 1:
+					nombreTabla = desempaquetado[0];
+					key = atoi(desempaquetado[1]);
+					value = desempaquetado[2];
+					//mInsert(nombreTabla, key, value);
 					printf("insert\n");
 					break;
 				case 2:
+					nombreTabla = desempaquetado[0];
+					consistencia = desempaquetado[1];
+					particiones = atoi(desempaquetado[2]);
+					tiempoCompactacion = atol(desempaquetado[3]);
+					//mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
+
 					printf("create\n");
 				break;
 
 				case 3:
+					nombreTabla = desempaquetado[0];
+					//mDescribe(nombreTabla);
 					printf("describe\n");
 					break;
 
 				case 4:
+					nombreTabla = desempaquetado[0];
+					//mDrop(nombreTabla);
 					printf("drop\n");
 					break;
+
 				case 5:
+					//mJournal();
 					printf("journal\n");
 					break;
 
 				case 6:
+					//mGossip();
 					printf("gossip\n");
 					break;
 
 
 				}
-	char* rta = "4";
-	send(cli, rta, strlen(rta), 0);
-	printf("La rta fue %s \n", rta);
+	//responder 0 si todo bien, 1 si salio mal
 
 	return NULL;
 }
@@ -61,7 +99,6 @@ void* recibirOperacion(void * arg){
 
 
 
-//rta kernel 0 todo bien, 1 todo mal, 2 memoria esta full
 
 int main(void) {
 
@@ -71,7 +108,6 @@ int main(void) {
 
 
 	finalizar();
-	//se rompe al destruir segmentos pero antes no pasaba ??????
 
 	return EXIT_SUCCESS;
 }
@@ -114,7 +150,8 @@ void inicializar(){
 
 segmento *crearSegmento(char* nombre){
 	segmento *nuevoSegmento = malloc(sizeof(segmento));
-	nuevoSegmento->nombreTabla = nombre;
+	nuevoSegmento->nombreTabla = malloc(strlen(nombre)+1);
+	strcpy(nuevoSegmento->nombreTabla,nombre);
 	nuevoSegmento->tablaPaginas = list_create();
 
 	return nuevoSegmento;
@@ -179,15 +216,27 @@ t_config* read_config() {
 
 ////AUX PARA LISSANDRA O KERNEL////
 
- char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value){
+ char* empaquetar(int operacion, char* paquete){
  	char* msj;
- 	msj = malloc(sizeof(long)+sizeof(u_int16_t)+strlen(value)+1);
- 	msj = string_from_format("%s;%s;%s",timestamp, key, value);
- 	//sacar tamanio
- 	//concatenar operacion y tamanio del mensaje
+
+ 	msj = string_from_format("%s%s%s", string_itoa(operacion), string_itoa(strlen(paquete)+1), paquete);
+
  	return msj;
  }
 
+char* formatearSelect(char* nombreTabla, u_int16_t key){
+	char* paquete = string_from_format("%s;%s", nombreTabla, string_itoa(key));
+	return paquete;
+}
+char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* value){
+	char* paquete = string_from_format("%s;%s;%s;%s", nombreTabla, string_itoa(timestamp), string_itoa(key), value);
+	return paquete;
+}
+
+char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion){
+	char* paquete= string_from_format("%s;%s;%s;%s", nombreTabla, consistencia, string_itoa(particiones), string_itoa(tiempoCompactacion));
+	return paquete;
+}
 
 
 
@@ -386,7 +435,7 @@ char* conseguirValor(pagina* pNueva){
 
 
 
-int conseguirIndexSeg(segmento* nuevo){ //Funcion util para cuando haces los free del drop
+int conseguirIndexSeg(segmento* nuevo){
 
 	int index=0;
 
@@ -518,22 +567,23 @@ void mDescribe(){
 
 void mDrop(char* nombreTabla){
 
+
 	segmento* nuevo = buscarSegmento(nombreTabla);
 
 	if(nuevo != NULL){
 
-		eliminarSegmento(nuevo); //hacer
-		//Eliminar pagina por pagina de la memoria recorriendola
-		//hacer free en las listas
+		eliminarSegmento(nuevo);
 
 	}
 	pedirleALissandraQueBorre(nombreTabla);
 
 }
+
 void mJournal(){
 	printf("Hola soy journal");
 
 }
+
 void mGossip(){
 	printf("Hola soy gossip");
 

@@ -87,7 +87,7 @@ pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
 
 //AUXILIARES PARA LISSANDRA O KERNEL
-char* empaquetar(int operacion, long timestamp, u_int16_t key, char* value);
+char* empaquetar(int operacion, char* paquete);
 char* pedirALissandraPagina(char* nombreTabla,u_int16_t key); //Devuelve el value
 void pedirleCrearTablaAlissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
 void pedirleALissandraQueBorre(char* nombreTabla);
