@@ -64,7 +64,7 @@ typedef struct{
 void mSelect(char* nombreTabla,u_int16_t key);
 void mInsert(char* nombreTabla,u_int16_t key,char* valor);
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
-void mDescribe();
+void mDescribe(char* nombreTabla);
 void mDrop(char* nombreTabla);
 void mJournal();
 void mGossip();
@@ -106,10 +106,13 @@ void segmentoDestroy(segmento* segParaDestruir);
 int LRU();
 void agregarListaUsos(int nroMarco);
 void eliminarDeListaUsos(int nroMarcoAEliminar);
+bool estaModificada(pagina *pag);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
 char* conseguirValor(pagina* pNueva);
+long conseguirTimestamp(pagina *pag);
+u_int16_t conseguirKey(pagina *pag);
 void mostrarMemoria();
 
 #endif /* MEMORYPOOL_H_ */

@@ -62,6 +62,7 @@ void* recibirOperacion(void * arg){
 					//timestamp = atol(desempaquetado[1]);
 					key = atoi(desempaquetado[1]);
 					value = desempaquetado[2];
+					//ver si el valor es mayor al maximo, entonces rechaar el insert
 					mInsert(nombreTabla, key, value);
 					break;
 
@@ -120,11 +121,14 @@ int main(void) {
 
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "MONO");
-	mInsert("ANIMALES", 3, "CABALLO");
-	mInsert("ANIMALES",4,"LOBO MARINO");
 	mInsert("POSTRES",5,"TORTA");
 	mostrarMemoria();
 
+
+
+
+
+	/* PASAR A FUNCIONES SHARED
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family=AF_INET;
 	direccionServidor.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -174,7 +178,7 @@ int main(void) {
 
 		}
 
-
+*/
 
 	finalizar();
 
@@ -517,6 +521,15 @@ char* conseguirValor(pagina* pNueva){
 	return (((char*)(memoria + sizeof(long) + sizeof(u_int16_t)))+((pNueva->nroMarco)*offsetMarco));
 }//Consigue el value de una pagina especifica
 
+long conseguirTimestamp(pagina *pag){
+	return (long*)(memoria + offsetMarco*pag->nroMarco);
+}
+
+u_int16_t conseguirKey(pagina *pag){
+	return (u_int16_t*)(memoria + sizeof(long) + offsetMarco*pag->nroMarco);
+}
+
+
 
 
 int conseguirIndexSeg(segmento* nuevo){
@@ -668,8 +681,12 @@ void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long t
 }
 
 
-void mDescribe(){
+void mDescribe(char* nombreTabla){
 	printf("Hola soy describe");
+	//mandar a lfs
+	//recibir metadata
+	//mandarle a kernel
+	//decidir el sabado cómo vamos a armar este pasamanos
 
 }
 
@@ -686,10 +703,34 @@ void mDrop(char* nombreTabla){
 	pedirleALissandraQueBorre(nombreTabla);
 
 }
+bool estaModificada(pagina *pag){
+	bool res = false;
+	if(pag->modificado == 1){
+		res = true;
+	}
+
+	return res;
+}
 
 void mJournal(){
-	printf("Hola soy journal");
 
+	//bloquear tabla de segmentos entera
+	for(int i =0; i<(tablaSegmentos->elements_count); i++){
+		char* nombreSegmento;
+		segmento *seg = list_get(tablaSegmentos, i);
+		nombreSegmento = seg->nombreTabla;
+		t_list *paginasMod;
+		paginasMod = list_filter(seg->tablaPaginas, (void*)estaModificada);
+
+		for(int j=0; j<(paginasMod->elements_count); j++){
+			pagina *pag = list_get(paginasMod, j);
+			long timestamp = conseguirTimestamp(pag);
+			u_int16_t key = conseguirKey(pag);
+			char* value = conseguirValue(pag);
+
+
+		}
+	}
 }
 
 void mGossip(){
