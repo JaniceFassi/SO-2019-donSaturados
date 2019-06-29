@@ -11,7 +11,7 @@
 #include<commons/collections/list.h>
 #include "Lissandra.h"
 #include "TADs.h"
-
+#include "Compactor.h"
 /*typedef enum{
 	SELECT,
 	INSERT,

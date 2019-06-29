@@ -38,24 +38,33 @@ int dump(){
 	return 0;
 }
 
-void compactar(char *nombreTabla){
-	log_info(logger,"Se empezo a hacer la compactacion de la tabla %s",nombreTabla);
-	char *path=nivelUnaTabla(nombreTabla,0);
+void liberarTest(testT *nuevo){
+	free(nuevo->nombre);
+	pthread_kill(nuevo->hilo,0);
+	free(nuevo);
+}
+
+//void compactar(char *nombreTabla, long tiempoCompactacion){
+void compactar(testT* nuevo){
+while(1){
+	sleep(nuevo->time_compact);
+	log_info(logger,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
+	char *path=nivelUnaTabla(nuevo->nombre,0);
 	if(folderExist(path)==1){
-		log_error(logger,"No se puede hacer la compactacion por que la tabla %s ya no existe",nombreTabla);
+		log_error(logger,"No se puede hacer la compactacion por que la tabla %s ya no existe",nuevo->nombre);
 		free(path);
 		return;
 	}
 	free(path);
-	int cantTemp=contarArchivos(nombreTabla,1);
+	int cantTemp=contarArchivos(nuevo->nombre,1);
 	//Cambiar nombre de tmp a tmpc
 	if(cantTemp==0){
-		log_info(logger,"No hay datos para la compactacion de %s.",nombreTabla);
+		log_info(logger,"No hay datos para la compactacion de %s.",nuevo->nombre);
 		return;
 	}
 	int contador=0;
 	while(cantTemp>contador){
-		char *arch=nivelParticion(nombreTabla,contador,1);
+		char *arch=nivelParticion(nuevo->nombre,contador,1);
 		//semaforos
 		if(renombrarTemp_TempC(arch)==1){
 			log_error(logger,"No se puede hacer la compactacion porque no se pudo renombrar los temporales.");
@@ -66,7 +75,7 @@ void compactar(char *nombreTabla){
 		contador++;
 	}
 	//sacar la metadata
-	metaTabla *metadata=leerMetadataTabla(nombreTabla);
+	metaTabla *metadata=leerMetadataTabla(nuevo->nombre);
 	t_list *todosLosRegistros=list_create();
 	contador=0;
 	int cantMax=metadata->partitions;
@@ -76,7 +85,7 @@ void compactar(char *nombreTabla){
 		char *arch;
 		if(binario==0){
 			//leer binarios
-			arch=nivelParticion(nombreTabla,contador,0);
+			arch=nivelParticion(nuevo->nombre,contador,0);
 			if(contador+1==cantMax){
 				contador=-1;
 				cantMax=cantTemp;
@@ -84,19 +93,20 @@ void compactar(char *nombreTabla){
 			}
 		}else{
 			//leerTempc
-			arch=nivelParticion(nombreTabla,contador,2);
+			arch=nivelParticion(nuevo->nombre,contador,2);
 		}
 		escanearArchivo(arch,todosLosRegistros);
-		liberarParticion(arch);
 		free(arch);
 		contador++;
 	}
 	contador=0;
 	t_list *depurado=regDep(todosLosRegistros);
 	//escribir
+	//WAIT MUTEX DE BINARIOS DE LA TABLA
 	while(contador<metadata->partitions){
 		t_list *particion=filtrarPorParticion(depurado,contador,metadata->partitions);
-		char *archP=nivelParticion(nombreTabla,contador,0);
+		char *archP=nivelParticion(nuevo->nombre,contador,0);
+		liberarParticion(archP);
 		if(escribirParticion(archP,particion,1)==1){
 			log_error(logger,"Error a la hora de escribir la compactacion");
 			free(archP);
@@ -109,10 +119,21 @@ void compactar(char *nombreTabla){
 		free(archP);
 		list_destroy(particion);
 		contador++;
+	}//SIGNAL MUTEX BINARIOS DE LA TABLA
+	//liberar TMPC
+	contador=0;
+	//WAIT MUTEX TMPC DE LA TABLA
+	while(cantTemp>contador){
+		char *arch=nivelParticion(nuevo->nombre,contador,2);
+		liberarParticion(arch);
+		free(arch);
+		contador++;
 	}
+	//SIGNAL MUTEX TMPC DE LA TABLA
 	list_destroy(depurado);
 	borrarMetadataTabla(metadata);
 	list_destroy_and_destroy_elements(todosLosRegistros,(void *)destroyRegistry);
-	log_info(logger,"Fin de la compactacion de %s",nombreTabla);
+	log_info(logger,"Fin de la compactacion de %s",nuevo->nombre);
 	//aca deberia activar el tiempo de compactacion de nuevo
+}
 }

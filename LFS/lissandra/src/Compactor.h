@@ -13,9 +13,16 @@
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
-#include "Lissandra.h"
 #include "TADs.h"
+#include "Lissandra.h"
+typedef struct{
+	char *nombre;
+	long time_compact;
+	pthread_t hilo;
+}testT;
+void liberarTest(testT *nuevo);
 
 int dump();
-void compactar(char *nombreTabla);
+void compactar(testT *nuevo);
+//void compactar(char *nombreTabla,long tiempo_compactacion);
 #endif /* COMPACTOR_H_ */

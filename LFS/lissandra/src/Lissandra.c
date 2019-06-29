@@ -14,7 +14,7 @@ int main(void) {
 	theStart();
 
 	u_int16_t socket_client;
-
+	u_int16_t  server;
 
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
@@ -28,24 +28,22 @@ int main(void) {
 
 	/****************PARA USAR CONEXIONES******************/
 
-	/*connectMemory(&socket_client);
+	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
+		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
+		return 1;
+	}else{
+		log_info(logger, "\nSe pudo crear el server.");
+	}
 
-	int i=0;
-	int recibidos=0;
-	int header=0;
+	listenForClients(server,100);
 
-	while(i<3){
-	char *buffer=malloc(2);
-	recibidos=recvData(socket_client,buffer,1);
-	header=atoi(buffer);
-	exec_api(header,socket_client);
-	free(buffer);
-	i++;
-	}*/
+	while(1){
+		connectMemory(&socket_client,server);
+	}
 
 	/****************PARA USAR FUNCIONES PURAS******************/
 
-	create("TAB","SC",3,3000);
+	/*create("TAB","SC",3,3000);
 	insert("TAB",0,"gato",10);
 	insert("TAB",0,"perro",11);
 	dump();
@@ -56,11 +54,30 @@ int main(void) {
 	//insert("TAB",0,"pollo",4);
 	char *r=lSelect("TAB",0);
 	free(r);
-
+*/
 
 	theEnd();
 	return EXIT_SUCCESS;
 }
+
+void *interactuarConMemoria(u_int16_t *socket_cliente){
+	//u_int16_t *socket_cliente = arg;
+	int recibidos=0;
+	int header=0;
+	int seguir=1;
+	while(seguir){
+		char *buffer=malloc(2);
+		recibidos=recvData(*socket_cliente,buffer,1);
+		header=atoi(buffer);
+		if(header==5){
+			seguir=0;
+		}
+		exec_api(header,*socket_cliente);
+		free(buffer);
+	}
+	//return NULL;
+}
+
 
 void theStart(){
 
@@ -254,47 +271,46 @@ void exec_api(op_code mode,u_int16_t sock){
 		free(respuesta);
 		break;
 
+	case 5:
+		log_info(logger,"\nEXIT");
+		break;
 	default:
 		log_info(logger,"\nAPI INVALIDA");
 		break;
 
 	}
-	free(buffer);
-	liberarSubstrings(subCadena);			//NO SIEMPRE HAY QUE LIBERAR SUBSTRINGS
+	//free(buffer);							//SE LO SAQUE MOMENTANEAMENTE PARA PROBAR EL EXIT
+	//liberarSubstrings(subCadena);			//NO SIEMPRE HAY QUE LIBERAR SUBSTRINGS
 }
 
-void connectMemory(u_int16_t *socket_client){	//PRUEBA SOCKETS CON LIBRERIA
-	u_int16_t  server;
+int connectMemory(u_int16_t *socket_client, u_int16_t server){	//PRUEBA SOCKETS CON LIBRERIA
 
-	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
-		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
-	}else{
-		log_info(logger, "\nSe pudo crear el server.");
-	}
-
-	listenForClients(server,100);
-
+	char *maxValue;
 
 	if(acceptConexion( server, socket_client,configLissandra->idEsperado)!=0){
-		log_info(logger, "\nError en el acept.");
-	}else
-	{
-		char *maxValue;
-		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
-		if(configLissandra->tamValue<10){
-			maxValue=string_from_format("00%i",configLissandra->tamValue);
-		}else{
-			if(configLissandra->tamValue<100){
-				maxValue=string_from_format("0%i",configLissandra->tamValue);
-			}
-			else{
-			maxValue=string_from_format("%i",configLissandra->tamValue);
-			}
-		}
-		sendData(*socket_client,maxValue,3);
-		free(maxValue);
+		return 1;
+		log_info(logger,"Conexion denegada.");
 	}
+
+	log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
+	if(configLissandra->tamValue<10){
+		maxValue=string_from_format("00%i",configLissandra->tamValue);
+	}else{
+		if(configLissandra->tamValue<100){
+			maxValue=string_from_format("0%i",configLissandra->tamValue);
+		}
+		else{
+		maxValue=string_from_format("%i",configLissandra->tamValue);
+		}
+	}
+	sendData(*socket_client,maxValue,3);
+	free(maxValue);
+	pthread_t unHilo;
+	pthread_create(&unHilo,NULL,interactuarConMemoria,socket_client);
+	//pthread_join(unHilo,NULL);
+	return 0;
 }
+
 void mostrarDescribe(t_list *lista){
 	void mostrarD(metaTabla *describe){
 		char *nombre=string_from_format("**Nombre de la TABLA: %s",describe->nombre);

@@ -562,7 +562,7 @@ char *leerArchBinario(char *path,int tamanio){
 	FILE *arch;
 	arch=fopen(path,"rb");
 	char *datos=malloc(tamanio);
-	fread(datos, 1, tamanio*sizeof(char)+1, arch);
+	fread(datos, 1, tamanio*sizeof(char), arch);
 	fclose(arch);
 	return datos;
 }
@@ -675,14 +675,14 @@ int renombrarTemp_TempC(char *path){
 void escribirBloque(char *buffer,char **bloques){
 	int nroArray=0;
 	while(strlen(buffer)>metaLFS->tamBloques){
-		char *escribir=string_substring_until(buffer,metaLFS->tamBloques);
+		char *escribir=string_substring_until(buffer,metaLFS->tamBloques-1);
 		int nroBloq=atoi(bloques[nroArray]);
 		char *pathB=rutaBloqueNro(nroBloq);
 		//escribir el archivo
 		escribirArchB(pathB,escribir);
 		free(escribir);
 		free(pathB);
-		char *auxilar=string_substring_from(buffer,metaLFS->tamBloques);
+		char *auxilar=string_substring_from(buffer,metaLFS->tamBloques-1);
 		free(buffer);
 		buffer=malloc(strlen(auxilar)+1);
 		strcpy(buffer,auxilar);
@@ -988,16 +988,24 @@ int calcularIndexTab(Tabla *tabla,t_list *lista){
 
 int calcularIndexTabPorNombre(char *name,t_list *lista){
 	int index=0;
-	char *nombre;
 	bool encontrar(char *comparar){
 
 		return string_equals_ignore_case(comparar,name);
 		index++;
 	}
-	list_iterate(directorio, (void*) encontrar);
+	list_iterate(lista, (void*) encontrar);
 	return index;
 }
 
+int calcularIndexName(char *name){
+	int index=0;
+	bool encontrar(testT* compara){
+		index++;
+		return string_equals_ignore_case(compara->nombre,name);
+	}
+	list_iterate(directorioP,(void *)encontrar);
+	return index;
+}
 /***********************************************************************************************/
 //FUNCIONES QUE LIBERAN MEMORIA
 
@@ -1096,4 +1104,9 @@ void liberarDirectorio(){
 	list_iterate(directorio,(void *)liberarString);
 	list_destroy(directorio);
 }
+void liberarDirectorioP(){
+	list_iterate(directorioP,(void *)liberarTest);
+	list_destroy(directorioP);
+}
+
 

@@ -12,9 +12,10 @@
 #include<commons/config.h>
 #include <commons/bitarray.h>
 #include <sys/mman.h>
+#include <pthread.h>
 #include<readline/readline.h>
 #include "Lissandra.h"
-
+#include "Compactor.h"
 typedef struct {
 	u_int16_t key;
 	char *value;
@@ -55,12 +56,13 @@ typedef struct{
 	u_int16_t retardo;
 }datosConfig;
 
+
 t_bitarray* bitmap;
 int archivoBitmap;
 datosConfig *configLissandra;
 metaFileSystem *metaLFS;
 t_list *directorio;
-
+t_list *directorioP;
 //FUNCIONES DE REGISTROS
 Registry *createRegistry(u_int16_t key, char *val, long time);
 void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);
@@ -92,7 +94,7 @@ char *concatRegistro(Registry *reg);
 char *ponerSeparador(char *linea);
 char *array_A_String(char **array,int cantBloques);
 char *cadenaDeRegistros(t_list *lista);
-
+int calcularIndexName(char *name);
 //FUNCIONES QUE DESCONCATENAN
 t_list *deChar_Registros(char *buffer);
 Registry *desconcatParaArch(char *linea);
@@ -149,4 +151,5 @@ void limpiarBloque(char* nroBloque);//NUEVO
 void limpiarArchivo(char* pathArchivo);//NUEVO
 void liberarArraydeBloques(char **array);//NUEVO
 void liberarDirectorio();
+void liberarDirectorioP();
 #endif
