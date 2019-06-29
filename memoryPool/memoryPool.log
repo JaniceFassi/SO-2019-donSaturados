@@ -555,3 +555,774 @@
 [INFO] 17:44:57:482 memoryPool/(476:476): Buffer 
 [INFO] 17:44:57:482 memoryPool/(476:476): Limpiando la memoria
 [INFO] 17:44:57:482 memoryPool/(476:476): Memoria limpia, adiós mundo cruel
+[INFO] 17:54:43:509 memoryPool/(986:986): Se inicializo la memoria con tamanio 130
+[INFO] 17:54:43:509 memoryPool/(986:986): Tamanio máximo recibido de FS: 20
+[INFO] 17:54:43:510 memoryPool/(986:986): Se creo el segmento ANIMALES
+[INFO] 17:54:43:510 memoryPool/(986:986): Se creo el segmento POSTRES
+[INFO] 17:54:43:510 memoryPool/(986:986): Se agrego una página al segmento ANIMALES
+[INFO] 17:54:43:510 memoryPool/(986:986): Se agrego el dato GATO al marco 0
+[INFO] 17:54:43:510 memoryPool/(986:986): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 17:54:43:510 memoryPool/(986:986): Se agrego una página al segmento ANIMALES
+[INFO] 17:54:43:510 memoryPool/(986:986): Se agrego el dato MONO al marco 1
+[INFO] 17:54:43:510 memoryPool/(986:986): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 17:54:43:510 memoryPool/(986:986): Se agrego una página al segmento POSTRES
+[INFO] 17:54:43:510 memoryPool/(986:986): Se agrego el dato FLAN al marco 2
+[INFO] 17:54:43:510 memoryPool/(986:986): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 17:55:09:404 memoryPool/(986:986): sock: 5
+[INFO] 17:55:09:405 memoryPool/(986:986): Bytes recibidos: 14
+[INFO] 17:55:09:405 memoryPool/(986:986): Buffer 
+[INFO] 17:55:09:405 memoryPool/(986:986): Limpiando la memoria
+[INFO] 17:55:09:405 memoryPool/(986:986): Memoria limpia, adiós mundo cruel
+[INFO] 17:56:22:962 memoryPool/(1218:1218): Se inicializo la memoria con tamanio 130
+[INFO] 17:56:22:965 memoryPool/(1218:1218): Tamanio máximo recibido de FS: 20
+[INFO] 17:56:22:965 memoryPool/(1218:1218): Se creo el segmento ANIMALES
+[INFO] 17:56:22:965 memoryPool/(1218:1218): Se creo el segmento POSTRES
+[INFO] 17:56:22:965 memoryPool/(1218:1218): Se agrego una página al segmento ANIMALES
+[INFO] 17:56:22:965 memoryPool/(1218:1218): Se agrego el dato GATO al marco 0
+[INFO] 17:56:22:966 memoryPool/(1218:1218): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 17:56:22:966 memoryPool/(1218:1218): Se agrego una página al segmento ANIMALES
+[INFO] 17:56:22:966 memoryPool/(1218:1218): Se agrego el dato MONO al marco 1
+[INFO] 17:56:22:966 memoryPool/(1218:1218): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 17:56:22:966 memoryPool/(1218:1218): Se agrego una página al segmento POSTRES
+[INFO] 17:56:22:966 memoryPool/(1218:1218): Se agrego el dato FLAN al marco 2
+[INFO] 17:56:22:966 memoryPool/(1218:1218): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 17:58:02:952 memoryPool/(1218:1218): sock: 5
+[INFO] 17:58:02:952 memoryPool/(1218:1218): Bytes recibidos: 14
+[INFO] 17:58:02:952 memoryPool/(1218:1218): Buffer 1017ANIMALES;9u�
+[INFO] 17:58:02:952 memoryPool/(1218:1218): Limpiando la memoria
+[INFO] 17:58:02:952 memoryPool/(1218:1218): Memoria limpia, adiós mundo cruel
+[INFO] 17:59:44:41 memoryPool/(1416:1416): Se inicializo la memoria con tamanio 130
+[INFO] 17:59:44:41 memoryPool/(1416:1416): Tamanio máximo recibido de FS: 20
+[INFO] 17:59:44:41 memoryPool/(1416:1416): Se creo el segmento ANIMALES
+[INFO] 17:59:44:41 memoryPool/(1416:1416): Se creo el segmento POSTRES
+[INFO] 17:59:44:41 memoryPool/(1416:1416): Se agrego una página al segmento ANIMALES
+[INFO] 17:59:44:42 memoryPool/(1416:1416): Se agrego el dato GATO al marco 0
+[INFO] 17:59:44:42 memoryPool/(1416:1416): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 17:59:44:42 memoryPool/(1416:1416): Se agrego una página al segmento ANIMALES
+[INFO] 17:59:44:42 memoryPool/(1416:1416): Se agrego el dato MONO al marco 1
+[INFO] 17:59:44:42 memoryPool/(1416:1416): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 17:59:44:42 memoryPool/(1416:1416): Se agrego una página al segmento POSTRES
+[INFO] 17:59:44:42 memoryPool/(1416:1416): Se agrego el dato FLAN al marco 2
+[INFO] 17:59:44:44 memoryPool/(1416:1416): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:00:05:993 memoryPool/(1416:1416): sock: 5
+[INFO] 18:00:05:994 memoryPool/(1416:1416): Bytes recibidos: 17
+[INFO] 18:00:05:994 memoryPool/(1416:1416): Buffer 1017ANIMALES;9;PE
+[INFO] 18:00:05:994 memoryPool/(1416:1416): Limpiando la memoria
+[INFO] 18:00:05:994 memoryPool/(1416:1416): Memoria limpia, adiós mundo cruel
+[INFO] 18:00:30:86 memoryPool/(1473:1473): Se inicializo la memoria con tamanio 130
+[INFO] 18:00:30:87 memoryPool/(1473:1473): Tamanio máximo recibido de FS: 20
+[INFO] 18:00:30:87 memoryPool/(1473:1473): Se creo el segmento ANIMALES
+[INFO] 18:00:30:88 memoryPool/(1473:1473): Se creo el segmento POSTRES
+[INFO] 18:00:30:88 memoryPool/(1473:1473): Se agrego una página al segmento ANIMALES
+[INFO] 18:00:30:88 memoryPool/(1473:1473): Se agrego el dato GATO al marco 0
+[INFO] 18:00:30:88 memoryPool/(1473:1473): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:00:30:89 memoryPool/(1473:1473): Se agrego una página al segmento ANIMALES
+[INFO] 18:00:30:89 memoryPool/(1473:1473): Se agrego el dato MONO al marco 1
+[INFO] 18:00:30:89 memoryPool/(1473:1473): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:00:30:92 memoryPool/(1473:1473): Se agrego una página al segmento POSTRES
+[INFO] 18:00:30:92 memoryPool/(1473:1473): Se agrego el dato FLAN al marco 2
+[INFO] 18:00:30:92 memoryPool/(1473:1473): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:00:33:492 memoryPool/(1473:1473): sock: 5
+[INFO] 18:00:33:492 memoryPool/(1473:1473): Bytes recibidos: 20
+[INFO] 18:00:33:492 memoryPool/(1473:1473): Buffer 1017ANIMALES;9;PERRO
+[INFO] 18:00:33:492 memoryPool/(1473:1473): Limpiando la memoria
+[INFO] 18:00:33:492 memoryPool/(1473:1473): Memoria limpia, adiós mundo cruel
+[INFO] 18:01:23:643 memoryPool/(1534:1534): Se inicializo la memoria con tamanio 130
+[INFO] 18:01:23:644 memoryPool/(1534:1534): Tamanio máximo recibido de FS: 20
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se creo el segmento ANIMALES
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se creo el segmento POSTRES
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se agrego una página al segmento ANIMALES
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se agrego el dato GATO al marco 0
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se agrego una página al segmento ANIMALES
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se agrego el dato MONO al marco 1
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se agrego una página al segmento POSTRES
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se agrego el dato FLAN al marco 2
+[INFO] 18:01:23:645 memoryPool/(1534:1534): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:01:25:475 memoryPool/(1534:1534): sock: 5
+[INFO] 18:01:25:475 memoryPool/(1534:1534): Bytes recibidos: 20
+[INFO] 18:01:25:475 memoryPool/(1534:1534): Buffer 1017ANIMALES;9;PERRO
+[INFO] 18:01:25:475 memoryPool/(1534:1534): Limpiando la memoria
+[INFO] 18:01:25:475 memoryPool/(1534:1534): Memoria limpia, adiós mundo cruel
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se inicializo la memoria con tamanio 130
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Tamanio máximo recibido de FS: 20
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se creo el segmento ANIMALES
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se creo el segmento POSTRES
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se agrego una página al segmento ANIMALES
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se agrego el dato GATO al marco 0
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se agrego una página al segmento ANIMALES
+[INFO] 18:05:24:851 memoryPool/(1611:1611): Se agrego el dato MONO al marco 1
+[INFO] 18:05:24:852 memoryPool/(1611:1611): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:05:24:852 memoryPool/(1611:1611): Se agrego una página al segmento POSTRES
+[INFO] 18:05:24:852 memoryPool/(1611:1611): Se agrego el dato FLAN al marco 2
+[INFO] 18:05:24:852 memoryPool/(1611:1611): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:05:27:36 memoryPool/(1611:1611): sock: 5
+[INFO] 18:05:27:36 memoryPool/(1611:1611): Bytes recibidos: 20
+[INFO] 18:05:27:36 memoryPool/(1611:1611): Buffer 1017ANIMALES;9;PERRO
+[INFO] 18:05:27:36 memoryPool/(1611:1611): Limpiando la memoria
+[INFO] 18:05:27:36 memoryPool/(1611:1611): Memoria limpia, adiós mundo cruel
+[INFO] 18:05:52:30 memoryPool/(1647:1647): Se inicializo la memoria con tamanio 130
+[INFO] 18:05:52:30 memoryPool/(1647:1647): Tamanio máximo recibido de FS: 20
+[INFO] 18:05:52:30 memoryPool/(1647:1647): Se creo el segmento ANIMALES
+[INFO] 18:05:52:31 memoryPool/(1647:1647): Se creo el segmento POSTRES
+[INFO] 18:05:52:31 memoryPool/(1647:1647): Se agrego una página al segmento ANIMALES
+[INFO] 18:05:52:32 memoryPool/(1647:1647): Se agrego el dato GATO al marco 0
+[INFO] 18:05:52:32 memoryPool/(1647:1647): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:05:52:32 memoryPool/(1647:1647): Se agrego una página al segmento ANIMALES
+[INFO] 18:05:52:32 memoryPool/(1647:1647): Se agrego el dato MONO al marco 1
+[INFO] 18:05:52:32 memoryPool/(1647:1647): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:05:52:33 memoryPool/(1647:1647): Se agrego una página al segmento POSTRES
+[INFO] 18:05:52:33 memoryPool/(1647:1647): Se agrego el dato FLAN al marco 2
+[INFO] 18:05:52:33 memoryPool/(1647:1647): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:08:48:600 memoryPool/(1647:1647): sock: 5
+[INFO] 18:08:48:601 memoryPool/(1647:1647): Bytes recibidos: 1
+[INFO] 18:08:48:601 memoryPool/(1647:1647): Buffer 
+[INFO] 18:08:48:601 memoryPool/(1647:1647): Limpiando la memoria
+[INFO] 18:08:48:602 memoryPool/(1647:1647): Memoria limpia, adiós mundo cruel
+[INFO] 18:09:50:320 memoryPool/(1684:1684): Se inicializo la memoria con tamanio 130
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Tamanio máximo recibido de FS: 20
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se creo el segmento ANIMALES
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se creo el segmento POSTRES
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se agrego una página al segmento ANIMALES
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se agrego el dato GATO al marco 0
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se agrego una página al segmento ANIMALES
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se agrego el dato MONO al marco 1
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se agrego una página al segmento POSTRES
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se agrego el dato FLAN al marco 2
+[INFO] 18:09:50:323 memoryPool/(1684:1684): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:09:52:180 memoryPool/(1684:1684): sock: 5
+[INFO] 18:09:52:186 memoryPool/(1684:1684): Bytes recibidos: 1
+[INFO] 18:09:52:187 memoryPool/(1684:1684): Buffer 
+[INFO] 18:09:52:187 memoryPool/(1684:1684): Limpiando la memoria
+[INFO] 18:09:52:187 memoryPool/(1684:1684): Memoria limpia, adiós mundo cruel
+[INFO] 18:12:17:40 memoryPool/(1776:1776): Se inicializo la memoria con tamanio 130
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Tamanio máximo recibido de FS: 20
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se creo el segmento ANIMALES
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se creo el segmento POSTRES
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se agrego una página al segmento ANIMALES
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se agrego el dato GATO al marco 0
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se agrego una página al segmento ANIMALES
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se agrego el dato MONO al marco 1
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se agrego una página al segmento POSTRES
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se agrego el dato FLAN al marco 2
+[INFO] 18:12:17:45 memoryPool/(1776:1776): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:15:55:615 memoryPool/(1776:1776): sock: 5
+[INFO] 18:15:55:616 memoryPool/(1776:1776): Bytes recibidos: 20
+[INFO] 18:15:55:616 memoryPool/(1776:1776): Buffer 1017ANIMALES;9;PERRO
+[INFO] 18:15:55:616 memoryPool/(1776:1776): Limpiando la memoria
+[INFO] 18:15:55:616 memoryPool/(1776:1776): Memoria limpia, adiós mundo cruel
+[INFO] 18:16:53:253 memoryPool/(1832:1832): Se inicializo la memoria con tamanio 130
+[INFO] 18:16:53:259 memoryPool/(1832:1832): Tamanio máximo recibido de FS: 20
+[INFO] 18:16:53:259 memoryPool/(1832:1832): Se creo el segmento ANIMALES
+[INFO] 18:16:53:259 memoryPool/(1832:1832): Se creo el segmento POSTRES
+[INFO] 18:16:53:259 memoryPool/(1832:1832): Se agrego una página al segmento ANIMALES
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se agrego el dato GATO al marco 0
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se agrego una página al segmento ANIMALES
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se agrego el dato MONO al marco 1
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se agrego una página al segmento POSTRES
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se agrego el dato FLAN al marco 2
+[INFO] 18:16:53:262 memoryPool/(1832:1832): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:17:03:395 memoryPool/(1832:1832): sock: 5
+[INFO] 18:17:03:397 memoryPool/(1832:1832): Bytes recibidos: 1
+[INFO] 18:17:03:397 memoryPool/(1832:1832): Buffer 
+[INFO] 18:17:03:397 memoryPool/(1832:1832): Limpiando la memoria
+[INFO] 18:17:03:397 memoryPool/(1832:1832): Memoria limpia, adiós mundo cruel
+[INFO] 18:17:24:40 memoryPool/(1855:1855): Se inicializo la memoria con tamanio 130
+[INFO] 18:17:24:42 memoryPool/(1855:1855): Tamanio máximo recibido de FS: 20
+[INFO] 18:17:24:42 memoryPool/(1855:1855): Se creo el segmento ANIMALES
+[INFO] 18:17:24:42 memoryPool/(1855:1855): Se creo el segmento POSTRES
+[INFO] 18:17:24:44 memoryPool/(1855:1855): Se agrego una página al segmento ANIMALES
+[INFO] 18:17:24:44 memoryPool/(1855:1855): Se agrego el dato GATO al marco 0
+[INFO] 18:17:24:44 memoryPool/(1855:1855): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:17:24:44 memoryPool/(1855:1855): Se agrego una página al segmento ANIMALES
+[INFO] 18:17:24:45 memoryPool/(1855:1855): Se agrego el dato MONO al marco 1
+[INFO] 18:17:24:45 memoryPool/(1855:1855): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:17:24:45 memoryPool/(1855:1855): Se agrego una página al segmento POSTRES
+[INFO] 18:17:24:45 memoryPool/(1855:1855): Se agrego el dato FLAN al marco 2
+[INFO] 18:17:24:45 memoryPool/(1855:1855): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:19:26:810 memoryPool/(1855:1855): sock: 5
+[INFO] 18:19:26:810 memoryPool/(1855:1855): Bytes recibidos: 1
+[INFO] 18:19:26:810 memoryPool/(1855:1855): Buffer 0011ANIMALES;1: 
+[INFO] 18:19:26:810 memoryPool/(1855:1855): Limpiando la memoria
+[INFO] 18:19:26:811 memoryPool/(1855:1855): Memoria limpia, adiós mundo cruel
+[INFO] 18:20:11:796 memoryPool/(1952:1952): Se inicializo la memoria con tamanio 130
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Tamanio máximo recibido de FS: 20
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se creo el segmento ANIMALES
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se creo el segmento POSTRES
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se agrego una página al segmento ANIMALES
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se agrego el dato GATO al marco 0
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se agrego una página al segmento ANIMALES
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se agrego el dato MONO al marco 1
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se agrego una página al segmento POSTRES
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se agrego el dato FLAN al marco 2
+[INFO] 18:20:11:798 memoryPool/(1952:1952): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:20:15:10 memoryPool/(1952:1952): sock: 5
+[INFO] 18:20:15:10 memoryPool/(1952:1952): Bytes recibidos: 14
+[INFO] 18:20:15:10 memoryPool/(1952:1952): Buffer 0011ANIMALES;1: 
+[INFO] 18:20:15:10 memoryPool/(1952:1952): Limpiando la memoria
+[INFO] 18:20:15:11 memoryPool/(1952:1952): Memoria limpia, adiós mundo cruel
+[INFO] 18:21:11:718 memoryPool/(2009:2009): Se inicializo la memoria con tamanio 130
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Tamanio máximo recibido de FS: 20
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se creo el segmento ANIMALES
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se creo el segmento POSTRES
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se agrego una página al segmento ANIMALES
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se agrego el dato GATO al marco 0
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se agrego una página al segmento ANIMALES
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se agrego el dato MONO al marco 1
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se agrego una página al segmento POSTRES
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se agrego el dato FLAN al marco 2
+[INFO] 18:21:11:724 memoryPool/(2009:2009): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:21:18:270 memoryPool/(2009:2009): sock: 5
+[INFO] 18:21:18:270 memoryPool/(2009:2009): Bytes recibidos: 14
+[INFO] 18:21:18:270 memoryPool/(2009:2009): Buffer 0011ANIMALES;1: 
+[INFO] 18:21:18:270 memoryPool/(2009:2009): Limpiando la memoria
+[INFO] 18:21:18:270 memoryPool/(2009:2009): Memoria limpia, adiós mundo cruel
+[INFO] 18:21:40:889 memoryPool/(2060:2060): Se inicializo la memoria con tamanio 130
+[INFO] 18:21:40:897 memoryPool/(2060:2060): Tamanio máximo recibido de FS: 20
+[INFO] 18:21:40:897 memoryPool/(2060:2060): Se creo el segmento ANIMALES
+[INFO] 18:21:40:897 memoryPool/(2060:2060): Se creo el segmento POSTRES
+[INFO] 18:21:40:897 memoryPool/(2060:2060): Se agrego una página al segmento ANIMALES
+[INFO] 18:21:40:897 memoryPool/(2060:2060): Se agrego el dato GATO al marco 0
+[INFO] 18:21:40:898 memoryPool/(2060:2060): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:21:40:898 memoryPool/(2060:2060): Se agrego una página al segmento ANIMALES
+[INFO] 18:21:40:898 memoryPool/(2060:2060): Se agrego el dato MONO al marco 1
+[INFO] 18:21:40:898 memoryPool/(2060:2060): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:21:40:898 memoryPool/(2060:2060): Se agrego una página al segmento POSTRES
+[INFO] 18:21:40:898 memoryPool/(2060:2060): Se agrego el dato FLAN al marco 2
+[INFO] 18:21:40:898 memoryPool/(2060:2060): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:21:46:83 memoryPool/(2060:2060): sock: 5
+[INFO] 18:21:46:83 memoryPool/(2060:2060): Bytes recibidos: 14
+[INFO] 18:21:46:83 memoryPool/(2060:2060): Buffer 0011ANIMALES;1: 
+
+[INFO] 18:21:46:84 memoryPool/(2060:2060): Limpiando la memoria
+[INFO] 18:21:46:84 memoryPool/(2060:2060): Memoria limpia, adiós mundo cruel
+[INFO] 18:22:02:798 memoryPool/(2106:2106): Se inicializo la memoria con tamanio 130
+[INFO] 18:22:02:798 memoryPool/(2106:2106): Tamanio máximo recibido de FS: 20
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se creo el segmento ANIMALES
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se creo el segmento POSTRES
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se agrego una página al segmento ANIMALES
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se agrego el dato GATO al marco 0
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se agrego una página al segmento ANIMALES
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se agrego el dato MONO al marco 1
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se agrego una página al segmento POSTRES
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se agrego el dato FLAN al marco 2
+[INFO] 18:22:02:800 memoryPool/(2106:2106): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:22:07:281 memoryPool/(2106:2106): sock: 5
+[INFO] 18:22:07:281 memoryPool/(2106:2106): Bytes recibidos: 14
+[INFO] 18:22:07:281 memoryPool/(2106:2106): Buffer 0011ANIMALES;1: 
+
+[INFO] 18:22:07:281 memoryPool/(2106:2106): Limpiando la memoria
+[INFO] 18:22:07:281 memoryPool/(2106:2106): Memoria limpia, adiós mundo cruel
+[INFO] 18:22:25:976 memoryPool/(2150:2150): Se inicializo la memoria con tamanio 130
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Tamanio máximo recibido de FS: 20
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se creo el segmento ANIMALES
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se creo el segmento POSTRES
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se agrego una página al segmento ANIMALES
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se agrego el dato GATO al marco 0
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se agrego una página al segmento ANIMALES
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se agrego el dato MONO al marco 1
+[INFO] 18:22:25:984 memoryPool/(2150:2150): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:22:25:985 memoryPool/(2150:2150): Se agrego una página al segmento POSTRES
+[INFO] 18:22:25:985 memoryPool/(2150:2150): Se agrego el dato FLAN al marco 2
+[INFO] 18:22:25:985 memoryPool/(2150:2150): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:22:28:121 memoryPool/(2150:2150): sock: 5
+[INFO] 18:22:28:121 memoryPool/(2150:2150): Bytes recibidos: 14
+[INFO] 18:22:28:121 memoryPool/(2150:2150): Buffer 0011ANIMALES;1: 
+
+[INFO] 18:22:28:122 memoryPool/(2150:2150): Limpiando la memoria
+[INFO] 18:22:28:122 memoryPool/(2150:2150): Memoria limpia, adiós mundo cruel
+[INFO] 18:22:55:676 memoryPool/(2199:2199): Se inicializo la memoria con tamanio 130
+[INFO] 18:22:55:677 memoryPool/(2199:2199): Tamanio máximo recibido de FS: 20
+[INFO] 18:22:55:677 memoryPool/(2199:2199): Se creo el segmento ANIMALES
+[INFO] 18:22:55:677 memoryPool/(2199:2199): Se creo el segmento POSTRES
+[INFO] 18:22:55:677 memoryPool/(2199:2199): Se agrego una página al segmento ANIMALES
+[INFO] 18:22:55:677 memoryPool/(2199:2199): Se agrego el dato GATO al marco 0
+[INFO] 18:22:55:680 memoryPool/(2199:2199): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:22:55:680 memoryPool/(2199:2199): Se agrego una página al segmento ANIMALES
+[INFO] 18:22:55:680 memoryPool/(2199:2199): Se agrego el dato MONO al marco 1
+[INFO] 18:22:55:680 memoryPool/(2199:2199): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:22:55:680 memoryPool/(2199:2199): Se agrego una página al segmento POSTRES
+[INFO] 18:22:55:681 memoryPool/(2199:2199): Se agrego el dato FLAN al marco 2
+[INFO] 18:22:55:681 memoryPool/(2199:2199): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:23:02:349 memoryPool/(2199:2199): sock: 5
+[INFO] 18:23:02:350 memoryPool/(2199:2199): Bytes recibidos: 14
+[INFO] 18:23:02:350 memoryPool/(2199:2199): Buffer 0011ANIMALES;1: 
+
+[INFO] 18:23:02:350 memoryPool/(2199:2199): Limpiando la memoria
+[INFO] 18:23:02:350 memoryPool/(2199:2199): Memoria limpia, adiós mundo cruel
+[INFO] 18:23:40:520 memoryPool/(2251:2251): Se inicializo la memoria con tamanio 130
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Tamanio máximo recibido de FS: 20
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se creo el segmento ANIMALES
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se creo el segmento POSTRES
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se agrego una página al segmento ANIMALES
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se agrego el dato GATO al marco 0
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se agrego una página al segmento ANIMALES
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se agrego el dato MONO al marco 1
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se agrego una página al segmento POSTRES
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se agrego el dato FLAN al marco 2
+[INFO] 18:23:40:529 memoryPool/(2251:2251): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:23:46:463 memoryPool/(2251:2251): sock: 5
+[INFO] 18:23:46:463 memoryPool/(2251:2251): Bytes recibidos: 10
+[INFO] 18:23:46:463 memoryPool/(2251:2251): Buffer 0011ANIMAL29
+
+[INFO] 18:23:46:463 memoryPool/(2251:2251): Limpiando la memoria
+[INFO] 18:23:46:463 memoryPool/(2251:2251): Memoria limpia, adiós mundo cruel
+[INFO] 18:24:35:553 memoryPool/(2302:2302): Se inicializo la memoria con tamanio 130
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Tamanio máximo recibido de FS: 20
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se creo el segmento ANIMALES
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se creo el segmento POSTRES
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se agrego una página al segmento ANIMALES
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se agrego el dato GATO al marco 0
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se agrego una página al segmento ANIMALES
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se agrego el dato MONO al marco 1
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se agrego una página al segmento POSTRES
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se agrego el dato FLAN al marco 2
+[INFO] 18:24:35:561 memoryPool/(2302:2302): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:24:37:748 memoryPool/(2302:2302): sock: 5
+[INFO] 18:24:37:749 memoryPool/(2302:2302): Bytes recibidos: 10
+[INFO] 18:24:37:749 memoryPool/(2302:2302): Buffer 0011ANIMAL61
+
+[INFO] 18:24:37:749 memoryPool/(2302:2302): Limpiando la memoria
+[INFO] 18:24:37:749 memoryPool/(2302:2302): Memoria limpia, adiós mundo cruel
+[INFO] 18:25:01:95 memoryPool/(2350:2350): Se inicializo la memoria con tamanio 130
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Tamanio máximo recibido de FS: 20
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se creo el segmento ANIMALES
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se creo el segmento POSTRES
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se agrego una página al segmento ANIMALES
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se agrego el dato GATO al marco 0
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se agrego una página al segmento ANIMALES
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se agrego el dato MONO al marco 1
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se agrego una página al segmento POSTRES
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se agrego el dato FLAN al marco 2
+[INFO] 18:25:01:96 memoryPool/(2350:2350): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:25:05:575 memoryPool/(2350:2350): sock: 5
+[INFO] 18:25:05:575 memoryPool/(2350:2350): Bytes recibidos: 10
+[INFO] 18:25:05:575 memoryPool/(2350:2350): Buffer 0011ANIMAL6
+
+[INFO] 18:25:05:575 memoryPool/(2350:2350): Limpiando la memoria
+[INFO] 18:25:05:575 memoryPool/(2350:2350): Memoria limpia, adiós mundo cruel
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Se inicializo la memoria con tamanio 130
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Tamanio máximo recibido de FS: 20
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Se creo el segmento ANIMALES
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Se creo el segmento POSTRES
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Se agrego una página al segmento ANIMALES
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Se agrego el dato GATO al marco 0
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:25:21:409 memoryPool/(2392:2392): Se agrego una página al segmento ANIMALES
+[INFO] 18:25:21:410 memoryPool/(2392:2392): Se agrego el dato MONO al marco 1
+[INFO] 18:25:21:410 memoryPool/(2392:2392): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:25:21:410 memoryPool/(2392:2392): Se agrego una página al segmento POSTRES
+[INFO] 18:25:21:410 memoryPool/(2392:2392): Se agrego el dato FLAN al marco 2
+[INFO] 18:25:21:410 memoryPool/(2392:2392): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:25:23:462 memoryPool/(2392:2392): sock: 5
+[INFO] 18:25:23:463 memoryPool/(2392:2392): Bytes recibidos: 10
+[INFO] 18:25:23:463 memoryPool/(2392:2392): Buffer 0011ANIMAL10
+
+[INFO] 18:25:23:463 memoryPool/(2392:2392): Limpiando la memoria
+[INFO] 18:25:23:464 memoryPool/(2392:2392): Memoria limpia, adiós mundo cruel
+[INFO] 18:26:27:805 memoryPool/(2527:2527): Se inicializo la memoria con tamanio 130
+[INFO] 18:26:27:821 memoryPool/(2527:2527): Tamanio máximo recibido de FS: 20
+[INFO] 18:26:27:821 memoryPool/(2527:2527): Se creo el segmento ANIMALES
+[INFO] 18:26:27:821 memoryPool/(2527:2527): Se creo el segmento POSTRES
+[INFO] 18:26:27:821 memoryPool/(2527:2527): Se agrego una página al segmento ANIMALES
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se agrego el dato GATO al marco 0
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se agrego una página al segmento ANIMALES
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se agrego el dato MONO al marco 1
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se agrego una página al segmento POSTRES
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se agrego el dato FLAN al marco 2
+[INFO] 18:26:27:822 memoryPool/(2527:2527): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:26:31:782 memoryPool/(2527:2527): sock: 5
+[INFO] 18:26:31:782 memoryPool/(2527:2527): Bytes recibidos: 14
+[INFO] 18:26:31:782 memoryPool/(2527:2527): Buffer 0011ANIMALES;1� 
+
+[INFO] 18:26:31:782 memoryPool/(2527:2527): Limpiando la memoria
+[INFO] 18:26:31:782 memoryPool/(2527:2527): Memoria limpia, adiós mundo cruel
+[INFO] 18:27:22:693 memoryPool/(2551:2551): Se inicializo la memoria con tamanio 130
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Tamanio máximo recibido de FS: 20
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se creo el segmento ANIMALES
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se creo el segmento POSTRES
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se agrego una página al segmento ANIMALES
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se agrego el dato GATO al marco 0
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se agrego una página al segmento ANIMALES
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se agrego el dato MONO al marco 1
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se agrego una página al segmento POSTRES
+[INFO] 18:27:22:694 memoryPool/(2551:2551): Se agrego el dato FLAN al marco 2
+[INFO] 18:27:22:700 memoryPool/(2551:2551): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:29:28:392 memoryPool/(2551:2551): sock: 5
+[INFO] 18:29:28:392 memoryPool/(2551:2551): Bytes recibidos: 14
+[INFO] 18:29:28:392 memoryPool/(2551:2551): Buffer 
+
+[INFO] 18:29:28:393 memoryPool/(2551:2551): Limpiando la memoria
+[INFO] 18:29:28:393 memoryPool/(2551:2551): Memoria limpia, adiós mundo cruel
+[INFO] 18:30:37:94 memoryPool/(2598:2598): Se inicializo la memoria con tamanio 130
+[INFO] 18:30:37:96 memoryPool/(2598:2598): Tamanio máximo recibido de FS: 20
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se creo el segmento ANIMALES
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se creo el segmento POSTRES
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se agrego una página al segmento ANIMALES
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se agrego el dato GATO al marco 0
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se agrego una página al segmento ANIMALES
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se agrego el dato MONO al marco 1
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se agrego una página al segmento POSTRES
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se agrego el dato FLAN al marco 2
+[INFO] 18:30:37:97 memoryPool/(2598:2598): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:30:44:906 memoryPool/(2598:2598): sock: 5
+[INFO] 18:30:44:908 memoryPool/(2598:2598): Bytes recibidos: 14
+[INFO] 18:30:44:909 memoryPool/(2598:2598): Buffer 
+
+[INFO] 18:30:44:909 memoryPool/(2598:2598): Limpiando la memoria
+[INFO] 18:30:44:909 memoryPool/(2598:2598): Memoria limpia, adiós mundo cruel
+[INFO] 18:31:01:180 memoryPool/(2621:2621): Se inicializo la memoria con tamanio 130
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Tamanio máximo recibido de FS: 20
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se creo el segmento ANIMALES
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se creo el segmento POSTRES
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se agrego una página al segmento ANIMALES
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se agrego el dato GATO al marco 0
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se agrego una página al segmento ANIMALES
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se agrego el dato MONO al marco 1
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se agrego una página al segmento POSTRES
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se agrego el dato FLAN al marco 2
+[INFO] 18:31:01:185 memoryPool/(2621:2621): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:31:46:69 memoryPool/(2621:2621): sock: 5
+[INFO] 18:31:46:70 memoryPool/(2621:2621): Bytes recibidos: 14
+[INFO] 18:31:46:70 memoryPool/(2621:2621): Buffer 
+
+[INFO] 18:31:46:70 memoryPool/(2621:2621): Limpiando la memoria
+[INFO] 18:31:46:70 memoryPool/(2621:2621): Memoria limpia, adiós mundo cruel
+[INFO] 18:32:00:785 memoryPool/(2648:2648): Se inicializo la memoria con tamanio 130
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Tamanio máximo recibido de FS: 20
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se creo el segmento ANIMALES
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se creo el segmento POSTRES
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se agrego una página al segmento ANIMALES
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se agrego el dato GATO al marco 0
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se agrego una página al segmento ANIMALES
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se agrego el dato MONO al marco 1
+[INFO] 18:32:00:786 memoryPool/(2648:2648): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:32:00:787 memoryPool/(2648:2648): Se agrego una página al segmento POSTRES
+[INFO] 18:32:00:787 memoryPool/(2648:2648): Se agrego el dato FLAN al marco 2
+[INFO] 18:32:00:787 memoryPool/(2648:2648): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:33:02:453 memoryPool/(2648:2648): sock: 5
+[INFO] 18:33:02:453 memoryPool/(2648:2648): Bytes recibidos: 2
+[INFO] 18:33:02:454 memoryPool/(2648:2648): Buffer 
+
+[INFO] 18:33:02:454 memoryPool/(2648:2648): Limpiando la memoria
+[INFO] 18:33:02:454 memoryPool/(2648:2648): Memoria limpia, adiós mundo cruel
+[INFO] 18:33:19:47 memoryPool/(2680:2680): Se inicializo la memoria con tamanio 130
+[INFO] 18:33:19:52 memoryPool/(2680:2680): Tamanio máximo recibido de FS: 20
+[INFO] 18:33:19:52 memoryPool/(2680:2680): Se creo el segmento ANIMALES
+[INFO] 18:33:19:52 memoryPool/(2680:2680): Se creo el segmento POSTRES
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se agrego una página al segmento ANIMALES
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se agrego el dato GATO al marco 0
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se agrego una página al segmento ANIMALES
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se agrego el dato MONO al marco 1
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se agrego una página al segmento POSTRES
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se agrego el dato FLAN al marco 2
+[INFO] 18:33:19:53 memoryPool/(2680:2680): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:33:21:994 memoryPool/(2680:2680): sock: 5
+[INFO] 18:33:21:994 memoryPool/(2680:2680): Bytes recibidos: 14
+[INFO] 18:33:21:994 memoryPool/(2680:2680): Buffer 
+
+[INFO] 18:33:21:994 memoryPool/(2680:2680): Limpiando la memoria
+[INFO] 18:33:21:995 memoryPool/(2680:2680): Memoria limpia, adiós mundo cruel
+[INFO] 18:35:21:724 memoryPool/(2713:2713): Se inicializo la memoria con tamanio 130
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Tamanio máximo recibido de FS: 20
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se creo el segmento ANIMALES
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se creo el segmento POSTRES
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se agrego una página al segmento ANIMALES
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se agrego el dato GATO al marco 0
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se agrego una página al segmento ANIMALES
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se agrego el dato MONO al marco 1
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se agrego una página al segmento POSTRES
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se agrego el dato FLAN al marco 2
+[INFO] 18:35:21:729 memoryPool/(2713:2713): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:36:47:749 memoryPool/(2713:2713): sock: 5
+[INFO] 18:36:47:750 memoryPool/(2713:2713): Bytes recibidos: 14
+[INFO] 18:36:47:750 memoryPool/(2713:2713): Buffer 
+
+[INFO] 18:36:47:750 memoryPool/(2713:2713): Limpiando la memoria
+[INFO] 18:36:47:750 memoryPool/(2713:2713): Memoria limpia, adiós mundo cruel
+[INFO] 18:37:40:222 memoryPool/(2774:2774): Se inicializo la memoria con tamanio 130
+[INFO] 18:37:40:226 memoryPool/(2774:2774): Tamanio máximo recibido de FS: 20
+[INFO] 18:37:40:226 memoryPool/(2774:2774): Se creo el segmento ANIMALES
+[INFO] 18:37:40:226 memoryPool/(2774:2774): Se creo el segmento POSTRES
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se agrego una página al segmento ANIMALES
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se agrego el dato GATO al marco 0
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se agrego una página al segmento ANIMALES
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se agrego el dato MONO al marco 1
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se agrego una página al segmento POSTRES
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se agrego el dato FLAN al marco 2
+[INFO] 18:37:40:227 memoryPool/(2774:2774): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:37:41:207 memoryPool/(2788:2788): Se inicializo la memoria con tamanio 130
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Tamanio máximo recibido de FS: 20
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se creo el segmento ANIMALES
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se creo el segmento POSTRES
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se agrego una página al segmento ANIMALES
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se agrego el dato GATO al marco 0
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se agrego una página al segmento ANIMALES
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se agrego el dato MONO al marco 1
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se agrego una página al segmento POSTRES
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se agrego el dato FLAN al marco 2
+[INFO] 18:37:41:210 memoryPool/(2788:2788): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:37:51:927 memoryPool/(2774:2774): sock: 5
+[INFO] 18:37:51:928 memoryPool/(2774:2774): Bytes recibidos: 14
+[INFO] 18:37:51:929 memoryPool/(2774:2774): Buffer 
+
+[INFO] 18:37:51:929 memoryPool/(2774:2774): Limpiando la memoria
+[INFO] 18:37:51:929 memoryPool/(2774:2774): Memoria limpia, adiós mundo cruel
+[INFO] 18:39:31:772 memoryPool/(2821:2821): Se inicializo la memoria con tamanio 130
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Tamanio máximo recibido de FS: 20
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se creo el segmento ANIMALES
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se creo el segmento POSTRES
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se agrego una página al segmento ANIMALES
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se agrego el dato GATO al marco 0
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se agrego una página al segmento ANIMALES
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se agrego el dato MONO al marco 1
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:39:31:780 memoryPool/(2821:2821): Se agrego una página al segmento POSTRES
+[INFO] 18:39:31:781 memoryPool/(2821:2821): Se agrego el dato FLAN al marco 2
+[INFO] 18:39:31:781 memoryPool/(2821:2821): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:40:59:295 memoryPool/(2821:2821): sock: 5
+[INFO] 18:40:59:296 memoryPool/(2821:2821): Bytes recibidos: 14
+[INFO] 18:40:59:296 memoryPool/(2821:2821): Buffer 0011ANIMALES;1� 
+
+[INFO] 18:40:59:296 memoryPool/(2821:2821): Limpiando la memoria
+[INFO] 18:40:59:296 memoryPool/(2821:2821): Memoria limpia, adiós mundo cruel
+[INFO] 18:42:00:463 memoryPool/(2862:2862): Se inicializo la memoria con tamanio 130
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Tamanio máximo recibido de FS: 20
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se creo el segmento ANIMALES
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se creo el segmento POSTRES
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se agrego una página al segmento ANIMALES
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se agrego el dato GATO al marco 0
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se agrego una página al segmento ANIMALES
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se agrego el dato MONO al marco 1
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se agrego una página al segmento POSTRES
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se agrego el dato FLAN al marco 2
+[INFO] 18:42:00:473 memoryPool/(2862:2862): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:42:48:425 memoryPool/(2862:2862): sock: 5
+[INFO] 18:42:48:434 memoryPool/(2862:2862): Bytes recibidos: 14
+[INFO] 18:42:48:434 memoryPool/(2862:2862): Buffer 
+
+[INFO] 18:42:48:434 memoryPool/(2862:2862): Limpiando la memoria
+[INFO] 18:42:48:435 memoryPool/(2862:2862): Memoria limpia, adiós mundo cruel
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se inicializo la memoria con tamanio 130
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Tamanio máximo recibido de FS: 20
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se creo el segmento ANIMALES
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se creo el segmento POSTRES
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se agrego una página al segmento ANIMALES
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se agrego el dato GATO al marco 0
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se agrego una página al segmento ANIMALES
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se agrego el dato MONO al marco 1
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se agrego una página al segmento POSTRES
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se agrego el dato FLAN al marco 2
+[INFO] 18:46:26:430 memoryPool/(2964:2964): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:47:17:10 memoryPool/(2964:2964): sock: 5
+[INFO] 18:47:17:11 memoryPool/(2964:2964): Bytes recibidos: 14
+[INFO] 18:47:17:11 memoryPool/(2964:2964): Buffer 
+
+[INFO] 18:47:17:11 memoryPool/(2964:2964): Limpiando la memoria
+[INFO] 18:47:17:12 memoryPool/(2964:2964): Memoria limpia, adiós mundo cruel
+[INFO] 18:47:22:853 memoryPool/(3021:3021): Se inicializo la memoria con tamanio 130
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Tamanio máximo recibido de FS: 20
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se creo el segmento ANIMALES
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se creo el segmento POSTRES
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se agrego una página al segmento ANIMALES
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se agrego el dato GATO al marco 0
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se agrego una página al segmento ANIMALES
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se agrego el dato MONO al marco 1
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se agrego una página al segmento POSTRES
+[INFO] 18:47:22:857 memoryPool/(3021:3021): Se agrego el dato FLAN al marco 2
+[INFO] 18:47:22:858 memoryPool/(3021:3021): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:47:27:871 memoryPool/(3021:3021): sock: 5
+[INFO] 18:47:27:871 memoryPool/(3021:3021): Bytes recibidos: 14
+[INFO] 18:47:27:871 memoryPool/(3021:3021): Buffer 
+
+[INFO] 18:47:27:871 memoryPool/(3021:3021): Limpiando la memoria
+[INFO] 18:47:27:871 memoryPool/(3021:3021): Memoria limpia, adiós mundo cruel
+[INFO] 18:50:07:184 memoryPool/(3064:3064): Se inicializo la memoria con tamanio 130
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Tamanio máximo recibido de FS: 20
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Se creo el segmento ANIMALES
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Se creo el segmento POSTRES
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Se agrego una página al segmento ANIMALES
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Se agrego el dato GATO al marco 0
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Se agrego una página al segmento ANIMALES
+[INFO] 18:50:07:192 memoryPool/(3064:3064): Se agrego el dato MONO al marco 1
+[INFO] 18:50:07:193 memoryPool/(3064:3064): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:50:07:193 memoryPool/(3064:3064): Se agrego una página al segmento POSTRES
+[INFO] 18:50:07:193 memoryPool/(3064:3064): Se agrego el dato FLAN al marco 2
+[INFO] 18:50:07:193 memoryPool/(3064:3064): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 18:50:20:979 memoryPool/(3064:3064): sock: 5
+[INFO] 18:50:20:980 memoryPool/(3064:3064): Bytes recibidos: 14
+[INFO] 18:50:20:980 memoryPool/(3064:3064): Buffer 0011ANIMALES;1� 
+
+[INFO] 18:50:20:982 memoryPool/(3064:3064): Limpiando la memoria
+[INFO] 18:50:20:983 memoryPool/(3064:3064): Memoria limpia, adiós mundo cruel
+[INFO] 18:58:47:573 memoryPool/(3260:3260): Se inicializo la memoria con tamanio 130
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Tamanio máximo recibido de FS: 20
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se creo el segmento ANIMALES
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se creo el segmento POSTRES
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se agrego una página al segmento ANIMALES
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se agrego el dato GATO al marco 0
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se agrego una página al segmento ANIMALES
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se agrego el dato MONO al marco 1
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se agrego una página al segmento POSTRES
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se agrego el dato FLAN al marco 2
+[INFO] 18:58:47:574 memoryPool/(3260:3260): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 19:02:39:389 memoryPool/(3260:3260): sock: 47
+[INFO] 19:02:39:390 memoryPool/(3260:3260): Bytes recibidos: -1
+[INFO] 19:02:39:390 memoryPool/(3260:3260): Buffer �Wj���p:574
+
+[INFO] 19:02:39:390 memoryPool/(3260:3260): Limpiando la memoria
+[INFO] 19:05:59:631 memoryPool/(3355:3355): Se inicializo la memoria con tamanio 130
+[INFO] 19:05:59:645 memoryPool/(3355:3355): Tamanio máximo recibido de FS: 20
+[INFO] 19:05:59:645 memoryPool/(3355:3355): Se creo el segmento ANIMALES
+[INFO] 19:05:59:645 memoryPool/(3355:3355): Se creo el segmento POSTRES
+[INFO] 19:05:59:645 memoryPool/(3355:3355): Se agrego una página al segmento ANIMALES
+[INFO] 19:05:59:645 memoryPool/(3355:3355): Se agrego el dato GATO al marco 0
+[INFO] 19:05:59:648 memoryPool/(3355:3355): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 19:05:59:648 memoryPool/(3355:3355): Se agrego una página al segmento ANIMALES
+[INFO] 19:05:59:648 memoryPool/(3355:3355): Se agrego el dato MONO al marco 1
+[INFO] 19:05:59:648 memoryPool/(3355:3355): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 19:05:59:649 memoryPool/(3355:3355): Se agrego una página al segmento POSTRES
+[INFO] 19:05:59:649 memoryPool/(3355:3355): Se agrego el dato FLAN al marco 2
+[INFO] 19:05:59:653 memoryPool/(3355:3355): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 19:06:17:10 memoryPool/(3355:3355): sock: 47
+[INFO] 19:06:17:10 memoryPool/(3355:3355): Bytes recibidos: -1
+[INFO] 19:06:17:10 memoryPool/(3355:3355): Buffer �gr��a�	:653
+
+[INFO] 19:06:17:11 memoryPool/(3355:3355): Limpiando la memoria
+[INFO] 19:07:28:774 memoryPool/(3421:3421): Se inicializo la memoria con tamanio 130
+[INFO] 19:07:28:776 memoryPool/(3421:3421): Tamanio máximo recibido de FS: 20
+[INFO] 19:07:28:777 memoryPool/(3421:3421): Se creo el segmento ANIMALES
+[INFO] 19:07:28:777 memoryPool/(3421:3421): Se creo el segmento POSTRES
+[INFO] 19:07:28:777 memoryPool/(3421:3421): Se agrego una página al segmento ANIMALES
+[INFO] 19:07:28:777 memoryPool/(3421:3421): Se agrego el dato GATO al marco 0
+[INFO] 19:07:28:777 memoryPool/(3421:3421): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 19:07:28:778 memoryPool/(3421:3421): Se agrego una página al segmento ANIMALES
+[INFO] 19:07:28:778 memoryPool/(3421:3421): Se agrego el dato MONO al marco 1
+[INFO] 19:07:28:778 memoryPool/(3421:3421): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 19:07:28:778 memoryPool/(3421:3421): Se agrego una página al segmento POSTRES
+[INFO] 19:07:28:778 memoryPool/(3421:3421): Se agrego el dato FLAN al marco 2
+[INFO] 19:07:28:778 memoryPool/(3421:3421): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 19:07:33:374 memoryPool/(3421:3421): sock: 5
+[INFO] 19:07:33:374 memoryPool/(3421:3421): Bytes recibidos: 14
+[INFO] 19:07:33:374 memoryPool/(3421:3421): Buffer 
+
+[INFO] 19:07:33:374 memoryPool/(3421:3421): Limpiando la memoria
+[INFO] 19:07:33:374 memoryPool/(3421:3421): Memoria limpia, adiós mundo cruel
+[INFO] 19:09:08:872 memoryPool/(3450:3450): Se inicializo la memoria con tamanio 130
+[INFO] 19:09:08:876 memoryPool/(3450:3450): Tamanio máximo recibido de FS: 20
+[INFO] 19:09:08:876 memoryPool/(3450:3450): Se creo el segmento ANIMALES
+[INFO] 19:09:08:876 memoryPool/(3450:3450): Se creo el segmento POSTRES
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se agrego una página al segmento ANIMALES
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se agrego el dato GATO al marco 0
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se agrego una página al segmento ANIMALES
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se agrego el dato MONO al marco 1
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se agrego una página al segmento POSTRES
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se agrego el dato FLAN al marco 2
+[INFO] 19:09:08:877 memoryPool/(3450:3450): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 19:09:14:869 memoryPool/(3450:3450): sock: 5
+[INFO] 19:09:14:869 memoryPool/(3450:3450): Bytes recibidos: 14
+[INFO] 19:09:14:869 memoryPool/(3450:3450): Buffer 
+
+[INFO] 19:09:14:869 memoryPool/(3450:3450): Limpiando la memoria
+[INFO] 19:09:14:869 memoryPool/(3450:3450): Memoria limpia, adiós mundo cruel
+[INFO] 19:09:36:151 memoryPool/(3491:3491): Se inicializo la memoria con tamanio 130
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Tamanio máximo recibido de FS: 20
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se creo el segmento ANIMALES
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se creo el segmento POSTRES
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se agrego una página al segmento ANIMALES
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se agrego el dato GATO al marco 0
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se agrego una página al segmento ANIMALES
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se agrego el dato MONO al marco 1
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se agrego una página al segmento POSTRES
+[INFO] 19:09:36:162 memoryPool/(3491:3491): Se agrego el dato FLAN al marco 2
+[INFO] 19:09:36:163 memoryPool/(3491:3491): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 19:09:47:828 memoryPool/(3491:3491): sock: 5
+[INFO] 19:09:47:828 memoryPool/(3491:3491): Bytes recibidos: 14
+[INFO] 19:09:47:828 memoryPool/(3491:3491): Buffer 
+
+[INFO] 19:09:47:828 memoryPool/(3491:3491): Limpiando la memoria
+[INFO] 19:09:47:828 memoryPool/(3491:3491): Memoria limpia, adiós mundo cruel
+[INFO] 19:10:06:279 memoryPool/(3513:3513): Se inicializo la memoria con tamanio 130
+[INFO] 19:10:06:280 memoryPool/(3513:3513): Tamanio máximo recibido de FS: 20
+[INFO] 19:10:06:280 memoryPool/(3513:3513): Se creo el segmento ANIMALES
+[INFO] 19:10:06:280 memoryPool/(3513:3513): Se creo el segmento POSTRES
+[INFO] 19:10:06:280 memoryPool/(3513:3513): Se agrego una página al segmento ANIMALES
+[INFO] 19:10:06:280 memoryPool/(3513:3513): Se agrego el dato GATO al marco 0
+[INFO] 19:10:06:281 memoryPool/(3513:3513): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 19:10:06:281 memoryPool/(3513:3513): Se agrego una página al segmento ANIMALES
+[INFO] 19:10:06:281 memoryPool/(3513:3513): Se agrego el dato MONO al marco 1
+[INFO] 19:10:06:281 memoryPool/(3513:3513): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 19:10:06:281 memoryPool/(3513:3513): Se agrego una página al segmento POSTRES
+[INFO] 19:10:06:281 memoryPool/(3513:3513): Se agrego el dato FLAN al marco 2
+[INFO] 19:10:06:281 memoryPool/(3513:3513): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 19:10:10:388 memoryPool/(3513:3513): sock: 5
+[INFO] 19:10:10:389 memoryPool/(3513:3513): Bytes recibidos: 14
+[INFO] 19:10:10:389 memoryPool/(3513:3513): Buffer 
+
+[INFO] 19:10:10:389 memoryPool/(3513:3513): Limpiando la memoria
+[INFO] 19:10:10:389 memoryPool/(3513:3513): Memoria limpia, adiós mundo cruel
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se inicializo la memoria con tamanio 130
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Tamanio máximo recibido de FS: 20
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se creo el segmento ANIMALES
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se creo el segmento POSTRES
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego una página al segmento ANIMALES
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego el dato GATO al marco 0
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego una página al segmento ANIMALES
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego el dato MONO al marco 1
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego una página al segmento POSTRES
+[INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego el dato FLAN al marco 2
+[INFO] 19:10:47:920 memoryPool/(3535:3535): Se inserto al segmento POSTRES el valor FLAN

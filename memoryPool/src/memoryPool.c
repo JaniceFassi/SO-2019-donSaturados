@@ -163,23 +163,21 @@ int main(void) {
 
 	for(int i =0; i <1; i++){
 
-	int cliente = accept(server, (void*) &kernelCliente, (socklen_t*)&tamanioDireccion);
-	if(cliente<0){
-			perror("error en accept");
-		}
+	u_int16_t cliente;
+	acceptConexion(server, &cliente,0);
 
 	printf("Se conecto un cliente\n");
 	char *buffer = malloc(15);
-	char* puto = malloc(15);
+	char* puto = malloc(14);
 
 
 	log_info(logger,"sock: %i",cliente);
-	//int b= recv(cliente, buffer, 14, MSG_WAITALL);
-	int b = recvData(cliente, buffer, 14);
+	int b= recv(cliente, buffer, 14, 0);
+	//int b = recvData(cliente, buffer, 14);
 	//buffer[b]= "\0";
-	strcpy(puto, buffer);
+	//strcpy(puto, buffer);
 	log_info(logger, "Bytes recibidos: %d", b);
-	log_info(logger, "Buffer %s", puto);
+	log_info(logger, "Buffer %s\n", buffer);
 
 
 	//pthread_t unHilo;
@@ -387,7 +385,6 @@ t_config* read_config() {
 	 //recibir rta
 	 close(lfsSock);
 
-	 return 0;
  }
 
  void createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
