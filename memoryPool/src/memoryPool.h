@@ -28,6 +28,8 @@
 
 
 //VARIABLES GLOBALES
+t_log *logger;
+t_config *configuracion;
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* listaDeUsos;

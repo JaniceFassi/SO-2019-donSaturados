@@ -199,17 +199,22 @@ int main(void) {
 //-------------------------------------------------------//
 
 void inicializar(){
-	//t_log *logger = init_logger();
-	t_config *configuracion = read_config();
+	logger = init_logger();
+	configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
 	//int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
 	//int ipFS = config_get_int_value(configuracion,"IP_FS");
 
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
 
+
+	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
 	maxValue = 20;
 	//maxValue = handshakeConLissandra(puertoFS,ipFS);
+
+	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
+
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
@@ -227,7 +232,7 @@ void inicializar(){
 			list_add(tablaMarcos, unMarco);
 		}
 
-	config_destroy(configuracion);
+
 }
 
 segmento *crearSegmento(char* nombre){
@@ -235,6 +240,7 @@ segmento *crearSegmento(char* nombre){
 	nuevoSegmento->nombreTabla = malloc(strlen(nombre)+1);
 	strcpy(nuevoSegmento->nombreTabla,nombre);
 	nuevoSegmento->tablaPaginas = list_create();
+	log_info(logger, "Se creo el segmento %s", nombre);
 
 	return nuevoSegmento;
 }
@@ -243,18 +249,16 @@ pagina *crearPagina(){
 	pagina *pag = malloc(sizeof(pagina));
 	pag->nroMarco = primerMarcoLibre();
 	if(pag->nroMarco == -1){
-		printf("No hay espacio para crear una pagina");
+		log_error(logger, "No hay espacio para crear una pagina");
+		//acá hay que revisar como manejar el error
 	}
 	return pag;
-}
-
-void agregarSegmento(segmento* nuevo){
-	list_add(tablaSegmentos,nuevo);
 }
 
 void agregarPagina(segmento *seg, pagina *pag){
 
 	list_add(seg->tablaPaginas, pag);
+	log_info(logger, "Se agrego una página al segmento %s", seg->nombreTabla);
 
 }
 
@@ -368,6 +372,7 @@ t_config* read_config() {
 
 	 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 	 char* paqueteListo = empaquetar(1, datos);
+	 //BORRAR PRINTF
 	 printf("EL PAQUETE ES: %s\n", paqueteListo);
 	 //enviar paquete y recibir rta
 
@@ -411,11 +416,12 @@ t_config* read_config() {
  	memcpy(memoria+offset, &key,sizeof(u_int16_t));
  	int offset2 = offset + sizeof(u_int16_t);
  	memcpy(memoria+offset2, value, strlen(value)+1);
+ 	log_info(logger, "Se agrego el dato %s al marco %d", value, pag->nroMarco);
  }
 
 
  int primerMarcoLibre(){
- 	int posMarco = 0;
+ 	int posMarco = -1;
  	int i=0;
  	marco *unMarco;
 
@@ -482,8 +488,7 @@ t_config* read_config() {
 		 }
 	 }
 	 else{
-		 printf("hacete un jorunal \n");
-		 //hacer journal por memoria llena de flags modificados
+		mJournal();
 	 }
 
 	 liberarMarco(aux->nroMarco);
@@ -611,7 +616,7 @@ void marcoDestroy(marco *unMarco){
 }
 
 void finalizar(){
-
+	log_info(logger, "Limpiando la memoria");
 	for(int i = 0; i<(tablaSegmentos->elements_count); i++){
 		segmento *seg = list_get(tablaSegmentos, i);
 		eliminarSegmento(seg);
@@ -620,6 +625,9 @@ void finalizar(){
 	eliminarMarcos();
 
 	free(memoria);
+	config_destroy(configuracion);
+	log_info(logger, "Memoria limpia, adiós mundo cruel");
+	log_destroy(logger);
 
 }
 
@@ -662,21 +670,26 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarDato(timestampActual, key, valor, pag);
 		pag->modificado = 1;
 	}
+	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
 
 }
 
 void mSelect(char* nombreTabla,u_int16_t key){
+	//BORRAR LOS PRINTFS
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
 	pagina* pNueva;
 	char* valorPagNueva;
+	char* valor;
 
 	if(nuevo!= NULL){
 
 		pNueva = buscarPaginaConKey(nuevo,key);
 
 		if(pNueva != NULL){
-			printf("El valor es: %s\n",(char*)conseguirValor(pNueva));
+			valor = (char*)conseguirValor(pNueva);
+			printf("El valor es: %s\n", valor);
+			log_info(logger, "Se seleccionó el valor %s", valor);
 		}
 		else{
 			pNueva = crearPagina();
@@ -685,7 +698,10 @@ void mSelect(char* nombreTabla,u_int16_t key){
 			agregarPagina(nuevo,pNueva);
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
 			agregarAListaUsos(pNueva->nroMarco);
-		    printf("El valor es: %s\n",(char*)conseguirValor(pNueva));
+			valor = (char*)conseguirValor(pNueva);
+			printf("El valor es: %s\n", valor);
+			log_info(logger, "Se seleccionó el valor %s", valor);
+
 		}
 	}
 	else{
@@ -697,9 +713,10 @@ void mSelect(char* nombreTabla,u_int16_t key){
 		agregarDato(time(NULL),key,valorPagNueva,pNueva);
 		agregarAListaUsos(pNueva->nroMarco);
 		printf("El valor es: %s\n",valorPagNueva);
+		log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
+
 	}
 
-	//Los casos en los que requiera pedir datos a lissandra no funcionan ya que pedirALissandra todavia no esta hecha.
 
 }
 
@@ -729,6 +746,7 @@ void mDrop(char* nombreTabla){
 	if(nuevo != NULL){
 
 		eliminarSegmento(nuevo);
+		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
 	}
 	dropLissandra(nombreTabla);
@@ -737,7 +755,7 @@ void mDrop(char* nombreTabla){
 
 
 void mJournal(){
-
+	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos");
 	//bloquear tabla de segmentos entera
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
 		char* nombreSegmento;
@@ -757,7 +775,9 @@ void mJournal(){
 		}
 		list_destroy(paginasMod);
 	}
+	log_info(logger, "Fin del journal, procede a borrar datos existentes");
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
+	log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 }
 
 void mGossip(){
