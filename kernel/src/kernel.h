@@ -9,6 +9,7 @@
 #define KERNEL_H_
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <readline/history.h>
@@ -23,6 +24,7 @@
 #include<socketSaturados.h>
 #include<pthread.h>
 #include<semaphore.h>
+#include<sys/time.h>
 
 t_log* logger;
 t_config* config;
@@ -35,6 +37,7 @@ struct memoria{
 	u_int16_t id;
 	int estado; // para saber si esta ocupada
 	int puerto; // al ser varias memorias me deberia conectar con cada una?
+	char *ip;
 };
 t_list *memorias;
 // lista de las memorias para cada criterio
@@ -96,6 +99,9 @@ struct metadataTabla * buscarMetadataTabla(char* table);
 void destruir();
 void moverAcola(t_queue * a,t_queue *b);
 void metrics();
+void describeGlobal();
+
+
 
 #endif /*KERNEL_H_*/
 
