@@ -104,7 +104,21 @@ void* recibirOperacion(void * arg){
 	return NULL;
 }
 
+int crearConexionLFS(){
+	//crea un socket para comunicarse con lfs, devuelve el file descriptor conectado
+	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
+	int ipFS = config_get_int_value(configuracion,"IP_FS");
 
+	u_int16_t *lfsServer;
+	createSocket(lfsServer);
+	struct sockaddr_in direccionLFS;
+	direccionLFS = completServer(ipFS, puertoFS);
+	int rta = conectClient(lfsServer, direccionLFS);
+	if(rta == 1){
+		return -1;
+	}
+	return lfsServer;
+}
 
 void recibirRespuesta(){
 
@@ -220,7 +234,6 @@ void inicializar(){
 	tablaSegmentos = list_create();
 	listaDeUsos = list_create();
 
-	//handshake lissandra para que nos de el maxvalue
 
 
 	//Inicializar los marcos
@@ -360,7 +373,12 @@ t_config* read_config() {
  char* selectLissandra(char* nombreTabla,u_int16_t key){
 	 char* datos = formatearSelect(nombreTabla, key);
 	 char* paqueteListo = empaquetar(0, datos);
-	 //enviar
+	 u_int16_t lfsSock = crearConexionLFS();
+	 if(lfsSock == -1){
+		 log_error(logger, "No se pudo conectar con LFS");
+	 }
+	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
+	 	 //recibir rta
 	 //recibir value
 	 //insertar el value
 	 //responder a kernel
@@ -374,7 +392,13 @@ t_config* read_config() {
 	 char* paqueteListo = empaquetar(1, datos);
 	 //BORRAR PRINTF
 	 printf("EL PAQUETE ES: %s\n", paqueteListo);
-	 //enviar paquete y recibir rta
+	 u_int16_t lfsSock = crearConexionLFS();
+	 if(lfsSock == -1){
+		 log_error(logger, "No se pudo conectar con LFS");
+	 }
+	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
+	 //recibir rta
+	 close(lfsSock);
 
 	 return 0;
  }
@@ -382,14 +406,25 @@ t_config* read_config() {
  void createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
 	 char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
 	 char* paqueteListo = empaquetar(2, datos);
-	 //enviar paqueteListo
+	 u_int16_t lfsSock = crearConexionLFS();
+	 if(lfsSock == -1){
+		 log_error(logger, "No se pudo conectar con LFS");
+	 }
+	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
 	 //recibir rta
+
+	 close(lfsSock);
  }
 
  void dropLissandra(char* nombreTabla){
 	 char* paqueteListo = empaquetar(4, nombreTabla);
-	 //enviar paqueteListo
+	 u_int16_t lfsSock = crearConexionLFS();
+	 if(lfsSock == -1){
+	 	 log_error(logger, "No se pudo conectar con LFS");
+	  }
+	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
 	 //recibir rta
+
  }
 
 
