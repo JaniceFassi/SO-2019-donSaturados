@@ -13,24 +13,29 @@
 void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
 
-	char* buffer = malloc(sizeof(char));
-	recv(cli, buffer, sizeof(char), NULL);
+	char *buffer = malloc(15);
+	log_info(logger,"sock: %i",cli);
+	//int b= recv(cli, buffer, 2, NULL);
+	int b = recvData(cli, buffer, 14);
+	//buffer[b]= "\0";
+	log_info(logger, "Bytes recibidos: %d", b);
+	log_info(logger, "Buffer %s", buffer);
 	//1byteop
 	//3bytes tamanioop
 	//linea con ;
 
-	int operacion = atoi(buffer);
-	printf("Operacion %d \n", operacion);
+	//int operacion = atoi(buffer);
+	//printf("Operacion %s \n", buffer);
 
-	char** desempaquetado;
+/*	char** desempaquetado;
 	if(operacion !=5 && operacion !=6){
-		char* tamanioPaq = malloc(sizeof(char)*2);
+		char* tamanioPaq = malloc(sizeof(char)*4);
 
 		recv(cli,tamanioPaq, sizeof(char)*3, NULL);
 		printf("Tamanio paquete %s \n", tamanioPaq);
 
 		int tamanio = atoi(tamanioPaq);
-		char* paquete = malloc(tamanio);
+		char* paquete = malloc(tamanio+1);
 
 		recv(cli, paquete, tamanio, NULL);
 		printf("Paquete %s \n", paquete);
@@ -88,8 +93,7 @@ void* recibirOperacion(void * arg){
 					break;
 
 				case 5:
-					//mJournal();
-					printf("journal\n");
+					mJournal();
 					break;
 
 				case 6:
@@ -100,7 +104,7 @@ void* recibirOperacion(void * arg){
 
 				}
 	//responder 0 si todo bien, 1 si salio mal
-
+*/
 	return NULL;
 }
 
@@ -140,68 +144,51 @@ int main(void) {
 	mInsert("POSTRES",5,"FLAN");
 	mostrarMemoria();
 
-	mJournal();
-	sleep(2);
-	mInsert("ANIMALES", 1, "PERRO");
-	mInsert("ANIMALES", 2, "COCODRILO");
-	mInsert("POSTRES",5,"HELADO");
-	mostrarMemoria();
-	long timestamp = time(NULL);
-	printf("TIMESTAMP; %ld \n", timestamp);
-	mSelect("ANIMALES", 2);
 
 
-	/* PASAR A FUNCIONES SHARED
-	struct sockaddr_in direccionServidor;
-	direccionServidor.sin_family=AF_INET;
-	direccionServidor.sin_addr.s_addr = inet_addr("127.0.0.1");
-	direccionServidor.sin_port=htons(9500);
+	u_int16_t puertoServer = config_get_int_value(configuracion, "PUERTO");
+	char* ipServer = config_get_string_value(configuracion, "IP");
+	u_int16_t server;
 
-	int servidor = socket(AF_INET,SOCK_STREAM,0);
-
-		if(servidor==-1){
-				perror("Error al crear socket\n");
-				return 1;
-			}
-
-		int activado=1;
-
-		if(setsockopt(servidor, SOL_SOCKET, SO_REUSEADDR, (void*)&activado, (socklen_t)sizeof(activado))==-1){
-				perror("Error al setear el socket\n");
-				return 1;
-			}
-
-			//INICIO DEL SERVIDOR
-		if(bind(servidor, (void*) &direccionServidor, sizeof(direccionServidor))!=0){
-				perror("Fallo el bind\n");
-				return 1;
-			}
+	int servidorCreado = createServer(ipServer, puertoServer, &server);
 
 
-		listen(servidor,100);
-		printf("Servidor escuchando\n");
-
-		struct sockaddr_in kernelCliente;
-
-		unsigned int tamanioDireccion=sizeof(kernelCliente);
-
-		for(int i =0; i <1; i++){
-
-		int cliente = accept(servidor, (void*) &kernelCliente, (socklen_t*)&tamanioDireccion);
-		if(cliente<0){
-				perror("error en accept");
-			}
-
-		printf("Se conecto un cliente\n");
+	listen(server,100);
+	printf("Servidor escuchando\n");
 
 
-		pthread_t unHilo;
-		pthread_create(&unHilo, NULL, recibirOperacion, &cliente);
-		pthread_join(unHilo, NULL);
+	struct sockaddr_in kernelCliente;
+
+	unsigned int tamanioDireccion=sizeof(kernelCliente);
+
+	for(int i =0; i <1; i++){
+
+	int cliente = accept(server, (void*) &kernelCliente, (socklen_t*)&tamanioDireccion);
+	if(cliente<0){
+			perror("error en accept");
+		}
+
+	printf("Se conecto un cliente\n");
+	char *buffer = malloc(15);
+	char* puto = malloc(15);
+
+
+	log_info(logger,"sock: %i",cliente);
+	//int b= recv(cliente, buffer, 14, MSG_WAITALL);
+	int b = recvData(cliente, buffer, 14);
+	//buffer[b]= "\0";
+	strcpy(puto, buffer);
+	log_info(logger, "Bytes recibidos: %d", b);
+	log_info(logger, "Buffer %s", puto);
+
+
+	//pthread_t unHilo;
+	//pthread_create(&unHilo, NULL, recibirOperacion, &cliente);
+	//pthread_join(unHilo, NULL);
 
 		}
 
-*/
+
 
 	finalizar();
 

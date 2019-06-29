@@ -16,6 +16,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 
 #include<commons/log.h>
