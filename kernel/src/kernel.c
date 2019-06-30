@@ -317,19 +317,14 @@ int mySelect(char * table, char *key){
 
 	int sock = conexionMemoria(memAsignada->puerto);
 
-	//int enviados=sendData(sock,msj,strlen(msj)+1);
-//	char* m = malloc(strlen(msj)+1);
-//	strcpy(m,msj);
-	u_int16_t t=htons(strlen(msj));
-	int enviados=sendData(sock,msj,ntohs(t)+1);
-	log_info(logger,"%i",t);
-	//int enviados= send(sock,msj,strlen(m)+1,0);
+	int enviados=sendData(sock,msj,strlen(msj)+1);
 	log_info(logger,"%i",enviados);
 
+	char * resultado=malloc(2);
+	recvData(sock,resultado,1);
 
-/*	char * resultado=malloc(2);
-	recvData(sock,&resultado,1);
-
+	log_info(logger,"resultado %i" , atoi(resultado));
+	/*
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
 			sendData(sock,"6",2);//journal

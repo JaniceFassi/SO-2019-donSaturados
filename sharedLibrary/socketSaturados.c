@@ -93,7 +93,7 @@ int acceptConexion(int server,u_int16_t *socket_client,int idEsperado){
 
 	printf("\nAlguien se conecto\n");
 
-		if(recvData(client,&idRecv,sizeof(u_int16_t))!=0){
+		if(recvData(client,&idRecv,sizeof(u_int16_t))==1){
 		perror("\nNo se pudo recibir el handshake");
 		return 1;
 		}															//ARREGLAR. NO GUARDA BIEN EL ID EN idRecv. SI DEBUGUEAS TE DAS CUENTA
@@ -118,7 +118,7 @@ int sendData(u_int16_t sock ,const void *buffer ,int sizeBytes){
 		}
 	bytesSend+=bytesReturn;
 	}
-	return 0;
+	return bytesSend;
 }
 
 int recvData(u_int16_t socket,const void* buffer,int bytesToRecieve){
@@ -137,7 +137,7 @@ int recvData(u_int16_t socket,const void* buffer,int bytesToRecieve){
 	   byteRecv+= returnByte;
 	}
 
-	return 0;
+	return byteRecv;
 }
 
 void listenForClients(int server, int cantConexiones){
