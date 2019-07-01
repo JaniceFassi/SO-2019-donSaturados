@@ -459,7 +459,7 @@ t_config* read_config() {
  		}
  	}
  	else{
- 		//Habria que hacer un if para ver si esta llena pero CON FLAGS en ese caso JOURNAL
+ 		//No hace falta llamar el journal aca ya que esta adentro del LRU
  		posMarco = LRU();
  		unMarco->estaLibre = 1;
  	}
@@ -508,6 +508,9 @@ t_config* read_config() {
 	 }
 	 else{
 		mJournal();
+		nroMarcoAborrar=0;
+	    //hacer journal por memoria llena de flags modificados
+	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio
 	 }
 
 	 liberarMarco(aux->nroMarco);
@@ -799,8 +802,14 @@ void mJournal(){
 	log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 }
 
-void mGossip(){
-	printf("Hola soy gossip");
+void buscarMemorias(){}
 
+void mGossip(){
+	int retardo = config_get_int_value(configuracion, "RETARDO_GOSSIPING");
+
+		while(1){
+			buscarMemorias();
+			sleep(retardo);
+		}
 }
 
