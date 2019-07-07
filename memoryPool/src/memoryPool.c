@@ -201,8 +201,8 @@ void inicializar(){
 	logger = init_logger();
 	configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
-	//int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
-	//int ipFS = config_get_int_value(configuracion,"IP_FS");
+	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
+	int ipFS = config_get_int_value(configuracion,"IP_FS");
 
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
 
@@ -543,6 +543,20 @@ t_config* read_config() {
  	list_remove(listaDeUsos,index);
 
  }
+
+
+ void actualizarListaDeUsos(int nroMarco){
+
+ 	int tieneMismoMarco(posMarcoUsado * aux){
+ 		return aux->nroMarco == nroMarco;
+ 	}
+
+ 	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,tieneMismoMarco);
+
+ 	marcoParaActualizar->posicionDeUso = posicionUltimoUso;
+ 	posicionUltimoUso++;
+ }
+
  bool estaModificada(pagina *pag){
  	bool res = false;
  	if(pag->modificado == 1){
@@ -579,6 +593,12 @@ void* conseguirValor(pagina* pNueva){
 
 void *conseguirTimestamp(pagina *pag){
 	return ((memoria) + offsetMarco*pag->nroMarco);
+
+	//Si no entendi mal seria asi lo que quiere hernan:
+	//void* timestamp = malloc(sizeof(long));
+	//memcpy(timestamp,((memoria) + offsetMarco*pag->nroMarco),sizeof(long));
+	//return timestamp;
+
 }
 
 void *conseguirKey(pagina *pag){
@@ -696,6 +716,8 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 }
 
+
+
 void mSelect(char* nombreTabla,u_int16_t key){
 	//BORRAR LOS PRINTFS
 
@@ -712,6 +734,7 @@ void mSelect(char* nombreTabla,u_int16_t key){
 			valor = (char*)conseguirValor(pNueva);
 			printf("El valor es: %s\n", valor);
 			log_info(logger, "Se seleccionó el valor %s", valor);
+			if(pNueva->modificado == 0)actualizarListaDeUsos(pNueva->nroMarco);
 		}
 		else{
 			pNueva = crearPagina();

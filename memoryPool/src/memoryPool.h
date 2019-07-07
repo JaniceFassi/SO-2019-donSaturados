@@ -110,6 +110,7 @@ void segmentoDestroy(segmento* segParaDestruir);
 int LRU();
 void agregarListaUsos(int nroMarco);
 void eliminarDeListaUsos(int nroMarcoAEliminar);
+void actualizarListaDeUsos(int nroMarco);
 bool estaModificada(pagina *pag);
 
 //AUX SECUNDARIAS
