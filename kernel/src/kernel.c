@@ -24,21 +24,25 @@ int main(void) {
 	//inicializa memoria x archivo de configuracion
 	struct memoria *m1=malloc(sizeof(struct memoria));
 	m1->id=0;
+	m1->ip=config_get_string_value(config,"IP_MEMORIA");
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
 	m1->estado=1;// inicia disponible
 	list_add(memorias,m1);
 	list_add(criterioSC,m1);
-	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
+/*	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	pthread_t hilos[limiteProcesamiento];
 	int i=0;
 	while(i<limiteProcesamiento){
 		pthread_create(&(hilos[i]), NULL, (void*)ejecutarScripts, NULL);
 		i++;
-	}
-
-
+	}*/
+	apiKernel();
+	/*
 	// aca deberia poder conocer el resto de las memorias
 	// ademas deberia hacer un describe de las tablas actuales
+	pthread_t hiloDescribe;
+	pthread_create(&hiloDescribe, NULL, (void*)describeGlobal, NULL);
+
 	pruebas();
 	//apiKernel();
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql");
@@ -46,28 +50,19 @@ int main(void) {
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_1.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_2.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/películas.lql");
-
-	i=0;
+*/
+/*	i=0;
 	while(i<limiteProcesamiento){
 		pthread_join(hilos[i], NULL);
 		i++;
-	}
-//	parsear("DESCRIBE");
-//	parsear("DESCRIBE tablita");
+	}*/
+//	pthread_join(hiloDescribe, NULL);
 
 	//ejecutarScripts();
-	mostrarResultados();
-	destruir();
-	//char *linea=readline(">");
-	/*
-	char *a= "table1";
-	char *b= "3";
-	char* linea=malloc(40);
-	strcpy(linea,"INSERT TABLE1 3 estaba la pajara pinta");
-	parsear(linea);*/
-	//conexionMemoria();
+//	mostrarResultados();
+//	destruir();
 
-	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql");
+	ejecutarScripts();
 
 	return EXIT_SUCCESS;
 }
@@ -81,7 +76,7 @@ t_config* read_config() {
 }
 
 void apiKernel(){
-	while(1){
+	//while(1){
 		char * linea;
 		linea= readline(">");
 		if(string_starts_with(linea,"RUN")){
@@ -95,16 +90,19 @@ void apiKernel(){
 			else{
 				struct script *nuevo= malloc(sizeof(struct script));
 				nuevo->id=idScriptGlobal;
+				//sem3 wait
 				idScriptGlobal++;
+				//sem3 signal
 				nuevo->lineasLeidas=0;
 				nuevo->estado=0;
 				nuevo->modoOp=1;// Script de una sola linea
 				nuevo->input= linea;
 				queue_push(ready,nuevo);
+				//signal de ejecutar scripts?
 
 			}
 		}
-	}
+//	}
 }
 
 int conexionMemoria(int puerto){
@@ -140,7 +138,9 @@ void run(char *path){
 
 	struct script *nuevo= malloc(sizeof(struct script));
 	nuevo->id=idScriptGlobal;
+
 	idScriptGlobal++;
+
 	nuevo->lineasLeidas=0;
 	nuevo->estado=0;
 	nuevo->modoOp=0;
@@ -149,6 +149,7 @@ void run(char *path){
 	nuevo->input=string_from_format("%s", pathReady);
 
 	queue_push(ready,nuevo);
+	// signal de ejecutar scripts?
 	log_info(logger,"Script con el path %s entro a cola ready",path);
 }
 
@@ -156,6 +157,7 @@ void ejecutarScripts(){
 	int resultado=0;
 	while(terminaHilo==0){
 		if(!queue_is_empty(ready)){
+			// otro semaforo que indique que se puede pasar en vez del if?
 			// sem1 wait
 			struct script *execNuevo = queue_pop(ready);
 			queue_push(exec,execNuevo);
@@ -291,36 +293,60 @@ int mySelect(char * table, char *key){
 	char*linea=string_from_format("%s;%s",table,key);
 	int len = strlen(linea);
 	char* tamanioYop;//= malloc(4);
-	if(len>10){
+	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
 	}
 	else{
-		tamanioYop=string_from_format("%i0%i",op,len);
+		if(len>=10){
+			tamanioYop=string_from_format("%i0%i",op,len);
+		}
+		else{
+			tamanioYop=string_from_format("%i00%i",op,len);
+		}
 	}
 	char *msj=string_from_format("%s%s",tamanioYop,linea);
 
 	log_info(logger,"SELECT %s",msj);
-/*
+	log_info(logger,"mide %i",strlen(msj));
+
 	//aca fijandome la tabla deberia elegir la memoria adecuada
-	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
-	metadata = buscarMetadataTabla(table);
+	//struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+//	metadata = buscarMetadataTabla(table);
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-	memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
+	memAsignada= asignarMemoriaSegunCriterio("SC");
 
 	int sock = conexionMemoria(memAsignada->puerto);
 
-	sendData(sock,msj,strlen(msj)+1);
+	int enviados=sendData(sock,msj,strlen(msj)+1);
+	log_info(logger,"%i",enviados);
 
 	char * resultado=malloc(2);
-	recvData(sock,&resultado,1);
+	recvData(sock,resultado,1);
 
+	log_info(logger,"resultado %i" , atoi(resultado));
+	/*
 	if(atoi(resultado)!=0){
-		return -1;
+		if(atoi(resultado)==2){
+			sendData(sock,"6",2);//journal
+			recvData(sock,&resultado,1);
+			if(atoi(resultado)!=0){
+				return -1;
+			}
+			sendData(sock,msj,strlen(msj)+1);
+			recvData(sock,&resultado,1);
+			if(atoi(resultado)!=0){
+				return -1;
+			}
+		}
+		else{
+			return -1;
+		}
 	}
-	free(memAsignada);*/
+
+	free(memAsignada);
 	free(linea);
 	free(msj);
-	free(tamanioYop);
+	free(tamanioYop);*/
 	return 0;
 }
 
@@ -352,7 +378,21 @@ int insert(char* table ,char* key ,char* value){
 	recvData(sock,&resultado,1);
 
 	if(atoi(resultado)!=0){
-		return -1;
+		if(atoi(resultado)==2){
+			sendData(sock,"6",2);//journal
+			recvData(sock,&resultado,1);
+			if(atoi(resultado)!=0){
+				return -1;
+			}
+			sendData(sock,msj,strlen(msj)+1);
+			recvData(sock,&resultado,1);
+			if(atoi(resultado)!=0){
+				return -1;
+			}
+		}
+		else{
+			return -1;
+		}
 	}
 
 	free(memAsignada);*/
@@ -602,6 +642,13 @@ struct metadataTabla * buscarMetadataTabla(char* table){
 	return list_find(listaMetadata,(void*) findTabla);
 }
 
+void describeGlobal(){
+	int tiempo = config_get_int_value(config, "15000");
+	while(1){
+		sleep(tiempo/(float)1000);
+		log_info(logger,"Describe global automatico papaa");
+	}
+}
 
 
 //---------------- PRUEBAS ----------------------------
@@ -697,6 +744,8 @@ void destruir(){
 	free(exec->elements);
 	free(exec);
 }
+
+
 
 
 

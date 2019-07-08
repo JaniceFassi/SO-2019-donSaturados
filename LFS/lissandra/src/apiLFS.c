@@ -173,6 +173,13 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	list_add(directorio,nombre);
 	log_info(logger,"Se ha creado la tabla %s.",nombre);
 	free(path);
+	testT *uno=malloc(sizeof(testT));
+	uno->nombre=malloc(strlen(nombre)+1);
+	uno->time_compact=timeCompaction;
+	strcpy(uno->nombre,nombre);
+	pthread_create(&uno->hilo, NULL, &compactar,uno);
+//	compactar(nombre,timeCompaction);
+	//free(nombre);
 	return 0;
 }
 
@@ -258,7 +265,9 @@ int drop(char* nameTable){
 		int index=calcularIndexTabPorNombre(nameTable,directorio);			//	NO CALCULA BIEN EL INDEX
 		char *tabla=list_remove(directorio,index);
 		free(tabla);
-
+		int index2=calcularIndexName(nameTable);
+		testT *nuevo=list_remove(directorioP,index2);
+		liberarTest(nuevo);
 		//Eliminar carpeta
 		borrarCarpeta(pathFolder);
 		free(pathFolder);
