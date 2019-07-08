@@ -13,7 +13,6 @@ int main(void) {
 
 	theStart();
 
-	u_int16_t socket_client;
 	u_int16_t  server;
 
     // ****************PARA USAR TIEMPO DEL DUMP*************
@@ -36,28 +35,54 @@ int main(void) {
 	}
 
 	listenForClients(server,100);
+	int i=0;
 
-	while(1){
-		connectMemory(&socket_client,server);
-	}
-
-	/****************PARA USAR FUNCIONES PURAS******************/
-
-	/*create("TAB","SC",3,3000);
-	insert("TAB",0,"gato",10);
-	insert("TAB",0,"perro",11);
-	dump();
-	insert("TAB",0,"pez",12);
-	dump();
-	insert("TAB",0,"pato",10);
-//	compactar("TAB");
-	//insert("TAB",0,"pollo",4);
-	char *r=lSelect("TAB",0);
-	free(r);
-*/
+	pthread_t hiloMemoria;
+	pthread_create(&hiloMemoria,NULL,connectMemory,&server);
+	pthread_join(hiloMemoria,NULL);
 
 	theEnd();
 	return EXIT_SUCCESS;
+}
+
+void *connectMemory(u_int16_t *server){	//PRUEBA SOCKETS CON LIBRERIA
+
+	char *maxValue;
+	u_int16_t socket_client;
+
+	if(acceptConexion( *server, &socket_client,configLissandra->idEsperado)!=0){
+		return 1;
+		log_info(logger,"Conexion denegada.");
+	}
+	log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
+	if(configLissandra->tamValue<10){
+		maxValue=string_from_format("00%i",configLissandra->tamValue);
+	}else{
+		if(configLissandra->tamValue<100){
+			maxValue=string_from_format("0%i",configLissandra->tamValue);
+		}
+		else{
+		maxValue=string_from_format("%i",configLissandra->tamValue);
+		}
+	}
+
+	sendData(socket_client,maxValue,3);
+	free(maxValue);
+	close(socket_client);
+
+	u_int16_t nuevoSocketClient;
+	while(1){
+		if(acceptConexion( *server, &socket_client,configLissandra->idEsperado)!=0){
+			return 1;
+			log_info(logger,"Conexion denegada.");
+		}
+		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
+		pthread_t unHilo;
+		pthread_create(&unHilo,NULL,interactuarConMemoria,&socket_client);
+		pthread_join(unHilo,NULL);
+	}
+
+	return NULL;
 }
 
 void *interactuarConMemoria(u_int16_t *socket_cliente){
@@ -65,8 +90,10 @@ void *interactuarConMemoria(u_int16_t *socket_cliente){
 	int recibidos=0;
 	int header=0;
 	int seguir=1;
+	char *buffer=malloc(2);
+	recibidos=recvData(*socket_cliente,buffer,1);
 	while(seguir){
-		char *buffer=malloc(2);
+		buffer=malloc(2);
 		recibidos=recvData(*socket_cliente,buffer,1);
 		header=atoi(buffer);
 		if(header==5){
@@ -75,7 +102,7 @@ void *interactuarConMemoria(u_int16_t *socket_cliente){
 		exec_api(header,*socket_cliente);
 		free(buffer);
 	}
-	//return NULL;
+	return NULL;
 }
 
 
@@ -105,9 +132,9 @@ t_config* init_config() {
 }
 
 char* recibirDeMemoria(u_int16_t sock){
-	char *tam=malloc(3);
+	char *tam=malloc(4);
 	char * buffer;
-	recvData(sock,tam,2);
+	recvData(sock,tam,3);
 	int tamanio=atoi(tam);
 
 	if(tamanio==0){
@@ -120,6 +147,7 @@ char* recibirDeMemoria(u_int16_t sock){
 	free(tam);
 	return buffer;
 }
+
 char *empaquetarDescribe(t_list *lista){
 	char *paquete=NULL;
 	void concatDescribe(metaTabla *describe){
@@ -150,6 +178,7 @@ char *empaquetarDescribe(t_list *lista){
 	list_iterate(lista,(void*)concatDescribe);
 	return paquete;
 }
+
 void exec_api(op_code mode,u_int16_t sock){
 
 	char *buffer;
@@ -167,22 +196,23 @@ void exec_api(op_code mode,u_int16_t sock){
 		char *valor=lSelect(subCadena[0],keyBuscada);
 
 		if(valor==NULL){
-			respuesta=string_from_format("01");
+			respuesta=string_from_format("1");
 		}else
 		{
 			if(strlen(valor)<10){
-				respuesta=string_from_format("0000%i%s",strlen(valor),valor);
+				respuesta=string_from_format("000%i%s",strlen(valor),valor);
 			}else{
 				if(configLissandra->tamValue<100){
-					respuesta=string_from_format("000%i%s",strlen(valor),valor);
-				}else{
 					respuesta=string_from_format("00%i%s",strlen(valor),valor);
+				}else{
+					respuesta=string_from_format("0%i%s",strlen(valor),valor);
 				}
 			}
 		}
 		sendData(sock,respuesta,strlen(respuesta));
 		free(respuesta);
 		free(valor);
+		close(sock);
 		break;
 
 	case 1:
@@ -192,13 +222,14 @@ void exec_api(op_code mode,u_int16_t sock){
 		int key=atoi(subCadena[1]);
 		long time=atol(subCadena[3]);
 		if(insert(subCadena[0], key,subCadena[2],time)==1){
-			respuesta=string_from_format("11");
+			respuesta=string_from_format("1");
 		}else
 		{
-			respuesta=string_from_format("10");
+			respuesta=string_from_format("0");
 		}
 		sendData(sock,respuesta,strlen(respuesta));
 		free(respuesta);
+		close(sock);
 		break;
 
 	case 2:
@@ -208,13 +239,14 @@ void exec_api(op_code mode,u_int16_t sock){
 		int part=atoi(subCadena[2]);
 		int timeCompact=atol(subCadena[3]);
 		if(create(subCadena[0],subCadena[1],part,timeCompact)==1){
-			respuesta=string_from_format("21");
+			respuesta=string_from_format("1");
 		}else
 		{
-			respuesta=string_from_format("20");
+			respuesta=string_from_format("0");
 		}
 		sendData(sock,respuesta,strlen(respuesta));
 		free(respuesta);
+		close(sock);
 		break;
 
 	case 3:
@@ -227,7 +259,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			tabla=describe(buffer);
 		}
 		if(list_is_empty(tabla)){
-			respuesta=string_from_format("31");
+			respuesta=string_from_format("1");
 		}else{
 			char *paquete=empaquetarDescribe(tabla);
 			int cantT=list_size(tabla);
@@ -239,15 +271,15 @@ void exec_api(op_code mode,u_int16_t sock){
 			}
 			int tamTotal=strlen(paquete)+1+strlen(canTablas);
 			if(tamTotal<10){
-				respuesta=string_from_format("30000%i%s%s",tamTotal,canTablas,paquete);
+				respuesta=string_from_format("0000%i%s%s",tamTotal,canTablas,paquete);
 			}else{
 				if(tamTotal<100){
-					respuesta=string_from_format("3000%i%s%s",tamTotal,canTablas,paquete);
+					respuesta=string_from_format("000%i%s%s",tamTotal,canTablas,paquete);
 				}else{
 					if(tamTotal<1000){
-						respuesta=string_from_format("300%i%s%s",tamTotal,canTablas,paquete);
+						respuesta=string_from_format("00%i%s%s",tamTotal,canTablas,paquete);
 					}else{
-						respuesta=string_from_format("30%i%s%s",tamTotal,canTablas,paquete);
+						respuesta=string_from_format("0%i%s%s",tamTotal,canTablas,paquete);
 					}
 				}
 			}
@@ -256,59 +288,35 @@ void exec_api(op_code mode,u_int16_t sock){
 		}
 		sendData(sock,respuesta,strlen(respuesta));
 		free(respuesta);
+		close(sock);
 		break;
 
 	case 4:
 		log_info(logger,"\nDROP");		//orden: tabla
 		buffer=recibirDeMemoria(sock);
 		if(drop(buffer)==1){
-			respuesta=string_from_format("41");
+			respuesta=string_from_format("1");
 		}else
 		{
-			respuesta=string_from_format("40");
+			respuesta=string_from_format("0");
 		}
 		sendData(sock,respuesta,strlen(respuesta));
 		free(respuesta);
+		close(sock);
 		break;
 
 	case 5:
 		log_info(logger,"\nEXIT");
+		close(sock);
 		break;
 	default:
 		log_info(logger,"\nAPI INVALIDA");
+
 		break;
 
 	}
 	//free(buffer);							//SE LO SAQUE MOMENTANEAMENTE PARA PROBAR EL EXIT
 	//liberarSubstrings(subCadena);			//NO SIEMPRE HAY QUE LIBERAR SUBSTRINGS
-}
-
-int connectMemory(u_int16_t *socket_client, u_int16_t server){	//PRUEBA SOCKETS CON LIBRERIA
-
-	char *maxValue;
-
-	if(acceptConexion( server, socket_client,configLissandra->idEsperado)!=0){
-		return 1;
-		log_info(logger,"Conexion denegada.");
-	}
-
-	log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
-	if(configLissandra->tamValue<10){
-		maxValue=string_from_format("00%i",configLissandra->tamValue);
-	}else{
-		if(configLissandra->tamValue<100){
-			maxValue=string_from_format("0%i",configLissandra->tamValue);
-		}
-		else{
-		maxValue=string_from_format("%i",configLissandra->tamValue);
-		}
-	}
-	sendData(*socket_client,maxValue,3);
-	free(maxValue);
-	pthread_t unHilo;
-	pthread_create(&unHilo,NULL,interactuarConMemoria,socket_client);
-	//pthread_join(unHilo,NULL);
-	return 0;
 }
 
 void mostrarDescribe(t_list *lista){
