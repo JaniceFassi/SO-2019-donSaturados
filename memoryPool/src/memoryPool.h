@@ -96,8 +96,9 @@ char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* va
 char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion);
 char* selectLissandra(char* nombreTabla,u_int16_t key); //Devuelve el value
 int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value);
-void createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
+int createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
 void dropLissandra(char* nombreTabla);
+u_int16_t handshakeConLissandra(u_int16_t socket, char* ip, u_int16_t puerto);
 
 //MANEJAR MEMORIA
 int memoriaLlena();

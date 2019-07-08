@@ -1326,3 +1326,129 @@
 [INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego una página al segmento POSTRES
 [INFO] 19:10:47:919 memoryPool/(3535:3535): Se agrego el dato FLAN al marco 2
 [INFO] 19:10:47:920 memoryPool/(3535:3535): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 13:32:31:421 memoryPool/(4158:4158): Se inicializo la memoria con tamanio 130
+[INFO] 13:32:31:426 memoryPool/(4158:4158): Tamanio máximo recibido de FS: 20
+[INFO] 13:32:31:427 memoryPool/(4158:4158): Se creo el segmento ANIMALES
+[INFO] 13:32:31:428 memoryPool/(4158:4158): Se creo el segmento POSTRES
+[INFO] 13:32:31:429 memoryPool/(4158:4158): Se agrego una página al segmento ANIMALES
+[INFO] 13:32:31:430 memoryPool/(4158:4158): Se agrego el dato GATO al marco 0
+[INFO] 13:32:31:430 memoryPool/(4158:4158): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 13:32:31:430 memoryPool/(4158:4158): Se agrego una página al segmento ANIMALES
+[INFO] 13:32:31:430 memoryPool/(4158:4158): Se agrego el dato MONO al marco 1
+[INFO] 13:32:31:431 memoryPool/(4158:4158): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 13:32:31:431 memoryPool/(4158:4158): Se agrego una página al segmento POSTRES
+[INFO] 13:32:31:431 memoryPool/(4158:4158): Se agrego el dato FLAN al marco 2
+[INFO] 13:32:31:431 memoryPool/(4158:4158): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 14:00:48:947 memoryPool/(4662:4662): Se inicializo la memoria con tamanio 130
+[INFO] 14:00:48:948 memoryPool/(4662:4662): Tamanio máximo recibido de FS: 20
+[INFO] 14:00:48:948 memoryPool/(4662:4662): Se creo el segmento ANIMALES
+[INFO] 14:00:48:949 memoryPool/(4662:4662): Se creo el segmento POSTRES
+[INFO] 14:00:48:949 memoryPool/(4662:4662): Se agrego una página al segmento ANIMALES
+[INFO] 14:00:48:949 memoryPool/(4662:4662): Se agrego el dato GATO al marco 0
+[INFO] 14:00:48:950 memoryPool/(4662:4662): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 14:00:48:950 memoryPool/(4662:4662): Se agrego una página al segmento ANIMALES
+[INFO] 14:00:48:950 memoryPool/(4662:4662): Se agrego el dato MONO al marco 1
+[INFO] 14:00:48:950 memoryPool/(4662:4662): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 14:00:48:950 memoryPool/(4662:4662): Se agrego una página al segmento POSTRES
+[INFO] 14:00:48:950 memoryPool/(4662:4662): Se agrego el dato FLAN al marco 2
+[INFO] 14:00:48:950 memoryPool/(4662:4662): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 14:01:21:94 memoryPool/(4684:4684): Se inicializo la memoria con tamanio 130
+[INFO] 14:01:21:95 memoryPool/(4684:4684): Tamanio máximo recibido de FS: 20
+[INFO] 14:01:21:95 memoryPool/(4684:4684): Se creo el segmento ANIMALES
+[INFO] 14:01:21:95 memoryPool/(4684:4684): Se creo el segmento POSTRES
+[INFO] 14:01:21:96 memoryPool/(4684:4684): Se agrego una página al segmento ANIMALES
+[INFO] 14:01:21:96 memoryPool/(4684:4684): Se agrego el dato GATO al marco 0
+[INFO] 14:01:21:96 memoryPool/(4684:4684): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 14:01:21:96 memoryPool/(4684:4684): Se agrego una página al segmento ANIMALES
+[INFO] 14:01:21:96 memoryPool/(4684:4684): Se agrego el dato MONO al marco 1
+[INFO] 14:01:21:96 memoryPool/(4684:4684): Se inserto al segmento ANIMALES el valor MONO
+[INFO] 14:01:21:96 memoryPool/(4684:4684): Se agrego una página al segmento POSTRES
+[INFO] 14:01:21:97 memoryPool/(4684:4684): Se agrego el dato FLAN al marco 2
+[INFO] 14:01:21:97 memoryPool/(4684:4684): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 16:36:01:412 memoryPool/(9699:9699): Se inicializo la memoria con tamanio 130
+[INFO] 16:36:01:417 memoryPool/(9699:9699): Tamanio máximo recibido de FS: 20
+[INFO] 16:36:01:418 memoryPool/(9699:9699): Se creo el segmento ANIMALES
+[INFO] 16:36:01:418 memoryPool/(9699:9699): Se agrego una página al segmento ANIMALES
+[INFO] 16:36:01:418 memoryPool/(9699:9699): Se agrego el dato GATO al marco 0
+[INFO] 16:36:01:418 memoryPool/(9699:9699): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 16:37:04:733 memoryPool/(9727:9727): Se inicializo la memoria con tamanio 130
+[INFO] 16:37:04:742 memoryPool/(9727:9727): Tamanio máximo recibido de FS: 20
+[INFO] 16:37:04:742 memoryPool/(9727:9727): Se creo el segmento ANIMALES
+[INFO] 16:37:04:742 memoryPool/(9727:9727): Se agrego una página al segmento ANIMALES
+[INFO] 16:37:04:742 memoryPool/(9727:9727): Se agrego el dato GATO al marco 0
+[INFO] 16:37:04:742 memoryPool/(9727:9727): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 16:37:05:94 memoryPool/(9727:9727): error al crear una conexión con lfs
+[INFO] 16:37:27:611 memoryPool/(9746:9746): Se inicializo la memoria con tamanio 130
+[INFO] 16:37:27:612 memoryPool/(9746:9746): Tamanio máximo recibido de FS: 20
+[INFO] 16:37:27:612 memoryPool/(9746:9746): Se creo el segmento ANIMALES
+[INFO] 16:37:27:612 memoryPool/(9746:9746): Se agrego una página al segmento ANIMALES
+[INFO] 16:37:27:612 memoryPool/(9746:9746): Se agrego el dato GATO al marco 0
+[INFO] 16:37:27:612 memoryPool/(9746:9746): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 16:37:28:135 memoryPool/(9746:9746): se creo una conexión con lfs
+[INFO] 16:37:36:430 memoryPool/(9746:9746): La respuesta del create fue 1
+[INFO] 16:42:46:261 memoryPool/(9834:9834): Se inicializo la memoria con tamanio 130
+[INFO] 16:43:13:624 memoryPool/(9854:9854): Se inicializo la memoria con tamanio 130
+[INFO] 16:45:13:858 memoryPool/(9926:9926): Se inicializo la memoria con tamanio 130
+[INFO] 16:46:53:739 memoryPool/(10028:10028): Se inicializo la memoria con tamanio 130
+[INFO] 16:48:49:657 memoryPool/(10158:10158): Se inicializo la memoria con tamanio 130
+[INFO] 16:49:40:729 memoryPool/(10229:10229): Se inicializo la memoria con tamanio 130
+[INFO] 16:50:20:960 memoryPool/(10284:10284): Se inicializo la memoria con tamanio 130
+[INFO] 16:54:08:258 memoryPool/(10411:10411): Se inicializo la memoria con tamanio 130
+[INFO] 16:54:44:131 memoryPool/(10493:10493): Se inicializo la memoria con tamanio 130
+[INFO] 16:55:56:470 memoryPool/(10568:10568): Se inicializo la memoria con tamanio 130
+[INFO] 16:56:40:604 memoryPool/(10635:10635): Se inicializo la memoria con tamanio 130
+[INFO] 16:58:42:794 memoryPool/(10728:10728): Se inicializo la memoria con tamanio 130
+[INFO] 17:02:37:711 memoryPool/(10867:10867): Se inicializo la memoria con tamanio 130
+[INFO] 17:05:40:381 memoryPool/(11049:11049): Se inicializo la memoria con tamanio 130
+[INFO] 17:06:32:733 memoryPool/(11106:11106): Se inicializo la memoria con tamanio 130
+[INFO] 17:10:09:957 memoryPool/(11385:11385): Se inicializo la memoria con tamanio 130
+[INFO] 17:11:55:614 memoryPool/(11489:11489): Se inicializo la memoria con tamanio 130
+[INFO] 17:13:25:831 memoryPool/(11586:11586): Se inicializo la memoria con tamanio 130
+[INFO] 17:14:10:75 memoryPool/(11586:11586): Tamanio máximo recibido de FS: 20
+[INFO] 17:14:10:75 memoryPool/(11586:11586): Se creo el segmento ANIMALES
+[INFO] 17:14:10:75 memoryPool/(11586:11586): Se agrego una página al segmento ANIMALES
+[INFO] 17:14:10:75 memoryPool/(11586:11586): Se agrego el dato GATO al marco 0
+[INFO] 17:14:10:75 memoryPool/(11586:11586): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 17:14:10:195 memoryPool/(11586:11586): error al crear una conexión con lfs
+[INFO] 17:14:58:761 memoryPool/(11606:11606): Se inicializo la memoria con tamanio 130
+[INFO] 17:30:06:484 memoryPool/(11640:11640): Se inicializo la memoria con tamanio 130
+[INFO] 17:32:32:85 memoryPool/(11818:11818): Se inicializo la memoria con tamanio 130
+[INFO] 17:34:06:525 memoryPool/(11884:11884): Se inicializo la memoria con tamanio 130
+[INFO] 17:36:46:978 memoryPool/(12003:12003): Se inicializo la memoria con tamanio 130
+[INFO] 17:37:35:529 memoryPool/(12152:12152): Se inicializo la memoria con tamanio 130
+[INFO] 17:38:00:964 memoryPool/(12152:12152): Tamanio máximo recibido de FS: 20
+[INFO] 17:38:09:759 memoryPool/(12152:12152): Se creo el segmento ANIMALES
+[INFO] 17:38:11:369 memoryPool/(12152:12152): Se agrego una página al segmento ANIMALES
+[INFO] 17:38:11:370 memoryPool/(12152:12152): Se agrego el dato GATO al marco 0
+[INFO] 17:38:11:370 memoryPool/(12152:12152): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 17:38:19:358 memoryPool/(12152:12152): se creo una conexión con lfs
+[INFO] 17:46:08:978 memoryPool/(13346:13346): Se inicializo la memoria con tamanio 130
+[INFO] 17:46:27:63 memoryPool/(13346:13346): Tamanio máximo recibido de FS: 20
+[INFO] 17:46:35:595 memoryPool/(13346:13346): Se creo el segmento ANIMALES
+[INFO] 17:46:37:157 memoryPool/(13346:13346): Se agrego una página al segmento ANIMALES
+[INFO] 17:46:37:157 memoryPool/(13346:13346): Se agrego el dato GATO al marco 0
+[INFO] 17:46:37:157 memoryPool/(13346:13346): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 17:46:45:588 memoryPool/(13346:13346): se creo una conexión con lfs
+[INFO] 17:49:48:477 memoryPool/(14383:14383): Se inicializo la memoria con tamanio 130
+[INFO] 17:50:01:774 memoryPool/(14383:14383): Tamanio máximo recibido de FS: 20
+[INFO] 17:50:09:568 memoryPool/(14383:14383): Se creo el segmento ANIMALES
+[INFO] 17:50:10:336 memoryPool/(14383:14383): Se agrego una página al segmento ANIMALES
+[INFO] 17:50:10:336 memoryPool/(14383:14383): Se agrego el dato GATO al marco 0
+[INFO] 17:50:10:336 memoryPool/(14383:14383): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 17:50:23:953 memoryPool/(14383:14383): se creo una conexión con lfs
+[INFO] 18:55:09:599 memoryPool/(16351:16351): Se inicializo la memoria con tamanio 130
+[INFO] 18:55:41:62 memoryPool/(16742:16742): Se inicializo la memoria con tamanio 130
+[INFO] 18:57:43:356 memoryPool/(17126:17126): Se inicializo la memoria con tamanio 130
+[INFO] 18:58:10:785 memoryPool/(17126:17126): Tamanio máximo recibido de FS: 20
+[INFO] 18:58:18:515 memoryPool/(17126:17126): Se creo el segmento ANIMALES
+[INFO] 18:58:19:926 memoryPool/(17126:17126): Se agrego una página al segmento ANIMALES
+[INFO] 18:58:19:926 memoryPool/(17126:17126): Se agrego el dato GATO al marco 0
+[INFO] 18:58:19:926 memoryPool/(17126:17126): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:58:28:924 memoryPool/(17126:17126): se creo una conexión con lfs
+[INFO] 18:59:18:104 memoryPool/(18102:18102): Se inicializo la memoria con tamanio 130
+[INFO] 18:59:32:342 memoryPool/(18102:18102): Tamanio máximo recibido de FS: 20
+[INFO] 18:59:39:349 memoryPool/(18102:18102): Se creo el segmento ANIMALES
+[INFO] 18:59:40:360 memoryPool/(18102:18102): Se agrego una página al segmento ANIMALES
+[INFO] 18:59:40:360 memoryPool/(18102:18102): Se agrego el dato GATO al marco 0
+[INFO] 18:59:40:360 memoryPool/(18102:18102): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 18:59:45:215 memoryPool/(18102:18102): se creo una conexión con lfs

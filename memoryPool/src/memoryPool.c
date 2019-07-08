@@ -111,16 +111,19 @@ void* recibirOperacion(void * arg){
 int crearConexionLFS(){
 	//crea un socket para comunicarse con lfs, devuelve el file descriptor conectado
 	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
-	int ipFS = config_get_int_value(configuracion,"IP_FS");
+	char* ipFS = config_get_string_value(configuracion,"IP_FS");
 
-	u_int16_t *lfsServer;
-	createSocket(lfsServer);
-	struct sockaddr_in direccionLFS;
-	direccionLFS = completServer(ipFS, puertoFS);
-	int rta = conectClient(lfsServer, direccionLFS);
-	if(rta == 1){
-		return -1;
+	u_int16_t lfsServer;
+	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
+
+	if(rta == 0){
+		log_info(logger, "se creo una conexión con lfs");
+
+	}else{
+		log_info(logger, "error al crear una conexión con lfs");
+
 	}
+
 	return lfsServer;
 }
 
@@ -131,21 +134,22 @@ void recibirRespuesta(){
 
 
 int main(void) {
-
+//aca va la consola, y después un hilo que gestione conexiones, donde va a estar el while 1
 
 	inicializar();
 	segmento *animales = crearSegmento("ANIMALES");
-	segmento *postres = crearSegmento("POSTRES");
+	//segmento *postres = crearSegmento("POSTRES");
 	list_add(tablaSegmentos, animales);
-	list_add(tablaSegmentos, postres);
+	//list_add(tablaSegmentos, postres);
 
 	mInsert("ANIMALES", 1, "GATO");
-	mInsert("ANIMALES", 2, "MONO");
-	mInsert("POSTRES",5,"FLAN");
+	//mInsert("ANIMALES", 2, "MONO");
+	//nsert("POSTRES",5,"FLAN");
 	mostrarMemoria();
 
+	mCreate("ANIMALES",  "SC", 16, 50000);
 
-
+/*
 	u_int16_t puertoServer = config_get_int_value(configuracion, "PUERTO");
 	char* ipServer = config_get_string_value(configuracion, "IP");
 	u_int16_t server;
@@ -186,9 +190,11 @@ int main(void) {
 
 		}
 
+*/
+	//mJournal();
 
 
-	finalizar();
+	//finalizar();
 
 	return EXIT_SUCCESS;
 }
@@ -201,16 +207,18 @@ void inicializar(){
 	logger = init_logger();
 	configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
-	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
-	int ipFS = config_get_int_value(configuracion,"IP_FS");
+	u_int16_t puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
+	char* ipFS = malloc(15);
+	strcpy(ipFS, config_get_string_value(configuracion,"IP_FS"));
 
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
 
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
-	maxValue = 20;
-	//maxValue = handshakeConLissandra(puertoFS,ipFS);
+	//maxValue = 20;
+	u_int16_t lfsServidor;
+	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
 	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
 
@@ -342,16 +350,18 @@ t_config* read_config() {
 
 
 
- void handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
+ u_int16_t handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
  	int conexionExitosa;
  	int id = 1;
- 	conexionExitosa = linkClient(&lfsCliente,ipLissandra , puertoLissandra,id);
+ 	conexionExitosa = linkClient(&lfsCliente, ipLissandra , puertoLissandra,id);
 
  		if(conexionExitosa !=0){
  			perror("Error al conectarse con LFS");
  		}
-
- 		recvData(lfsCliente, &maxValue, sizeof(u_int16_t));
+ 		char* buffer = malloc(sizeof(char)*4);
+ 		recvData(lfsCliente, buffer, sizeof(char)*3);
+ 		u_int16_t maxV = atoi(buffer);
+ 		return maxV;
  }
 
 
@@ -382,22 +392,27 @@ t_config* read_config() {
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
 	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
-	 //recibir rta
+	 void *buffer = malloc(sizeof(char)+1);
+	 recvData(lfsSock, buffer, sizeof(char));
 	 close(lfsSock);
+	 int rta = atoi(buffer);
+	 return buffer;
 
  }
 
- void createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
+ int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
 	 char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
 	 char* paqueteListo = empaquetar(2, datos);
 	 u_int16_t lfsSock = crearConexionLFS();
 	 if(lfsSock == -1){
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
-	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
-	 //recibir rta
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 char* buffer = malloc(sizeof(char)+1);
+	 recvData(lfsSock, buffer, sizeof(char));
 
 	 close(lfsSock);
+	 return 1;
  }
 
  void dropLissandra(char* nombreTabla){
@@ -767,7 +782,8 @@ void mSelect(char* nombreTabla,u_int16_t key){
 
 void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
 
-	createLissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
+	int rta = createLissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
+	log_info(logger, "La respuesta del create fue %d", rta);
 
 	//El enunciado solo dice que le informe a lissandra, no dice nada de guardar la tabla en memoria
 	//Habria que modificar empaquetar para poder mandar criterio,nroParticiones y tiempoCompactacion
