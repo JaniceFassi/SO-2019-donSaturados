@@ -78,6 +78,7 @@ void marcoDestroy(marco *unMarco);
 
 //AUXILIARES DE ARRANQUE
 void inicializar();
+void consola();
 t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);

@@ -137,6 +137,8 @@ int main(void) {
 //aca va la consola, y después un hilo que gestione conexiones, donde va a estar el while 1
 
 	inicializar();
+	consola();
+	/*
 	segmento *animales = crearSegmento("ANIMALES");
 	//segmento *postres = crearSegmento("POSTRES");
 	list_add(tablaSegmentos, animales);
@@ -190,9 +192,13 @@ int main(void) {
 
 		}
 
+<<<<<<< HEAD
 */
 	//mJournal();
 
+=======
+	*/
+>>>>>>> 6d24d6d68672cc775c4a2aec73ddb21cf24b7486
 
 	//finalizar();
 
@@ -239,6 +245,73 @@ void inicializar(){
 		}
 
 
+}
+
+void consola(){
+
+	char* linea;
+	while(1){
+		linea = readline(">");
+
+		if(!strncmp(linea,"SELECT ",7))
+		{
+			char **subStrings= string_n_split(linea,3," ");
+			u_int16_t k=atoi(subStrings[2]);
+			mSelect(subStrings[1],k);
+			//liberarSubstrings(subStrings);
+		}
+
+	 	if(!strncmp(linea,"INSERT ",7)){//INSERT "NOMBRE" 5/ "VALUE"
+	 		char **split= string_n_split(linea,4," ");
+	 		int key= atoi(split[2]);
+	 		char **cadena=string_split(split[3]," ");
+
+	 		mInsert(split[1],key,split[3]);
+
+
+	 		//liberarSubstrings(cadena);
+	 		//liberarSubstrings(split);
+	 	}
+
+	 	if(!strncmp(linea,"CREATE ",7)){
+			char **subStrings= string_n_split(linea,5," ");
+			u_int16_t particiones=atoi(subStrings[3]);
+			long timeCompaction=atol(subStrings[4]);
+			mCreate(subStrings[1],subStrings[2],particiones,timeCompaction);
+			log_info(logger,"Se hizo CREATE de la tabla: %s.",subStrings[1]);
+			//liberarSubstrings(subStrings);
+		}
+
+		if(!strncmp(linea,"DESCRIBE",8)){
+			char **subStrings= string_n_split(linea,2," ");
+			mDescribe(subStrings[1]);
+			//liberarSubstrings(subStrings);
+		}
+
+		if(!strncmp(linea,"DROP ",5)){
+			char **subStrings= string_n_split(linea,2," ");
+			if(subStrings[1]==NULL){
+				log_info(logger,"No se ingreso el nombre de la tabla.");
+			}
+			mDrop(subStrings[1]);
+			log_info(logger,"Se envio el drop a LFS y se borro de memoria la tabla %s");
+
+			//free(subStrings[0]);
+			//free(subStrings[1]);
+			//free(subStrings);
+		}
+
+		if(!strncmp(linea,"JOURNAL",6)){
+			mJournal();
+		}
+
+		if(!strncmp(linea,"exit",5)){
+			free(linea);
+			//theEnd();
+			break;
+		}
+		free(linea);
+	}
 }
 
 segmento *crearSegmento(char* nombre){
