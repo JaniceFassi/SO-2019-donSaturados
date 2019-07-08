@@ -192,13 +192,10 @@ int main(void) {
 
 		}
 
-<<<<<<< HEAD
+
 */
 	//mJournal();
 
-=======
-	*/
->>>>>>> 6d24d6d68672cc775c4a2aec73ddb21cf24b7486
 
 	//finalizar();
 
