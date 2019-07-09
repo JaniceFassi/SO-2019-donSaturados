@@ -546,6 +546,7 @@ t_config* read_config() {
  	else{
  		//No hace falta llamar el journal aca ya que esta adentro del LRU
  		posMarco = LRU();
+		unMarco = list_get(tablaMarcos,0);
  		unMarco->estaLibre = 1;
  	}
 
