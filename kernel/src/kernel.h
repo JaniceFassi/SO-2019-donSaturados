@@ -26,6 +26,15 @@
 #include<semaphore.h>
 #include<sys/time.h>
 
+struct metricas{
+	double tiempoS;
+	double tiempoI;
+	int cantS;
+	int cantI;
+};
+
+struct metricas metrica;
+
 t_log* logger;
 t_config* config;
 t_log* init_logger(void);
@@ -68,7 +77,7 @@ struct metadataTabla{
 	char *table;
 	char *consistency;
 	u_int16_t numPart;
-	u_int16_t compTime;
+	long compTime;
 };
 
 t_list *listaMetadata;
@@ -76,7 +85,7 @@ int terminaHilo=0;
 int main();
 void run(char * path);
 int parsear(char *linea);
-int conexionMemoria(int puerto);
+int conexionMemoria(int puerto, char*ip);
 void apiKernel();
 int mySelect(char * table, char *key);
 int insert(char* table ,char* key ,char* value);
@@ -98,8 +107,14 @@ void mostrarResultados();
 struct metadataTabla * buscarMetadataTabla(char* table);
 void destruir();
 void moverAcola(t_queue * a,t_queue *b);
-void metrics();
+int metrics(int modo);
 void describeGlobal();
+void limpiarMetadata();
+void actualizarMetadataTabla(struct metadataTabla *m);
+void metricasAutomaticas();
+
+static sem_t semColasMutex;
+static sem_t semColasContador;
 
 
 

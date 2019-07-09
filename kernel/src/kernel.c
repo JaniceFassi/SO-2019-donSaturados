@@ -1,25 +1,17 @@
-/*
- ============================================================================
- Name        : kernel.c
- Author      : pepe
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
-
 #include "kernel.h"
 
-// Falta describe COMPLETO (hablar con memoria),--
-// create(HECHO, falta probarlo)--
-// deberia poner los estados como ENUM porque nadie los va a entender (ya fue, ni en pedo)
-
 int main(void) {
+	sem_init(&semColasContador,0,0);
+	sem_init(&semColasMutex,0,1);
 	srand(time(NULL));
 	logger = init_logger();
 	config = read_config();
 	inicializarColas();
 	inicializarListas();
+	metrica.cantI=0;
+	metrica.cantS=0;
+	metrica.tiempoI=0;
+	metrica.tiempoS=0;
 	quantum = config_get_int_value(config, "QUANTUM");
 	//inicializa memoria x archivo de configuracion
 	struct memoria *m1=malloc(sizeof(struct memoria));
@@ -29,46 +21,43 @@ int main(void) {
 	m1->estado=1;// inicia disponible
 	list_add(memorias,m1);
 	list_add(criterioSC,m1);
-/*	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
+	pruebas();
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	pthread_t hilos[limiteProcesamiento];
 	int i=0;
 	while(i<limiteProcesamiento){
 		pthread_create(&(hilos[i]), NULL, (void*)ejecutarScripts, NULL);
 		i++;
-	}*/
-	apiKernel();
-	/*
+	}
 	// aca deberia poder conocer el resto de las memorias
-	// ademas deberia hacer un describe de las tablas actuales
+	pthread_t hiloMetricas;
+	pthread_create(&hiloMetricas, NULL, (void*)metricasAutomaticas, NULL);
 	pthread_t hiloDescribe;
 	pthread_create(&hiloDescribe, NULL, (void*)describeGlobal, NULL);
 
-	pruebas();
-	//apiKernel();
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql");
-//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_1.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_2.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/películas.lql");
-*/
-/*	i=0;
-	while(i<limiteProcesamiento){
+	apiKernel();
+	i=0;
+	/*while(i<limiteProcesamiento){
 		pthread_join(hilos[i], NULL);
 		i++;
 	}*/
-//	pthread_join(hiloDescribe, NULL);
 
-	//ejecutarScripts();
 //	mostrarResultados();
-//	destruir();
+	destruir();
 
-	ejecutarScripts();
+//	ejecutarScripts();
 
 	return EXIT_SUCCESS;
 }
 
 t_log* init_logger() {
-	return log_create("kernel.log", "kernel", 1, LOG_LEVEL_INFO);
+	return log_create("kernel.log", "kernel", 0, LOG_LEVEL_DEBUG);
 }
 
 t_config* read_config() {
@@ -76,7 +65,7 @@ t_config* read_config() {
 }
 
 void apiKernel(){
-	//while(1){
+	while(1){
 		char * linea;
 		linea= readline(">");
 		if(string_starts_with(linea,"RUN")){
@@ -85,50 +74,32 @@ void apiKernel(){
 		}
 		else{
 			if(string_starts_with(linea,"EXIT")||strcmp(linea,"")==0){
+				terminaHilo=1;
 				return;
 			}
 			else{
 				struct script *nuevo= malloc(sizeof(struct script));
 				nuevo->id=idScriptGlobal;
-				//sem3 wait
 				idScriptGlobal++;
-				//sem3 signal
 				nuevo->lineasLeidas=0;
 				nuevo->estado=0;
 				nuevo->modoOp=1;// Script de una sola linea
 				nuevo->input= linea;
+				sem_wait(&semColasMutex);
 				queue_push(ready,nuevo);
-				//signal de ejecutar scripts?
-
+				sem_post(&semColasMutex);
+				sem_post(&semColasContador);
 			}
 		}
-//	}
+	}
 }
 
-int conexionMemoria(int puerto){
+int conexionMemoria(int puerto, char*ip){
 		u_int16_t sock;
-		char * ip = config_get_string_value(config,"IP_MEMORIA");
 		u_int16_t port= puerto;
-		//int enviados;
 		if(linkClient(&sock,ip , port,1)!=0){
 			return -1;
 		}
-		/*char* select =malloc(13);
-		char* insert=malloc(21);
-		char* create=malloc(18);
-		char * describe=malloc(11);
-		char * drop=malloc(11);
-		strcpy(select,"010tablita;0");
-		strcpy(insert,"118tablita;0;hola;20");
-		strcpy(create,"215tablita;SC;3;5");
-		strcpy(describe,"308tablita");
-		strcpy(drop,"408tablita");
-		enviados=sendData(sock,select,strlen(select)+1);				//select
-		enviados=sendData(sock,insert,strlen(insert)+1);	//insert
-		enviados=sendData(sock,create,strlen(create)+1);		//create
-		enviados=sendData(sock,describe,strlen(describe)+1);				//describe con parametro
-		enviados=sendData(sock,drop,strlen(drop)+1);				//drop
-		*/
 		return sock;
 }
 
@@ -147,41 +118,41 @@ void run(char *path){
 
 	char * pathReady=queue_pop(new);
 	nuevo->input=string_from_format("%s", pathReady);
-
+	sem_wait(&semColasMutex);
 	queue_push(ready,nuevo);
-	// signal de ejecutar scripts?
+	sem_post(&semColasMutex);
+	sem_post(&semColasContador);
 	log_info(logger,"Script con el path %s entro a cola ready",path);
 }
 
 void ejecutarScripts(){
 	int resultado=0;
 	while(terminaHilo==0){
-		if(!queue_is_empty(ready)){
-			// otro semaforo que indique que se puede pasar en vez del if?
-			// sem1 wait
+			sem_wait(&semColasContador);
+			sem_wait(&semColasMutex);
 			struct script *execNuevo = queue_pop(ready);
 			queue_push(exec,execNuevo);
-			// sem1 signal
+			sem_post(&semColasMutex);
+
 			log_info(logger,"Script nro %i entro a cola EXEC",execNuevo->id);
 			if(execNuevo->modoOp==1){// es para scripts de una sola linea introducidos desde consola
 				resultado=parsear(execNuevo->input);
 				if(resultado!=0){
-					//sem1 wait
-					queue_pop(exec);
 					execNuevo->estado=1;//fallo
+					sem_wait(&semColasMutex);
+					queue_pop(exec);
 					queue_push(myExit,execNuevo);
-					//sem1 signal
+					sem_post(&semColasMutex);
 				}
 				else{
-					//sem1 wait
+					sem_wait(&semColasMutex);
 					queue_pop(exec);
 					queue_push(myExit,execNuevo);
-					//sem1 signal
+					sem_post(&semColasMutex);
 				}
 			}
 			else{
 				FILE *f;
-				//f=fopen("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql","r");
 				f=fopen(execNuevo->input,"r");
 
 				if(f==NULL){
@@ -197,11 +168,7 @@ void ejecutarScripts(){
 				do{
 					resultado=parsear(linea);
 					if(resultado!=0){
-						//sem1 wait
-						queue_pop(exec);
-						execNuevo->estado=1;//fallo
-						queue_push(myExit,execNuevo);
-						//sem1 signal
+						execNuevo->estado=1;
 					}
 					lineasEjecutadas++;
 					execNuevo->lineasLeidas++;
@@ -209,29 +176,29 @@ void ejecutarScripts(){
 				free(linea);
 				if(!feof(f)){
 					if(lineasEjecutadas>=quantum && resultado==0){
-						//sem1 wait
+						sem_wait(&semColasMutex);
 						queue_pop(exec);
 						queue_push(ready,execNuevo);
-						//sem1 signal
+						sem_post(&semColasMutex);
+						sem_post(&semColasContador);
 						log_info(logger,"Script nro %i salio por fin de quantum",execNuevo->id);
 					}
 					else{
+						sem_wait(&semColasMutex);
+						queue_pop(exec);
+						queue_push(myExit,execNuevo);
+						sem_post(&semColasMutex);
 						log_info(logger,"El script fallo");
 					}
 				}
 				else{
-					//sem1 wait
+					sem_wait(&semColasMutex);
 					queue_pop(exec);
 					queue_push(myExit,execNuevo);
-					//sem1 signal
+					sem_post(&semColasMutex);
 					log_info(logger,"Script con el path %s entro a cola exit",execNuevo->input);
 				}
 				fclose(f);
-
-			}
-		}
-		if(queue_size(myExit)==1){
-				terminaHilo=1;
 			}
 	}
 }
@@ -277,7 +244,7 @@ int parsear(char * linea){
 		resultado=add(split[1],split[2]);
 	}
 	if(string_starts_with(linea,"METRICS")){
-		//resultado=metrics();
+		resultado=metrics(1);
 	}
 	int i=0;
 	while(split[i]!=NULL){
@@ -285,10 +252,16 @@ int parsear(char * linea){
 		i++;
 	}
 	free(split);
+	int retardo= config_get_int_value(config,"SLEEP_EJECUCION");
+	sleep(retardo/(float)1000);
 	return resultado;
 }
 
 int mySelect(char * table, char *key){
+	clock_t ini = clock();
+	// va semaforo
+	metrica.cantS++;
+
 	int op= 0;
 	char*linea=string_from_format("%s;%s",table,key);
 	int len = strlen(linea);
@@ -310,12 +283,26 @@ int mySelect(char * table, char *key){
 	log_info(logger,"mide %i",strlen(msj));
 
 	//aca fijandome la tabla deberia elegir la memoria adecuada
-	//struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
-//	metadata = buscarMetadataTabla(table);
+	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+	metadata = buscarMetadataTabla(table);
+	if(metadata==NULL){
+		log_info(logger,"ERROR - no existe la tabla especificada");
+		return -1;
+	}
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-	memAsignada= asignarMemoriaSegunCriterio("SC");
-
-	int sock = conexionMemoria(memAsignada->puerto);
+/*
+	int c=0;
+	int sock=-1;
+	while(sock==-1 && c<5){
+		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
+		if(memAsignada!=NULL){
+			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+		}
+		c++;
+	}
+	if(sock==-1){
+		return -1;
+	}
 
 	int enviados=sendData(sock,msj,strlen(msj)+1);
 	log_info(logger,"%i",enviados);
@@ -324,7 +311,7 @@ int mySelect(char * table, char *key){
 	recvData(sock,resultado,1);
 
 	log_info(logger,"resultado %i" , atoi(resultado));
-	/*
+
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
 			sendData(sock,"6",2);//journal
@@ -341,18 +328,26 @@ int mySelect(char * table, char *key){
 		else{
 			return -1;
 		}
-	}
-
+	}*/
 	free(memAsignada);
 	free(linea);
 	free(msj);
-	free(tamanioYop);*/
+	free(tamanioYop);
+	clock_t fin = clock();
+	double tiempo = (double)(fin-ini);
+	//semaforo
+	metrica.tiempoS += tiempo;
 	return 0;
 }
 
 int insert(char* table ,char* key ,char* value){
+	clock_t ini = clock();
+	// va semaforo
+	metrica.cantI++;
+
 	int op= 1;
-	char*linea=string_from_format("%s;%s;%s",table,key,value);
+	char **split= string_split(value,"\"");
+	char*linea=string_from_format("%s;%s;%s",table,key,split[0]);
 	int len = strlen(linea);
 	char* tamanioYop;;//= malloc(4);
 	if(len>10){
@@ -364,13 +359,28 @@ int insert(char* table ,char* key ,char* value){
 	char*msj=string_from_format("%s%s",tamanioYop,linea);
 
 	log_info(logger,"INSERT %s",msj);
-/*
+
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	metadata = buscarMetadataTabla(table);
-	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-	memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
 
-	int sock = conexionMemoria(memAsignada->puerto);
+	if(metadata==NULL){
+		log_info(logger,"ERROR - no existe la tabla especificada");
+		return -1;
+	}
+
+	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	/*int c=0;
+	int sock=-1;
+	while(sock==-1 && c<5){
+		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
+		if(memAsignada!=NULL){
+			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+		}
+		c++;
+	}
+	if(sock==-1){
+		return -1;
+	}
 
 	sendData(sock,msj,strlen(msj)+1);
 
@@ -393,12 +403,17 @@ int insert(char* table ,char* key ,char* value){
 		else{
 			return -1;
 		}
-	}
+	}*/
 
-	free(memAsignada);*/
+	free(memAsignada);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
+
+	clock_t fin = clock();
+	double tiempo= (double) (fin-ini);
+	//semaforo
+	metrica.tiempoI+= tiempo;
 	return 0;
 }
 
@@ -417,11 +432,29 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 
 	log_info(logger,"CREATE %s",msj);
 
-	//tengo que hacer la metadata de la tabla? o despues con el describe? quedaria inconsistente hasta que lo hagan
-/*	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-	memAsignada= asignarMemoriaSegunCriterio(consistency);
+	//prueba, luego borrar
+	struct metadataTabla *m = malloc(sizeof(struct metadataTabla));
+	m->compTime= atoi(timeComp);
+	m->consistency= string_duplicate(consistency);
+	m->numPart= atoi(numPart);
+	m->table=string_duplicate(table);
+	list_add(listaMetadata,m);
 
-	int sock = conexionMemoria(memAsignada->puerto);
+	//tengo que hacer la metadata de la tabla? o despues con el describe? quedaria inconsistente hasta que lo hagan
+	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+/*
+	int c=0;
+	int sock=-1;
+	while(sock==-1 && c<5){
+		memAsignada= asignarMemoriaSegunCriterio(consistency);
+		if(memAsignada!=NULL){
+			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+		}
+		c++;
+	}
+	if(sock==-1){
+		return -1;
+	}
 
 	sendData(sock,msj,strlen(msj)+1);
 
@@ -430,9 +463,9 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 
 	if(atoi(resultado)!=0){
 		return -1;
-	}
+	}*/
 
-	free(memAsignada);*/
+	free(memAsignada);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -440,9 +473,21 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 }
 
 int journal(){
-	char msj= "5JOURNAL";
-	//aca deberia mandar a cada una supongo
-	return 0;
+	int ret=0;
+	void envioJournal(struct memoria *m){
+		char *resultado= malloc(2);
+		int sock=conexionMemoria(m->puerto,m->ip);
+		sendData(sock,"5",2);
+		recvData(sock,resultado,1);
+		if(atoi(resultado)!=0){
+			ret=1;
+			log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
+		}
+	}
+	list_iterate(criterioEC,(void*)envioJournal);
+	list_iterate(criterioSC,(void*)envioJournal);
+	list_iterate(criterioSHC,(void*)envioJournal);
+	return ret;
 }
 
 int describe(char *table){
@@ -456,15 +501,26 @@ int describe(char *table){
 		msj=string_from_format("%i%i",op,tamanio);
 	}
 	else{
+		// ver temas de comunicacion con memoria
 		msj=string_from_format("%i%i%s",op,tamanio,table);
 	}
 
 	log_info(logger,"DESCRIBE %s",msj);
-/*
-	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-	memAsignada= verMemoriaLibre(memorias);
 
-	int sock = conexionMemoria(memAsignada->puerto);
+	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	//ver si tengo que usar una memoria asignada al criterio de la tabla
+	/*int c=0;
+	int sock=-1;
+	while(sock==-1 && c<5){
+		memAsignada= verMemoriaLibre(memorias);
+		if(memAsignada!=NULL){
+			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+		}
+		c++;
+	}
+	if(sock==-1){
+		return -1;
+	}
 
 	sendData(sock,msj,strlen(msj)+1);
 
@@ -476,35 +532,69 @@ int describe(char *table){
 	if(atoi(resultado)!=0){
 		return -1;
 	}
-	char *tamanioRespuesta= malloc(4);
-	recvData(sock,tamanioRespuesta,3);
-	int tr= atoi(tamanioRespuesta);
+	char *tamanioRespuesta= malloc(5);
+	recvData(sock,tamanioRespuesta,4);
+	char *cantTablas= malloc(3);
+	recvData(sock,cantTablas,2);
+	int tr= atoi(cantTablas);
 	int i=0;
 
-	while(i<tr){
-		char *t=malloc(3);
-		recvData(sock,t,2);
+//	me falta un recv de la cantidad de tablas, ademas deberia borrar las tablas que tengo
+//  si tengo un describe de una sola tabla tengo que actualizarla
+	if(tr>1){
+		limpiarMetadata();
+		while(i<tr){
+			char *t=malloc(4);
+			recvData(sock,t,3);
+			char *buffer=malloc(atoi(t)+1);
+			recvData(sock,buffer,atoi(t));
+			//REVISAR
+			struct metadataTabla *metadata= malloc(sizeof(struct metadataTabla));
+			char ** split = string_split(buffer,";");
+			metadata->table= string_duplicate(split[0]);
+			metadata->consistency=string_duplicate(split[1]);
+			metadata->numPart=atoi(split[2]);
+			metadata->compTime=atol(split[3]);
+
+			// sem2 wait?
+			list_add(listaMetadata,metadata);
+			// sem2 signal?
+
+			free(t);
+			free(buffer);
+			free(split[0]);
+			free(split[1]);
+			free(split[2]);
+			free(split[3]);
+			free(split);
+			i++;
+		}
+	}
+	else{
+		char *t=malloc(4);
+		recvData(sock,t,3);
 		char *buffer=malloc(atoi(t)+1);
 		recvData(sock,buffer,atoi(t));
-		//REVISAR
-		struct metadataTabla *metadata;//= malloc(sizeof(struct metadataTabla));
+		struct metadataTabla *metadata= malloc(sizeof(struct metadataTabla));
 		char ** split = string_split(buffer,";");
-		metadata->table=split[0];
-		metadata->consistency=split[1];
+		metadata->table= string_duplicate(split[0]);
+		metadata->consistency=string_duplicate(split[1]);
 		metadata->numPart=atoi(split[2]);
-		metadata->compTime=atoi(split[3]);
-		// sem2 wait?
-		list_add(listaMetadata,metadata);
-		// sem2 signal?
+		metadata->compTime=atol(split[3]);
+		actualizarMetadataTabla(metadata);
+
 		free(t);
 		free(buffer);
-		i++;
+		free(split[0]);
+		free(split[1]);
+		free(split[2]);
+		free(split[3]);
+		free(split);
 	}
-*/
-//	free(resultado);
-//	free(tamanioRespuesta);
+	free(resultado);
+	free(tamanioRespuesta);*/
 	free(msj);
-//	free(memAsignada);
+	free(memAsignada);
 	return 0;
 }
 
@@ -515,10 +605,25 @@ int drop(char*table){
 
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	metadata = buscarMetadataTabla(table);
-	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-	memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
 
-	int sock = conexionMemoria(memAsignada->puerto);
+	if(metadata==NULL){
+		log_info(logger,"ERROR - no existe la tabla especificada");
+		return -1;
+	}
+
+	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	int c=0;
+	int sock=-1;
+	while(sock==-1 && c<5){
+		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
+		if(memAsignada!=NULL){
+			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+		}
+		c++;
+	}
+	if(sock==-1){
+		return -1;
+	}
 
 	sendData(sock,msj,strlen(msj)+1);
 
@@ -582,9 +687,36 @@ int add(char* memory , char* consistency){
 	return -1;
 }
 
-void metrics(){
-
+int metrics(int modo){
+	float promedioS=(float)(metrica.tiempoS/(float)metrica.cantS);
+	float promedioI=(float)(metrica.tiempoI/(float)metrica.cantI);
+	if(modo==1){
+		log_info(logger,"Read Latency: %f",promedioS);
+		log_info(logger,"Write Latency: %f",promedioI);
+		log_info(logger,"Reads: %i",metrica.cantS);
+		log_info(logger,"Writes: %i",metrica.cantI);
+	}
+	else{
+		log_info(logger,"Read Latency: %f",promedioS);
+		log_info(logger,"Write Latency: %f",promedioI);
+		log_info(logger,"Reads: %i",metrica.cantS);
+		log_info(logger,"Writes: %i",metrica.cantI);
+	}
+	return 0;
 }
+
+void metricasAutomaticas(){
+	while(terminaHilo==0){
+		sleep(3);
+		metrics(0);
+		//semaforos
+		metrica.cantI=0;
+		metrica.cantS=0;
+		metrica.tiempoI=0;
+		metrica.tiempoS=0;
+	}
+}
+
 
 bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio){
 	bool idRepetido(struct memoria *mem){
@@ -599,6 +731,32 @@ struct memoria * buscarMemoria(u_int16_t id){
 	}
 	return list_find(memorias,(void*)funcionBusca);
 }
+// borro toda la metadata para no andar actualizando
+void limpiarMetadata(){
+	// agregar semaforo
+	void destruirMet(struct metadataTabla *mt){
+		free(mt->consistency);
+		free(mt->table);
+		free(mt);
+	}
+	list_destroy_and_destroy_elements(listaMetadata,(void*)destruirMet);
+	listaMetadata=list_create();
+}
+
+void actualizarMetadataTabla(struct metadataTabla *m){
+	// agregar semaforo
+	void destruirMet(struct metadataTabla *mt){
+		free(mt->consistency);
+		free(mt->table);
+		free(mt);
+	}
+	bool buscar(struct metadataTabla *mt){
+		return strcmp(mt->table,m->table)!=0;
+	}
+	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
+	list_add(listaMetadata,m);
+}
+
 
 void inicializarColas(){
 	myExit=queue_create();
@@ -643,10 +801,11 @@ struct metadataTabla * buscarMetadataTabla(char* table){
 }
 
 void describeGlobal(){
-	int tiempo = config_get_int_value(config, "15000");
-	while(1){
+	int tiempo = config_get_int_value(config, "METADATA_REFRESH");
+	while(terminaHilo==0){
 		sleep(tiempo/(float)1000);
-		log_info(logger,"Describe global automatico papaa");
+		describe(NULL);
+		log_info(logger,"Describe global automático");
 	}
 }
 
@@ -744,8 +903,3 @@ void destruir(){
 	free(exec->elements);
 	free(exec);
 }
-
-
-
-
-
