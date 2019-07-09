@@ -598,7 +598,7 @@ t_config* read_config() {
 	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio
 	 }
 
-	 liberarMarco(aux->nroMarco);
+	 liberarMarco(nroMarcoAborrar);
 
 	 return nroMarcoAborrar;
 
