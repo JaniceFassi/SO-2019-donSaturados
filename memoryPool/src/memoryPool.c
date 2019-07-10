@@ -442,11 +442,19 @@ t_config* read_config() {
 	 if(lfsSock == -1){
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
-	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
-	 	 //recibir rta
-	 //recibir value
-	 //insertar el value
-	 //responder a kernel
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 int tamRta = offsetMarco + sizeof(char)*4;
+	 char* buffer = malloc(tamRta+1);
+	 //recibo si salió todo bien
+	 //recibo tamanio para malloquear
+	 //recibo pagina empaquetada
+	 //desempaquetar en timestamp, key, value
+	 //insertar
+	 recvData(lfsSock, buffer, tamRta);
+
+	 close(lfsSock);
+
+
 	 char* valueRecibido;
 	 return valueRecibido;
  }
@@ -461,8 +469,8 @@ t_config* read_config() {
 	 if(lfsSock == -1){
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
-	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
-	 void *buffer = malloc(sizeof(char)+1);
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 char *buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 	 close(lfsSock);
 	 int rta = atoi(buffer);
@@ -478,21 +486,27 @@ t_config* read_config() {
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
-	 char* buffer = malloc(sizeof(char)+1);
+	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 
 	 close(lfsSock);
-	 return 1;
+	 int rta = atoi(buffer);
+	 return rta;
  }
 
- void dropLissandra(char* nombreTabla){
+ int dropLissandra(char* nombreTabla){
 	 char* paqueteListo = empaquetar(4, nombreTabla);
 	 u_int16_t lfsSock = crearConexionLFS();
 	 if(lfsSock == -1){
 	 	 log_error(logger, "No se pudo conectar con LFS");
 	  }
-	 send(lfsSock, paqueteListo, strlen(paqueteListo), 0);
-	 //recibir rta
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 char* buffer = malloc(sizeof(char)*2);
+	 recvData(lfsSock, buffer, sizeof(char));
+
+	 close(lfsSock);
+	 int rta = atoi(buffer);
+	 return rta;
 
  }
 

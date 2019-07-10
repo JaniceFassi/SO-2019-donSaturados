@@ -98,7 +98,7 @@ char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, lo
 char* selectLissandra(char* nombreTabla,u_int16_t key); //Devuelve el value
 int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value);
 int createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
-void dropLissandra(char* nombreTabla);
+int dropLissandra(char* nombreTabla);
 u_int16_t handshakeConLissandra(u_int16_t socket, char* ip, u_int16_t puerto);
 
 //MANEJAR MEMORIA
