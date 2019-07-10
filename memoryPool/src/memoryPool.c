@@ -301,6 +301,10 @@ void consola(){
 		if(!strncmp(linea,"JOURNAL",6)){
 			mJournal();
 		}
+		
+		if(!strncmp(linea,"MOSTRAR",7)){
+			mostrarMemoria();
+		}
 
 		if(!strncmp(linea,"exit",5)){
 			free(linea);
@@ -560,6 +564,7 @@ t_config* read_config() {
  	else{
  		//No hace falta llamar el journal aca ya que esta adentro del LRU
  		posMarco = LRU();
+		unMarco = list_get(tablaMarcos,0);
  		unMarco->estaLibre = 1;
  	}
 
@@ -612,7 +617,7 @@ t_config* read_config() {
 	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio
 	 }
 
-	 liberarMarco(aux->nroMarco);
+	 liberarMarco(nroMarcoAborrar);
 
 	 return nroMarcoAborrar;
 
@@ -894,7 +899,7 @@ void mDrop(char* nombreTabla){
 		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
 	}
-	dropLissandra(nombreTabla);
+	//dropLissandra(nombreTabla); ///////////////////////////////////////////
 
 }
 
@@ -914,7 +919,7 @@ void mJournal(){
 			long timestamp = *(long*)conseguirTimestamp(pag);
 			u_int16_t key = *(u_int16_t*)conseguirKey(pag);
 			char* value = (char*)conseguirValor(pag);
-			insertLissandra(nombreSegmento, timestamp, key, value);
+			//insertLissandra(nombreSegmento, timestamp, key, value); /////////////////////////////////////////////
 
 
 		}
@@ -925,6 +930,16 @@ void mJournal(){
 	log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 }
 
+void activarJournal(){
+	int retardo = config_get_int_value(configuracion,"RETARDO_JOURNAL");
+	while(1){
+		log_info(logger,"Hacemos journal por retardo");
+		mJournal();
+		sleep(retardo);
+	}
+}
+
+//NROMEM;PUERTO;IP SUPER SEND CON TABLA ENTERA
 void buscarMemorias(){}
 
 void mGossip(){
