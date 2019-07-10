@@ -13,31 +13,31 @@
 void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
 
-	char *buffer = malloc(15);
+	char *buffer = malloc(2);
 	log_info(logger,"sock: %i",cli);
-	//int b= recv(cli, buffer, 2, NULL);
-	int b = recvData(cli, buffer, 14);
-	//buffer[b]= "\0";
+
+	int b = recvData(cli, buffer, sizeof(char));
+
 	log_info(logger, "Bytes recibidos: %d", b);
 	log_info(logger, "Buffer %s", buffer);
 	//1byteop
 	//3bytes tamanioop
 	//linea con ;
 
-	//int operacion = atoi(buffer);
-	//printf("Operacion %s \n", buffer);
+	int operacion = atoi(buffer);
+	printf("Operacion %s \n", buffer);
 
-/*	char** desempaquetado;
+	char** desempaquetado;
 	if(operacion !=5 && operacion !=6){
 		char* tamanioPaq = malloc(sizeof(char)*4);
 
-		recv(cli,tamanioPaq, sizeof(char)*3, NULL);
+		recvData(cli,tamanioPaq, sizeof(char)*3);
 		printf("Tamanio paquete %s \n", tamanioPaq);
 
 		int tamanio = atoi(tamanioPaq);
-		char* paquete = malloc(tamanio+1);
+		char* paquete = malloc(tamanio + sizeof(char));
 
-		recv(cli, paquete, tamanio, NULL);
+		recvData(cli, paquete, tamanio);
 		printf("Paquete %s \n", paquete);
 
 
@@ -104,7 +104,7 @@ void* recibirOperacion(void * arg){
 
 				}
 	//responder 0 si todo bien, 1 si salio mal
-*/
+
 	return NULL;
 }
 
@@ -141,23 +141,29 @@ void* gestionarConexiones (void* arg){
 
 int main(void) {
 
+//TODO hay que abortar si no se puede hacer el handshake o el malloc gigante
 
 	inicializar();
-	pthread_t hiloConsola;
-	pthread_create(&hiloConsola, NULL, consola, NULL);
+
+	//pthread_t gossipTemporal;
+	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
+
+	//pthread_t hiloConsola;
+	//pthread_create(&hiloConsola, NULL, consola, NULL);
 
 
 	pthread_t gestorConexiones;
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
-	pthread_t journalTemporal;
-	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
+	//pthread_t journalTemporal;
+	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
-	pthread_join(hiloConsola, NULL);
+	//pthread_join(hiloConsola, NULL);
 	pthread_join(gestorConexiones, NULL);
-	pthread_join(journalTemporal, NULL);
+	//pthread_join(journalTemporal, NULL);
+	//pthread_join(gossipTemporal, NULL);
 	finalizar();
 
 	return EXIT_SUCCESS;
@@ -357,6 +363,16 @@ int main(void) {
  		mJournal();
 
  		}
+
+ 	return NULL;
+ }
+
+ void* gossipProgramado(void* arg){
+ 	int retardo = config_get_int_value(configuracion, "RETARDO_GOSSIPING")/10000;
+ 	while(1){
+ 		mGossip();
+ 		sleep(retardo);
+ 	}
 
  	return NULL;
  }

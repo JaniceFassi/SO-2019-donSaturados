@@ -94,6 +94,7 @@ void* consola(void* arg);
 void* recibirOperacion(void * arg);
 void* gestionarConexiones(void *arg);
 void* journalProgramado(void* arg);
+void* gossipProgramado(void* arg);
 
 
 
