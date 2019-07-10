@@ -18,7 +18,7 @@ void* recibirOperacion(void * arg){
 	int b = recvData(cli, buffer, sizeof(char));
 
 	log_info(logger, "Bytes recibidos: %d", b);
-	log_info(logger, "Operacion %s", buffer);
+	log_info(logger, "Operacion %d", atoi(buffer));
 
 	int operacion = atoi(buffer);
 	char** desempaquetado;
@@ -47,19 +47,21 @@ void* recibirOperacion(void * arg){
 	char* consistencia;
 	int particiones;
 	long tiempoCompactacion;
+	int resp;
+	char* rta;
 
 
 	switch (operacion) {
 				case 0: //SELECT
 					nombreTabla = desempaquetado[0];
 					key = atoi(desempaquetado[1]);
-					char* rta = mSelect(nombreTabla, key);
+					rta = mSelect(nombreTabla, key);
 					printf("rta %s\n", rta);
 					//si el select no es basura
-					char* msj = malloc(strlen(rta)+5);
+					char* msj = malloc(strlen(rta)+4);
 					msj = empaquetar(0, rta);
 					printf("mensaje %s \n", msj);
-					sendData(cli, msj, strlen(msj));
+					sendData(cli, msj, strlen(msj)+1);
 					//sino sólo mandar un 1
 					//sendData(cli, "1", sizeof(char));
 					break;
@@ -74,8 +76,8 @@ void* recibirOperacion(void * arg){
 
 					}else{
 						log_info(logger, "Parametros válidos, se hace un insert");
-						int rta = mInsert(nombreTabla, key, value);
-						sendData(cli, string_itoa(rta), sizeof(char));
+						int resp = mInsert(nombreTabla, key, value);
+						sendData(cli, string_itoa(resp), sizeof(char));
 					}
 
 					break;
@@ -85,7 +87,7 @@ void* recibirOperacion(void * arg){
 					consistencia = desempaquetado[1];
 					particiones = atoi(desempaquetado[2]);
 					tiempoCompactacion = atol(desempaquetado[3]);
-					int resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
+					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
 					sendData(cli, string_itoa(resp), sizeof(char));
 					break;
 
@@ -97,7 +99,9 @@ void* recibirOperacion(void * arg){
 
 				case 4: //DROP
 					nombreTabla = desempaquetado[0];
-					mDrop(nombreTabla);
+					resp = mDrop(nombreTabla);
+					sendData(cli, string_itoa(resp), sizeof(char));
+
 					break;
 
 				case 5: //JOURNAL
@@ -156,8 +160,8 @@ int main(void) {
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 
-	//pthread_t hiloConsola;
-	//pthread_create(&hiloConsola, NULL, consola, NULL);
+	pthread_t hiloConsola;
+	pthread_create(&hiloConsola, NULL, consola, NULL);
 
 	mInsert("PROFESIONES", 1, "CIRUJANO");
 	pthread_t gestorConexiones;
@@ -168,7 +172,7 @@ int main(void) {
 	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
-	//pthread_join(hiloConsola, NULL);
+	pthread_join(hiloConsola, NULL);
 	//si el exit de consola "apaga" la memoria, pasar un parámetro que vuelva en el join
 	//hacer un if y destruir el resto de los hilos ahí, después finalizar
 
@@ -396,7 +400,7 @@ int main(void) {
  char* empaquetar(int operacion, char* paquete){
 
 	 char* msj;
-	 int tamanioPaquete = strlen(paquete)+1;
+	 int tamanioPaquete = strlen(paquete);
 	 char* tamanioFormateado;
 	 if(tamanioPaquete<10){
 		 	tamanioFormateado = string_from_format("%i00%i", operacion, tamanioPaquete);
@@ -916,10 +920,9 @@ void mDescribe(char* nombreTabla){
 
 }
 
-void mDrop(char* nombreTabla){
+int mDrop(char* nombreTabla){
 
-	//la respuesta de esto es sólo del drop de lissandra?
-	//dropLissandra(nombreTabla); ///////////////////////////////////////////
+
 	segmento* nuevo = buscarSegmento(nombreTabla);
 
 	if(nuevo != NULL){
@@ -928,8 +931,9 @@ void mDrop(char* nombreTabla){
 		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
 	}
+	int rta = dropLissandra(nombreTabla);
 
-
+	return rta;
 }
 
 
