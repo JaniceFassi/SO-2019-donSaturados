@@ -108,96 +108,57 @@ void* recibirOperacion(void * arg){
 	return NULL;
 }
 
-int crearConexionLFS(){
-	//crea un socket para comunicarse con lfs, devuelve el file descriptor conectado
-	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
-	char* ipFS = config_get_string_value(configuracion,"IP_FS");
-
-	u_int16_t lfsServer;
-	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
-
-	if(rta == 0){
-		log_info(logger, "se creo una conexión con lfs");
-
-	}else{
-		log_info(logger, "error al crear una conexión con lfs");
-
-	}
-
-	return lfsServer;
-}
-
-void recibirRespuesta(){
-
-}
-
-
-
-int main(void) {
-//aca va la consola, y después un hilo que gestione conexiones, donde va a estar el while 1
-
-	inicializar();
-	consola();
-	/*
-	segmento *animales = crearSegmento("ANIMALES");
-	//segmento *postres = crearSegmento("POSTRES");
-	list_add(tablaSegmentos, animales);
-	//list_add(tablaSegmentos, postres);
-
-	mInsert("ANIMALES", 1, "GATO");
-	//mInsert("ANIMALES", 2, "MONO");
-	//nsert("POSTRES",5,"FLAN");
-	mostrarMemoria();
-
-	mCreate("ANIMALES",  "SC", 16, 50000);
-
-/*
+void* gestionarConexiones (void* arg){
+	//CREA EL SERVIDOR Y ESTÁ CONTÍNUAMENTE ESCUCHANDO Y ACEPTANDO PEDIDOS
 	u_int16_t puertoServer = config_get_int_value(configuracion, "PUERTO");
 	char* ipServer = config_get_string_value(configuracion, "IP");
 	u_int16_t server;
 
 	int servidorCreado = createServer(ipServer, puertoServer, &server);
-
-
 	listen(server,100);
 	printf("Servidor escuchando\n");
 
+	while(1){
 
-	struct sockaddr_in kernelCliente;
+		u_int16_t cliente;
+		acceptConexion(server, &cliente,0);
 
-	unsigned int tamanioDireccion=sizeof(kernelCliente);
-
-	for(int i =0; i <1; i++){
-
-	u_int16_t cliente;
-	acceptConexion(server, &cliente,0);
-
-	printf("Se conecto un cliente\n");
-	char *buffer = malloc(15);
-	char* puto = malloc(14);
+		printf("Se conecto un cliente\n");
+		pthread_t atiendeCliente;
+		pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
+		//pthread_join(atiendeCliente, NULL);
 
 
-	log_info(logger,"sock: %i",cliente);
-	int b= recv(cliente, buffer, 14, 0);
-	//int b = recvData(cliente, buffer, 14);
-	//buffer[b]= "\0";
-	//strcpy(puto, buffer);
-	log_info(logger, "Bytes recibidos: %d", b);
-	log_info(logger, "Buffer %s\n", buffer);
+	}
 
 
-	//pthread_t unHilo;
-	//pthread_create(&unHilo, NULL, recibirOperacion, &cliente);
-	//pthread_join(unHilo, NULL);
-
-		}
 
 
-*/
-	//mJournal();
+	return NULL;
+}
 
 
-	//finalizar();
+
+int main(void) {
+
+
+	inicializar();
+	pthread_t hiloConsola;
+	pthread_create(&hiloConsola, NULL, consola, NULL);
+
+
+	pthread_t gestorConexiones;
+	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
+
+
+	pthread_t journalTemporal;
+	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
+
+
+	pthread_join(hiloConsola, NULL);
+	pthread_join(gestorConexiones, NULL);
+	pthread_join(journalTemporal, NULL);
+	finalizar();
 
 	return EXIT_SUCCESS;
 }
@@ -206,7 +167,7 @@ int main(void) {
 //------------------AUXILIARES DE ARRANQUE----------------//
 //-------------------------------------------------------//
 
-void inicializar(){
+ void inicializar(){
 	logger = init_logger();
 	configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
@@ -244,78 +205,8 @@ void inicializar(){
 
 }
 
-void consola(){
 
-	char* linea;
-	while(1){
-		linea = readline(">");
-
-		if(!strncmp(linea,"SELECT ",7))
-		{
-			char **subStrings= string_n_split(linea,3," ");
-			u_int16_t k=atoi(subStrings[2]);
-			mSelect(subStrings[1],k);
-			//liberarSubstrings(subStrings);
-		}
-
-	 	if(!strncmp(linea,"INSERT ",7)){//INSERT "NOMBRE" 5/ "VALUE"
-	 		char **split= string_n_split(linea,4," ");
-	 		int key= atoi(split[2]);
-	 		char **cadena=string_split(split[3]," ");
-
-	 		mInsert(split[1],key,split[3]);
-
-
-	 		//liberarSubstrings(cadena);
-	 		//liberarSubstrings(split);
-	 	}
-
-	 	if(!strncmp(linea,"CREATE ",7)){
-			char **subStrings= string_n_split(linea,5," ");
-			u_int16_t particiones=atoi(subStrings[3]);
-			long timeCompaction=atol(subStrings[4]);
-			mCreate(subStrings[1],subStrings[2],particiones,timeCompaction);
-			log_info(logger,"Se hizo CREATE de la tabla: %s.",subStrings[1]);
-			//liberarSubstrings(subStrings);
-		}
-
-		if(!strncmp(linea,"DESCRIBE",8)){
-			char **subStrings= string_n_split(linea,2," ");
-			mDescribe(subStrings[1]);
-			//liberarSubstrings(subStrings);
-		}
-
-		if(!strncmp(linea,"DROP ",5)){
-			char **subStrings= string_n_split(linea,2," ");
-			if(subStrings[1]==NULL){
-				log_info(logger,"No se ingreso el nombre de la tabla.");
-			}
-			mDrop(subStrings[1]);
-			log_info(logger,"Se envio el drop a LFS y se borro de memoria la tabla %s");
-
-			//free(subStrings[0]);
-			//free(subStrings[1]);
-			//free(subStrings);
-		}
-
-		if(!strncmp(linea,"JOURNAL",6)){
-			mJournal();
-		}
-		
-		if(!strncmp(linea,"MOSTRAR",7)){
-			mostrarMemoria();
-		}
-
-		if(!strncmp(linea,"exit",5)){
-			free(linea);
-			//theEnd();
-			break;
-		}
-		free(linea);
-	}
-}
-
-segmento *crearSegmento(char* nombre){
+ segmento *crearSegmento(char* nombre){
 	segmento *nuevoSegmento = malloc(sizeof(segmento));
 	nuevoSegmento->nombreTabla = malloc(strlen(nombre)+1);
 	strcpy(nuevoSegmento->nombreTabla,nombre);
@@ -325,7 +216,7 @@ segmento *crearSegmento(char* nombre){
 	return nuevoSegmento;
 }
 
-pagina *crearPagina(){
+ pagina *crearPagina(){
 	pagina *pag = malloc(sizeof(pagina));
 	pag->nroMarco = primerMarcoLibre();
 	if(pag->nroMarco == -1){
@@ -335,14 +226,14 @@ pagina *crearPagina(){
 	return pag;
 }
 
-void agregarPagina(segmento *seg, pagina *pag){
+ void agregarPagina(segmento *seg, pagina *pag){
 
 	list_add(seg->tablaPaginas, pag);
 	log_info(logger, "Se agrego una página al segmento %s", seg->nombreTabla);
 
 }
 
-segmento *buscarSegmento(char* nombre){
+ segmento *buscarSegmento(char* nombre){
 
 	int tieneMismoNombre(segmento *seg){
 		int rta = 0;
@@ -355,7 +246,7 @@ segmento *buscarSegmento(char* nombre){
 	return list_find(tablaSegmentos, (void *) tieneMismoNombre);
 }
 
-pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
+ pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
 
 	int tieneMismaKey(pagina *pag){
 			int rta = 0;
@@ -372,7 +263,7 @@ pagina *buscarPaginaConKey(segmento *seg, u_int16_t key){
 
 }
 
-t_config* read_config() {
+ t_config* read_config() {
 	return config_create("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
 }
 
@@ -381,6 +272,94 @@ t_config* read_config() {
 }
 
 
+ //-----------------------------------------------------------//
+ //---------------------AUXILIARES DE HILOS------------------//
+ //---------------------------------------------------------//
+
+ void* consola(void* arg){
+
+	char* linea;
+	while(1){
+		linea = readline(">");
+
+ 		if(!strncmp(linea,"SELECT ",7))
+ 		{
+ 			char **subStrings= string_n_split(linea,3," ");
+ 			u_int16_t k=atoi(subStrings[2]);
+ 			mSelect(subStrings[1],k);
+ 			//liberarSubstrings(subStrings);
+ 		}
+
+ 	 	if(!strncmp(linea,"INSERT ",7)){//INSERT "NOMBRE" 5/ "VALUE"
+ 	 		char **split= string_n_split(linea,4," ");
+ 	 		int key= atoi(split[2]);
+ 	 		char **cadena=string_split(split[3]," ");
+
+ 	 		mInsert(split[1],key,split[3]);
+
+
+ 	 		//liberarSubstrings(cadena);
+ 	 		//liberarSubstrings(split);
+ 	 	}
+
+ 	 	if(!strncmp(linea,"CREATE ",7)){
+ 			char **subStrings= string_n_split(linea,5," ");
+ 			u_int16_t particiones=atoi(subStrings[3]);
+ 			long timeCompaction=atol(subStrings[4]);
+ 			mCreate(subStrings[1],subStrings[2],particiones,timeCompaction);
+ 			log_info(logger,"Se hizo CREATE de la tabla: %s.",subStrings[1]);
+ 			//liberarSubstrings(subStrings);
+ 		}
+
+ 		if(!strncmp(linea,"DESCRIBE",8)){
+ 			char **subStrings= string_n_split(linea,2," ");
+ 			mDescribe(subStrings[1]);
+ 			//liberarSubstrings(subStrings);
+ 		}
+
+ 		if(!strncmp(linea,"DROP ",5)){
+ 			char **subStrings= string_n_split(linea,2," ");
+ 			if(subStrings[1]==NULL){
+ 				log_info(logger,"No se ingreso el nombre de la tabla.");
+ 			}
+ 			mDrop(subStrings[1]);
+ 			log_info(logger,"Se envio el drop a LFS y se borro de memoria la tabla %s");
+
+ 			//free(subStrings[0]);
+ 			//free(subStrings[1]);
+ 			//free(subStrings);
+ 		}
+
+ 		if(!strncmp(linea,"JOURNAL",6)){
+ 			mJournal();
+ 		}
+
+ 		if(!strncmp(linea,"MOSTRAR",7)){
+ 			mostrarMemoria();
+ 		}
+
+ 		if(!strncmp(linea,"exit",5)){
+ 			free(linea);
+ 			break;
+ 		}
+ 		free(linea);
+ 	}
+
+ 	return NULL;
+ }
+
+ void* journalProgramado(void *arg){
+
+ 	int retardo = config_get_int_value(configuracion,"RETARDO_JOURNAL")/1000;
+ 	while(1){
+ 		sleep(retardo);
+ 		log_info(logger,"Se realiza un journal programado");
+ 		mJournal();
+
+ 		}
+
+ 	return NULL;
+ }
 
  //-----------------------------------------------------------//
  //------------------AUXILIARES DE LFS/KERNEL----------------//
@@ -438,6 +417,25 @@ t_config* read_config() {
  		return maxV;
  }
 
+
+ int crearConexionLFS(){
+ 	//crea un socket para comunicarse con lfs, devuelve el file descriptor conectado
+ 	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
+ 	char* ipFS = config_get_string_value(configuracion,"IP_FS");
+
+ 	u_int16_t lfsServer;
+ 	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
+
+ 	if(rta == 0){
+ 		log_info(logger, "se creo una conexión con lfs");
+
+ 	}else{
+ 		log_info(logger, "error al crear una conexión con lfs");
+
+ 	}
+
+ 	return lfsServer;
+ }
 
  char* selectLissandra(char* nombreTabla,u_int16_t key){
 	 char* datos = formatearSelect(nombreTabla, key);
@@ -670,7 +668,7 @@ t_config* read_config() {
  	return res;
  }
  //---------------------------------------------------------//
- //------------AUXILIARES SECUNDARIAS Y BORRADO------------//
+ //-----------------AUXILIARES SECUNDARIAS-----------------//
  //-------------------------------------------------------//
 
 
@@ -688,7 +686,6 @@ void mostrarMemoria(){
 
 		}
 }
-
 
 void* conseguirValor(pagina* pNueva){
 
@@ -709,9 +706,6 @@ void *conseguirKey(pagina *pag){
 	return ((memoria) + sizeof(long) + offsetMarco*pag->nroMarco);
 }
 
-
-
-
 int conseguirIndexSeg(segmento* nuevo){
 
 	int index=0;
@@ -727,6 +721,13 @@ int conseguirIndexSeg(segmento* nuevo){
 	}
 	return index;
 }
+
+
+
+//---------------------------------------------------------//
+//--------------------------BORRADO-----------------------//
+//-------------------------------------------------------//
+
 
 void eliminarSegmento(segmento* nuevo){
 
@@ -750,7 +751,6 @@ void segmentoDestroy(segmento* segParaDestruir){
 	free(segParaDestruir->nombreTabla);
 	free(segParaDestruir);
 }
-
 
 void eliminarMarcos(){
 		list_destroy_and_destroy_elements(tablaMarcos,(void*)marcoDestroy);
@@ -925,19 +925,13 @@ void mJournal(){
 		}
 		list_destroy(paginasMod);
 	}
+
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 }
 
-void activarJournal(){
-	int retardo = config_get_int_value(configuracion,"RETARDO_JOURNAL");
-	while(1){
-		log_info(logger,"Hacemos journal por retardo");
-		mJournal();
-		sleep(retardo);
-	}
-}
+
 
 //NROMEM;PUERTO;IP SUPER SEND CON TABLA ENTERA
 void buscarMemorias(){}

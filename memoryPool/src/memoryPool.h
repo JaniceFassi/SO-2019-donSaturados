@@ -78,7 +78,6 @@ void marcoDestroy(marco *unMarco);
 
 //AUXILIARES DE ARRANQUE
 void inicializar();
-void consola();
 t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
@@ -90,6 +89,15 @@ void agregarPosMarcoUsado(posMarcoUsado* nuevo);
 pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
 
+//FUNCIONES PARA HILOS
+void* consola(void* arg);
+void* recibirOperacion(void * arg);
+void* gestionarConexiones(void *arg);
+void* journalProgramado(void* arg);
+
+
+
+
 //AUXILIARES PARA LISSANDRA O KERNEL
 char* empaquetar(int operacion, char* paquete);
 char* formatearSelect(char* nombreTabla, u_int16_t key);
@@ -100,6 +108,7 @@ int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* valu
 int createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
 int dropLissandra(char* nombreTabla);
 u_int16_t handshakeConLissandra(u_int16_t socket, char* ip, u_int16_t puerto);
+int crearConexionLFS();
 
 //MANEJAR MEMORIA
 int memoriaLlena();
