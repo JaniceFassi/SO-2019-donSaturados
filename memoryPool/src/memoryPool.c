@@ -12,31 +12,26 @@
 
 void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
-
-	char *buffer = malloc(2);
 	log_info(logger,"sock: %i",cli);
 
+	char *buffer = malloc(2);
 	int b = recvData(cli, buffer, sizeof(char));
 
 	log_info(logger, "Bytes recibidos: %d", b);
-	log_info(logger, "Buffer %s", buffer);
-	//1byteop
-	//3bytes tamanioop
-	//linea con ;
+	log_info(logger, "Operacion %s", buffer);
 
 	int operacion = atoi(buffer);
-	printf("Operacion %s \n", buffer);
-
 	char** desempaquetado;
+
 	if(operacion !=5 && operacion !=6){
 		char* tamanioPaq = malloc(sizeof(char)*4);
 
 		recvData(cli,tamanioPaq, sizeof(char)*3);
-		printf("Tamanio paquete %s \n", tamanioPaq);
-
 		int tamanio = atoi(tamanioPaq);
-		char* paquete = malloc(tamanio + sizeof(char));
 
+		printf("tamanio paquete en nro %d \n", tamanio);
+
+		char* paquete = malloc(tamanio + sizeof(char));
 		recvData(cli, paquete, tamanio);
 		printf("Paquete %s \n", paquete);
 
@@ -44,6 +39,7 @@ void* recibirOperacion(void * arg){
 		desempaquetado = string_n_split(paquete, 5, ";");
 
 	}
+	/*
 	char* nombreTabla;
 	u_int16_t key;
 	char* value;
@@ -67,8 +63,15 @@ void* recibirOperacion(void * arg){
 					//timestamp = atol(desempaquetado[1]);
 					key = atoi(desempaquetado[1]);
 					value = desempaquetado[2];
-					//ver si el valor es mayor al maximo, entonces rechaar el insert
-					mInsert(nombreTabla, key, value);
+					if(strlen(value)+1> maxValue){
+						log_error(logger, "Se intentó insertar un valor mayor al permitido");
+						//responder 1 a kernel
+					}else{
+						log_info(logger, "Parametros válidos, se hace un insert");
+						mInsert(nombreTabla, key, value);
+						//responder segun resultado insert
+					}
+
 					break;
 
 				case 2:
@@ -76,8 +79,8 @@ void* recibirOperacion(void * arg){
 					consistencia = desempaquetado[1];
 					particiones = atoi(desempaquetado[2]);
 					tiempoCompactacion = atol(desempaquetado[3]);
-					//mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
-
+					int rta = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
+					//enviar rta a kernel
 					printf("create\n");
 				break;
 
@@ -104,7 +107,7 @@ void* recibirOperacion(void * arg){
 
 				}
 	//responder 0 si todo bien, 1 si salio mal
-
+*/
 	return NULL;
 }
 
@@ -121,7 +124,7 @@ void* gestionarConexiones (void* arg){
 	while(1){
 
 		u_int16_t cliente;
-		acceptConexion(server, &cliente,0);
+		acceptConexion(server, &cliente, 0);
 
 		printf("Se conecto un cliente\n");
 		pthread_t atiendeCliente;
@@ -161,6 +164,9 @@ int main(void) {
 
 
 	//pthread_join(hiloConsola, NULL);
+	//si el exit de consola "apaga" la memoria, pasar un parámetro que vuelva en el join
+	//hacer un if y destruir el resto de los hilos ahí, después finalizar
+
 	pthread_join(gestorConexiones, NULL);
 	//pthread_join(journalTemporal, NULL);
 	//pthread_join(gossipTemporal, NULL);
@@ -186,11 +192,11 @@ int main(void) {
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
-	//maxValue = 20;
+	maxValue = 20;
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
+	//log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
 
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
 	tablaMarcos = list_create();
@@ -885,13 +891,12 @@ void mSelect(char* nombreTabla,u_int16_t key){
 
 }
 
-void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
+int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
 
 	int rta = createLissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
 	log_info(logger, "La respuesta del create fue %d", rta);
 
-	//El enunciado solo dice que le informe a lissandra, no dice nada de guardar la tabla en memoria
-	//Habria que modificar empaquetar para poder mandar criterio,nroParticiones y tiempoCompactacion
+	return rta;
 }
 
 

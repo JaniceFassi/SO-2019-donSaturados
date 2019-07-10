@@ -66,7 +66,7 @@ typedef struct{
 //API
 void mSelect(char* nombreTabla,u_int16_t key);
 void mInsert(char* nombreTabla,u_int16_t key,char* valor);
-void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
+int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
 void mDescribe(char* nombreTabla);
 void mDrop(char* nombreTabla);
 void mJournal();
