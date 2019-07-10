@@ -75,3 +75,83 @@
 [INFO] 18:51:55:607 memoryPool/(20847:20867): Se agrego una página al segmento PROFESIONES
 [INFO] 18:51:55:607 memoryPool/(20847:20867): Se agrego el dato CIRUJANO al marco 0
 [INFO] 18:51:55:607 memoryPool/(20847:20867): Se inserto al segmento PROFESIONES el valor CIRUJANO
+[INFO] 19:03:45:957 memoryPool/(21161:21161): Se inicializo la memoria con tamanio 130
+[INFO] 19:03:49:890 memoryPool/(21161:21181): sock: 652738565
+[INFO] 19:03:49:890 memoryPool/(21161:21181): Bytes recibidos: 1
+[INFO] 19:03:49:890 memoryPool/(21161:21181): Operacion 1
+[INFO] 19:03:49:890 memoryPool/(21161:21181): Parametros válidos, se hace un insert
+[INFO] 19:03:49:890 memoryPool/(21161:21181): Se creo el segmento PROFESIONES
+[INFO] 19:03:49:890 memoryPool/(21161:21181): Se agrego una página al segmento PROFESIONES
+[INFO] 19:03:49:891 memoryPool/(21161:21181): Se agrego el dato CIRUJANO al marco 0
+[INFO] 19:03:49:891 memoryPool/(21161:21181): Se inserto al segmento PROFESIONES el valor CIRUJANO
+[INFO] 19:44:34:429 memoryPool/(21974:21974): Se inicializo la memoria con tamanio 130
+[INFO] 19:44:47:451 memoryPool/(21974:21993): sock: 652738565
+[INFO] 19:44:47:451 memoryPool/(21974:21993): Bytes recibidos: 1
+[INFO] 19:44:47:451 memoryPool/(21974:21993): Operacion 1
+[INFO] 19:44:47:451 memoryPool/(21974:21993): Parametros válidos, se hace un insert
+[INFO] 19:44:47:451 memoryPool/(21974:21993): Se creo el segmento PROFESIONES
+[INFO] 19:44:47:451 memoryPool/(21974:21993): Se agrego una página al segmento PROFESIONES
+[INFO] 19:44:47:451 memoryPool/(21974:21993): Se agrego el dato CIRUJANO al marco 0
+[INFO] 19:44:47:451 memoryPool/(21974:21993): Se inserto al segmento PROFESIONES el valor CIRUJANO
+[INFO] 19:45:38:873 memoryPool/(21974:22040): sock: 652738566
+[INFO] 19:45:38:873 memoryPool/(21974:22040): Bytes recibidos: 1
+[INFO] 19:45:38:873 memoryPool/(21974:22040): Operacion 0
+[INFO] 19:45:38:874 memoryPool/(21974:22040): Se seleccionó el valor CIRUJANO
+[INFO] 19:47:48:654 memoryPool/(22127:22127): Se inicializo la memoria con tamanio 130
+[INFO] 19:49:06:3 memoryPool/(22127:22204): sock: 652738565
+[INFO] 19:49:06:3 memoryPool/(22127:22204): Bytes recibidos: 1
+[INFO] 19:49:06:3 memoryPool/(22127:22204): Operacion 1
+[INFO] 19:49:06:3 memoryPool/(22127:22204): Parametros válidos, se hace un insert
+[INFO] 19:49:06:3 memoryPool/(22127:22204): Se creo el segmento PROFESIONES
+[INFO] 19:49:06:3 memoryPool/(22127:22204): Se agrego una página al segmento PROFESIONES
+[INFO] 19:49:06:3 memoryPool/(22127:22204): Se agrego el dato CIRUJANO al marco 0
+[INFO] 19:49:06:3 memoryPool/(22127:22204): Se inserto al segmento PROFESIONES el valor CIRUJANO
+[INFO] 19:49:31:36 memoryPool/(22127:22244): sock: 652738566
+[INFO] 19:49:31:36 memoryPool/(22127:22244): Bytes recibidos: 1
+[INFO] 19:49:31:37 memoryPool/(22127:22244): Operacion 0
+[INFO] 19:49:31:37 memoryPool/(22127:22244): Se seleccionó el valor CIRUJANO
+[INFO] 19:50:12:16 memoryPool/(22127:22292): sock: 652738567
+[INFO] 19:50:12:16 memoryPool/(22127:22292): Bytes recibidos: 1
+[INFO] 19:50:12:16 memoryPool/(22127:22292): Operacion 0
+[INFO] 19:50:12:17 memoryPool/(22127:22292): Se seleccionó el valor CIRUJANO
+[INFO] 19:53:38:341 memoryPool/(22127:22351): sock: 652738568
+[INFO] 19:53:38:341 memoryPool/(22127:22351): Bytes recibidos: 1
+[INFO] 19:53:38:341 memoryPool/(22127:22351): Operacion 0
+[INFO] 19:53:38:341 memoryPool/(22127:22351): Se seleccionó el valor CIRUJANO
+[INFO] 19:53:50:503 memoryPool/(22127:22390): sock: 652738569
+[INFO] 19:53:50:503 memoryPool/(22127:22390): Bytes recibidos: 1
+[INFO] 19:53:50:503 memoryPool/(22127:22390): Operacion 0
+[INFO] 19:53:50:503 memoryPool/(22127:22390): Se seleccionó el valor CIRUJANO
+[INFO] 19:54:05:506 memoryPool/(22127:22428): sock: 652738570
+[INFO] 19:54:05:506 memoryPool/(22127:22428): Bytes recibidos: 1
+[INFO] 19:54:05:506 memoryPool/(22127:22428): Operacion 0
+[INFO] 19:54:05:506 memoryPool/(22127:22428): Se seleccionó el valor CIRUJANO
+[INFO] 19:54:15:110 memoryPool/(22127:22463): sock: 652738571
+[INFO] 19:54:15:110 memoryPool/(22127:22463): Bytes recibidos: 1
+[INFO] 19:54:15:110 memoryPool/(22127:22463): Operacion 0
+[INFO] 19:54:15:110 memoryPool/(22127:22463): Se seleccionó el valor CIRUJANO
+[INFO] 19:57:12:133 memoryPool/(22127:22578): sock: 652738572
+[INFO] 19:57:12:133 memoryPool/(22127:22578): Bytes recibidos: 1
+[INFO] 19:57:12:133 memoryPool/(22127:22578): Operacion 0
+[INFO] 19:57:12:133 memoryPool/(22127:22578): Se seleccionó el valor CIRUJANO
+[INFO] 19:58:34:622 memoryPool/(22628:22628): Se inicializo la memoria con tamanio 130
+[INFO] 19:58:34:623 memoryPool/(22628:22628): Se creo el segmento PROFESIONES
+[INFO] 19:58:34:623 memoryPool/(22628:22628): Se agrego una página al segmento PROFESIONES
+[INFO] 19:58:34:623 memoryPool/(22628:22628): Se agrego el dato CIRUJANO al marco 0
+[INFO] 19:58:34:623 memoryPool/(22628:22628): Se inserto al segmento PROFESIONES el valor CIRUJANO
+[INFO] 20:00:18:916 memoryPool/(22628:22658): sock: 652738565
+[INFO] 20:00:18:916 memoryPool/(22628:22658): Bytes recibidos: 1
+[INFO] 20:00:18:916 memoryPool/(22628:22658): Operacion 0
+[INFO] 20:00:18:916 memoryPool/(22628:22658): Se seleccionó el valor CIRUJANO
+[INFO] 20:01:30:692 memoryPool/(22628:22721): sock: 652738566
+[INFO] 20:01:30:692 memoryPool/(22628:22721): Bytes recibidos: 1
+[INFO] 20:01:30:692 memoryPool/(22628:22721): Operacion 0
+[INFO] 20:01:30:692 memoryPool/(22628:22721): Se seleccionó el valor CIRUJANO
+[INFO] 20:02:25:262 memoryPool/(22628:22774): sock: 652738567
+[INFO] 20:02:25:262 memoryPool/(22628:22774): Bytes recibidos: 1
+[INFO] 20:02:25:263 memoryPool/(22628:22774): Operacion 0
+[INFO] 20:02:25:263 memoryPool/(22628:22774): Se seleccionó el valor CIRUJANO
+[INFO] 20:02:53:682 memoryPool/(22628:22813): sock: 652738568
+[INFO] 20:02:53:682 memoryPool/(22628:22813): Bytes recibidos: 1
+[INFO] 20:02:53:682 memoryPool/(22628:22813): Operacion 0
+[INFO] 20:02:53:683 memoryPool/(22628:22813): Se seleccionó el valor CIRUJANO

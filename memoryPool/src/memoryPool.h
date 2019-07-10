@@ -64,8 +64,8 @@ typedef struct{
 }posMarcoUsado;
 
 //API
-void mSelect(char* nombreTabla,u_int16_t key);
-void mInsert(char* nombreTabla,u_int16_t key,char* valor);
+char* mSelect(char* nombreTabla,u_int16_t key);
+int mInsert(char* nombreTabla,u_int16_t key,char* valor);
 int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
 void mDescribe(char* nombreTabla);
 void mDrop(char* nombreTabla);

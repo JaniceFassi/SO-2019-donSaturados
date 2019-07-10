@@ -50,13 +50,21 @@ void* recibirOperacion(void * arg){
 
 
 	switch (operacion) {
-				case 0:
+				case 0: //SELECT
 					nombreTabla = desempaquetado[0];
 					key = atoi(desempaquetado[1]);
-					mSelect(nombreTabla, key);
+					char* rta = mSelect(nombreTabla, key);
+					printf("rta %s\n", rta);
+					//si el select no es basura
+					char* msj = malloc(strlen(rta)+5);
+					msj = empaquetar(0, rta);
+					printf("mensaje %s \n", msj);
+					sendData(cli, msj, strlen(msj));
+					//sino sólo mandar un 1
+					//sendData(cli, "1", sizeof(char));
 					break;
 
-				case 1:
+				case 1: //INSERT
 					nombreTabla = desempaquetado[0];
 					key = atoi(desempaquetado[1]);
 					value = desempaquetado[2];
@@ -66,38 +74,37 @@ void* recibirOperacion(void * arg){
 
 					}else{
 						log_info(logger, "Parametros válidos, se hace un insert");
-						mInsert(nombreTabla, key, value);
-						sendData(cli, "0", sizeof(char));
+						int rta = mInsert(nombreTabla, key, value);
+						sendData(cli, string_itoa(rta), sizeof(char));
 					}
 
 					break;
 
-				case 2:
+				case 2: //CREATE
 					nombreTabla = desempaquetado[0];
 					consistencia = desempaquetado[1];
 					particiones = atoi(desempaquetado[2]);
 					tiempoCompactacion = atol(desempaquetado[3]);
-					int rta = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
-					//enviar rta a kernel
-					printf("create\n");
-				break;
+					int resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
+					sendData(cli, string_itoa(resp), sizeof(char));
+					break;
 
-				case 3:
+				case 3: //DESCRIBE
 					nombreTabla = desempaquetado[0];
 					//mDescribe(nombreTabla);
 					printf("describe\n");
 					break;
 
-				case 4:
+				case 4: //DROP
 					nombreTabla = desempaquetado[0];
 					mDrop(nombreTabla);
 					break;
 
-				case 5:
+				case 5: //JOURNAL
 					mJournal();
 					break;
 
-				case 6:
+				case 6: //GOSSIP
 					//mGossip();
 					printf("gossip\n");
 					break;
@@ -152,7 +159,7 @@ int main(void) {
 	//pthread_t hiloConsola;
 	//pthread_create(&hiloConsola, NULL, consola, NULL);
 
-
+	mInsert("PROFESIONES", 1, "CIRUJANO");
 	pthread_t gestorConexiones;
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
@@ -477,7 +484,8 @@ int main(void) {
 
 	 close(lfsSock);
 
-
+//Si no existe en lissandra tengo que retornar un value invalido tipo error o el char 1 para que se sepa
+	 //que responder a kernel
 	 char* valueRecibido;
 	 return valueRecibido;
  }
@@ -807,8 +815,8 @@ void finalizar(){
 
 
 
-void mInsert(char* nombreTabla, u_int16_t key, char* valor){
-
+int mInsert(char* nombreTabla, u_int16_t key, char* valor){
+//esto se hace si la memoria no esta full, hay que hacer esa función
 	segmento *seg = buscarSegmento(nombreTabla);
 	pagina *pag;
 	long timestampActual;
@@ -838,12 +846,13 @@ void mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		pag->modificado = 1;
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
-
+	return 0;
+	//dejo el 0 hasta que Fran haga lo de memoria full
 }
 
 
 
-void mSelect(char* nombreTabla,u_int16_t key){
+char* mSelect(char* nombreTabla,u_int16_t key){
 	//BORRAR LOS PRINTFS
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
@@ -857,8 +866,8 @@ void mSelect(char* nombreTabla,u_int16_t key){
 
 		if(pNueva != NULL){
 			valor = (char*)conseguirValor(pNueva);
-			printf("El valor es: %s\n", valor);
 			log_info(logger, "Se seleccionó el valor %s", valor);
+			return valor;
 			if(pNueva->modificado == 0)actualizarListaDeUsos(pNueva->nroMarco);
 		}
 		else{
@@ -869,9 +878,8 @@ void mSelect(char* nombreTabla,u_int16_t key){
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
 			agregarAListaUsos(pNueva->nroMarco);
 			valor = (char*)conseguirValor(pNueva);
-			printf("El valor es: %s\n", valor);
 			log_info(logger, "Se seleccionó el valor %s", valor);
-
+			return valor;
 		}
 	}
 	else{
@@ -882,8 +890,8 @@ void mSelect(char* nombreTabla,u_int16_t key){
 		agregarPagina(nuevo,pNueva);
 		agregarDato(time(NULL),key,valorPagNueva,pNueva);
 		agregarAListaUsos(pNueva->nroMarco);
-		printf("El valor es: %s\n",valorPagNueva);
 		log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
+		return valorPagNueva;
 
 	}
 
@@ -910,7 +918,8 @@ void mDescribe(char* nombreTabla){
 
 void mDrop(char* nombreTabla){
 
-
+	//la respuesta de esto es sólo del drop de lissandra?
+	//dropLissandra(nombreTabla); ///////////////////////////////////////////
 	segmento* nuevo = buscarSegmento(nombreTabla);
 
 	if(nuevo != NULL){
@@ -919,7 +928,7 @@ void mDrop(char* nombreTabla){
 		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
 	}
-	//dropLissandra(nombreTabla); ///////////////////////////////////////////
+
 
 }
 
@@ -940,7 +949,7 @@ void mJournal(){
 			u_int16_t key = *(u_int16_t*)conseguirKey(pag);
 			char* value = (char*)conseguirValor(pag);
 			//insertLissandra(nombreSegmento, timestamp, key, value); /////////////////////////////////////////////
-
+			//acá hay que responder de a 1 al kernel?
 
 		}
 		list_destroy(paginasMod);
