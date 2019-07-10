@@ -39,7 +39,7 @@ void* recibirOperacion(void * arg){
 		desempaquetado = string_n_split(paquete, 5, ";");
 
 	}
-	/*
+
 	char* nombreTabla;
 	u_int16_t key;
 	char* value;
@@ -57,19 +57,17 @@ void* recibirOperacion(void * arg){
 					break;
 
 				case 1:
-					//acá hay que ver porque lfs sí manda el timestamp pero kernel no
-					//quizás con el id de cliente?
 					nombreTabla = desempaquetado[0];
-					//timestamp = atol(desempaquetado[1]);
 					key = atoi(desempaquetado[1]);
 					value = desempaquetado[2];
 					if(strlen(value)+1> maxValue){
 						log_error(logger, "Se intentó insertar un valor mayor al permitido");
-						//responder 1 a kernel
+						sendData(cli, "1", sizeof(char));
+
 					}else{
 						log_info(logger, "Parametros válidos, se hace un insert");
 						mInsert(nombreTabla, key, value);
-						//responder segun resultado insert
+						sendData(cli, "0", sizeof(char));
 					}
 
 					break;
@@ -107,7 +105,7 @@ void* recibirOperacion(void * arg){
 
 				}
 	//responder 0 si todo bien, 1 si salio mal
-*/
+
 	return NULL;
 }
 
@@ -414,7 +412,7 @@ int main(void) {
 	return paquete;
 }
  char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* value){
-	char* paquete = string_from_format("%s;%s;%s;%s", nombreTabla, string_itoa(timestamp), string_itoa(key), value);
+	char* paquete = string_from_format("%s;%s;%s;%s", nombreTabla, string_itoa(key), value, string_itoa(timestamp));
 	return paquete;
 }
 
@@ -434,6 +432,7 @@ int main(void) {
  			perror("Error al conectarse con LFS");
  		}
  		char* buffer = malloc(sizeof(char)*4);
+ 		//aca iría el enviar codigo del handshake
  		recvData(lfsCliente, buffer, sizeof(char)*3);
  		u_int16_t maxV = atoi(buffer);
  		return maxV;

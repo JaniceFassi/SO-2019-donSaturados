@@ -44,3 +44,34 @@
 [INFO] 18:22:42:755 memoryPool/(20023:20041): sock: 594411525
 [INFO] 18:22:42:755 memoryPool/(20023:20041): Bytes recibidos: 1
 [INFO] 18:22:42:755 memoryPool/(20023:20041): Operacion 1
+[INFO] 18:38:07:903 memoryPool/(20331:20331): Se inicializo la memoria con tamanio 130
+[INFO] 18:38:31:790 memoryPool/(20377:20377): Se inicializo la memoria con tamanio 130
+[INFO] 18:38:34:556 memoryPool/(20377:20395): sock: 600965125
+[INFO] 18:38:34:556 memoryPool/(20377:20395): Bytes recibidos: 1
+[INFO] 18:38:34:556 memoryPool/(20377:20395): Operacion 1
+[INFO] 18:38:34:556 memoryPool/(20377:20395): Parametros válidos, se hace un insert
+[INFO] 18:38:34:556 memoryPool/(20377:20395): Se creo el segmento ANIMALES
+[INFO] 18:38:34:556 memoryPool/(20377:20395): Se agrego una página al segmento ANIMALES
+[INFO] 18:38:34:556 memoryPool/(20377:20395): Se agrego el dato PERRO al marco 0
+[INFO] 18:38:34:556 memoryPool/(20377:20395): Se inserto al segmento ANIMALES el valor PERRO
+[INFO] 18:45:25:881 memoryPool/(20524:20524): Se inicializo la memoria con tamanio 130
+[INFO] 18:45:47:947 memoryPool/(20571:20571): Se inicializo la memoria con tamanio 130
+[INFO] 18:45:50:236 memoryPool/(20571:20590): sock: 600309765
+[INFO] 18:45:50:242 memoryPool/(20571:20590): Bytes recibidos: 1
+[INFO] 18:45:50:242 memoryPool/(20571:20590): Operacion 1
+[ERROR] 18:45:50:242 memoryPool/(20571:20590): Se intentó insertar un valor mayor al permitido
+[INFO] 18:50:33:53 memoryPool/(20701:20701): Se inicializo la memoria con tamanio 130
+[INFO] 18:50:36:336 memoryPool/(20701:20719): sock: 600309765
+[INFO] 18:50:36:336 memoryPool/(20701:20719): Bytes recibidos: 1
+[INFO] 18:50:36:336 memoryPool/(20701:20719): Operacion 1
+[ERROR] 18:50:36:336 memoryPool/(20701:20719): Se intentó insertar un valor mayor al permitido
+[INFO] 18:51:26:79 memoryPool/(20799:20799): Se inicializo la memoria con tamanio 130
+[INFO] 18:51:52:872 memoryPool/(20847:20847): Se inicializo la memoria con tamanio 130
+[INFO] 18:51:55:606 memoryPool/(20847:20867): sock: 652738565
+[INFO] 18:51:55:606 memoryPool/(20847:20867): Bytes recibidos: 1
+[INFO] 18:51:55:606 memoryPool/(20847:20867): Operacion 1
+[INFO] 18:51:55:607 memoryPool/(20847:20867): Parametros válidos, se hace un insert
+[INFO] 18:51:55:607 memoryPool/(20847:20867): Se creo el segmento PROFESIONES
+[INFO] 18:51:55:607 memoryPool/(20847:20867): Se agrego una página al segmento PROFESIONES
+[INFO] 18:51:55:607 memoryPool/(20847:20867): Se agrego el dato CIRUJANO al marco 0
+[INFO] 18:51:55:607 memoryPool/(20847:20867): Se inserto al segmento PROFESIONES el valor CIRUJANO
