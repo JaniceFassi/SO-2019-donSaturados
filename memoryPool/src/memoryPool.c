@@ -116,7 +116,7 @@ void* recibirOperacion(void * arg){
 
 				}
 	//responder 0 si todo bien, 1 si salio mal
-
+	close(cli);
 	return NULL;
 }
 
@@ -563,12 +563,14 @@ int main(void) {
 
  void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 
+	pthread_mutex_lock(&lockMem);
  	int offset = offsetMarco*(pag->nroMarco);
  	memcpy(memoria+offset, &timestamp, sizeof(long));
  	offset = offset + sizeof(long);
  	memcpy(memoria+offset, &key,sizeof(u_int16_t));
  	int offset2 = offset + sizeof(u_int16_t);
  	memcpy(memoria+offset2, value, strlen(value)+1);
+ 	pthread_mutex_unlock(&lockMem);
  	log_info(logger, "Se agrego el dato %s al marco %d", value, pag->nroMarco);
  }
 
@@ -939,7 +941,7 @@ int mDrop(char* nombreTabla){
 
 void mJournal(){
 	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos");
-	//bloquear tabla de segmentos entera
+	pthread_mutex_lock(&lockTablaSeg);
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
 		char* nombreSegmento;
 		segmento *seg = list_get(tablaSegmentos, i);
@@ -962,6 +964,7 @@ void mJournal(){
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
+	pthread_mutex_unlock(&lockTablaSeg);
 }
 
 

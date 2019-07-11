@@ -39,7 +39,8 @@ int offsetMarco;
 u_int16_t maxValue;
 int cantMarcos;
 int posicionUltimoUso; // Lo usa el LRU
-
+pthread_mutex_t lockMem = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lockTablaSeg = PTHREAD_MUTEX_INITIALIZER;
 
 //ESTRUCTURA MEMORIA
 typedef struct {
