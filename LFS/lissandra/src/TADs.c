@@ -7,6 +7,25 @@
  */
 #include "TADs.h"
 
+
+
+
+//INICIALIZAR SEMAFOROS
+
+void inicializarSemGlob(){
+	sem_init(criticaDirectorio,0,1);
+	sem_init(criticaMemtable,0,1);
+	sem_init(criticaTablaGlobal,0,1);
+	sem_init(criticaCantBloques,0,1);
+	sem_init(criticaBitmap,0,1);
+}
+void liberarSemaforos(){
+	sem_destroy(criticaDirectorio);
+	sem_destroy(criticaMemtable);
+	sem_destroy(criticaTablaGlobal);
+	sem_destroy(criticaCantBloques);
+	sem_destroy(criticaBitmap);
+}
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
 char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
@@ -999,7 +1018,7 @@ int calcularIndexTabPorNombre(char *name,t_list *lista){
 
 int calcularIndexName(char *name){
 	int index=0;
-	bool encontrar(testT* compara){
+	bool encontrar(Sdirectorio* compara){
 		index++;
 		return string_equals_ignore_case(compara->nombre,name);
 	}
@@ -1095,18 +1114,6 @@ void liberarParticion(char *path){
 	}else{
 		eliminarArchivo(path);
 	}
-}
-
-void liberarDirectorio(){
-	void liberarString(char *nombre){
-		free(nombre);
-	}
-	list_iterate(directorio,(void *)liberarString);
-	list_destroy(directorio);
-}
-void liberarDirectorioP(){
-	list_iterate(directorioP,(void *)liberarTest);
-	list_destroy(directorioP);
 }
 
 

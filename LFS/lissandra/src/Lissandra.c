@@ -17,7 +17,7 @@ int main(void) {
 
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
-	//alarm(configLissandra->tiempoDump);
+	//alarm(configLissandra->tiempoDump/1000);
 	//alarm(100);
     //signal(SIGALRM, funcionSenial);
 
@@ -120,7 +120,8 @@ void theStart(){
 	}
 	levantarDirectorio();				//Crea el directorio ya teniendo el archivo config listo
 	memtable= list_create();												//Inicia la memtable global
-	directorio=list_create();
+	directorioP=list_create();
+	inicializarSemGlob();
 }
 
 t_log* init_logger() {
@@ -439,7 +440,7 @@ void console(){
 
 void funcionSenial(int sig){
 	dump();
-	alarm(100);
+	alarm(configLissandra->tiempoDump/1000);
     signal(SIGALRM, funcionSenial);
 	return;
 }
@@ -450,12 +451,13 @@ void theEnd(){
 	}else{
 		list_destroy(memtable);
 	}
-	liberarDirectorio();
+	liberarDirectorioP();
 	borrarDatosConfig();
 	borrarMetaLFS();
 	free(pathInicial);
 	free(raizDirectorio);
 	bitarray_destroy(bitmap);
 	close(archivoBitmap);
+	liberarSemaforos();
 	log_destroy(logger);
 }

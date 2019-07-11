@@ -23,14 +23,19 @@
 #include <signal.h>
 #include <socketSaturados.h>
 #include"apiLFS.h"
-#include "Compactor.h"
-#include "FileSystem.h"
 #include "TADs.h"
+
+typedef struct{
+	char *nombreTabla;
+	int extension;//0 bin 1 temp  2tmpC
+	int contador;
+}archAbierto;
+
+t_list *tablaArchGlobal;
 
 int crearMontaje();
 int crearNivelMetadata();
 int crearNivelTablas();
 int crearNivelBloques();
-void levantarDirectorio();
 
 #endif /* FILESYSTEM_H_ */

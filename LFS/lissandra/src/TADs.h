@@ -11,6 +11,7 @@
 #include<commons/string.h>
 #include<commons/config.h>
 #include <commons/bitarray.h>
+#include <semaphore.h>
 #include <sys/mman.h>
 #include <pthread.h>
 #include<readline/readline.h>
@@ -56,13 +57,20 @@ typedef struct{
 	u_int16_t retardo;
 }datosConfig;
 
-
 t_bitarray* bitmap;
 int archivoBitmap;
 datosConfig *configLissandra;
 metaFileSystem *metaLFS;
-t_list *directorio;
-t_list *directorioP;
+int cantBloqGlobal;
+//semaforos
+sem_t *criticaMemtable;
+sem_t *criticaDirectorio;
+sem_t *criticaTablaGlobal;
+sem_t *criticaCantBloques;
+sem_t *criticaBitmap;
+//FUNCIONES SEMAFOROS
+void inicializarSemGlob();
+void liberarSemaforos();
 //FUNCIONES DE REGISTROS
 Registry *createRegistry(u_int16_t key, char *val, long time);
 void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);
@@ -150,6 +158,5 @@ void liberarParticion(char *path);//NUEVO
 void limpiarBloque(char* nroBloque);//NUEVO
 void limpiarArchivo(char* pathArchivo);//NUEVO
 void liberarArraydeBloques(char **array);//NUEVO
-void liberarDirectorio();
-void liberarDirectorioP();
+
 #endif

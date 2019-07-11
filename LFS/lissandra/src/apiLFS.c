@@ -26,6 +26,8 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	}
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
+	//WAIT DE MEMTABLE
+	sem_wait(criticaMemtable);
 	if(list_is_empty(memtable)){
 		Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
 		list_add(memtable,nueva);
@@ -40,6 +42,8 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 			agregarRegistro(encontrada,param_key,param_value,param_timestamp);
 		}
 	}
+	//SIGNAL DE MEMTABLE
+	sem_post(criticaMemtable);
 	log_info(logger,"Se ha insertado el registro en la memtable.");
 	return 0;
 }
@@ -170,31 +174,34 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		//liberar el semaforo de bloques ocupados
 		return 1;
 	}
-	list_add(directorio,nombre);
 	log_info(logger,"Se ha creado la tabla %s.",nombre);
 	free(path);
-	testT *uno=malloc(sizeof(testT));
+	Sdirectorio *uno=malloc(sizeof(Sdirectorio));
 	uno->nombre=malloc(strlen(nombre)+1);
 	uno->time_compact=timeCompaction;
 	strcpy(uno->nombre,nombre);
+	semaforosTabla(uno);
+	sem_wait(criticaDirectorio);
+	list_add(directorioP,uno);
 	pthread_create(&uno->hilo, NULL, &compactar,uno);
-//	compactar(nombre,timeCompaction);
-	//free(nombre);
+	sem_post(criticaDirectorio);
+	//compactar(nombre,timeCompaction);
+	free(nombre);
 	return 0;
 }
 
 t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
 	t_list *tablas=list_create();
 	if(nameTable==NULL){
-		if(list_is_empty(directorio)){
+		if(list_is_empty(directorioP)){
 			log_error(logger,"No hay ninguna tabla cargada en el sistema.");
 		}else{
 			//Recorrer el directorio de árboles de tablas
 			//y descubrir cuales son las tablas que dispone el sistema.
-			int cant=list_size(directorio);
+			int cant=list_size(directorioP);
 			while(cant>0){
-				char *tabla=list_get(directorio,cant-1);
-				t_list *aux=describe(tabla);
+				Sdirectorio *tabla=list_get(directorioP,cant-1);
+				t_list *aux=describe(tabla->nombre);
 				if(!list_is_empty(aux)){
 					list_add_all(tablas,aux);
 				}
@@ -224,7 +231,6 @@ t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE 
 
 int drop(char* nameTable){
 	//Verificar que la tabla exista en el file system.
-
 	char *pathFolder=nivelUnaTabla(nameTable,0);
 	char *path;
 	if(folderExist(pathFolder)==0){
@@ -260,19 +266,19 @@ int drop(char* nameTable){
 		eliminarArchivo(path);
 		free(path);
 		//aumentar el semaforo contador
-
+		sem_wait(criticaCantBloques);
+		cantBloqGlobal+=cantBins+cantTmpc+cantDumps;
+		sem_post(criticaCantBloques);
 		//sacar la tabla del directorio
-		int index=calcularIndexTabPorNombre(nameTable,directorio);			//	NO CALCULA BIEN EL INDEX
-		char *tabla=list_remove(directorio,index);
-		free(tabla);
 		int index2=calcularIndexName(nameTable);
-		testT *nuevo=list_remove(directorioP,index2);
-		liberarTest(nuevo);
+		sem_wait(criticaDirectorio);
+		Sdirectorio *nuevo=list_remove(directorioP,index2);
+		liberarDirectorio(nuevo);
+		sem_post(criticaDirectorio);
 		//Eliminar carpeta
 		borrarCarpeta(pathFolder);
 		free(pathFolder);
 		log_info(logger,"Se ha eliminado la tabla %s",nameTable);
-
 	}else{
 		log_error(logger, "No se puede hacer el drop porque no existe la tabla %s.", nameTable);
 		free(pathFolder);

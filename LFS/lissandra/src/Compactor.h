@@ -7,22 +7,32 @@
 
 #ifndef COMPACTOR_H_
 #define COMPACTOR_H_
-#include <stdio.h>
-#include <stdlib.h>
-#include<commons/log.h>
-#include<commons/string.h>
-#include<commons/config.h>
-#include<readline/readline.h>
 #include "TADs.h"
+#include "apiLFS.h"
+#include "FileSystem.h"
 #include "Lissandra.h"
 typedef struct{
 	char *nombre;
 	long time_compact;
 	pthread_t hilo;
-}testT;
-void liberarTest(testT *nuevo);
+	sem_t *semaforoTMP;
+	sem_t *semaforoTMPC;
+	sem_t *semaforoBIN;
+	sem_t *semaforoContarTMP;
+	int pedido_Compact;
+}Sdirectorio;
 
+t_list *directorioP;
+//FUNCIONES SEMAFOROS
+void semaforosTabla(Sdirectorio *nuevo);
+void liberarSemaforosTabla(Sdirectorio *nuevo);
+
+
+void compactar(Sdirectorio *nuevo);
 int dump();
-void compactar(testT *nuevo);
+void levantarDirectorio();
+void liberarDirectorio(Sdirectorio *nuevo);
+void liberarDirectorioP();
+
 //void compactar(char *nombreTabla,long tiempo_compactacion);
 #endif /* COMPACTOR_H_ */
