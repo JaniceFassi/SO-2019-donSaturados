@@ -205,7 +205,7 @@ int main(void) {
 	u_int16_t lfsServidor;
 	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	//log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
+	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
 
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
 	tablaMarcos = list_create();
@@ -222,7 +222,6 @@ int main(void) {
 			unMarco->estaLibre = 0;
 			list_add(tablaMarcos, unMarco);
 		}
-
 
 }
 
@@ -261,7 +260,6 @@ int main(void) {
 		if(strcmp((seg->nombreTabla), nombre) ==0){
 			rta = 1;
 		}
-
 		return rta;
 	}
 	return list_find(tablaSegmentos, (void *) tieneMismoNombre);
@@ -579,9 +577,10 @@ int main(void) {
 	 int i=0;
 	 int total=0;
 	 int tam =list_size(tablaSegmentos);
+	 if(tam==0)return 0;
 	 segmento* aux = malloc(sizeof(segmento));
 
-	 if(memoriaLlena()){
+	 if(!memoriaLlena()){
 		 for(i;i<tam;i++){
 			 aux = list_get(tablaSegmentos,i);
 			 total += todosModificados(aux);
