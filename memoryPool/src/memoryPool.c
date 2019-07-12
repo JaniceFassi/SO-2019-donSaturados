@@ -551,7 +551,7 @@ int main(void) {
  //-------------------------------------------------------//
 
 
- int memoriaLlena(){ //Devuelve 0 si esta llena
+ int memoriaLlena(){ //Devuelve 0 si esta llena (no se fija los flags modificados)
 
  	int algunoLibre(marco* unMarco){
  		return unMarco->estaLibre == 0;
@@ -559,6 +559,38 @@ int main(void) {
 
  	return list_any_satisfy(tablaMarcos,(void*)algunoLibre);
 
+ }
+
+ int todosModificados(segmento* aux){
+
+	 int estaModificada(pagina* p){
+		 return p->modificado == 1;
+	 }
+
+	 return list_all_satisfy(aux->tablaPaginas,(void*)estaModificada);
+ }
+
+ int FULL(){ //La memoria esta FULL si se cumple memoriaLlena() y todas las tablaPaginas estan con flag modificados
+
+	 int i=0;
+	 int total=0;
+	 int tam =list_size(tablaSegmentos);
+	 segmento* aux = malloc(sizeof(segmento));
+
+	 if(memoriaLlena()){
+
+		 for(i;i<tam;i++){
+			 aux = list_get(tablaSegmentos,i);
+			 total += todosModificados(aux);
+
+		 }
+
+	 }else{
+		 return 0;
+	 }
+
+	 free(aux);
+	 return total == tam;
  }
 
  void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
