@@ -358,6 +358,13 @@ int main(void) {
  		if(!strncmp(linea,"MOSTRAR",7)){
  			mostrarMemoria();
  		}
+		
+		if(!strncmp(linea,"FULL",4)){
+			int resultado=0;
+ 			resultado=FULL();
+			if(resultado)log_info(logger,"La memoria esta FULL");
+			if(!resultado)log_info(logger,"La memoria NO esta FULL");
+ 		}
 
  		if(!strncmp(linea,"exit",5)){
  			free(linea);
@@ -556,9 +563,7 @@ int main(void) {
  	int algunoLibre(marco* unMarco){
  		return unMarco->estaLibre == 0;
  	}
-
  	return list_any_satisfy(tablaMarcos,(void*)algunoLibre);
-
  }
 
  int todosModificados(segmento* aux){
@@ -566,7 +571,6 @@ int main(void) {
 	 int estaModificada(pagina* p){
 		 return p->modificado == 1;
 	 }
-
 	 return list_all_satisfy(aux->tablaPaginas,(void*)estaModificada);
  }
 
@@ -578,17 +582,14 @@ int main(void) {
 	 segmento* aux = malloc(sizeof(segmento));
 
 	 if(memoriaLlena()){
-
 		 for(i;i<tam;i++){
 			 aux = list_get(tablaSegmentos,i);
 			 total += todosModificados(aux);
-
 		 }
 
 	 }else{
 		 return 0;
 	 }
-
 	 free(aux);
 	 return total == tam;
  }
@@ -610,9 +611,9 @@ int main(void) {
  int primerMarcoLibre(){
  	int posMarco = -1;
  	int i=0;
- 	marco *unMarco;
+ 	marco *unMarco; //habria que hacer un malloc aca? //
 
- 	if(memoriaLlena()){ //Si la memoria no esta llena puede asignar un marco
+ 	if(memoriaLlena()){ //Si la memoria NO esta llena puede asignar un marco
 
  		while(i < cantMarcos){
  			unMarco = list_get(tablaMarcos,i);
@@ -627,9 +628,8 @@ int main(void) {
  		}
  	}
  	else{
- 		//No hace falta llamar el journal aca ya que esta adentro del LRU
- 		posMarco = LRU();
-		unMarco = list_get(tablaMarcos,0);
+ 		posMarco = LRU(); //te devuelve la posicion del marco a ocupar, liberando lo que habia antes
+		unMarco = list_get(tablaMarcos,posMarco);
  		unMarco->estaLibre = 1;
  	}
 
@@ -661,7 +661,7 @@ int main(void) {
 	 tamLista = list_size(listaDeUsos);
 
 
-	 if(tamLista != 0){ //es decir, si la lista de usos esta vacia
+	 if(tamLista != 0){ //es decir, si la lista de usos NO esta vacia
 		 menor = aux->posicionDeUso;
 		 nroMarcoAborrar= aux->nroMarco;
 
@@ -676,10 +676,10 @@ int main(void) {
 		 }
 	 }
 	 else{
-		mJournal();
+		//Si llegamos aca la memoria SI o SI esta FULL 
+		//Avisarle al Kernel FULL
 		nroMarcoAborrar=0;
-	    //hacer journal por memoria llena de flags modificados
-	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio
+	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio (DEBERIA)
 	 }
 
 	 liberarMarco(nroMarcoAborrar);
@@ -747,10 +747,8 @@ void mostrarMemoria(){
 			printf("Timestamp: %ld \n", *(long*)((memoria) + desplazador));
 			printf("Key: %d \n", *(u_int16_t*)((memoria)+ sizeof(long) + desplazador));
 			printf("Value: %s \n", (char*)((memoria) + sizeof(long) + sizeof(u_int16_t)+desplazador));
-
 			desplazador += offsetMarco;
 			i++;
-
 		}
 }
 
@@ -854,7 +852,8 @@ void finalizar(){
 
 
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
-//esto se hace si la memoria no esta full, hay que hacer esa función
+
+	if(!FULL()){
 	segmento *seg = buscarSegmento(nombreTabla);
 	pagina *pag;
 	long timestampActual;
@@ -885,7 +884,12 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
 	return 0;
-	//dejo el 0 hasta que Fran haga lo de memoria full
+		
+	}
+	else{
+		log_info(logger,"La memoria esta FULL, no se puede hacer el INSERT");
+		return 1;
+	}
 }
 
 
