@@ -386,10 +386,12 @@ metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPar
 }
 
 metaTabla *leerMetadataTabla(char *nombre){
-	char *path=nivelUnaTabla(nombre,1);
-	t_config *metaTab=config_create(path);
+	t_config *metaTab=abrirMetaTabGlobal(nombre);//config_create(path);
+	if(metaTab==NULL){
+		log_info(logger,"No se pudo abrir la metadata.");
+		return NULL;
+	}
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
-
 	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
 	char *aux=config_get_string_value(metaTab, "CONSISTENCY");
 	nuevo->consistency=malloc(string_length(aux)+1);
@@ -397,9 +399,8 @@ metaTabla *leerMetadataTabla(char *nombre){
 	nuevo->partitions= config_get_int_value(metaTab, "PARTITIONS");
 	nuevo->nombre=malloc(strlen(nombre)+1);
 	strcpy(nuevo->nombre,nombre);
-
-	config_destroy(metaTab);
-	free(path);
+	cerrarMetaTabGlobal(nombre,metaTab);
+	//config_destroy(metaTab);
 	return nuevo;
 }
 
@@ -482,22 +483,22 @@ void leerMetaLFS(){
 	config_destroy(metadataLFS);
 	free(path);
 }
-
-void escanearArchivo(char *path, t_list *obtenidos){//no deberia ser int?
-	if(archivoValido(path)==1){
-		t_list *aux;
-		metaArch *archivoAbierto=leerMetaArch(path);
-		if(archivoAbierto->size>0){
-			aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
-			if(list_is_empty(aux)){
-				list_destroy(aux);
-			}else{
-				list_add_all(obtenidos,aux);
-				list_destroy(aux);
-			}
-		}
-		borrarMetaArch(archivoAbierto);
+//MODIFICADO
+void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){//no deberia ser int?
+	t_list *aux;
+	metaArch *archivoAbierto=abrirArchivo(nameTable, part, extension);
+	if(archivoAbierto==NULL){
+		log_info(logger,"No se pudo abrir el archivo.");
+		return;
 	}
+	if(archivoAbierto->size>0){
+		aux=leerBloques(archivoAbierto->bloques,archivoAbierto->size);
+		if(!list_is_empty(aux)){
+			list_add_all(obtenidos,aux);
+		}
+		list_destroy(aux);
+	}
+	cerrarArchivo(nameTable,extension,archivoAbierto);
 }
 
 void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
@@ -654,7 +655,6 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 	}else{
 		buffer=cadenaDeRegistros(lista);
 		largo=strlen(buffer);
-
 		//Calcular cant bloques
 		bloquesNecesarios=largo/metaLFS->tamBloques;
 		if(largo%metaLFS->tamBloques!=0){
@@ -676,6 +676,10 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 		liberarArraydeBloques(arrayBlock);
 		free(arrayBlock);
 		free(buffer);
+		//libera la cant de bloques
+		sem_wait(criticaCantBloques);
+		cantBloqGlobal+=bloquesNecesarios;
+		sem_post(criticaCantBloques);
 		return 1;
 	}
 
@@ -776,19 +780,19 @@ t_list *leerBloques(char**bloques,int offset){
 
 void ocuparBloque(int Nrobloque){
 	char*rutaBloque=rutaBloqueNro(Nrobloque);
-//mutex
 	FILE* file = fopen(rutaBloque,"wb");
 	fflush(file);
 	fclose(file);
 	free(rutaBloque);
 	bitarray_set_bit(bitmap, Nrobloque);
 	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
-//signal
 }
 
 void desocuparBloque(int Nrobloque){
+	sem_wait(criticaBitmap);
 	bitarray_clean_bit(bitmap, Nrobloque);
 	msync(bitmap->bitarray,bitmap->size,MS_SYNC);
+	sem_post(criticaBitmap);
 }
 
 int obtenerBloqueVacio(){
@@ -805,7 +809,6 @@ int obtenerBloqueVacio(){
 }
 
 bool hayXBloquesLibres(int cantidad){
-	//BLOQUEO BINARIO
 	int libres = 0;
 	libres= cantBloquesLibres(cantidad);
 	return libres>=cantidad;
@@ -829,17 +832,22 @@ int cantBloquesLibres(int cantidad){
 }
 
 int pedirBloques(int cantidad, char **array){
+	sem_wait(criticaBitmap);
 	if(!hayXBloquesLibres(cantidad)){
 		//COMPLETAR
 		log_info(logger,"No hay suficientes bloques como para realizar el dump, se perderán los datos de la memtable.");
 		return 1;
 	}
 	int i=0;
+	sem_wait(criticaCantBloques);
+	cantBloqGlobal-=cantidad;
+	sem_post(criticaCantBloques);
 	while(i<cantidad){
 		int bloqueVacio=obtenerBloqueVacio();
 		array[i]=string_itoa(bloqueVacio);
 		i++;
 	}
+	sem_post(criticaBitmap);
 	return 0;
 }
 
@@ -1126,6 +1134,11 @@ void liberarParticion(char *path){
 			limpiarBloque(archivoAbierto->bloques[cantBloques]);
 			cantBloques++;
 		}
+		//se aumenta el contador de bloques
+		sem_wait(criticaCantBloques);
+		cantBloqGlobal+=cantBloques+1;
+		sem_post(criticaCantBloques);
+
 		borrarMetaArch(archivoAbierto);
 		eliminarArchivo(path);
 	}else{
@@ -1133,4 +1146,128 @@ void liberarParticion(char *path){
 	}
 }
 
+metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP, 2TMPC
+	metaArch *arch=NULL;
+	char *path=nivelParticion(tabla,nombreArch,extension);
+	if(archivoValido(path)!=0){
+		Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
+		int borrar;
+		sem_getvalue(tablaDirec->borrarTabla,&borrar);
+		if(borrar==0){
+			log_info(logger,"No se puede abrir archivos de esta tabla, porque hay pedido de borrar Tabla");
+			free(path);
+			return arch;
+		}
+		switch(extension){
+		int estado;
+			case 0: sem_getvalue(tablaDirec->semaforoBIN,&estado);
+					if(estado==1){
+						//WAIT
+						sem_wait(tablaDirec->semaforoBIN);
+						nuevoArch(tabla,extension);
+						arch=leerMetaArch(path);
+						break;
+					}else{
+						if(tablaDirec->pedido_extension==0){
+							log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							break;
+						}else{
+							nuevoArch(tabla,extension);
+							arch=leerMetaArch(path);
+							break;
+						}
+					}
+			case 1: sem_getvalue(tablaDirec->semaforoTMP,&estado);
+					if(estado==1){
+						//WAIT
+						sem_wait(tablaDirec->semaforoTMP);
+						nuevoArch(tabla,extension);
+						arch=leerMetaArch(path);
+						break;
+					}else{
+						if(tablaDirec->pedido_extension==1){
+							log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							break;
+						}else{
+							nuevoArch(tabla,extension);
+							arch=leerMetaArch(path);
+							break;
+						}
+					}
+			case 2: sem_getvalue(tablaDirec->semaforoTMPC,&estado);
+					if(estado==1){
+						//WAIT
+						sem_wait(tablaDirec->semaforoTMPC);
+						nuevoArch(tabla,extension);
+						arch=leerMetaArch(path);
+						break;
+					}else{
+						if(tablaDirec->pedido_extension==2){
+							log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							break;
+						}else{
+							nuevoArch(tabla,extension);
+							arch=leerMetaArch(path);
+							break;
+						}
+					}
+
+		}
+	}
+	free(path);
+	return arch;
+}
+void cerrarArchivo(char *tabla,int extension, metaArch *arch){
+	archAbierto *obtenido=obtenerArch(tabla,extension);
+	obtenido->contador-=1;
+	if(obtenido->contador==0){
+		Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(tabla);
+		sacarArch(tabla,extension);
+		//SIGNAL
+		switch(extension){
+			case 0: sem_post(tabDirectorio->semaforoBIN);
+					break;
+
+			case 1: sem_post(tabDirectorio->semaforoTMP);
+					break;
+
+			case 2: sem_post(tabDirectorio->semaforoTMPC);
+					break;
+		}
+	}
+	borrarMetaArch(arch);
+}
+
+void cerrarMetaTabGlobal(char *tabla,t_config *arch){
+	archAbierto *obtenido=obtenerArch(tabla,3);
+	obtenido->contador-=1;
+	if(obtenido->contador==0){
+		Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(tabla);
+		sacarArch(tabla,3);
+		sem_post(tabDirectorio->semaforoMeta);
+	}
+	config_destroy(arch);
+}
+
+t_config *abrirMetaTabGlobal(char *tabla){
+	t_config *arch=NULL;
+	Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
+	int borrar;
+	sem_getvalue(tablaDirec->borrarTabla,&borrar);
+	if(borrar==0){
+		log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla");
+		return arch;
+	}
+	int estado;
+	sem_getvalue(tablaDirec->semaforoMeta,&estado);//caso de metadata
+	if(estado==1){
+		//WAIT
+		sem_wait(tablaDirec->semaforoMeta);
+	}
+	nuevoArch(tabla,3);//3 es METADATA
+	char *path=nivelUnaTabla(tabla,1);
+	arch=config_create(tabla);
+	free(path);
+	return arch;
+}
 

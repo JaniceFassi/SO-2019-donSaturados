@@ -32,10 +32,16 @@ typedef struct{
 }archAbierto;
 
 t_list *tablaArchGlobal;
-
+//FUNCIONES DE DIRECTORIO
 int crearMontaje();
 int crearNivelMetadata();
 int crearNivelTablas();
 int crearNivelBloques();
-
+//FUNCIONES DE ABRIR Y CERRAR ARCHIVOS
+bool archivoYaAbierto(char *tabla,int extension);
+archAbierto *obtenerArch(char *tabla, int extension);
+void nuevoArch(char *tabla, int extension);
+void liberarArch(archAbierto *nuevo);
+int calcularIndexArch(char *tabla,int extension);
+void sacarArch(char *tabla,int extension);
 #endif /* FILESYSTEM_H_ */

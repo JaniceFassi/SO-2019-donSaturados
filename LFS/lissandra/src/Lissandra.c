@@ -15,16 +15,16 @@ int main(void) {
 
 	theStart();
 
-	u_int16_t  server;
+	//u_int16_t  server;
 
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
-	//alarm(configLissandra->tiempoDump/1000);
-	//alarm(100);
-    //signal(SIGALRM, funcionSenial);
+	alarm(configLissandra->tiempoDump/1000);
+	alarm(100);
+    signal(SIGALRM, funcionSenial);
 
 	/****************CONEXIONES******************/
-
+/*
 	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
 			log_error(logger, "Error al levantar el servidor.");
 			return 1;
@@ -36,14 +36,14 @@ int main(void) {
 
 	pthread_t hiloMemoria;
 	pthread_create(&hiloMemoria,NULL,connectMemory,&server);
-
+*/
 	/****************PARA USAR LA CONSOLA******************/
-	pthread_t hiloConsola;
-	pthread_create(&hiloConsola,NULL,console,NULL);
-	//console();
+	//pthread_t hiloConsola;
+	//pthread_create(&hiloConsola,NULL,console,NULL);
+	console();
 
-	pthread_join(hiloMemoria,NULL);
-	pthread_join(hiloConsola,NULL);
+	//pthread_join(hiloMemoria,NULL);
+	//pthread_join(hiloConsola,NULL);
 
 	theEnd();
 	return EXIT_SUCCESS;

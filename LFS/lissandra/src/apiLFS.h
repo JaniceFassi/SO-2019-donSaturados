@@ -9,8 +9,6 @@
 #include<commons/config.h>
 #include<commons/txt.h>
 #include<commons/collections/list.h>
-#include "Lissandra.h"
-#include "TADs.h"
 #include "Compactor.h"
 /*typedef enum{
 	SELECT,

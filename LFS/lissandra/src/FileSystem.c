@@ -105,7 +105,7 @@ int crearNivelBloques(){
 	return 0;
 }
 
-bool archivoYaAbierto(char *tabla,int nombreArch,char *extension){
+bool archivoYaAbierto(char *tabla,int extension){
 	bool abierto(archAbierto *es){
 			if(tabla==es->nombreTabla && extension==es->extension){
 				return true;
@@ -114,7 +114,8 @@ bool archivoYaAbierto(char *tabla,int nombreArch,char *extension){
 		}
 	return list_any_satisfy(tablaArchGlobal,(void *)abierto);
 }
-archAbierto *obtenerArch(char *tabla,int nombreArch,char *extension){
+
+archAbierto *obtenerArch(char *tabla, int extension){
 	bool abierto(archAbierto *es){
 			if(tabla==es->nombreTabla && extension==es->extension){
 				return true;
@@ -123,57 +124,40 @@ archAbierto *obtenerArch(char *tabla,int nombreArch,char *extension){
 		}
 	return list_find(tablaArchGlobal,(void *)abierto);
 }
-metaArch *abrirArchivo(char *tabla,int nombreArch,char *extension){
-	metaArch *arch=NULL;
 
-	if(archivoYaAbierto(tabla,nombreArch,extension)){
-		archAbierto *obtenido=obtenerArch(tabla,nombreArch,extension);
+void nuevoArch(char *tabla, int extension){
+	if(archivoYaAbierto(tabla,extension)){
+		archAbierto *obtenido=obtenerArch(tabla,extension);
 		obtenido->contador+=1;
 	}else{
 		archAbierto *nuevo=malloc(sizeof(archAbierto));
 		nuevo->contador=1;
-		nuevo->extension=string_from_format("%s",extension);
+		nuevo->extension=extension;
 		nuevo->nombreTabla=string_from_format("%s",tabla);
 		list_add(tablaArchGlobal,nuevo);
 	}
-	char *path=nivelUnaTabla(tabla,0);
-	char *path2=string_from_format("%s%s.%s",path,nombreArch,extension);
-	free(path);
-	//WAIT
-	arch=leerMetaArch(path);
-	free(path2);
-	return arch;
 }
 
 void liberarArch(archAbierto *nuevo){
-	free(nuevo->extension);
 	free(nuevo->nombreTabla);
 	free(nuevo);
 }
 
-int calcularIndexArch(char *tabla,int nombreArch,char *extension){
-	int index=-1;
+int calcularIndexArch(char *tabla,int extension){
+	int index=0;
 	bool abierto(archAbierto *es){
-		index++;
 			if(tabla==es->nombreTabla && extension==es->extension){
 				return true;
 			}
+			index++;
 			return false;
 		}
 	list_iterate(tablaArchGlobal, (void*) abierto);
 	return index;
 }
-void sacarArch(char *tabla,int nombreArch,char *extension){
-	int index=calcularIndexArch(tabla,nombreArch,extension);
+
+void sacarArch(char *tabla,int extension){
+	int index=calcularIndexArch(tabla,extension);
 	archAbierto *victima=list_remove(tablaArchGlobal,index);
 	liberarArch(victima);
-}
-void cerrarArchivo(char *tabla,int nombreArch,int extension, metaArch *arch){
-	archAbierto *obtenido=obtenerArch(tabla,nombreArch,extension);
-	obtenido->contador-=1;
-	if(obtenido->contador==0){
-		sacarArch(tabla,nombreArch,extension);
-		//SIGNAL
-	}
-	borrarMetadataTabla(arch);
 }

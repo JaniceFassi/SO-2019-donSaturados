@@ -1,22 +1,31 @@
 #ifndef TADS_H
 #define TADS_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
 #include <unistd.h>
-#include <sys/stat.h>
+#include <time.h>
+#include <commons/temporal.h>
 #include<commons/log.h>
-#include <fcntl.h>
-#include <sys/types.h>
 #include<commons/string.h>
 #include<commons/config.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include<commons/collections/node.h>
+#include<commons/collections/list.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <socketSaturados.h>
+#include <pthread.h>
+#include <sys/inotify.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/types.h>
 #include <commons/bitarray.h>
 #include <semaphore.h>
 #include <sys/mman.h>
-#include <pthread.h>
-#include<readline/readline.h>
-#include "Lissandra.h"
 #include "Compactor.h"
+
 typedef struct {
 	u_int16_t key;
 	char *value;
@@ -57,17 +66,30 @@ typedef struct{
 	u_int16_t retardo;
 }datosConfig;
 
+t_log* logger;
+t_list *memtable;
 t_bitarray* bitmap;
 int archivoBitmap;
 datosConfig *configLissandra;
 metaFileSystem *metaLFS;
 int cantBloqGlobal;
+char *pathInicial;
+char *raizDirectorio;
+
 //semaforos
 sem_t *criticaMemtable;
 sem_t *criticaDirectorio;
 sem_t *criticaTablaGlobal;
 sem_t *criticaCantBloques;
 sem_t *criticaBitmap;
+
+
+//FUNCIONES DE TABLA DE ARCHIVOS GLOBAL
+metaArch *abrirArchivo(char *tabla,int nombre,int extension);
+void cerrarArchivo(char *tabla,int extension, metaArch *arch);
+void cerrarMetaTabGlobal(char *tabla,t_config *arch);
+t_config *abrirMetaTabGlobal(char *tabla);
+
 //FUNCIONES SEMAFOROS
 void inicializarSemGlob();
 void liberarSemaforos();
@@ -117,7 +139,7 @@ int crearParticiones(metaTabla *tabla);
 metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction);
 metaTabla *leerMetadataTabla(char *nombre);
 int archivoValido(char *path);
-void escanearArchivo(char *path, t_list *obtenidos);
+void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos);
 int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
 int contarArchivos(char *nombre, int modo);
 void crearConfig();

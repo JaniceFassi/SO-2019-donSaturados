@@ -8,8 +8,10 @@
 #include "apiLFS.h"
 
 //API
-int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 
+int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
+	//RETARDO
+	sleep(configLissandra->retardo/1000);
 	//Verificar que la tabla exista en el file system.
 	char *path=nivelUnaTabla(param_nameTable, 0);
 	if(folderExist(path)==1){
@@ -49,6 +51,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 }
 
 char *lSelect(char *nameTable, u_int16_t key){
+	sleep(configLissandra->retardo/1000);
 	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
 	t_list *obtenidos=list_create();
@@ -69,27 +72,19 @@ char *lSelect(char *nameTable, u_int16_t key){
 	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 
 	//Escanear la partición objetivo (modo 0)
-	path=nivelParticion(nameTable, part, 0);
-	escanearArchivo(path,obtenidos);
-	free(path);
-
+	escanearArchivo(nameTable, part, 0,obtenidos);
 	//Escanear todos los archivos temporales (modo 1)
 	int cantDumps=contarArchivos(nameTable, 1); //PREGUNTAR DILEMA
 	int i=0;
 	while(i<cantDumps){
-		path=nivelParticion(nameTable,i, 1);
-		escanearArchivo(path, obtenidos);
-		free(path);
+		escanearArchivo(nameTable,i, 1, obtenidos);
 		i++;
 	}
 	//Escanear los .tmpc si es necesario (modo 2)
-
 	int cantTmpc=contarArchivos(nameTable ,2);
 	i=0;
 	while(i<cantTmpc){
-		path=nivelParticion(nameTable,i, 1);
-		escanearArchivo(path, obtenidos);
-		free(path);
+		escanearArchivo(nameTable,i, 2, obtenidos);
 		i++;
 	}
 
@@ -136,6 +131,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 
 //*****************************************************************************************************
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
+	sleep(configLissandra->retardo/1000);
 	char *nombre=string_duplicate(nameTable);
 	string_to_upper(nombre);	//solo funciona si escribis en minuscula
 	char *path=nivelUnaTabla(nombre, 0);
@@ -149,7 +145,11 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		return 1;
 	}
 	//Crear el directorio para dicha tabla.
-	if(hayXBloquesLibres(numPartition)){
+	//if(hayXBloquesLibres(numPartition)){
+	if(cantBloqGlobal>=numPartition){
+		sem_wait(criticaCantBloques);
+		cantBloqGlobal-=numPartition;
+		sem_post(criticaCantBloques);
 		if(crearCarpeta(path)==1){
 			log_error(logger,"ERROR AL CREAR LA CARPETA %s.",nombre);
 			free(path);
@@ -164,6 +164,9 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		if(crearParticiones(tabla)==1){
 			log_error(logger,"ERROR AL CREAR LAS PARTICIONES.");
 			//liberar el semaforo de bloques ocupados
+			sem_wait(criticaCantBloques);
+			cantBloqGlobal+=numPartition;
+			sem_post(criticaCantBloques);
 			return 1;
 		}
 		borrarMetadataTabla(tabla);
@@ -171,7 +174,6 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		log_error(logger,"No hay %i bloques libres.\n",numPartition);
 		free(path);
 		free(nombre);
-		//liberar el semaforo de bloques ocupados
 		return 1;
 	}
 	log_info(logger,"Se ha creado la tabla %s.",nombre);
@@ -191,6 +193,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 }
 
 t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
+	sleep(configLissandra->retardo/1000);
 	t_list *tablas=list_create();
 	if(nameTable==NULL){
 		if(list_is_empty(directorioP)){
@@ -217,7 +220,7 @@ t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE 
 		if(folderExist(path)==0){
 			free(path);
 			//Leer el archivo Metadata de dicha tabla.
-			metaTabla *metadata= leerMetadataTabla(nameTable);
+			metaTabla *metadata=leerMetadataTabla(nameTable);
 			list_add(tablas,metadata);
 			//Retornar el contenido del archivo.
 			return tablas;
@@ -230,13 +233,17 @@ t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE 
 }
 
 int drop(char* nameTable){
+	sleep(configLissandra->retardo/1000);
 	//Verificar que la tabla exista en el file system.
 	char *pathFolder=nivelUnaTabla(nameTable,0);
 	char *path;
 	if(folderExist(pathFolder)==0){
+		Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(nameTable);
+		sem_wait(tabDirectorio->borrarTabla);
 		//eliminar archivos binarios con sus respectivos bloques
 		int cantBins=contarArchivos(nameTable, 0);
 		int i=0;
+		sem_wait(tabDirectorio->semaforoBIN);
 		while(i<cantBins){
 			path=nivelParticion(nameTable,i, 0);
 			liberarParticion(path);
@@ -246,6 +253,7 @@ int drop(char* nameTable){
 		//eliminar archivos temporales con sus respectivos bloques
 		int cantDumps=contarArchivos(nameTable, 1);
 		i=0;
+		sem_wait(tabDirectorio->semaforoTMP);
 		while(i<cantDumps){
 			path=nivelParticion(nameTable,i, 1);
 			liberarParticion(path);
@@ -255,6 +263,7 @@ int drop(char* nameTable){
 		//eliminar archivos tempC con sus respectivos bloques
 		int cantTmpc=contarArchivos(nameTable, 2);
 		i=0;
+		sem_wait(tabDirectorio->semaforoTMPC);
 		while(i<cantTmpc){
 			path=nivelParticion(nameTable,i, 2);
 			liberarParticion(path);
@@ -263,12 +272,9 @@ int drop(char* nameTable){
 		}
 		 //eliminar archivo metadata
 		path=nivelUnaTabla(nameTable,1);
+		sem_wait(tabDirectorio->semaforoMeta);
 		eliminarArchivo(path);
 		free(path);
-		//aumentar el semaforo contador
-		sem_wait(criticaCantBloques);
-		cantBloqGlobal+=cantBins+cantTmpc+cantDumps;
-		sem_post(criticaCantBloques);
 		//sacar la tabla del directorio
 		int index2=calcularIndexName(nameTable);
 		sem_wait(criticaDirectorio);
