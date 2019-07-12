@@ -27,6 +27,7 @@
 #include "FileSystem.h"
 #include "TADs.h"
 #include <pthread.h>
+#include <sys/inotify.h>
 
 typedef enum{
 	SELECT,
@@ -43,9 +44,10 @@ t_list *memtable;
 char *pathInicial;
 char *raizDirectorio;
 void theStart();
+void *inicializarInotify();
 void *connectMemory(u_int16_t *server);
 void *interactuarConMemoria(u_int16_t *arg);
-void console();
+void *console();
 void funcionSenial(int sig);
 void theEnd();
 void exec_api(op_code mode, u_int16_t sock);

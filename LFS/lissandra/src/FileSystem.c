@@ -9,22 +9,22 @@
 
 void levantarDirectorio(){
 	if(crearMontaje()==0){
-		log_info(logger,"Se ha creado el montaje.");
+		log_info(logger,"Se levanto el montaje.");
 	}
 
 	if(crearNivelMetadata()==0){
-		log_info(logger,"Se ha creado el nivel Metadata.");
+		log_info(logger,"Se levanto el nivel Metadata.");
 	}
 	if(crearNivelTablas()==0){
-		log_info(logger,"Se ha creado el nivel Tablas.");
+		log_info(logger,"Se levanto el nivel Tablas.");
 	}
 	if(crearNivelBloques()==0){
-		log_info(logger,"Se ha creado el nivel Bloques.");
+		log_info(logger,"Se levanto el nivel Bloques.");
 	}
 }
 
 int crearMontaje(){
-	char *montaje=obtenerMontaje();
+	char *montaje=obtenerMontaje();					//Si la opcion es 0 se devuelve el montaje, si no se concatena a /home/utnso
 	char **subCadena=string_split(montaje,"/");
 	int i=2;
 	char *path=malloc(strlen(raizDirectorio)+1);
@@ -45,7 +45,7 @@ int crearMontaje(){
 		free(subCadena[i]);
 		i++;
 	}
-	free(montaje);
+	//free(montaje);
 	free(subCadena);
 	free(path);
 	return 0;
@@ -53,9 +53,7 @@ int crearMontaje(){
 
 int crearNivelMetadata(){
 	char *path=nivelMetadata(0);
-	if(folderExist(path)!=1){
-		log_info(logger,"La carpeta Metadata ya existe.");
-	}else{
+	if(folderExist(path)==1){
 		crearCarpeta(path);
 	}
 	free(path);
@@ -74,9 +72,7 @@ int crearNivelMetadata(){
 
 int crearNivelTablas(){
 	char *path=nivelTablas();
-	if(folderExist(path)!=1){
-		log_info(logger,"El directorio ya existe.");
-	}else{
+	if(folderExist(path)==1){
 		if(crearCarpeta(path)==1){
 			free(path);
 			return 1;
@@ -88,9 +84,7 @@ int crearNivelTablas(){
 
 int crearNivelBloques(){
 	char *path=nivelBloques();
-	if(folderExist(path)!=1){
-		log_info(logger,"El directorio ya existe.");
-	}else{
+	if(folderExist(path)==1){
 		if(crearCarpeta(path)==1){
 			free(path);
 			return 1;

@@ -154,9 +154,13 @@ void liberarDirectorioP(){
 }
 
 void semaforosTabla(Sdirectorio *nuevo){
+	nuevo->semaforoBIN=malloc(sizeof(sem_t));
 	sem_init(nuevo->semaforoBIN,0,1);
+	nuevo->semaforoContarTMP=malloc(sizeof(sem_t));
 	sem_init(nuevo->semaforoContarTMP,0,1);
+	nuevo->semaforoTMP=malloc(sizeof(sem_t));
 	sem_init(nuevo->semaforoTMP,0,1);
+	nuevo->semaforoTMPC=malloc(sizeof(sem_t));
 	sem_init(nuevo->semaforoTMPC,0,1);
 	nuevo->pedido_Compact=1;
 }

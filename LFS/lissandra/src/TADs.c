@@ -13,17 +13,27 @@
 //INICIALIZAR SEMAFOROS
 
 void inicializarSemGlob(){
+	criticaDirectorio=malloc(sizeof(sem_t));
 	sem_init(criticaDirectorio,0,1);
+	criticaMemtable=malloc(sizeof(sem_t));
 	sem_init(criticaMemtable,0,1);
+	criticaTablaGlobal=malloc(sizeof(sem_t));
 	sem_init(criticaTablaGlobal,0,1);
+	criticaCantBloques=malloc(sizeof(sem_t));
 	sem_init(criticaCantBloques,0,1);
+	criticaBitmap=malloc(sizeof(sem_t));
 	sem_init(criticaBitmap,0,1);
 }
 void liberarSemaforos(){
+	free(criticaDirectorio);
 	sem_destroy(criticaDirectorio);
+	free(criticaMemtable);
 	sem_destroy(criticaMemtable);
+	free(criticaTablaGlobal);
 	sem_destroy(criticaTablaGlobal);
+	free(criticaCantBloques);
 	sem_destroy(criticaCantBloques);
+	free(criticaBitmap);
 	sem_destroy(criticaBitmap);
 }
 /************************************************************************************************/
@@ -122,11 +132,18 @@ char *ponerSeparador(char *linea){
 }
 
 char *obtenerMontaje(){
+	if(string_starts_with(configLissandra->puntoMontaje,"/home/utnso")){
+		char *pMontaje=malloc(strlen(configLissandra->puntoMontaje)+1);
+		strcpy(pMontaje,configLissandra->puntoMontaje);
+		return pMontaje;
+	}
+	else{
 	char *montaje=malloc(strlen(raizDirectorio)+1);
 	strcpy(montaje,raizDirectorio);
 	montaje=realloc(montaje,strlen(montaje)+strlen(configLissandra->puntoMontaje)+1);
 	strcat(montaje,configLissandra->puntoMontaje);
 	return montaje;
+	}
 }
 
 char *nivelMetadata(int modo){	//0 metadata carpeta, 1 metadata.bin, 2 metadata.bitmap

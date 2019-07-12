@@ -8,6 +8,8 @@
  ============================================================================
  */
 #include "Lissandra.h"
+#define EVENT_SIZE  ( sizeof (struct inotify_event) + 100 )
+#define BUF_LEN     ( 1024 * EVENT_SIZE )
 
 int main(void) {
 
@@ -21,90 +23,60 @@ int main(void) {
 	//alarm(100);
     //signal(SIGALRM, funcionSenial);
 
-	/****************PARA USAR LA CONSOLA******************/
-
-	//console();
-
-	/****************PARA USAR CONEXIONES******************/
+	/****************CONEXIONES******************/
 
 	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
-		log_info(logger, "\nNo se pudo crear el server por el puerto o el bind, %n", 1);
-		return 1;
-	}else{
-		log_info(logger, "\nSe pudo crear el server.");
-	}
+			log_error(logger, "Error al levantar el servidor.");
+			return 1;
+		}else{
+			log_info(logger, "Se levanto el servidor.");
+		}
 
 	listenForClients(server,100);
-	int i=0;
 
 	pthread_t hiloMemoria;
 	pthread_create(&hiloMemoria,NULL,connectMemory,&server);
+
+	/****************PARA USAR LA CONSOLA******************/
+	pthread_t hiloConsola;
+	pthread_create(&hiloConsola,NULL,console,NULL);
+	//console();
+
 	pthread_join(hiloMemoria,NULL);
+	pthread_join(hiloConsola,NULL);
 
 	theEnd();
 	return EXIT_SUCCESS;
 }
 
-void *connectMemory(u_int16_t *server){	//PRUEBA SOCKETS CON LIBRERIA
+void *connectMemory(u_int16_t *server){
 
-	char *maxValue;
 	u_int16_t socket_client;
 
-	if(acceptConexion( *server, &socket_client,configLissandra->idEsperado)!=0){
-		return 1;
-		log_info(logger,"Conexion denegada.");
-	}
-	log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
-	if(configLissandra->tamValue<10){
-		maxValue=string_from_format("00%i",configLissandra->tamValue);
-	}else{
-		if(configLissandra->tamValue<100){
-			maxValue=string_from_format("0%i",configLissandra->tamValue);
-		}
-		else{
-		maxValue=string_from_format("%i",configLissandra->tamValue);
-		}
-	}
-
-	sendData(socket_client,maxValue,3);
-	free(maxValue);
-	close(socket_client);
-
-	u_int16_t nuevoSocketClient;
 	while(1){
 		if(acceptConexion( *server, &socket_client,configLissandra->idEsperado)!=0){
-			return 1;
 			log_info(logger,"Conexion denegada.");
+			return NULL;
 		}
 		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
 		pthread_t unHilo;
 		pthread_create(&unHilo,NULL,interactuarConMemoria,&socket_client);
-		pthread_join(unHilo,NULL);
+		//pthread_join(unHilo,NULL);
 	}
 
 	return NULL;
 }
 
 void *interactuarConMemoria(u_int16_t *socket_cliente){
-	//u_int16_t *socket_cliente = arg;
-	int recibidos=0;
 	int header=0;
-	int seguir=1;
 	char *buffer=malloc(2);
-	recibidos=recvData(*socket_cliente,buffer,1);
-	while(seguir){
-		buffer=malloc(2);
-		recibidos=recvData(*socket_cliente,buffer,1);
-		header=atoi(buffer);
-		if(header==5){
-			seguir=0;
-		}
-		exec_api(header,*socket_cliente);
-		free(buffer);
-	}
+	recvData(*socket_cliente,buffer,1);
+	header=atoi(buffer);
+	exec_api(header,*socket_cliente);
+	free(buffer);
+	pthread_exit(NULL);
 	return NULL;
 }
-
 
 void theStart(){
 
@@ -122,6 +94,36 @@ void theStart(){
 	memtable= list_create();												//Inicia la memtable global
 	directorioP=list_create();
 	inicializarSemGlob();
+}
+
+void *inicializarInotify(){
+	char buffer[BUF_LEN];
+	int file_descriptor = inotify_init();
+	if (file_descriptor < 0) {
+		perror("inotify_init");
+	}
+	int watch_descriptor = inotify_add_watch(file_descriptor, pathInicial, IN_MODIFY );
+	int length = read(file_descriptor, buffer, BUF_LEN);
+	if (length < 0) {
+		perror("read");
+	}
+
+	int offset = 0;
+
+	while (offset < length) {
+		struct inotify_event *event = (struct inotify_event *) &buffer[offset];
+		if (event->len) {
+			if (event->mask & IN_MODIFY) {
+				if (event->mask & IN_ISDIR) {
+					printf("The directory %s was modified.\n", event->name);
+				} else {
+					printf("The file %s was modified.\n", event->name);
+				}
+			}
+		offset += sizeof (struct inotify_event) + event->len;
+		}
+	}
+	return NULL;
 }
 
 t_log* init_logger() {
@@ -310,9 +312,28 @@ void exec_api(op_code mode,u_int16_t sock){
 		log_info(logger,"\nEXIT");
 		close(sock);
 		break;
+
+	case 8:
+		log_info(logger,"PRIMER HANDSHAKE CON MEMORIA");
+		char *maxValue;
+		if(configLissandra->tamValue<10){
+			maxValue=string_from_format("00%i",configLissandra->tamValue);
+		}else{
+			if(configLissandra->tamValue<100){
+				maxValue=string_from_format("0%i",configLissandra->tamValue);
+			}
+			else{
+			maxValue=string_from_format("%i",configLissandra->tamValue);
+			}
+		}
+
+		sendData(sock,maxValue,3);
+		free(maxValue);
+		close(sock);
+		break;
+
 	default:
 		log_info(logger,"\nAPI INVALIDA");
-
 		break;
 
 	}
@@ -338,7 +359,7 @@ void mostrarDescribe(t_list *lista){
 	list_iterate(lista,(void *)mostrarD);
 }
 
-void console(){
+void *console(){
 	char* linea;
 	while(1){
 		linea = readline(">");
@@ -431,11 +452,12 @@ void console(){
 
 		if(!strncmp(linea,"exit",5)){
 			free(linea);
-			//theEnd();
+			theEnd();
 			break;
 		}
 		free(linea);
 	}
+	return NULL;
 }
 
 void funcionSenial(int sig){
@@ -460,4 +482,5 @@ void theEnd(){
 	close(archivoBitmap);
 	liberarSemaforos();
 	log_destroy(logger);
+
 }
