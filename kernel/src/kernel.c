@@ -4,7 +4,8 @@ int main(void) {
 	sem_init(&semColasContador,0,0);
 	sem_init(&semColasMutex,0,1);
 	srand(time(NULL));
-	logger = init_logger();
+	logger = init_logger(0);
+	loggerConsola = init_logger(1);
 	config = read_config();
 	inicializarColas();
 	inicializarListas();
@@ -56,8 +57,11 @@ int main(void) {
 	return EXIT_SUCCESS;
 }
 
-t_log* init_logger() {
-	return log_create("kernel.log", "kernel", 0, LOG_LEVEL_DEBUG);
+t_log* init_logger(int i) {
+	if(i==0){
+	return log_create("kernel.log", "kernel",0, LOG_LEVEL_INFO);
+	}
+	else return log_create("kernel.log", "kernel",1, LOG_LEVEL_INFO);
 }
 
 t_config* read_config() {
@@ -290,17 +294,18 @@ int mySelect(char * table, char *key){
 		return -1;
 	}
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-/*
+
 	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
-		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
+		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency, key);
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
 		c++;
 	}
 	if(sock==-1){
+		log_info(logger, "no se pudo conectar con las memorias");
 		return -1;
 	}
 
@@ -309,7 +314,16 @@ int mySelect(char * table, char *key){
 
 	char * resultado=malloc(2);
 	recvData(sock,resultado,1);
-
+	if(atoi(resultado)==0){
+		char *tamanioRta=malloc(4);
+		recvData(sock,tamanioRta,3);
+		char *rta=malloc(atoi(tamanioRta));
+		recvData(sock,rta,atoi(tamanioRta));
+		log_info(logger,"Resultado SELECT : %s", rta);
+		/*if(consola==1){
+			log_info(loggerConsola,"Resultado SELECT : %s",rta);
+		}*/
+	}
 	log_info(logger,"resultado %i" , atoi(resultado));
 
 	if(atoi(resultado)!=0){
@@ -328,7 +342,7 @@ int mySelect(char * table, char *key){
 		else{
 			return -1;
 		}
-	}*/
+	}
 	free(memAsignada);
 	free(linea);
 	free(msj);
@@ -350,11 +364,16 @@ int insert(char* table ,char* key ,char* value){
 	char*linea=string_from_format("%s;%s;%s",table,key,split[0]);
 	int len = strlen(linea);
 	char* tamanioYop;;//= malloc(4);
-	if(len>10){
+	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
 	}
 	else{
-		tamanioYop=string_from_format("%i0%i",op,len);
+		if(len>=10){
+			tamanioYop=string_from_format("%i0%i",op,len);
+		}
+		else{
+			tamanioYop=string_from_format("%i00%i",op,len);
+		}
 	}
 	char*msj=string_from_format("%s%s",tamanioYop,linea);
 
@@ -369,10 +388,10 @@ int insert(char* table ,char* key ,char* value){
 	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-	/*int c=0;
+/*	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
-		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
+		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency , key);
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
@@ -422,11 +441,16 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	char*linea=string_from_format("%s;%s;%s;%s",table,consistency,numPart,timeComp);
 	int len = strlen(linea);
 	char* tamanioYop;//= malloc(4);
-	if(len>10){
+	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
 	}
 	else{
-		tamanioYop=string_from_format("%i0%i",op,len);
+		if(len>=10){
+			tamanioYop=string_from_format("%i0%i",op,len);
+		}
+		else{
+			tamanioYop=string_from_format("%i00%i",op,len);
+		}
 	}
 	char*msj=string_from_format("%s%s",tamanioYop,linea);
 
@@ -442,11 +466,10 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 
 	//tengo que hacer la metadata de la tabla? o despues con el describe? quedaria inconsistente hasta que lo hagan
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-/*
 	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
-		memAsignada= asignarMemoriaSegunCriterio(consistency);
+		memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
@@ -463,7 +486,14 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 
 	if(atoi(resultado)!=0){
 		return -1;
-	}*/
+	}
+
+	struct metadataTabla *met= malloc(sizeof(struct metadataTabla));
+	met->compTime=atoi(timeComp);
+	met->consistency=string_duplicate(consistency);
+	met->numPart=atoi(numPart);
+	met->table=string_duplicate(table);
+	list_add(listaMetadata,met);
 
 	free(memAsignada);
 	free(linea);
@@ -474,6 +504,7 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 
 int journal(){
 	int ret=0;
+
 	void envioJournal(struct memoria *m){
 		char *resultado= malloc(2);
 		int sock=conexionMemoria(m->puerto,m->ip);
@@ -484,6 +515,7 @@ int journal(){
 			log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
 		}
 	}
+
 	list_iterate(criterioEC,(void*)envioJournal);
 	list_iterate(criterioSC,(void*)envioJournal);
 	list_iterate(criterioSHC,(void*)envioJournal);
@@ -498,11 +530,18 @@ int describe(char *table){
 	int op=3;//verificar
 	char *msj;
 	if(tamanio==0){
-		msj=string_from_format("%i%i",op,tamanio);
+		msj=string_from_format("%i00%i",op,tamanio);
 	}
 	else{
 		// ver temas de comunicacion con memoria
-		msj=string_from_format("%i%i%s",op,tamanio,table);
+		if(tamanio<10){
+			msj=string_from_format("%i00%i%s",op,tamanio,table);
+		}else{
+			if(tamanio<100){
+				msj=string_from_format("%i0%i%s",op,tamanio,table);
+			}
+			else msj=string_from_format("%i%i%s",op,tamanio,table);
+		}
 	}
 
 	log_info(logger,"DESCRIBE %s",msj);
@@ -601,7 +640,16 @@ int describe(char *table){
 int drop(char*table){
 	int op=4;
 	int len=strlen(table);
-	char*msj=string_from_format("%i%i%s",op,len,table);
+
+	char*msj;
+
+	if(len<10){
+		msj=string_from_format("%i00%i%s",op,len,table);
+	}else{
+		if(len<100){
+			msj=string_from_format("%i0%i%s",op,len,table);
+		}else msj=string_from_format("%i%i%s",op,len,table);
+	}
 
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	metadata = buscarMetadataTabla(table);
@@ -615,7 +663,7 @@ int drop(char*table){
 	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
-		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency);
+		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency,NULL);
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
@@ -666,7 +714,19 @@ int add(char* memory , char* consistency){
 	}
 	if(strcmp(consistency,"SHC")==0){
 		if(!verificaMemoriaRepetida(idMemoria,criterioSHC)){
+			int ret=0;
 			list_add(criterioSHC,memoria);
+			void envioJournal(struct memoria *m){
+				char *resultado= malloc(2);
+				int sock=conexionMemoria(m->puerto,m->ip);
+				sendData(sock,"5",2);
+				recvData(sock,resultado,1);
+				if(atoi(resultado)!=0){
+					ret=1;
+					log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
+				}
+			}
+			list_iterate(criterioSHC,(void*)envioJournal);
 			return 0;
 		}
 		else{
@@ -716,7 +776,6 @@ void metricasAutomaticas(){
 		metrica.tiempoS=0;
 	}
 }
-
 
 bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio){
 	bool idRepetido(struct memoria *mem){
@@ -773,19 +832,37 @@ void inicializarListas(){
 	listaMetadata=list_create();
 }
 
-struct memoria *asignarMemoriaSegunCriterio(char *consistency){
+struct memoria *asignarMemoriaSegunCriterio(char *consistency, char *key){
 	struct memoria *memAsignada= malloc(sizeof(struct memoria));
 	if(strcmp(consistency,"SC")==0){
 		memAsignada=list_get(criterioSC,0);
 	}
 	if(strcmp(consistency,"SHC")==0){
-		memAsignada=verMemoriaLibre(criterioSHC);
+		memAsignada=verMemoriaLibreSHC(atoi(key));
 	}
 	if(strcmp(consistency,"EC")==0){
 		memAsignada=verMemoriaLibre(criterioEC);
 	}
 	return memAsignada;
 }
+
+struct memoria *verMemoriaLibreSHC(int key){
+	if(key==NULL){
+		key=1;
+	}
+	int size= list_size(criterioSHC);
+	if(size!=0){
+		int idMemoria = (key+113)%size;
+
+		struct memoria *m = list_get(criterioSHC,idMemoria);
+
+		return m;
+	}
+	else{
+		return NULL;
+	}
+}
+
 
 struct memoria *verMemoriaLibre(t_list *lista){
 	int size= list_size(lista);

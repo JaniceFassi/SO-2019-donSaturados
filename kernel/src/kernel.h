@@ -36,8 +36,9 @@ struct metricas{
 struct metricas metrica;
 
 t_log* logger;
+t_log* loggerConsola;
 t_config* config;
-t_log* init_logger(void);
+t_log* init_logger(int i);
 t_config* read_config(void);
 int quantum;
 
@@ -98,7 +99,7 @@ void ejecutarScripts();
 void inicializarColas();
 FILE* avanzarLineas(int num,FILE * fp);
 void inicializarListas();
-struct memoria *asignarMemoriaSegunCriterio( char *consistency);
+struct memoria *asignarMemoriaSegunCriterio( char *consistency, char * key);
 struct memoria *verMemoriaLibre(t_list *lista);
 bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio);
 struct memoria * buscarMemoria(u_int16_t id);
@@ -112,6 +113,7 @@ void describeGlobal();
 void limpiarMetadata();
 void actualizarMetadataTabla(struct metadataTabla *m);
 void metricasAutomaticas();
+struct memoria *verMemoriaLibreSHC(int key);
 
 static sem_t semColasMutex;
 static sem_t semColasContador;
