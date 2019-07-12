@@ -34,6 +34,11 @@ t_config *configuracion;
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* listaDeUsos;
+t_list* tablaMemActivas;
+t_list* tablaMemActivasSecundaria; //tablas del gossiping
+char** ipSeeds;
+char** puertoSeeds; //variables del gossiping
+int idMemoria;
 void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
@@ -64,6 +69,13 @@ typedef struct{
 	int posicionDeUso;
 }posMarcoUsado;
 
+//GOSSIPING
+typedef struct {
+    int nroMem; //cada proceso tendra un nroMem propio. Asignado a mano y unico.
+    char* ip;
+    char* puerto;
+}infoMemActiva;
+
 //API
 char* mSelect(char* nombreTabla,u_int16_t key);
 int mInsert(char* nombreTabla,u_int16_t key,char* valor);
@@ -79,6 +91,7 @@ void marcoDestroy(marco *unMarco);
 
 //AUXILIARES DE ARRANQUE
 void inicializar();
+void prepararGossiping();
 t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
@@ -127,6 +140,9 @@ void actualizarListaDeUsos(int nroMarco);
 bool estaModificada(pagina *pag);
 int FULL();
 int todosModificados(segmento* aux);
+
+//GOSSIPING
+void agregarMemActiva(int id,char* ip,char* puerto);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);

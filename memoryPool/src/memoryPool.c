@@ -156,16 +156,15 @@ int main(void) {
 //TODO hay que abortar si no se puede hacer el handshake o el malloc gigante
 
 	inicializar();
-
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 
-	mInsert("PROFESIONES", 1, "CIRUJANO");
-	pthread_t gestorConexiones;
-	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
+	//mInsert("PROFESIONES", 1, "CIRUJANO");
+	//pthread_t gestorConexiones;
+	//pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
 	//pthread_t journalTemporal;
@@ -176,7 +175,7 @@ int main(void) {
 	//si el exit de consola "apaga" la memoria, pasar un parámetro que vuelva en el join
 	//hacer un if y destruir el resto de los hilos ahí, después finalizar
 
-	pthread_join(gestorConexiones, NULL);
+	//pthread_join(gestorConexiones, NULL);
 	//pthread_join(journalTemporal, NULL);
 	//pthread_join(gossipTemporal, NULL);
 	finalizar();
@@ -195,9 +194,8 @@ int main(void) {
 	u_int16_t puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
 	char* ipFS = malloc(15);
 	strcpy(ipFS, config_get_string_value(configuracion,"IP_FS"));
-
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
-
+	prepararGossiping();
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
@@ -225,6 +223,14 @@ int main(void) {
 
 }
 
+ void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
+	 idMemoria = 0; //Unico de cada proceso
+	 tablaMemActivas = list_create();
+	 tablaMemActivasSecundaria = list_create();
+	 ipSeeds = config_get_array_value(configuracion,"IP_SEEDS");
+	 puertoSeeds = config_get_array_value(configuracion,"PUERTO_SEEDS");
+	 agregarMemActiva(idMemoria,ipSeeds[0],puertoSeeds[0]);
+ }
 
  segmento *crearSegmento(char* nombre){
 	segmento *nuevoSegmento = malloc(sizeof(segmento));
@@ -1002,17 +1008,84 @@ void mJournal(){
 	pthread_mutex_unlock(&lockTablaSeg);
 }
 
-
-
 //NROMEM;PUERTO;IP SUPER SEND CON TABLA ENTERA
-void buscarMemorias(){}
+
+void agregarMemActivasAConfig(){} //agrega tablaMemActivas a la config del arch sin repetidos
+void enviarTablaAlKernel(){} //un listen y cuando el kernel pide empaqueta y manda la tablaMemActivas
+
+char* empaquetarTablaActivas(){}
+t_list* desempaquetarTablaSecundaria(){} // desempaqueta la tabla recibida y la devuelve
+
+
+int pedirConfirmacion(char*ip,char* puerto){
+    //funciones de la shared
+    //char*paqueteEnvio = empaquetarTablaActivas();
+    //sendData(paqueteEnvio);
+    //recvData(paqueteRecv);
+    //tablaSecundaria = desempaquetarTablaSecundaria(char* paqueteRecv);
+	return 1;
+} // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
+
+void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
+    char* paquete;
+   // paquete=empaquetarTablaActivas();
+   // sendData(paquete); //como sabe a quien mardalo? ya tiene la ip cargada de antes?
+} //un listen y da el ok a otra mem, tambien envia su tablaMemActivas
+
+void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
+	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
+	nueva->ip=ip;
+	nueva->puerto=puerto;
+	nueva->nroMem=id;
+	list_add(tablaMemActivas,nueva);
+
+	if(tablaMemActivasSecundaria){ //es decir, si se recibio una tablaSecundaria
+		int i=1; //la 0 ya la agregamos arriba
+		int tam=list_size(tablaMemActivasSecundaria);
+		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
+		while(aux){
+			list_add(tablaMemActivas,aux);
+			//agregar a la config
+			i++;
+			aux=list_get(tablaMemActivasSecundaria,i);
+		}
+
+	}
+}
+
+int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
+	infoMemActiva* aux = list_get(tablaMemActivasSecundaria,0);
+	return aux->nroMem;
+}
+
+void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
+    int i=1;
+    infoMemActiva* aux = list_get(tablaMemActivas,i);
+    while(aux){
+        if(aux->ip == ip){
+            list_remove(tablaMemActivas,i);
+        }
+        i++;
+        aux = list_get(tablaMemActivas,i);
+    }
+}
 
 void mGossip(){
-	int retardo = config_get_int_value(configuracion, "RETARDO_GOSSIPING");
+	int i=1;
+	ipSeeds = config_get_array_value(configuracion,"IP_SEEDS");
+    puertoSeeds = config_get_array_value(configuracion,"PUERTO_SEEDS");
 
-		while(1){
-			buscarMemorias();
-			sleep(retardo);
-		}
+    while(ipSeeds[i]){
+
+    	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){ //falta casteo
+    		int id = conseguirIdSecundaria();
+    		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]); //aca tambien
+    	}else{
+    		estaEnActivaElim(ipSeeds[i]);
+    	}
+    	i++;
+    }
 }
+
+
 
