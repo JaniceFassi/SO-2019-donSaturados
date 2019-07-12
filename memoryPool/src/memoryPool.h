@@ -125,6 +125,8 @@ void agregarListaUsos(int nroMarco);
 void eliminarDeListaUsos(int nroMarcoAEliminar);
 void actualizarListaDeUsos(int nroMarco);
 bool estaModificada(pagina *pag);
+int FULL();
+int todosModificados(segmento* aux);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
