@@ -324,3 +324,126 @@
 [INFO] 18:30:08:388 Lissandra/(13677:13677): Se ha insertado el registro en la memtable.
 [INFO] 18:30:43:511 Lissandra/(13677:13677): La key 0 esta contenida en la particion 0.
 [INFO] 18:32:30:367 Lissandra/(13677:13677): loromenta
+[INFO] 22:04:13:923 Lissandra/(27190:27190): Se levanto el montaje.
+[INFO] 22:04:13:958 Lissandra/(27190:27190): Se levanto el nivel Metadata.
+[INFO] 22:04:13:961 Lissandra/(27190:27190): Se levanto el nivel Tablas.
+[INFO] 22:04:14:188 Lissandra/(27190:27190): Se levanto el nivel Bloques.
+[INFO] 22:10:24:491 Lissandra/(27668:27668): Se levanto el montaje.
+[INFO] 22:10:24:492 Lissandra/(27668:27668): Se levanto el nivel Metadata.
+[INFO] 22:10:24:492 Lissandra/(27668:27668): Se levanto el nivel Tablas.
+[INFO] 22:10:24:614 Lissandra/(27668:27668): Se levanto el nivel Bloques.
+[ERROR] 22:10:46:970 Lissandra/(27668:27668): No hay 1 bloques libres.
+
+[INFO] 22:10:48:599 Lissandra/(27668:27668): No se pudo crear la tabla MARINOS.
+[INFO] 22:13:27:801 Lissandra/(27800:27800): Se levanto el montaje.
+[INFO] 22:13:27:802 Lissandra/(27800:27800): Se levanto el nivel Metadata.
+[INFO] 22:13:27:802 Lissandra/(27800:27800): Se levanto el nivel Tablas.
+[INFO] 22:13:27:884 Lissandra/(27800:27800): Se levanto el nivel Bloques.
+[INFO] 22:13:52:494 Lissandra/(27800:27800): Se ha creado la tabla MARINOS.
+[INFO] 22:14:55:66 Lissandra/(27877:27877): Se levanto el montaje.
+[INFO] 22:14:55:67 Lissandra/(27877:27877): Se levanto el nivel Metadata.
+[INFO] 22:14:55:69 Lissandra/(27877:27877): Se levanto el nivel Tablas.
+[INFO] 22:14:55:189 Lissandra/(27877:27877): Se levanto el nivel Bloques.
+[INFO] 22:15:37:885 Lissandra/(27912:27912): Se levanto el montaje.
+[INFO] 22:15:37:886 Lissandra/(27912:27912): Se levanto el nivel Metadata.
+[INFO] 22:15:37:886 Lissandra/(27912:27912): Se levanto el nivel Tablas.
+[INFO] 22:15:38:12 Lissandra/(27912:27912): Se levanto el nivel Bloques.
+[INFO] 22:16:02:230 Lissandra/(27912:27912): Se ha creado la tabla MARINOS.
+[INFO] 22:28:58:783 Lissandra/(28402:28402): Se levanto el montaje.
+[INFO] 22:28:58:784 Lissandra/(28402:28402): Se levanto el nivel Metadata.
+[INFO] 22:28:58:784 Lissandra/(28402:28402): Se levanto el nivel Tablas.
+[INFO] 22:28:58:866 Lissandra/(28402:28402): Se levanto el nivel Bloques.
+[INFO] 22:29:53:849 Lissandra/(28464:28464): Se levanto el montaje.
+[INFO] 22:29:53:850 Lissandra/(28464:28464): Se levanto el nivel Metadata.
+[INFO] 22:29:53:850 Lissandra/(28464:28464): Se levanto el nivel Tablas.
+[INFO] 22:29:53:960 Lissandra/(28464:28464): Se levanto el nivel Bloques.
+[INFO] 22:30:11:773 Lissandra/(28464:28464): Se ha creado la tabla MARINOS.
+[INFO] 22:33:04:198 Lissandra/(28554:28554): Se levanto el montaje.
+[INFO] 22:33:04:199 Lissandra/(28554:28554): Se levanto el nivel Metadata.
+[INFO] 22:33:04:199 Lissandra/(28554:28554): Se levanto el nivel Tablas.
+[INFO] 22:33:04:330 Lissandra/(28554:28554): Se levanto el nivel Bloques.
+[INFO] 22:34:00:302 Lissandra/(28554:28554): Se ha creado la tabla MARINOS.
+[INFO] 22:48:15:309 Lissandra/(28917:28917): Se levanto el montaje.
+[INFO] 22:48:15:310 Lissandra/(28917:28917): Se levanto el nivel Metadata.
+[INFO] 22:48:15:310 Lissandra/(28917:28917): Se levanto el nivel Tablas.
+[INFO] 22:48:15:464 Lissandra/(28917:28917): Se levanto el nivel Bloques.
+[INFO] 22:48:35:516 Lissandra/(28917:28917): Se ha creado la tabla MARINOS.
+[INFO] 22:49:33:958 Lissandra/(28989:28989): Se levanto el montaje.
+[INFO] 22:49:33:959 Lissandra/(28989:28989): Se levanto el nivel Metadata.
+[INFO] 22:49:33:959 Lissandra/(28989:28989): Se levanto el nivel Tablas.
+[INFO] 22:49:34:52 Lissandra/(28989:28989): Se levanto el nivel Bloques.
+[INFO] 22:49:51:684 Lissandra/(28989:28989): Se ha creado la tabla MARINOS.
+[INFO] 22:50:35:255 Lissandra/(29033:29033): Se levanto el montaje.
+[INFO] 22:50:35:263 Lissandra/(29033:29033): Se levanto el nivel Metadata.
+[INFO] 22:50:35:267 Lissandra/(29033:29033): Se levanto el nivel Tablas.
+[INFO] 22:50:35:451 Lissandra/(29033:29033): Se levanto el nivel Bloques.
+[INFO] 22:50:57:971 Lissandra/(29033:29033): Se ha creado la tabla MARINOS.
+[INFO] 22:53:46:101 Lissandra/(29105:29105): Se levanto el montaje.
+[INFO] 22:53:46:102 Lissandra/(29105:29105): Se levanto el nivel Metadata.
+[INFO] 22:53:46:102 Lissandra/(29105:29105): Se levanto el nivel Tablas.
+[INFO] 22:53:46:201 Lissandra/(29105:29105): Se levanto el nivel Bloques.
+[INFO] 22:54:21:95 Lissandra/(29105:29105): Se ha creado la tabla MARINOS.
+[INFO] 23:07:06:850 Lissandra/(29358:29358): Se levanto el montaje.
+[INFO] 23:07:06:850 Lissandra/(29358:29358): Se levanto el nivel Metadata.
+[INFO] 23:07:06:850 Lissandra/(29358:29358): Se levanto el nivel Tablas.
+[INFO] 23:07:06:949 Lissandra/(29358:29358): Se levanto el nivel Bloques.
+[INFO] 23:07:29:425 Lissandra/(29358:29358): Se ha creado la tabla MARINOS.
+[INFO] 23:15:52:113 Lissandra/(29615:29615): Se levanto el montaje.
+[INFO] 23:15:52:113 Lissandra/(29615:29615): Se levanto el nivel Metadata.
+[INFO] 23:15:52:114 Lissandra/(29615:29615): Se levanto el nivel Tablas.
+[INFO] 23:15:52:229 Lissandra/(29615:29615): Se levanto el nivel Bloques.
+[INFO] 23:16:13:532 Lissandra/(29615:29615): Se ha creado la tabla MARINOS.
+[INFO] 23:19:32:71 Lissandra/(29772:29772): Se levanto el montaje.
+[INFO] 23:19:32:71 Lissandra/(29772:29772): Se levanto el nivel Metadata.
+[INFO] 23:19:32:71 Lissandra/(29772:29772): Se levanto el nivel Tablas.
+[INFO] 23:19:32:250 Lissandra/(29772:29772): Se levanto el nivel Bloques.
+[INFO] 23:19:52:62 Lissandra/(29772:29772): Se ha creado la tabla MARINOS.
+[INFO] 23:21:28:699 Lissandra/(29772:29772): No se pudo abrir la metadata.
+[INFO] 23:22:32:403 Lissandra/(29901:29901): Se levanto el montaje.
+[INFO] 23:22:32:403 Lissandra/(29901:29901): Se levanto el nivel Metadata.
+[INFO] 23:22:32:404 Lissandra/(29901:29901): Se levanto el nivel Tablas.
+[INFO] 23:22:32:521 Lissandra/(29901:29901): Se levanto el nivel Bloques.
+[INFO] 23:22:51:172 Lissandra/(29901:29901): Se ha creado la tabla MARINOS.
+[INFO] 23:23:30:235 Lissandra/(29901:29901): No se pudo abrir la metadata.
+[INFO] 23:25:55:488 Lissandra/(30018:30018): Se levanto el montaje.
+[INFO] 23:25:55:489 Lissandra/(30018:30018): Se levanto el nivel Metadata.
+[INFO] 23:25:55:489 Lissandra/(30018:30018): Se levanto el nivel Tablas.
+[INFO] 23:25:55:667 Lissandra/(30018:30018): Se levanto el nivel Bloques.
+[INFO] 23:26:13:971 Lissandra/(30018:30018): Se ha creado la tabla MARINOS.
+[INFO] 23:35:27:191 Lissandra/(30417:30417): Se levanto el montaje.
+[INFO] 23:35:27:192 Lissandra/(30417:30417): Se levanto el nivel Metadata.
+[INFO] 23:35:27:192 Lissandra/(30417:30417): Se levanto el nivel Tablas.
+[INFO] 23:35:27:274 Lissandra/(30417:30417): Se levanto el nivel Bloques.
+[INFO] 23:35:49:198 Lissandra/(30417:30417): Se ha creado la tabla MARINOS.
+[INFO] 23:45:16:990 Lissandra/(30747:30747): Se levanto el montaje.
+[INFO] 23:45:16:991 Lissandra/(30747:30747): Se levanto el nivel Metadata.
+[INFO] 23:45:16:991 Lissandra/(30747:30747): Se levanto el nivel Tablas.
+[INFO] 23:45:17:127 Lissandra/(30747:30747): Se levanto el nivel Bloques.
+[INFO] 23:45:34:389 Lissandra/(30747:30747): Se ha creado la tabla MARINOS.
+[INFO] 23:54:13:298 Lissandra/(31020:31020): Se levanto el montaje.
+[INFO] 23:54:13:298 Lissandra/(31020:31020): Se levanto el nivel Metadata.
+[INFO] 23:54:13:298 Lissandra/(31020:31020): Se levanto el nivel Tablas.
+[INFO] 23:54:13:393 Lissandra/(31020:31020): Se levanto el nivel Bloques.
+[ERROR] 23:54:34:162 Lissandra/(31020:31020): No se puede hacer el create porque ya existe la tabla MARINOS.
+[INFO] 23:54:34:929 Lissandra/(31020:31020): No se pudo crear la tabla MARINOS.
+[INFO] 23:55:04:339 Lissandra/(31068:31068): Se levanto el montaje.
+[INFO] 23:55:04:340 Lissandra/(31068:31068): Se levanto el nivel Metadata.
+[INFO] 23:55:04:341 Lissandra/(31068:31068): Se levanto el nivel Tablas.
+[INFO] 23:55:04:508 Lissandra/(31068:31068): Se levanto el nivel Bloques.
+[INFO] 23:55:22:500 Lissandra/(31068:31068): Se ha creado la tabla MARINOS.
+[INFO] 23:59:20:147 Lissandra/(31241:31241): Se levanto el montaje.
+[INFO] 23:59:20:148 Lissandra/(31241:31241): Se levanto el nivel Metadata.
+[INFO] 23:59:20:148 Lissandra/(31241:31241): Se levanto el nivel Tablas.
+[INFO] 23:59:20:240 Lissandra/(31241:31241): Se levanto el nivel Bloques.
+[INFO] 23:59:42:726 Lissandra/(31241:31241): Se ha creado la tabla MARINOS.
+[INFO] 00:01:47:542 Lissandra/(31241:31241): Se ha insertado el registro en la memtable.
+[INFO] 00:02:08:355 Lissandra/(31241:31241): Se ha creado la tabla AVES.
+[INFO] 00:02:28:41 Lissandra/(31241:31241): Se ha creado la tabla MAMIFEROS.
+[INFO] 00:03:28:518 Lissandra/(31241:31241): Se ha insertado el registro en la memtable.
+[INFO] 00:03:48:167 Lissandra/(31241:31241): Se ha insertado el registro en la memtable.
+[INFO] 00:04:08:44 Lissandra/(31241:31241): Se ha insertado el registro en la memtable.
+[INFO] 00:04:28:860 Lissandra/(31241:31241): Se ha insertado el registro en la memtable.
+[INFO] 00:04:47:300 Lissandra/(31241:31241): Se ha insertado el registro en la memtable.
+[INFO] 00:05:09:724 Lissandra/(31241:31241): Se ha insertado el registro en la memtable.
+[INFO] 00:06:22:457 Lissandra/(31241:31241): La key 11 esta contenida en la particion 1.
+[INFO] 00:07:50:494 Lissandra/(31241:31241): Halcon

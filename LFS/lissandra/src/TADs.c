@@ -868,6 +868,7 @@ void cargarBitmap(){
 	char* bitArrayMap =  (char *) mmap(NULL, buf.st_size, PROT_WRITE | PROT_READ , MAP_SHARED, archivoBitmap, 0);
 	bitmap = bitarray_create_with_mode(bitArrayMap, buf.st_size, MSB_FIRST);
 	free(rutaBitmap);
+	cantBloqGlobal=metaLFS->cantBloques;
 }
 
 void mostrarBitmap(){
@@ -1152,7 +1153,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 	if(archivoValido(path)!=0){
 		Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
 		int borrar;
-		sem_getvalue(tablaDirec->borrarTabla,&borrar);
+		sem_getvalue(&tablaDirec->borrarTabla,&borrar);
 		if(borrar==0){
 			log_info(logger,"No se puede abrir archivos de esta tabla, porque hay pedido de borrar Tabla");
 			free(path);
@@ -1160,10 +1161,10 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 		}
 		switch(extension){
 		int estado;
-			case 0: sem_getvalue(tablaDirec->semaforoBIN,&estado);
+			case 0: sem_getvalue(&tablaDirec->semaforoBIN,&estado);
 					if(estado==1){
 						//WAIT
-						sem_wait(tablaDirec->semaforoBIN);
+						sem_wait(&tablaDirec->semaforoBIN);
 						nuevoArch(tabla,extension);
 						arch=leerMetaArch(path);
 						break;
@@ -1177,10 +1178,10 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 							break;
 						}
 					}
-			case 1: sem_getvalue(tablaDirec->semaforoTMP,&estado);
+			case 1: sem_getvalue(&tablaDirec->semaforoTMP,&estado);
 					if(estado==1){
 						//WAIT
-						sem_wait(tablaDirec->semaforoTMP);
+						sem_wait(&tablaDirec->semaforoTMP);
 						nuevoArch(tabla,extension);
 						arch=leerMetaArch(path);
 						break;
@@ -1194,10 +1195,10 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 							break;
 						}
 					}
-			case 2: sem_getvalue(tablaDirec->semaforoTMPC,&estado);
+			case 2: sem_getvalue(&tablaDirec->semaforoTMPC,&estado);
 					if(estado==1){
 						//WAIT
-						sem_wait(tablaDirec->semaforoTMPC);
+						sem_wait(&tablaDirec->semaforoTMPC);
 						nuevoArch(tabla,extension);
 						arch=leerMetaArch(path);
 						break;
@@ -1225,13 +1226,13 @@ void cerrarArchivo(char *tabla,int extension, metaArch *arch){
 		sacarArch(tabla,extension);
 		//SIGNAL
 		switch(extension){
-			case 0: sem_post(tabDirectorio->semaforoBIN);
+			case 0: sem_post(&tabDirectorio->semaforoBIN);
 					break;
 
-			case 1: sem_post(tabDirectorio->semaforoTMP);
+			case 1: sem_post(&tabDirectorio->semaforoTMP);
 					break;
 
-			case 2: sem_post(tabDirectorio->semaforoTMPC);
+			case 2: sem_post(&tabDirectorio->semaforoTMPC);
 					break;
 		}
 	}
@@ -1244,7 +1245,7 @@ void cerrarMetaTabGlobal(char *tabla,t_config *arch){
 	if(obtenido->contador==0){
 		Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(tabla);
 		sacarArch(tabla,3);
-		sem_post(tabDirectorio->semaforoMeta);
+		sem_post(&tabDirectorio->semaforoMeta);
 	}
 	config_destroy(arch);
 }
@@ -1253,20 +1254,20 @@ t_config *abrirMetaTabGlobal(char *tabla){
 	t_config *arch=NULL;
 	Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
 	int borrar;
-	sem_getvalue(tablaDirec->borrarTabla,&borrar);
+	sem_getvalue(&tablaDirec->borrarTabla,&borrar);
 	if(borrar==0){
 		log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla");
 		return arch;
 	}
 	int estado;
-	sem_getvalue(tablaDirec->semaforoMeta,&estado);//caso de metadata
+	sem_getvalue(&tablaDirec->semaforoMeta,&estado);//caso de metadata
 	if(estado==1){
 		//WAIT
-		sem_wait(tablaDirec->semaforoMeta);
+		sem_wait(&tablaDirec->semaforoMeta);
 	}
 	nuevoArch(tabla,3);//3 es METADATA
 	char *path=nivelUnaTabla(tabla,1);
-	arch=config_create(tabla);
+	arch=config_create(path);
 	free(path);
 	return arch;
 }

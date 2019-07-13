@@ -60,7 +60,7 @@ int crearNivelMetadata(){
 	path=nivelMetadata(1);
 	if(archivoValido(path)==0){
 		//crearMetaLFS();
-		oldCrearMetaLFS(32,10,"Lissandra");
+		oldCrearMetaLFS(64,4096,"Lissandra");
 	}else{
 		leerMetaLFS();
 	}
@@ -103,18 +103,34 @@ int crearNivelBloques(){
 	}
 	free(path);
 	return 0;
+}/*
+bool archivoYaAbierto(char *tabla,int extension){
+	int contador=0;
+	while(contador<list_size(tablaArchGlobal)){
+		archAbierto *es=list_get(tablaArchGlobal,contador);
+		if(string_equals_ignore_case(es->nombreTabla,tabla)){
+			if(extension==es->extension){
+				return true;
+			}
+		}
+		contador++;
+	}
+	return false;
 }
 
+*/
 bool archivoYaAbierto(char *tabla,int extension){
 	bool abierto(archAbierto *es){
-			if(tabla==es->nombreTabla && extension==es->extension){
-				return true;
+			if(string_equals_ignore_case(es->nombreTabla,tabla)){
+				if(extension==es->extension){
+					return true;
+				}
 			}
 			return false;
 		}
 	return list_any_satisfy(tablaArchGlobal,(void *)abierto);
 }
-
+/*
 archAbierto *obtenerArch(char *tabla, int extension){
 	bool abierto(archAbierto *es){
 			if(tabla==es->nombreTabla && extension==es->extension){
@@ -123,8 +139,20 @@ archAbierto *obtenerArch(char *tabla, int extension){
 			return false;
 		}
 	return list_find(tablaArchGlobal,(void *)abierto);
+}*/
+archAbierto *obtenerArch(char *tabla, int extension){
+	int contador=0;
+	while(contador<list_size(tablaArchGlobal)){
+		archAbierto *es=list_get(tablaArchGlobal,contador);
+		if(string_equals_ignore_case(es->nombreTabla,tabla)){
+			if(extension==es->extension){
+				return es;
+			}
+		}
+		contador++;
+	}
+	return NULL;
 }
-
 void nuevoArch(char *tabla, int extension){
 	if(archivoYaAbierto(tabla,extension)){
 		archAbierto *obtenido=obtenerArch(tabla,extension);
@@ -158,6 +186,6 @@ int calcularIndexArch(char *tabla,int extension){
 
 void sacarArch(char *tabla,int extension){
 	int index=calcularIndexArch(tabla,extension);
-	archAbierto *victima=list_remove(tablaArchGlobal,index);
+	archAbierto *victima=list_remove(tablaArchGlobal,index-1);
 	liberarArch(victima);
 }

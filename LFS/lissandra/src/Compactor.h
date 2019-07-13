@@ -14,12 +14,12 @@ typedef struct{
 	char *nombre;
 	long time_compact;
 	pthread_t hilo;
-	sem_t *semaforoTMP;
-	sem_t *semaforoTMPC;
-	sem_t *semaforoBIN;
-	sem_t *semaforoContarTMP;
-	sem_t *borrarTabla;
-	sem_t *semaforoMeta;
+	sem_t semaforoTMP;
+	sem_t semaforoTMPC;
+	sem_t semaforoBIN;
+	sem_t semaforoContarTMP;
+	sem_t borrarTabla;
+	sem_t semaforoMeta;
 	int pedido_extension;//se inicializa en -1// si esta en 0 es BIN, si es TMP es 1 y 2 TMPC
 }Sdirectorio;
 

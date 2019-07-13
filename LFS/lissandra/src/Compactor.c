@@ -19,7 +19,7 @@ int dump(){
 		char *path=nivelUnaTabla(dumpTabla->nombre,0);
 		if(folderExist(path)==0){
 			Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(dumpTabla->nombre);
-			sem_wait(tabDirectorio->semaforoContarTMP);
+			sem_wait(&tabDirectorio->semaforoContarTMP);
 			int cantTmp=contarArchivos(dumpTabla->nombre, 1);
 			char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
 
@@ -30,7 +30,7 @@ int dump(){
 				list_destroy_and_destroy_elements(dump,(void *)liberarTabla);
 				return 1;
 			}
-			sem_post(tabDirectorio->semaforoContarTMP);
+			sem_post(&tabDirectorio->semaforoContarTMP);
 			free(ruta);
 		}
 		liberarTabla(dumpTabla);
@@ -45,7 +45,7 @@ void compactar(Sdirectorio* nuevo){
 while(1){
 	sleep(nuevo->time_compact/1000);
 	int borrar;
-	sem_getvalue(nuevo->borrarTabla,&borrar);
+	sem_getvalue(&nuevo->borrarTabla,&borrar);
 	if(borrar!=0){
 		pthread_exit(NULL);
 	}
@@ -57,7 +57,7 @@ while(1){
 		pthread_exit(NULL);
 	}
 	free(path);
-	sem_wait(nuevo->semaforoContarTMP);
+	sem_wait(&nuevo->semaforoContarTMP);
 	int cantTemp=contarArchivos(nuevo->nombre,1);
 	//Cambiar nombre de tmp a tmpc
 /*	if(cantTemp==0){
@@ -66,7 +66,7 @@ while(1){
 	int contador=0;
 	// SEMAFORO WAIT PEDIDO RENOMBRAR
 	nuevo->pedido_extension=1;
-	sem_wait(nuevo->semaforoTMP);
+	sem_wait(&nuevo->semaforoTMP);
 	while(cantTemp>contador){
 		char *arch=nivelParticion(nuevo->nombre,contador,1);
 		//semaforos
@@ -76,9 +76,9 @@ while(1){
 		free(arch);
 		contador++;
 	}
-	sem_post(nuevo->semaforoContarTMP);
+	sem_post(&nuevo->semaforoContarTMP);
 	//SIGNAL WAIT PEDIDO RENOMBRAR
-	sem_post(nuevo->semaforoTMP);
+	sem_post(&nuevo->semaforoTMP);
 	nuevo->pedido_extension=-1;
 	//sacar la metadata
 	metaTabla *metadata=leerMetadataTabla(nuevo->nombre);
@@ -114,7 +114,7 @@ while(1){
 	//escribir
 	//WAIT MUTEX DE BINARIOS DE LA TABLA
 	nuevo->pedido_extension=0;
-	sem_wait(nuevo->semaforoBIN);
+	sem_wait(&nuevo->semaforoBIN);
 	while(contador<metadata->partitions){
 		t_list *particion=filtrarPorParticion(depurado,contador,metadata->partitions);
 		char *archP=nivelParticion(nuevo->nombre,contador,0);
@@ -133,12 +133,12 @@ while(1){
 		contador++;
 	}
 	//SIGNAL MUTEX BINARIOS DE LA TABLA
-	sem_post(nuevo->semaforoBIN);
+	sem_post(&nuevo->semaforoBIN);
 	//liberar TMPC
 	contador=0;
 	nuevo->pedido_extension=2;
 	//WAIT MUTEX TMPC DE LA TABLA
-	sem_wait(nuevo->semaforoTMPC);
+	sem_wait(&nuevo->semaforoTMPC);
 	while(cantTemp>contador){
 		char *arch=nivelParticion(nuevo->nombre,contador,2);
 		liberarParticion(arch);
@@ -146,7 +146,7 @@ while(1){
 		contador++;
 	}
 	//SIGNAL MUTEX TMPC DE LA TABLA
-	sem_post(nuevo->semaforoTMPC);
+	sem_post(&nuevo->semaforoTMPC);
 	nuevo->pedido_extension=-1;
 	list_destroy(depurado);
 	borrarMetadataTabla(metadata);
@@ -167,37 +167,37 @@ void liberarDirectorioP(){
 }
 
 void semaforosTabla(Sdirectorio *nuevo){
-	nuevo->semaforoBIN=malloc(sizeof(sem_t));
-	sem_init(nuevo->semaforoBIN,0,1);
-	nuevo->semaforoContarTMP=malloc(sizeof(sem_t));
-	sem_init(nuevo->semaforoContarTMP,0,1);
-	nuevo->semaforoTMP=malloc(sizeof(sem_t));
-	sem_init(nuevo->semaforoTMP,0,1);
-	nuevo->semaforoTMPC=malloc(sizeof(sem_t));
-	sem_init(nuevo->semaforoTMPC,0,1);
-	nuevo->borrarTabla=malloc(sizeof(sem_t));
-	sem_init(nuevo->borrarTabla,0,1);
-	nuevo->semaforoMeta=malloc(sizeof(sem_t));
-	sem_init(nuevo->semaforoMeta,0,1);
+	sem_init(&nuevo->semaforoBIN,0,1);
+	sem_init(&nuevo->semaforoContarTMP,0,1);
+	sem_init(&nuevo->semaforoTMP,0,1);
+	sem_init(&nuevo->semaforoTMPC,0,1);
+	sem_init(&nuevo->borrarTabla,0,1);
+	sem_init(&nuevo->semaforoMeta,0,1);
 	nuevo->pedido_extension=-1;
 }
 void liberarSemaforosTabla(Sdirectorio *nuevo){
-	sem_destroy(nuevo->semaforoBIN);
-	sem_destroy(nuevo->semaforoContarTMP);
-	sem_destroy(nuevo->semaforoTMP);
-	sem_destroy(nuevo->semaforoTMPC);
-	sem_destroy(nuevo->borrarTabla);
-	sem_destroy(nuevo->semaforoMeta);
-	free(nuevo->semaforoBIN);
-	free(nuevo->semaforoContarTMP);
-	free(nuevo->semaforoTMP);
-	free(nuevo->semaforoTMPC);
-	free(nuevo->borrarTabla);
-	free(nuevo->semaforoMeta);
+	sem_destroy(&nuevo->semaforoBIN);
+	sem_destroy(&nuevo->semaforoContarTMP);
+	sem_destroy(&nuevo->semaforoTMP);
+	sem_destroy(&nuevo->semaforoTMPC);
+	sem_destroy(&nuevo->borrarTabla);
+	sem_destroy(&nuevo->semaforoMeta);
 }
 Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
+	int contador=0;
+	while(contador<list_size(directorioP)){
+		Sdirectorio *es=list_get(directorioP,contador);
+		if(string_equals_ignore_case(es->nombre,tabla)){
+			return es;
+		}
+		contador++;
+		es=NULL;
+	}
+	return NULL;
+}
+/*Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
 	bool tabla_directorio(Sdirectorio *es){
 		return es->nombre == tabla;
 	}
 	return list_find(directorioP,(void *)tabla_directorio);
-}
+}*/

@@ -20,8 +20,7 @@ int main(void) {
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
 	alarm(configLissandra->tiempoDump/1000);
-	alarm(100);
-    signal(SIGALRM, funcionSenial);
+	signal(SIGALRM, funcionSenial);
 
 	/****************CONEXIONES******************/
 /*
@@ -93,6 +92,7 @@ void theStart(){
 	levantarDirectorio();				//Crea el directorio ya teniendo el archivo config listo
 	memtable= list_create();												//Inicia la memtable global
 	directorioP=list_create();
+	tablaArchGlobal=list_create();
 	inicializarSemGlob();
 }
 

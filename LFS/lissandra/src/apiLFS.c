@@ -239,11 +239,11 @@ int drop(char* nameTable){
 	char *path;
 	if(folderExist(pathFolder)==0){
 		Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(nameTable);
-		sem_wait(tabDirectorio->borrarTabla);
+		sem_wait(&tabDirectorio->borrarTabla);
 		//eliminar archivos binarios con sus respectivos bloques
 		int cantBins=contarArchivos(nameTable, 0);
 		int i=0;
-		sem_wait(tabDirectorio->semaforoBIN);
+		sem_wait(&tabDirectorio->semaforoBIN);
 		while(i<cantBins){
 			path=nivelParticion(nameTable,i, 0);
 			liberarParticion(path);
@@ -253,7 +253,7 @@ int drop(char* nameTable){
 		//eliminar archivos temporales con sus respectivos bloques
 		int cantDumps=contarArchivos(nameTable, 1);
 		i=0;
-		sem_wait(tabDirectorio->semaforoTMP);
+		sem_wait(&tabDirectorio->semaforoTMP);
 		while(i<cantDumps){
 			path=nivelParticion(nameTable,i, 1);
 			liberarParticion(path);
@@ -263,7 +263,7 @@ int drop(char* nameTable){
 		//eliminar archivos tempC con sus respectivos bloques
 		int cantTmpc=contarArchivos(nameTable, 2);
 		i=0;
-		sem_wait(tabDirectorio->semaforoTMPC);
+		sem_wait(&tabDirectorio->semaforoTMPC);
 		while(i<cantTmpc){
 			path=nivelParticion(nameTable,i, 2);
 			liberarParticion(path);
@@ -272,7 +272,7 @@ int drop(char* nameTable){
 		}
 		 //eliminar archivo metadata
 		path=nivelUnaTabla(nameTable,1);
-		sem_wait(tabDirectorio->semaforoMeta);
+		sem_wait(&tabDirectorio->semaforoMeta);
 		eliminarArchivo(path);
 		free(path);
 		//sacar la tabla del directorio
