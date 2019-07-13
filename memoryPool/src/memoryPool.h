@@ -80,7 +80,7 @@ typedef struct {
 char* mSelect(char* nombreTabla,u_int16_t key);
 int mInsert(char* nombreTabla,u_int16_t key,char* valor);
 int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
-void mDescribe(char* nombreTabla);
+char* mDescribe(char* nombreTabla);
 int mDrop(char* nombreTabla);
 void mJournal();
 void mGossip();
@@ -120,7 +120,8 @@ char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* va
 char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion);
 char* selectLissandra(char* nombreTabla,u_int16_t key); //Devuelve el value
 int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value);
-int createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
+int createLissandra(char* nombreTabla,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
+char* describeLissandra(char* nombreTabla);
 int dropLissandra(char* nombreTabla);
 u_int16_t handshakeConLissandra(u_int16_t socket, char* ip, u_int16_t puerto);
 int crearConexionLFS();

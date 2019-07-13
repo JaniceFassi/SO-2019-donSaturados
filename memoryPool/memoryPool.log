@@ -106,3 +106,10 @@
 [INFO] 20:40:28:778 memoryPool/(24088:24172): Bytes recibidos: 1
 [INFO] 20:40:28:778 memoryPool/(24088:24172): Operacion 0
 [INFO] 20:40:28:778 memoryPool/(24088:24172): Se seleccionÃ³ el valor CIRUJANO
+[INFO] 15:22:25:831 memoryPool/(6237:6237): Se inicializo la memoria con tamanio 2048
+[INFO] 15:22:26:155 memoryPool/(6237:6237): Tamanio mÃ¡ximo recibido de FS: 30
+[INFO] 15:23:04:787 memoryPool/(6237:6242): Se creo el segmento T
+[INFO] 15:23:04:803 memoryPool/(6237:6242): se creo una conexiÃ³n con lfs
+[INFO] 15:23:09:988 memoryPool/(6237:6242): Se agrego una pÃ¡gina al segmento T
+[INFO] 15:23:09:989 memoryPool/(6237:6242): Se agrego el dato ‰Â‹Eô‰‹Eô‹ al marco 0
+[INFO] 15:23:09:989 memoryPool/(6237:6242): Se seleccionÃ³ el valor ‰Â‹Eô‰‹Eô‹

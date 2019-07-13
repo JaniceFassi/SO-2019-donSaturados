@@ -22,6 +22,7 @@ void* recibirOperacion(void * arg){
 
 	int operacion = atoi(buffer);
 	char** desempaquetado;
+	char* paquete;
 
 	if(operacion !=5 && operacion !=6){
 		char* tamanioPaq = malloc(sizeof(char)*4);
@@ -30,13 +31,17 @@ void* recibirOperacion(void * arg){
 		int tamanio = atoi(tamanioPaq);
 
 		printf("tamanio paquete en nro %d \n", tamanio);
+		if(tamanio!=0){
+			paquete = malloc(tamanio + sizeof(char));
+			recvData(cli, paquete, tamanio);
+			printf("Paquete %s \n", paquete);
 
-		char* paquete = malloc(tamanio + sizeof(char));
-		recvData(cli, paquete, tamanio);
-		printf("Paquete %s \n", paquete);
+			desempaquetado = string_n_split(paquete, 5, ";");
 
-
-		desempaquetado = string_n_split(paquete, 5, ";");
+		}
+		else{
+			desempaquetado[0]=NULL;
+		}
 
 	}
 
@@ -57,13 +62,17 @@ void* recibirOperacion(void * arg){
 					key = atoi(desempaquetado[1]);
 					rta = mSelect(nombreTabla, key);
 					printf("rta %s\n", rta);
-					//si el select no es basura
-					char* msj = malloc(strlen(rta)+4);
-					msj = empaquetar(0, rta);
-					printf("mensaje %s \n", msj);
-					sendData(cli, msj, strlen(msj)+1);
-					//sino sólo mandar un 1
-					//sendData(cli, "1", sizeof(char));
+					if(rta!=NULL){
+						char* msj = malloc(strlen(rta)+4);
+						msj = empaquetar(0, rta);
+						printf("mensaje %s \n", msj);
+						sendData(cli, msj, strlen(msj)+1);
+					}
+
+					else{
+						sendData(cli, "1", sizeof(char));
+					}
+
 					break;
 
 				case 1: //INSERT
@@ -93,8 +102,8 @@ void* recibirOperacion(void * arg){
 
 				case 3: //DESCRIBE
 					nombreTabla = desempaquetado[0];
-					//mDescribe(nombreTabla);
-					printf("describe\n");
+					rta =mDescribe(nombreTabla);
+					sendData(cli, rta, strlen(rta)+1);
 					break;
 
 				case 4: //DROP
@@ -106,6 +115,7 @@ void* recibirOperacion(void * arg){
 
 				case 5: //JOURNAL
 					mJournal();
+					return 0;
 					break;
 
 				case 6: //GOSSIP
@@ -162,9 +172,8 @@ int main(void) {
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 
-	//mInsert("PROFESIONES", 1, "CIRUJANO");
-	//pthread_t gestorConexiones;
-	//pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
+	pthread_t gestorConexiones;
+	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
 	//pthread_t journalTemporal;
@@ -175,7 +184,7 @@ int main(void) {
 	//si el exit de consola "apaga" la memoria, pasar un parámetro que vuelva en el join
 	//hacer un if y destruir el resto de los hilos ahí, después finalizar
 
-	//pthread_join(gestorConexiones, NULL);
+	pthread_join(gestorConexiones, NULL);
 	//pthread_join(journalTemporal, NULL);
 	//pthread_join(gossipTemporal, NULL);
 	finalizar();
@@ -199,9 +208,9 @@ int main(void) {
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
-	maxValue = 20;
+	//maxValue = 20;
 	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
 	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
 
@@ -382,9 +391,9 @@ int main(void) {
 
  void* journalProgramado(void *arg){
 
- 	int retardo = config_get_int_value(configuracion,"RETARDO_JOURNAL")/1000;
+ 	int retardo = config_get_int_value(configuracion,"RETARDO_JOURNAL")*1000;
  	while(1){
- 		sleep(retardo);
+ 		usleep(retardo);
  		log_info(logger,"Se realiza un journal programado");
  		mJournal();
 
@@ -394,10 +403,10 @@ int main(void) {
  }
 
  void* gossipProgramado(void* arg){
- 	int retardo = config_get_int_value(configuracion, "RETARDO_GOSSIPING")/10000;
+ 	int retardo = config_get_int_value(configuracion, "RETARDO_GOSSIPING")*10000;
  	while(1){
  		mGossip();
- 		sleep(retardo);
+ 		usleep(retardo);
  	}
 
  	return NULL;
@@ -453,8 +462,9 @@ int main(void) {
  		if(conexionExitosa !=0){
  			perror("Error al conectarse con LFS");
  		}
+
+ 		sendData(lfsCliente, "6", sizeof(char) );
  		char* buffer = malloc(sizeof(char)*4);
- 		//aca iría el enviar codigo del handshake
  		recvData(lfsCliente, buffer, sizeof(char)*3);
  		u_int16_t maxV = atoi(buffer);
  		return maxV;
@@ -483,26 +493,29 @@ int main(void) {
  char* selectLissandra(char* nombreTabla,u_int16_t key){
 	 char* datos = formatearSelect(nombreTabla, key);
 	 char* paqueteListo = empaquetar(0, datos);
+	 char* value;
 	 u_int16_t lfsSock = crearConexionLFS();
 	 if(lfsSock == -1){
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
-	 int tamRta = offsetMarco + sizeof(char)*4;
-	 char* buffer = malloc(tamRta+1);
-	 //recibo si salió todo bien
-	 //recibo tamanio para malloquear
-	 //recibo pagina empaquetada
-	 //desempaquetar en timestamp, key, value
-	 //insertar
-	 recvData(lfsSock, buffer, tamRta);
+
+	 char* buffer = malloc(sizeof(char)+1);
+	 recvData(lfsSock, buffer, sizeof(char));
+	 if(atoi(buffer)==0){
+		 char* tam = malloc(sizeof(char)*4);
+		 recvData(lfsSock, tam, sizeof(char)*3);
+		 value = malloc(atoi(tam)+1);
+		 recvData(lfsSock, value, atoi(tam));
+
+	 }
+	 else{
+		 value = NULL;
+	 }
 
 	 close(lfsSock);
+	 return value;
 
-//Si no existe en lissandra tengo que retornar un value invalido tipo error o el char 1 para que se sepa
-	 //que responder a kernel
-	 char* valueRecibido;
-	 return valueRecibido;
  }
 
  int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value){
@@ -522,6 +535,24 @@ int main(void) {
 	 int rta = atoi(buffer);
 	 return buffer;
 
+ }
+ char* describeLissandra(char* nombreTabla){
+
+	 char* paqueteListo = empaquetar(3, nombreTabla);
+	 u_int16_t lfsSock = crearConexionLFS();
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 char* buffer = malloc(sizeof(char)*2);
+	 recvData(lfsSock, buffer, sizeof(char));
+
+	 char* tam = malloc(sizeof(char)*5);
+	 recvData(lfsSock, tam, sizeof(char)*4);
+	 int tamanio = atoi(tam);
+	 char* choclo = malloc(tamanio+1);
+	 recvData(lfsSock, choclo, tamanio);
+
+	 close(lfsSock);
+
+	 return choclo;
  }
 
  int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
@@ -933,13 +964,18 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		nuevo = crearSegmento(nombreTabla);
 		pNueva = crearPagina();
 		valorPagNueva = selectLissandra(nombreTabla,key);
-		pNueva->modificado = 0;
-		agregarPagina(nuevo,pNueva);
-		agregarDato(time(NULL),key,valorPagNueva,pNueva);
-		agregarAListaUsos(pNueva->nroMarco);
-		log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
-		return valorPagNueva;
+		if(valorPagNueva !=NULL){
+			pNueva->modificado = 0;
+			agregarPagina(nuevo,pNueva);
+			agregarDato(time(NULL),key,valorPagNueva,pNueva);
+			agregarAListaUsos(pNueva->nroMarco);
+			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
+			return valorPagNueva;
 
+		}
+		else{
+			return NULL;
+		}
 	}
 
 
@@ -954,12 +990,12 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 }
 
 
-void mDescribe(char* nombreTabla){
-	printf("Hola soy describe");
-	//mandar a lfs
-	//recibir metadata
-	//mandarle a kernel
-	//decidir el sabado cómo vamos a armar este pasamanos
+char* mDescribe(char* nombreTabla){
+
+	char* rta = describeLissandra(nombreTabla);
+	char* respuesta = string_from_format("%s%s", "0", rta);
+
+	return respuesta;
 
 }
 
