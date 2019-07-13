@@ -1,0 +1,136 @@
+
+[INFO] 16:04:47:40 memoryPool/(7706:7706): Se inicializo la memoria con tamanio 2048
+[INFO] 16:04:47:95 memoryPool/(7706:7706): Tamanio máximo recibido de FS: 30
+[INFO] 16:04:51:817 memoryPool/(7706:7716): sock: -1782775802
+[INFO] 16:04:51:827 memoryPool/(7706:7716): Bytes recibidos: 1
+[INFO] 16:04:51:827 memoryPool/(7706:7716): Operacion 2
+[INFO] 16:04:52:67 memoryPool/(7706:7716): se creo una conexión con lfs
+[INFO] 16:04:52:620 memoryPool/(7706:7716): La respuesta del create fue 0
+[INFO] 16:04:52:778 memoryPool/(7706:7720): sock: -1782775801
+[INFO] 16:04:52:786 memoryPool/(7706:7720): Bytes recibidos: 1
+[INFO] 16:04:52:786 memoryPool/(7706:7720): Operacion 3
+[INFO] 16:04:52:800 memoryPool/(7706:7720): se creo una conexión con lfs
+[INFO] 16:10:58:294 memoryPool/(7760:7760): Se inicializo la memoria con tamanio 2048
+[INFO] 16:10:59:503 memoryPool/(7760:7760): Tamanio máximo recibido de FS: 30
+[INFO] 16:11:09:225 memoryPool/(7760:7770): sock: -1782775802
+[INFO] 16:11:09:237 memoryPool/(7760:7770): Bytes recibidos: 1
+[INFO] 16:11:09:237 memoryPool/(7760:7770): Operacion 2
+[INFO] 16:11:24:197 memoryPool/(7760:7773): sock: -1782775801
+[INFO] 16:11:24:207 memoryPool/(7760:7773): Bytes recibidos: 1
+[INFO] 16:11:24:207 memoryPool/(7760:7773): Operacion 3
+[INFO] 16:15:37:126 memoryPool/(7892:7892): Se inicializo la memoria con tamanio 2048
+[INFO] 16:15:37:219 memoryPool/(7892:7892): Tamanio máximo recibido de FS: 30
+[INFO] 16:15:43:660 memoryPool/(7892:7901): sock: -1782775802
+[INFO] 16:15:43:671 memoryPool/(7892:7901): Bytes recibidos: 1
+[INFO] 16:15:43:675 memoryPool/(7892:7901): Operacion 2
+[INFO] 16:15:43:698 memoryPool/(7892:7901): se creo una conexión con lfs
+[INFO] 16:15:44:266 memoryPool/(7892:7901): La respuesta del create fue 0
+[INFO] 16:15:44:401 memoryPool/(7892:7902): sock: -1782775801
+[INFO] 16:15:44:407 memoryPool/(7892:7902): Bytes recibidos: 1
+[INFO] 16:15:44:411 memoryPool/(7892:7902): Operacion 3
+[INFO] 16:15:44:445 memoryPool/(7892:7902): se creo una conexión con lfs
+[INFO] 16:18:06:865 memoryPool/(7892:7940): sock: -1782775800
+[INFO] 16:18:06:877 memoryPool/(7892:7940): Bytes recibidos: 1
+[INFO] 16:18:06:878 memoryPool/(7892:7940): Operacion 2
+[INFO] 16:18:06:885 memoryPool/(7892:7940): error al crear una conexión con lfs
+[INFO] 16:18:32:258 memoryPool/(8106:8106): Se inicializo la memoria con tamanio 2048
+[INFO] 16:18:32:324 memoryPool/(8106:8106): Tamanio máximo recibido de FS: 30
+[INFO] 16:19:00:946 memoryPool/(8133:8133): Se inicializo la memoria con tamanio 2048
+[INFO] 16:19:32:681 memoryPool/(8165:8165): Se inicializo la memoria con tamanio 2048
+[INFO] 16:20:02:268 memoryPool/(8165:8165): Tamanio máximo recibido de FS: 30
+[INFO] 16:20:08:67 memoryPool/(8165:8178): sock: -1782775802
+[INFO] 16:20:08:79 memoryPool/(8165:8178): Bytes recibidos: 1
+[INFO] 16:20:08:80 memoryPool/(8165:8178): Operacion 2
+[INFO] 16:20:08:86 memoryPool/(8165:8178): se creo una conexión con lfs
+[INFO] 16:20:23:101 memoryPool/(8165:8181): sock: -1782775801
+[INFO] 16:20:23:113 memoryPool/(8165:8181): Bytes recibidos: 1
+[INFO] 16:20:23:114 memoryPool/(8165:8181): Operacion 3
+[INFO] 16:21:08:683 memoryPool/(8193:8193): Se inicializo la memoria con tamanio 2048
+[INFO] 16:21:22:576 memoryPool/(8193:8193): Tamanio máximo recibido de FS: 30
+[INFO] 16:21:30:808 memoryPool/(8193:8204): sock: -1782775802
+[INFO] 16:21:30:813 memoryPool/(8193:8204): Bytes recibidos: 1
+[INFO] 16:21:30:813 memoryPool/(8193:8204): Operacion 2
+[INFO] 16:21:45:863 memoryPool/(8193:8207): sock: -1782775801
+[INFO] 16:21:45:886 memoryPool/(8193:8207): Bytes recibidos: 1
+[INFO] 16:21:45:886 memoryPool/(8193:8207): Operacion 3
+[INFO] 16:22:52:472 memoryPool/(8224:8224): Se inicializo la memoria con tamanio 2048
+[INFO] 16:23:00:396 memoryPool/(8224:8224): Tamanio máximo recibido de FS: 30
+[INFO] 16:23:07:858 memoryPool/(8224:8236): sock: -1782775802
+[INFO] 16:23:07:867 memoryPool/(8224:8236): Bytes recibidos: 1
+[INFO] 16:23:07:867 memoryPool/(8224:8236): Operacion 2
+[INFO] 16:23:07:874 memoryPool/(8224:8236): se creo una conexión con lfs
+[INFO] 16:23:20:884 memoryPool/(8224:8236): La respuesta del create fue 0
+[INFO] 16:23:21:15 memoryPool/(8224:8245): sock: -1782775801
+[INFO] 16:23:21:51 memoryPool/(8224:8245): Bytes recibidos: 1
+[INFO] 16:23:21:51 memoryPool/(8224:8245): Operacion 2
+[INFO] 16:23:21:56 memoryPool/(8224:8245): se creo una conexión con lfs
+[INFO] 16:23:22:859 memoryPool/(8224:8246): sock: -1782775800
+[INFO] 16:23:22:868 memoryPool/(8224:8246): Bytes recibidos: 1
+[INFO] 16:23:22:868 memoryPool/(8224:8246): Operacion 3
+[INFO] 16:28:18:524 memoryPool/(8439:8439): Se inicializo la memoria con tamanio 2048
+[INFO] 16:28:25:861 memoryPool/(8439:8439): Tamanio máximo recibido de FS: 0
+[INFO] 16:28:41:344 memoryPool/(8459:8459): Se inicializo la memoria con tamanio 2048
+[INFO] 16:29:00:374 memoryPool/(8459:8459): Tamanio máximo recibido de FS: 30
+[INFO] 16:29:06:841 memoryPool/(8459:8473): sock: -1782775802
+[INFO] 16:29:06:845 memoryPool/(8459:8473): Bytes recibidos: 1
+[INFO] 16:29:06:846 memoryPool/(8459:8473): Operacion 2
+[INFO] 16:29:06:855 memoryPool/(8459:8473): se creo una conexión con lfs
+[INFO] 16:29:17:439 memoryPool/(8459:8473): La respuesta del create fue 0
+[INFO] 16:29:17:569 memoryPool/(8459:8477): sock: -1782775801
+[INFO] 16:29:17:577 memoryPool/(8459:8477): Bytes recibidos: 1
+[INFO] 16:29:17:577 memoryPool/(8459:8477): Operacion 2
+[INFO] 16:29:21:883 memoryPool/(8459:8478): sock: -1782775800
+[INFO] 16:29:21:895 memoryPool/(8459:8478): Bytes recibidos: 1
+[INFO] 16:29:21:898 memoryPool/(8459:8478): Operacion 3
+[INFO] 16:32:25:981 memoryPool/(8501:8501): Se inicializo la memoria con tamanio 2048
+[INFO] 16:32:47:933 memoryPool/(8501:8501): Tamanio máximo recibido de FS: 30
+[INFO] 16:33:06:884 memoryPool/(8501:8520): sock: -1782775802
+[INFO] 16:33:06:890 memoryPool/(8501:8520): Bytes recibidos: 1
+[INFO] 16:33:06:891 memoryPool/(8501:8520): Operacion 2
+[INFO] 16:33:06:897 memoryPool/(8501:8520): se creo una conexión con lfs
+[INFO] 16:33:17:544 memoryPool/(8501:8520): La respuesta del create fue 0
+[INFO] 16:33:17:710 memoryPool/(8501:8530): sock: -1782775801
+[INFO] 16:33:17:732 memoryPool/(8501:8530): Bytes recibidos: 1
+[INFO] 16:33:17:732 memoryPool/(8501:8530): Operacion 2
+[INFO] 16:35:24:948 memoryPool/(8501:8530): error al crear una conexión con lfs
+[INFO] 16:39:06:423 memoryPool/(8646:8646): Se inicializo la memoria con tamanio 2048
+[INFO] 16:39:17:564 memoryPool/(8646:8646): Tamanio máximo recibido de FS: 30
+[INFO] 16:39:42:99 memoryPool/(8646:8657): sock: -1782775802
+[INFO] 16:39:42:114 memoryPool/(8646:8657): Bytes recibidos: 1
+[INFO] 16:39:42:114 memoryPool/(8646:8657): Operacion 2
+[INFO] 16:39:42:121 memoryPool/(8646:8657): se creo una conexión con lfs
+[INFO] 16:42:20:821 memoryPool/(8676:8676): Se inicializo la memoria con tamanio 2048
+[INFO] 16:44:14:102 memoryPool/(8706:8706): Se inicializo la memoria con tamanio 2048
+[INFO] 16:44:32:357 memoryPool/(8721:8721): Se inicializo la memoria con tamanio 2048
+[INFO] 16:45:19:855 memoryPool/(8745:8745): Se inicializo la memoria con tamanio 2048
+[INFO] 16:45:53:317 memoryPool/(8758:8758): Se inicializo la memoria con tamanio 2048
+[INFO] 17:19:14:114 memoryPool/(3895:3895): Se inicializo la memoria con tamanio 2048
+[INFO] 17:19:14:528 memoryPool/(3895:3895): Tamanio máximo recibido de FS: 30
+[INFO] 17:19:50:64 memoryPool/(3895:3901): se creo una conexión con lfs
+[INFO] 17:19:50:678 memoryPool/(3895:3901): Respuesta del create 0
+[INFO] 17:19:50:679 memoryPool/(3895:3901): La respuesta del create fue 0
+[INFO] 17:19:50:680 memoryPool/(3895:3901): Se hizo CREATE de la tabla: ANIMALES.
+[INFO] 17:20:22:117 memoryPool/(3895:3901): se creo una conexión con lfs
+[INFO] 17:20:22:729 memoryPool/(3895:3901): Respuesta del describe 01021ANIMALES;SC;3;10000000
+[INFO] 17:20:23:471 memoryPool/(3895:3914): sock: -1782775802
+[INFO] 17:20:23:485 memoryPool/(3895:3914): Bytes recibidos: 1
+[INFO] 17:20:23:485 memoryPool/(3895:3914): Operacion 2
+[INFO] 17:20:23:797 memoryPool/(3895:3914): se creo una conexión con lfs
+[INFO] 17:20:24:367 memoryPool/(3895:3914): Respuesta del create 0
+[INFO] 17:20:24:368 memoryPool/(3895:3914): La respuesta del create fue 0
+[INFO] 17:20:24:592 memoryPool/(3895:3915): sock: -1782775801
+[INFO] 17:20:24:675 memoryPool/(3895:3915): Bytes recibidos: 1
+[INFO] 17:20:24:676 memoryPool/(3895:3915): Operacion 3
+[INFO] 17:20:24:790 memoryPool/(3895:3915): se creo una conexión con lfs
+[INFO] 17:20:25:392 memoryPool/(3895:3915): Respuesta del describe @
+[INFO] 17:20:43:736 memoryPool/(3895:3916): sock: -1782775800
+[INFO] 17:20:43:824 memoryPool/(3895:3916): Bytes recibidos: 1
+[INFO] 17:20:43:825 memoryPool/(3895:3916): Operacion 2
+[INFO] 17:20:43:838 memoryPool/(3895:3916): se creo una conexión con lfs
+[INFO] 17:20:44:439 memoryPool/(3895:3916): Respuesta del create 1
+[INFO] 17:20:44:441 memoryPool/(3895:3916): La respuesta del create fue 1
+[INFO] 17:20:44:658 memoryPool/(3895:3917): sock: -1782775799
+[INFO] 17:20:44:746 memoryPool/(3895:3917): Bytes recibidos: 1
+[INFO] 17:20:44:747 memoryPool/(3895:3917): Operacion 3
+[INFO] 17:20:44:757 memoryPool/(3895:3917): se creo una conexión con lfs
+[INFO] 17:20:45:577 memoryPool/(3895:3917): Respuesta del describe @

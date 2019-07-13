@@ -16,6 +16,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 
 #include<commons/log.h>
@@ -24,19 +25,27 @@
 #include<readline/readline.h>
 #include<commons/collections/node.h>
 #include<commons/collections/list.h>
-//#include <socketSaturados.h>
+#include <socketSaturados.h>
 
 
 //VARIABLES GLOBALES
+t_log *logger;
+t_config *configuracion;
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* listaDeUsos;
+t_list* tablaMemActivas;
+t_list* tablaMemActivasSecundaria; //tablas del gossiping
+char** ipSeeds;
+char** puertoSeeds; //variables del gossiping
+int idMemoria;
 void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
 int cantMarcos;
 int posicionUltimoUso; // Lo usa el LRU
-
+pthread_mutex_t lockMem = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lockTablaSeg = PTHREAD_MUTEX_INITIALIZER;
 
 //ESTRUCTURA MEMORIA
 typedef struct {
@@ -60,12 +69,19 @@ typedef struct{
 	int posicionDeUso;
 }posMarcoUsado;
 
+//GOSSIPING
+typedef struct {
+    int nroMem; //cada proceso tendra un nroMem propio. Asignado a mano y unico.
+    char* ip;
+    char* puerto;
+}infoMemActiva;
+
 //API
-void mSelect(char* nombreTabla,u_int16_t key);
-void mInsert(char* nombreTabla,u_int16_t key,char* valor);
-void mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
-void mDescribe(char* nombreTabla);
-void mDrop(char* nombreTabla);
+char* mSelect(char* nombreTabla,u_int16_t key);
+int mInsert(char* nombreTabla,u_int16_t key,char* valor);
+int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
+char* mDescribe(char* nombreTabla);
+int mDrop(char* nombreTabla);
 void mJournal();
 void mGossip();
 
@@ -75,6 +91,7 @@ void marcoDestroy(marco *unMarco);
 
 //AUXILIARES DE ARRANQUE
 void inicializar();
+void prepararGossiping();
 t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
@@ -86,6 +103,16 @@ void agregarPosMarcoUsado(posMarcoUsado* nuevo);
 pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
 
+//FUNCIONES PARA HILOS
+void* consola(void* arg);
+void* recibirOperacion(void * arg);
+void* gestionarConexiones(void *arg);
+void* journalProgramado(void* arg);
+void* gossipProgramado(void* arg);
+
+
+
+
 //AUXILIARES PARA LISSANDRA O KERNEL
 char* empaquetar(int operacion, char* paquete);
 char* formatearSelect(char* nombreTabla, u_int16_t key);
@@ -93,8 +120,11 @@ char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* va
 char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion);
 char* selectLissandra(char* nombreTabla,u_int16_t key); //Devuelve el value
 int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value);
-void createLissandra(char* nombretrable,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
-void dropLissandra(char* nombreTabla);
+int createLissandra(char* nombreTabla,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
+char* describeLissandra(char* nombreTabla);
+int dropLissandra(char* nombreTabla);
+u_int16_t handshakeConLissandra(u_int16_t socket, char* ip, u_int16_t puerto);
+int crearConexionLFS();
 
 //MANEJAR MEMORIA
 int memoriaLlena();
@@ -107,13 +137,19 @@ void segmentoDestroy(segmento* segParaDestruir);
 int LRU();
 void agregarListaUsos(int nroMarco);
 void eliminarDeListaUsos(int nroMarcoAEliminar);
+void actualizarListaDeUsos(int nroMarco);
 bool estaModificada(pagina *pag);
+int FULL();
+int todosModificados(segmento* aux);
+
+//GOSSIPING
+void agregarMemActiva(int id,char* ip,char* puerto);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
-char* conseguirValor(pagina* pNueva);
-long conseguirTimestamp(pagina *pag);
-u_int16_t conseguirKey(pagina *pag);
+void* conseguirValor(pagina* pNueva);
+void* conseguirTimestamp(pagina *pag);
+void* conseguirKey(pagina *pag);
 void mostrarMemoria();
 
 #endif /* MEMORYPOOL_H_ */
