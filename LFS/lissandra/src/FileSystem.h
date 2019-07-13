@@ -24,6 +24,7 @@
 #include <socketSaturados.h>
 #include"apiLFS.h"
 #include "TADs.h"
+#include <dirent.h>
 
 typedef struct{
 	char *nombreTabla;

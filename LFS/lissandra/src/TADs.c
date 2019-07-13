@@ -391,16 +391,29 @@ metaTabla *leerMetadataTabla(char *nombre){
 		log_info(logger,"No se pudo abrir la metadata.");
 		return NULL;
 	}
-	metaTabla *nuevo=malloc(sizeof(metaTabla));
-	nuevo->compaction_time=config_get_long_value(metaTab, "COMPACTION_TIME");
-	char *aux=config_get_string_value(metaTab, "CONSISTENCY");
-	nuevo->consistency=malloc(string_length(aux)+1);
-	strcpy(nuevo->consistency,aux);
-	nuevo->partitions= config_get_int_value(metaTab, "PARTITIONS");
-	nuevo->nombre=malloc(strlen(nombre)+1);
-	strcpy(nuevo->nombre,nombre);
+	metaTabla *nuevo=obtenerMetadataTabla(nombre, metaTab);
 	cerrarMetaTabGlobal(nombre,metaTab);
 	//config_destroy(metaTab);
+	return nuevo;
+}
+
+metaTabla *levantarMetadataTabla(char *nombre){
+	char *path=nivelUnaTabla(nombre,1);
+	t_config *arch=config_create(path);
+	metaTabla *metadata=obtenerMetadataTabla(nombre,arch);
+	return metadata;
+}
+
+metaTabla *obtenerMetadataTabla(char *nombre, t_config *arch){
+
+	metaTabla *nuevo=malloc(sizeof(metaTabla));
+	nuevo->compaction_time=config_get_long_value(arch, "COMPACTION_TIME");
+	char *aux=config_get_string_value(arch, "CONSISTENCY");
+	nuevo->consistency=malloc(string_length(aux)+1);
+	strcpy(nuevo->consistency,aux);
+	nuevo->partitions= config_get_int_value(arch, "PARTITIONS");
+	nuevo->nombre=malloc(strlen(nombre)+1);
+	strcpy(nuevo->nombre,nombre);
 	return nuevo;
 }
 
@@ -1254,6 +1267,7 @@ t_config *abrirMetaTabGlobal(char *tabla){
 	t_config *arch=NULL;
 	Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
 	int borrar;
+	if(tablaDirec!=NULL){
 	sem_getvalue(&tablaDirec->borrarTabla,&borrar);
 	if(borrar==0){
 		log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla");
@@ -1269,6 +1283,7 @@ t_config *abrirMetaTabGlobal(char *tabla){
 	char *path=nivelUnaTabla(tabla,1);
 	arch=config_create(path);
 	free(path);
+	}
 	return arch;
 }
 

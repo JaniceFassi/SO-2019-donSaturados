@@ -74,12 +74,39 @@ int crearNivelMetadata(){
 }
 
 int crearNivelTablas(){
+	struct dirent *file;
+	struct stat myStat;
 	char *path=nivelTablas();
 	if(folderExist(path)==1){
 		if(crearCarpeta(path)==1){
 			free(path);
 			return 1;
 		}
+	}else
+	{
+		char *dirTablas=nivelTablas();
+		DIR *dir=opendir(dirTablas);							//Examina si ya hay tablas en el fs, las agrega al directorio, comienza la compactacion de c/u
+		if(dir!=NULL){
+			while((file=readdir(dir))!=NULL){
+				stat(file->d_name, &myStat);
+				if ( (strcmp(file->d_name, ".")!=0) && (strcmp(file->d_name, "..")!=0) ){
+					log_info(logger,"%s es una tabla.",file->d_name);
+					metaTabla *metadata=levantarMetadataTabla(file->d_name);
+					Sdirectorio *uno=malloc(sizeof(Sdirectorio));
+					uno->nombre=malloc(strlen(file->d_name)+1);
+					uno->time_compact=metadata->compaction_time;
+					strcpy(uno->nombre,file->d_name);
+					semaforosTabla(uno);
+					//sem_wait(criticaDirectorio);
+					list_add(directorioP,uno);
+					pthread_create(&uno->hilo, NULL, &compactar,uno);
+					//sem_post(criticaDirectorio);
+					borrarMetadataTabla(metadata);
+				}
+			}
+			closedir(dir);
+		}
+		free(dirTablas);
 	}
 	free(path);
 	return 0;

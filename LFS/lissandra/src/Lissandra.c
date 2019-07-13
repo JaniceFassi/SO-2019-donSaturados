@@ -15,12 +15,12 @@ int main(void) {
 
 	theStart();
 
-    // ****************PARA USAR TIEMPO DEL DUMP*************
+    /***************PARA USAR TIEMPO DEL DUMP***************/
 
 	alarm(configLissandra->tiempoDump/1000);
 	signal(SIGALRM, funcionSenial);
 
-	/****************CONEXIONES******************/
+	/**********************CONEXIONES***********************/
 
 	u_int16_t  server;
 
@@ -35,7 +35,11 @@ int main(void) {
 
 	pthread_create(&hiloMemoria,NULL,connectMemory,&server);
 
-	/****************PARA USAR LA CONSOLA******************/
+	/************************INOTIFY************************/
+
+	pthread_create(&hiloInotify,NULL,inicializarInotify,NULL);
+
+	/***********************CONSOLA*************************/
 
 	console();
 
@@ -43,9 +47,6 @@ int main(void) {
 }
 
 void theStart(){
-
-	struct dirent *file;
-	struct stat myStat;
 	pathInicial=malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config")+1);		//Inicia variable global de path inicial (ruta conocida del config)
 	strcpy(pathInicial,"/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
 	raizDirectorio=malloc(strlen("/home/utnso")+1);
@@ -57,33 +58,10 @@ void theStart(){
 	}else{
 		crearConfig();										//EN CASO DE QUE NO NOS DEN EL CONFIG. DEBERIA SEGUIR ESTANDO ESTO??
 	}
-	levantarDirectorio();									//Crea todos los niveles del directorio ya teniendo el archivo config listo
 	tablaArchGlobal=list_create();
-	directorioP=list_create();
-	char *dirTablas=nivelTablas();
-	DIR *dir=opendir(dirTablas);							//Examina si ya hay tablas en el fs, las agrega al directorio, comienza la compactacion de c/u
-	if(dir!=NULL){
-		while((file=readdir(dir))!=NULL){
-			stat(file->d_name, &myStat);
-			if ( (strcmp(file->d_name, ".")!=0) && (strcmp(file->d_name, "..")!=0) ){
-				log_info(logger,"%s es una tabla.",file->d_name);
-				metaTabla *metadata=leerMetadataTabla(file->d_name);
-				Sdirectorio *uno=malloc(sizeof(Sdirectorio));
-				uno->nombre=malloc(strlen(file->d_name)+1);
-				uno->time_compact=metadata->compaction_time;
-				strcpy(uno->nombre,file->d_name);
-				semaforosTabla(uno);
-				//sem_wait(criticaDirectorio);
-				list_add(directorioP,uno);
-				pthread_create(&uno->hilo, NULL, &compactar,uno);
-				//sem_post(criticaDirectorio);
-				borrarMetadataTabla(metadata);
-			}
-		}
-		closedir(dir);
-	}
-	free(dirTablas);
 	inicializarSemGlob();
+	directorioP=list_create();
+	levantarDirectorio();									//Crea todos los niveles del directorio ya teniendo el archivo config listo
 }
 
 t_log* init_logger() {
@@ -160,20 +138,20 @@ void *inicializarInotify(){
 	}
 
 	int offset = 0;
+	//estructurarConfig();										//VA EN ALGUN LADO, TMB HAY QUE SINCRONIZAR
 
-	while (offset < length) {
+	/*while (offset < length) {
 		struct inotify_event *event = (struct inotify_event *) &buffer[offset];
-		if (event->len) {
+	if (event->len) {
 			if (event->mask & IN_MODIFY) {
-				if (event->mask & IN_ISDIR) {
-					printf("The directory %s was modified.\n", event->name);
-				} else {
 					printf("The file %s was modified.\n", event->name);
-				}
 			}
 		offset += sizeof (struct inotify_event) + event->len;
 		}
+
 	}
+*/
+
 	return NULL;
 }
 
@@ -477,7 +455,7 @@ void *console(){
 			free(subStrings);
 		}
 
-		if(!strncmp(linea,"exit",5)){
+		if(!strncmp(linea,"EXIT",5)){
 			free(linea);
 			theEnd();
 			break;
@@ -494,6 +472,7 @@ void theEnd(){
 		list_destroy(memtable);
 	}
 	pthread_kill(hiloMemoria,0);
+	pthread_kill(hiloInotify,0);
 	liberarDirectorioP();
 	borrarDatosConfig();
 	borrarMetaLFS();

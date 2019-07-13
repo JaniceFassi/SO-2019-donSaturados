@@ -7,6 +7,7 @@
 
 #include "Compactor.h"
 int dump(){
+	log_info(logger,"dump");
 	//ACA IRIA EL WAIT MUTEX DE LA MEMTABLE
 	sem_wait(criticaMemtable);
 	t_list *dump=list_duplicate(memtable);

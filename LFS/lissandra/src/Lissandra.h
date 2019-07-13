@@ -11,7 +11,6 @@
 #include "Compactor.h"
 #include "FileSystem.h"
 #include"apiLFS.h"
-#include <dirent.h>
 #include <sys/inotify.h>
 
 typedef enum{
@@ -27,6 +26,7 @@ typedef enum{
 }op_code;
 
 pthread_t hiloMemoria;
+pthread_t hiloInotify;
 t_log* init_logger(void);
 t_config* init_config(void);
 void theStart();

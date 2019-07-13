@@ -138,6 +138,8 @@ int borrarCarpeta(char *path);
 int crearParticiones(metaTabla *tabla);
 metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction);
 metaTabla *leerMetadataTabla(char *nombre);
+metaTabla *levantarMetadataTabla(char *nombre);
+metaTabla *obtenerMetadataTabla(char *nombre, t_config *arch);
 int archivoValido(char *path);
 void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos);
 int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
