@@ -15,15 +15,15 @@ int main(void) {
 
 	theStart();
 
-	//u_int16_t  server;
-
     // ****************PARA USAR TIEMPO DEL DUMP*************
 
 	alarm(configLissandra->tiempoDump/1000);
 	signal(SIGALRM, funcionSenial);
 
 	/****************CONEXIONES******************/
-/*
+
+	u_int16_t  server;
+
 	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
 			log_error(logger, "Error al levantar el servidor.");
 			return 1;
@@ -33,19 +33,72 @@ int main(void) {
 
 	listenForClients(server,100);
 
-	pthread_t hiloMemoria;
 	pthread_create(&hiloMemoria,NULL,connectMemory,&server);
-*/
+
 	/****************PARA USAR LA CONSOLA******************/
-	//pthread_t hiloConsola;
-	//pthread_create(&hiloConsola,NULL,console,NULL);
+
 	console();
 
-	//pthread_join(hiloMemoria,NULL);
-	//pthread_join(hiloConsola,NULL);
-
-	theEnd();
 	return EXIT_SUCCESS;
+}
+
+void theStart(){
+
+	struct dirent *file;
+	struct stat myStat;
+	pathInicial=malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config")+1);		//Inicia variable global de path inicial (ruta conocida del config)
+	strcpy(pathInicial,"/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
+	raizDirectorio=malloc(strlen("/home/utnso")+1);
+	strcpy(raizDirectorio,"/home/utnso");
+	logger = init_logger();									//Inicia el logger global
+	memtable= list_create();								//Inicia la memtable global
+	if(archivoValido(pathInicial)!=0){
+		estructurarConfig();								//Si existe el config en el path inicial crea la estructura, si no lo crea
+	}else{
+		crearConfig();										//EN CASO DE QUE NO NOS DEN EL CONFIG. DEBERIA SEGUIR ESTANDO ESTO??
+	}
+	levantarDirectorio();									//Crea todos los niveles del directorio ya teniendo el archivo config listo
+	tablaArchGlobal=list_create();
+	directorioP=list_create();
+	char *dirTablas=nivelTablas();
+	DIR *dir=opendir(dirTablas);							//Examina si ya hay tablas en el fs, las agrega al directorio, comienza la compactacion de c/u
+	if(dir!=NULL){
+		while((file=readdir(dir))!=NULL){
+			stat(file->d_name, &myStat);
+			if ( (strcmp(file->d_name, ".")!=0) && (strcmp(file->d_name, "..")!=0) ){
+				log_info(logger,"%s es una tabla.",file->d_name);
+				metaTabla *metadata=leerMetadataTabla(file->d_name);
+				Sdirectorio *uno=malloc(sizeof(Sdirectorio));
+				uno->nombre=malloc(strlen(file->d_name)+1);
+				uno->time_compact=metadata->compaction_time;
+				strcpy(uno->nombre,file->d_name);
+				semaforosTabla(uno);
+				//sem_wait(criticaDirectorio);
+				list_add(directorioP,uno);
+				pthread_create(&uno->hilo, NULL, &compactar,uno);
+				//sem_post(criticaDirectorio);
+				borrarMetadataTabla(metadata);
+			}
+		}
+		closedir(dir);
+	}
+	free(dirTablas);
+	inicializarSemGlob();
+}
+
+t_log* init_logger() {
+	return log_create("lissandra.log", "Lissandra", 1, LOG_LEVEL_INFO);
+}
+
+t_config* init_config() {
+	return config_create(pathInicial);
+}
+
+void funcionSenial(int sig){
+	dump();
+	alarm(configLissandra->tiempoDump/1000);
+    signal(SIGALRM, funcionSenial);
+	return;
 }
 
 void *connectMemory(u_int16_t *server){
@@ -77,23 +130,21 @@ void *interactuarConMemoria(u_int16_t *socket_cliente){
 	return NULL;
 }
 
-void theStart(){
+char* recibirDeMemoria(u_int16_t sock){
+	char *tam=malloc(4);
+	char * buffer;
+	recvData(sock,tam,3);
+	int tamanio=atoi(tam);
 
-	pathInicial=malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config")+1);		//Inicia variable global de path inicial
-	strcpy(pathInicial,"/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
-	raizDirectorio=malloc(strlen("/home/utnso")+1);
-	strcpy(raizDirectorio,"/home/utnso");
-	logger = init_logger();													//Inicia el logger global
-	if(archivoValido(pathInicial)!=0){
-		estructurarConfig();						//Si existe el config en el path inicial crea la estructura, si no crea el config
-	}else{
-		crearConfig();
+	if(tamanio==0){
+		free(tam);
+		return NULL;
 	}
-	levantarDirectorio();				//Crea el directorio ya teniendo el archivo config listo
-	memtable= list_create();												//Inicia la memtable global
-	directorioP=list_create();
-	tablaArchGlobal=list_create();
-	inicializarSemGlob();
+	buffer=malloc(tamanio);
+	recvData(sock,buffer,((atoi(tam))));
+
+	free(tam);
+	return buffer;
 }
 
 void *inicializarInotify(){
@@ -126,29 +177,22 @@ void *inicializarInotify(){
 	return NULL;
 }
 
-t_log* init_logger() {
-	return log_create("lissandra.log", "Lissandra", 1, LOG_LEVEL_INFO);
-}
-
-t_config* init_config() {
-	return config_create(pathInicial);
-}
-
-char* recibirDeMemoria(u_int16_t sock){
-	char *tam=malloc(4);
-	char * buffer;
-	recvData(sock,tam,3);
-	int tamanio=atoi(tam);
-
-	if(tamanio==0){
-		free(tam);
-		return NULL;
+void mostrarDescribe(t_list *lista){
+	void mostrarD(metaTabla *describe){
+		char *nombre=string_from_format("**Nombre de la TABLA: %s",describe->nombre);
+		printf("%s \n",nombre);
+		char *consistencia=string_from_format("CONSISTENCY= %s",describe->consistency);
+		printf("%s \n",consistencia);
+		char *particiones=string_from_format("PARTITIONS= %i",describe->partitions);
+		printf("%s \n",particiones);
+		char *compactacionT=string_from_format("TIME_COMPACTION= %ld",describe->compaction_time);
+		printf("%s \n",compactacionT);
+		free(nombre);
+		free(consistencia);
+		free(particiones);
+		free(compactacionT);
 	}
-	buffer=malloc(tamanio);
-	recvData(sock,buffer,((atoi(tam))));
-
-	free(tam);
-	return buffer;
+	list_iterate(lista,(void *)mostrarD);
 }
 
 char *empaquetarDescribe(t_list *lista){
@@ -311,6 +355,7 @@ void exec_api(op_code mode,u_int16_t sock){
 	case 5:
 		log_info(logger,"\nEXIT");
 		close(sock);
+		theEnd();
 		break;
 
 	case 8:
@@ -339,24 +384,6 @@ void exec_api(op_code mode,u_int16_t sock){
 	}
 	//free(buffer);							//SE LO SAQUE MOMENTANEAMENTE PARA PROBAR EL EXIT
 	//liberarSubstrings(subCadena);			//NO SIEMPRE HAY QUE LIBERAR SUBSTRINGS
-}
-
-void mostrarDescribe(t_list *lista){
-	void mostrarD(metaTabla *describe){
-		char *nombre=string_from_format("**Nombre de la TABLA: %s",describe->nombre);
-		printf("%s \n",nombre);
-		char *consistencia=string_from_format("CONSISTENCY= %s",describe->consistency);
-		printf("%s \n",consistencia);
-		char *particiones=string_from_format("PARTITIONS= %i",describe->partitions);
-		printf("%s \n",particiones);
-		char *compactacionT=string_from_format("TIME_COMPACTION= %ld",describe->compaction_time);
-		printf("%s \n",compactacionT);
-		free(nombre);
-		free(consistencia);
-		free(particiones);
-		free(compactacionT);
-	}
-	list_iterate(lista,(void *)mostrarD);
 }
 
 void *console(){
@@ -460,25 +487,18 @@ void *console(){
 	return NULL;
 }
 
-void funcionSenial(int sig){
-	dump();
-	alarm(configLissandra->tiempoDump/1000);
-    signal(SIGALRM, funcionSenial);
-	return;
-}
-
 void theEnd(){
 	if(!list_is_empty(memtable)){
 		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
 	}else{
 		list_destroy(memtable);
 	}
+	pthread_kill(hiloMemoria,0);
 	liberarDirectorioP();
 	borrarDatosConfig();
 	borrarMetaLFS();
 	free(pathInicial);
 	free(raizDirectorio);
-	bitarray_destroy(bitmap);
 	close(archivoBitmap);
 	liberarSemaforos();
 	log_destroy(logger);

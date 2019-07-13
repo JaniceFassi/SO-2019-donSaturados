@@ -8,17 +8,17 @@
 #include "FileSystem.h"
 
 void levantarDirectorio(){
-	if(crearMontaje()==0){
+	if(crearMontaje()==0){									//CREA LAS CARPETAS DEL MONTAJE SI NO EXISTEN
 		log_info(logger,"Se levanto el montaje.");
 	}
 
-	if(crearNivelMetadata()==0){
+	if(crearNivelMetadata()==0){							//CREA LA CARPETA METADATA CON EL METADATA.BIN y el BITMAP.BIN SI NO EXISTE
 		log_info(logger,"Se levanto el nivel Metadata.");
 	}
-	if(crearNivelTablas()==0){
+	if(crearNivelTablas()==0){								//CREA LA CARPETA TABLAS SI NO EXISTE
 		log_info(logger,"Se levanto el nivel Tablas.");
 	}
-	if(crearNivelBloques()==0){
+	if(crearNivelBloques()==0){								//CREA LA CARPETA BLOQUES CON LA CANTIDAD DE BLOQUES NECESARIOS SI NO EXISTE
 		log_info(logger,"Se levanto el nivel Bloques.");
 	}
 }
@@ -53,20 +53,23 @@ int crearMontaje(){
 
 int crearNivelMetadata(){
 	char *path=nivelMetadata(0);
+	int crear=0;
 	if(folderExist(path)==1){
 		crearCarpeta(path);
+		crear=1;
 	}
 	free(path);
 	path=nivelMetadata(1);
-	if(archivoValido(path)==0){
-		//crearMetaLFS();
+	if(archivoValido(path)==0){						//SI NO EXISTE EL METADATA.BIN CREA TODO
+		//crearMetaLFS();							//PIDE LOS VALORES POR CONSOLA. SE PUEDE SACAR?
 		oldCrearMetaLFS(64,4096,"Lissandra");
 	}else{
 		leerMetaLFS();
 	}
 	free(path);
-	cargarBitmap();
-
+	if(crear){
+		cargarBitmap();
+	}
 	return 0;
 }
 
@@ -89,21 +92,23 @@ int crearNivelBloques(){
 			free(path);
 			return 1;
 		}
-	}
-	//crear todos los bloques .bin
-	int i=0;
-	while(i<metaLFS->cantBloques){
-		char *pathBloque=rutaBloqueNro(i);
-		FILE *bloque=fopen(pathBloque,"wb");
-		if(bloque!=NULL){
-			fclose(bloque);
+		//crear todos los bloques .bin
+		int i=0;
+		while(i<metaLFS->cantBloques){
+			char *pathBloque=rutaBloqueNro(i);
+			FILE *bloque=fopen(pathBloque,"wb");
+			if(bloque!=NULL){
+				fclose(bloque);
+			}
+			i++;
+			free(pathBloque);
 		}
-		i++;
-		free(pathBloque);
 	}
 	free(path);
 	return 0;
-}/*
+}
+
+/*
 bool archivoYaAbierto(char *tabla,int extension){
 	int contador=0;
 	while(contador<list_size(tablaArchGlobal)){

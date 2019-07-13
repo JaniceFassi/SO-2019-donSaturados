@@ -46,7 +46,7 @@ while(1){
 	sleep(nuevo->time_compact/1000);
 	int borrar;
 	sem_getvalue(&nuevo->borrarTabla,&borrar);
-	if(borrar!=0){
+	if(borrar==0){
 		pthread_exit(NULL);
 	}
 	log_info(logger,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
