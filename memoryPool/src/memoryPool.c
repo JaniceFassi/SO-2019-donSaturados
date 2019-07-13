@@ -143,12 +143,14 @@ void* gestionarConexiones (void* arg){
 	while(1){
 
 		u_int16_t cliente;
-		acceptConexion(server, &cliente, 0);
+		int salioBien = acceptConexion(server, &cliente, 0);
+		if(salioBien == 0){
+			printf("Se conecto un cliente\n");
+			pthread_t atiendeCliente;
+			pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
+			//pthread_join(atiendeCliente, NULL);
 
-		printf("Se conecto un cliente\n");
-		pthread_t atiendeCliente;
-		pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
-		//pthread_join(atiendeCliente, NULL);
+		}
 
 
 	}
@@ -538,12 +540,22 @@ int main(void) {
  }
  char* describeLissandra(char* nombreTabla){
 
-	 char* paqueteListo = empaquetar(3, nombreTabla);
 	 u_int16_t lfsSock = crearConexionLFS();
-	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+
+	 if(nombreTabla!= NULL){
+		 char* paqueteListo = empaquetar(3, nombreTabla);
+		 printf("Paquete describe %s \n", paqueteListo);
+		 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 }
+	 else{
+
+		 sendData(lfsSock,"3000", strlen("3000"));
+	 }
+
+
+	 //recibir
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
-
 	 char* tam = malloc(sizeof(char)*5);
 	 recvData(lfsSock, tam, sizeof(char)*4);
 	 int tamanio = atoi(tam);
@@ -551,6 +563,7 @@ int main(void) {
 	 recvData(lfsSock, choclo, tamanio);
 
 	 close(lfsSock);
+	 log_info(logger, "Respuesta del describe %s", choclo);
 
 	 return choclo;
  }
@@ -568,6 +581,7 @@ int main(void) {
 
 	 close(lfsSock);
 	 int rta = atoi(buffer);
+	 log_info(logger, "Respuesta del create %d", rta);
 	 return rta;
  }
 
