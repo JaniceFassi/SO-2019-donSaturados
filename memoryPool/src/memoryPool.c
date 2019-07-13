@@ -210,9 +210,9 @@ int main(void) {
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
-	//maxValue = 20;
+	maxValue = 20;
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
 	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
 
@@ -422,7 +422,7 @@ int main(void) {
  char* empaquetar(int operacion, char* paquete){
 
 	 char* msj;
-	 int tamanioPaquete = strlen(paquete);
+	 int tamanioPaquete = strlen(paquete)+1;
 	 char* tamanioFormateado;
 	 if(tamanioPaquete<10){
 		 	tamanioFormateado = string_from_format("%i00%i", operacion, tamanioPaquete);
@@ -502,17 +502,21 @@ int main(void) {
 	 }
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
 
-	 char* buffer = malloc(sizeof(char)+1);
+	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 	 if(atoi(buffer)==0){
 		 char* tam = malloc(sizeof(char)*4);
 		 recvData(lfsSock, tam, sizeof(char)*3);
-		 value = malloc(atoi(tam)+1);
-		 recvData(lfsSock, value, atoi(tam));
+		 int t = atoi(tam);
+		 printf("Tamaño value %d\n", t);
+		 value = malloc(t+sizeof(char));
+		 recvData(lfsSock, value, t);
+		 log_info(logger, "Se recibio el valor %c", value);
 
 	 }
 	 else{
 		 value = NULL;
+		 log_info(logger, "No existe un valor con esa key en LFS");
 	 }
 
 	 close(lfsSock);
@@ -522,22 +526,23 @@ int main(void) {
 
  int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value){
 
-	 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
-	 char* paqueteListo = empaquetar(1, datos);
-	 //BORRAR PRINTF
-	 printf("EL PAQUETE ES: %s\n", paqueteListo);
-	 u_int16_t lfsSock = crearConexionLFS();
-	 if(lfsSock == -1){
-		 log_error(logger, "No se pudo conectar con LFS");
-	 }
-	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
-	 char *buffer = malloc(sizeof(char)*2);
-	 recvData(lfsSock, buffer, sizeof(char));
-	 close(lfsSock);
-	 int rta = atoi(buffer);
-	 return buffer;
+		 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
+		 char* paqueteListo = empaquetar(1, datos);
+		 //BORRAR PRINTF
+		 printf("EL PAQUETE ES: %s\n", paqueteListo);
+		 u_int16_t lfsSock = crearConexionLFS();
+		 if(lfsSock == -1){
+			 log_error(logger, "No se pudo conectar con LFS");
+		 }
+		 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+		 char *buffer = malloc(sizeof(char)*2);
+		 recvData(lfsSock, buffer, sizeof(char));
+		 close(lfsSock);
+		 int rta = atoi(buffer);
+		 return buffer;
 
  }
+
  char* describeLissandra(char* nombreTabla){
 
 	 u_int16_t lfsSock = crearConexionLFS();
@@ -902,7 +907,7 @@ void finalizar(){
 
 
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
-
+	if(strlen(valor)+1 <=maxValue){
 	if(!FULL()){
 	segmento *seg = buscarSegmento(nombreTabla);
 	pagina *pag;
@@ -940,6 +945,12 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		log_info(logger,"La memoria esta FULL, no se puede hacer el INSERT");
 		return 1;
 	}
+	}
+	else{
+		log_info(logger, "Se intentó insertar un value mayor al tamaño permitido");
+		return 1;
+	}
+
 }
 
 
@@ -964,7 +975,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		}
 		else{
 			pNueva = crearPagina();
-			valorPagNueva = selectLissandra(nombreTabla,key); //Algun dia la haremos y sera hermosa
+			valorPagNueva = selectLissandra(nombreTabla,key);
 			pNueva->modificado = 0;
 			agregarPagina(nuevo,pNueva);
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
