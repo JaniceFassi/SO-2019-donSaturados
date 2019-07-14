@@ -45,7 +45,7 @@ int crearMontaje(){
 		free(subCadena[i]);
 		i++;
 	}
-	//free(montaje);
+	free(montaje);
 	free(subCadena);
 	free(path);
 	return 0;
@@ -67,9 +67,7 @@ int crearNivelMetadata(){
 		leerMetaLFS();
 	}
 	free(path);
-	if(crear){
-		cargarBitmap();
-	}
+		cargarBitmap(crear);
 	return 0;
 }
 
@@ -135,22 +133,6 @@ int crearNivelBloques(){
 	return 0;
 }
 
-/*
-bool archivoYaAbierto(char *tabla,int extension){
-	int contador=0;
-	while(contador<list_size(tablaArchGlobal)){
-		archAbierto *es=list_get(tablaArchGlobal,contador);
-		if(string_equals_ignore_case(es->nombreTabla,tabla)){
-			if(extension==es->extension){
-				return true;
-			}
-		}
-		contador++;
-	}
-	return false;
-}
-
-*/
 bool archivoYaAbierto(char *tabla,int extension){
 	bool abierto(archAbierto *es){
 			if(string_equals_ignore_case(es->nombreTabla,tabla)){
@@ -162,6 +144,7 @@ bool archivoYaAbierto(char *tabla,int extension){
 		}
 	return list_any_satisfy(tablaArchGlobal,(void *)abierto);
 }
+
 /*
 archAbierto *obtenerArch(char *tabla, int extension){
 	bool abierto(archAbierto *es){
@@ -172,6 +155,7 @@ archAbierto *obtenerArch(char *tabla, int extension){
 		}
 	return list_find(tablaArchGlobal,(void *)abierto);
 }*/
+
 archAbierto *obtenerArch(char *tabla, int extension){
 	int contador=0;
 	while(contador<list_size(tablaArchGlobal)){

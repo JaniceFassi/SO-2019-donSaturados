@@ -44,7 +44,7 @@ int dump(){
 //void compactar(char *nombreTabla, long tiempoCompactacion){
 void compactar(Sdirectorio* nuevo){
 while(1){
-	sleep(nuevo->time_compact);///1000);
+	usleep(nuevo->time_compact*1000);
 	int borrar;
 	sem_getvalue(&nuevo->borrarTabla,&borrar);
 	if(borrar==0){

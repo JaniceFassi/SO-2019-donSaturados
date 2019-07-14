@@ -64,15 +64,20 @@ char *lSelect(char *nameTable, u_int16_t key){
 		return valor;
 	}
 	free(path);
-	//Obtener la metadata asociada a dicha tabla.
-	metaTabla *metadata= leerMetadataTabla(nameTable);
 
-	//Calcular cual es la partición que contiene dicho KEY.
-	int part=key % metadata->partitions;
-	//log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
+	//Escanear la memtable
+	t_list *aux;
+	if(!list_is_empty(memtable)){
+		Tabla *encontrada= find_tabla_by_name_in(nameTable, memtable);
+		if(encontrada!=NULL){
+			aux=filtrearPorKey(encontrada->registros,key);
+		}else{
+			aux=list_create();
+		}
+	}else{
+		aux=list_create();
+	}
 
-	//Escanear la partición objetivo (modo 0)
-	escanearArchivo(nameTable, part, 0,obtenidos);
 	//Escanear todos los archivos temporales (modo 1)
 	int cantDumps=contarArchivos(nameTable, 1); //PREGUNTAR DILEMA
 	int i=0;
@@ -88,19 +93,20 @@ char *lSelect(char *nameTable, u_int16_t key){
 		i++;
 	}
 
-	//Escanear la memtable
-	t_list *aux;
-	if(!list_is_empty(memtable)){
-		Tabla *encontrada= find_tabla_by_name_in(nameTable, memtable);
-		if(encontrada!=NULL){
-			aux=filtrearPorKey(encontrada->registros,key);
-			list_add_all(aux,obtenidos);
-		}
-	}else
-	{
-		aux=list_create();
+	//Obtener la metadata asociada a dicha tabla.
+	metaTabla *metadata= leerMetadataTabla(nameTable);
+
+	//Calcular cual es la partición que contiene dicho KEY.
+	int part=key % metadata->partitions;
+	//log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
+
+	//Escanear la partición objetivo (modo 0)
+	escanearArchivo(nameTable, part, 0,obtenidos);
+
+	if(list_size(obtenidos)!=0){
 		list_add_all(aux,obtenidos);
 	}
+
 	//Comparar los timestamps
 	if(!list_is_empty(aux)){
 		if(existeKeyEnRegistros(aux,key)==1){

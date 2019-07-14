@@ -19,7 +19,6 @@ int main(void) {
 	insert("T",0,"hola",12345678);
 
     /***************PARA USAR TIEMPO DEL DUMP***************/
-
 	alarm(configLissandra->tiempoDump/1000);
 	signal(SIGALRM, funcionSenial);
 
@@ -140,7 +139,7 @@ void *inicializarInotify(){
 	}
 
 	int offset = 0;
-	//estructurarConfig();										//VA EN ALGUN LADO, TMB HAY QUE SINCRONIZAR
+	estructurarConfig();										//VA EN ALGUN LADO, TMB HAY QUE SINCRONIZAR
 
 	/*while (offset < length) {
 		struct inotify_event *event = (struct inotify_event *) &buffer[offset];
@@ -484,6 +483,7 @@ void theEnd(){
 	free(pathInicial);
 	free(raizDirectorio);
 	close(archivoBitmap);
+	bitarray_destroy(bitmap);
 	liberarSemaforos();
 	log_destroy(logger);
 

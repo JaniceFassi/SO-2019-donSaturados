@@ -93,6 +93,7 @@ t_config *abrirMetaTabGlobal(char *tabla);
 //FUNCIONES SEMAFOROS
 void inicializarSemGlob();
 void liberarSemaforos();
+
 //FUNCIONES DE REGISTROS
 Registry *createRegistry(u_int16_t key, char *val, long time);
 void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);
@@ -145,6 +146,7 @@ void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos);
 int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
 int contarArchivos(char *nombre, int modo);
 void crearConfig();
+void modificarConfig();
 metaArch *leerMetaArch(char *path);
 void escribirArchB(char *path,char *buffer);
 char *leerArchBinario(char *path,int tamanio);

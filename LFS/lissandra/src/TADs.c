@@ -514,9 +514,15 @@ void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){
 	cerrarArchivo(nameTable,extension,archivoAbierto);
 }
 
+void modificarConfig(){
+	t_config *config = init_config();
+	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
+	configLissandra->retardo= config_get_int_value(config, "RETARDO");
+	config_destroy(config);
+}
+
 void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
 	t_config *config = init_config();				//Crea una estructura datosConfig en configLissandra, variable global
-
 	configLissandra=malloc(sizeof(datosConfig));
 	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
 	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
@@ -867,7 +873,7 @@ int pedirBloques(int cantidad, char **array){
 //****************************************************************************************
 //FUNCIONES DE BITMAP
 
-void cargarBitmap(){
+void cargarBitmap(int crear){					//SI ES 1 LO CREA, SI ES 0 LO ABRE
 	char *rutaBitmap=nivelMetadata(2);
 	archivoBitmap = open(rutaBitmap, O_RDWR | O_CREAT, S_IRWXU);
 	int cantBytes=metaLFS->cantBloques/8;
@@ -876,7 +882,11 @@ void cargarBitmap(){
 	}
 	struct stat buf;
 	lseek(archivoBitmap, cantBytes, SEEK_SET);
-	write(archivoBitmap, "", 1);
+	if(crear){
+		write(archivoBitmap, "", 1);
+	}else{
+		read(archivoBitmap, "", 1);
+	}
 	fstat(archivoBitmap,&buf);
 	char* bitArrayMap =  (char *) mmap(NULL, buf.st_size, PROT_WRITE | PROT_READ , MAP_SHARED, archivoBitmap, 0);
 	bitmap = bitarray_create_with_mode(bitArrayMap, buf.st_size, MSB_FIRST);
@@ -1011,7 +1021,7 @@ int existeKeyEnRegistros(t_list *registros,int key){		//Devuelve 0 cuando no hay
 		return p->key == key;
 	}
 
-	if(list_is_empty(list_find(registros, (void*) existe))){
+	if(list_find(registros, (void*) existe)==NULL){
 		return 0;
 	}else{
 		return 1;
