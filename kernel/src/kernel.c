@@ -24,8 +24,10 @@ int main(void) {
 	m1->estado=1;// inicia disponible
 	list_add(memorias,m1);
 	list_add(criterioSC,m1);
+	list_add(criterioEC,m1);
+	list_add(criterioSHC,m1);
 	//pruebas();
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	pthread_t hilos[limiteProcesamiento];
@@ -180,6 +182,8 @@ void ejecutarScripts(){
 					}
 					lineasEjecutadas++;
 					execNuevo->lineasLeidas++;
+					free(linea);
+					linea=NULL;
 				}while(getline(&linea,&a,f)!=EOF && lineasEjecutadas<quantum && resultado==0);
 				free(linea);
 				if(!feof(f)){
@@ -197,6 +201,7 @@ void ejecutarScripts(){
 						queue_push(myExit,execNuevo);
 						sem_post(&semColasMutex);
 						log_info(logger,"El script fallo");
+						log_error(logger,"El script fallo");
 					}
 				}
 				else{
@@ -243,6 +248,8 @@ int parsear(char * aux){
 	}
 	if(string_starts_with(linea,"DESCRIBE")){
 		split = string_split(linea," ");
+		log_info(loggerConsola,"linea %s",linea);
+		log_info(loggerConsola,"describe %s",split[1]);
 		resultado=describe(split[1]);
 	}
 	if(string_starts_with(linea,"JOURNAL")){
@@ -262,7 +269,7 @@ int parsear(char * aux){
 	}
 	free(split);
 	int retardo= config_get_int_value(config,"SLEEP_EJECUCION");
-	usleep(retardo*1000);
+	//usleep(retardo*1000);
 	return resultado;
 }
 
@@ -296,7 +303,7 @@ int mySelect(char * table, char *key){
 	metadata = buscarMetadataTabla(table);
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
-		return -1;
+		return 0;
 	}
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 
@@ -398,7 +405,7 @@ int insert(char* table ,char* key ,char* value){
 
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
-		return -1;
+		return 0;
 	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
@@ -430,7 +437,7 @@ int insert(char* table ,char* key ,char* value){
 				close(sock);
 				return -1;
 			}
-			sendData(sock,msj,strlen(msj)+1);
+			sendData(sock,linea,strlen(linea)+1);
 			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
 				close(sock);
@@ -709,7 +716,7 @@ int drop(char*table){
 
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
-		return -1;
+		return 0;
 	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
@@ -765,7 +772,7 @@ int add(char* memory , char* consistency){
 	memoria= buscarMemoria(idMemoria);
 	if(memoria==NULL){
 		log_info(logger,"La memoria no existe, no se pudo agregar al criterio");
-		return -1;
+		return 0;
 	}
 	if(strcmp(consistency,"SC")==0){
 		if(list_size(criterioSC)>0){
@@ -878,7 +885,7 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 	void destruirMet(struct metadataTabla *mt){
 		free(mt->consistency);
 		free(mt->table);
-//		free(mt);
+		free(mt);
 	}
 	bool buscar(struct metadataTabla *mt){
 		return strcmp(mt->table,m->table)!=0;
@@ -957,7 +964,7 @@ void describeGlobal(){
 	int tiempo = config_get_int_value(config, "METADATA_REFRESH");
 	while(terminaHilo==0){
 		sleep(tiempo/(float)1000);
-		describe(NULL);
+		//describe(NULL);
 		log_info(logger,"Describe global automático");
 	}
 }
