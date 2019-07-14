@@ -482,13 +482,13 @@ int main(void) {
  	u_int16_t lfsServer;
  	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
 
- 	if(rta == 0){
- 		log_info(logger, "se creo una conexión con lfs");
-
- 	}else{
- 		log_info(logger, "error al crear una conexión con lfs");
+ 	while(rta!=0){
+ 		log_error(logger, "error al crear una conexión con lfs, volverá a intentarse");
+ 	 	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
 
  	}
+
+ 	log_info(logger, "se creo una conexión con lfs");
 
  	return lfsServer;
  }
@@ -498,9 +498,7 @@ int main(void) {
 	 char* paqueteListo = empaquetar(0, datos);
 	 char* value;
 	 u_int16_t lfsSock = crearConexionLFS();
-	 if(lfsSock == -1){
-		 log_error(logger, "No se pudo conectar con LFS");
-	 }
+
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 
 	 char* buffer = malloc(sizeof(char)*2);
@@ -532,9 +530,7 @@ int main(void) {
 		 //BORRAR PRINTF
 		 printf("EL PAQUETE ES: %s\n", paqueteListo);
 		 u_int16_t lfsSock = crearConexionLFS();
-		 if(lfsSock == -1){
-			 log_error(logger, "No se pudo conectar con LFS");
-		 }
+
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
@@ -547,6 +543,8 @@ int main(void) {
  char* describeLissandra(char* nombreTabla){
 
 	 u_int16_t lfsSock = crearConexionLFS();
+	 char* describeGlobal = malloc(sizeof(char)*5);
+	 strcpy(describeGlobal, "3000");
 
 	 if(nombreTabla!= NULL){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
@@ -555,7 +553,7 @@ int main(void) {
 	 }
 	 else{
 
-		 sendData(lfsSock,"3000", strlen("3000")+1);
+		 sendData(lfsSock, describeGlobal, strlen(describeGlobal)+1);
 	 }
 
 
@@ -565,13 +563,13 @@ int main(void) {
 	 char* tam = malloc(sizeof(char)*5);
 	 recvData(lfsSock, tam, sizeof(char)*4);
 	 int tamanio = atoi(tam);
-	 char* choclo = malloc(tamanio+1);
-	 recvData(lfsSock, choclo, tamanio);
+	 char* listaMetadatas = malloc(tamanio+1);
+	 recvData(lfsSock, listaMetadatas, tamanio);
 
 	 close(lfsSock);
-	 log_info(logger, "Respuesta del describe %s", choclo);
+	 log_info(logger, "Respuesta del describe %s", listaMetadatas);
 
-	 return choclo;
+	 return listaMetadatas;
  }
 
  int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
