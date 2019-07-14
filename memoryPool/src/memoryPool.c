@@ -177,7 +177,7 @@ int main(void) {
 	}
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
-
+	int *fin;
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 
@@ -189,15 +189,22 @@ int main(void) {
 	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
-	pthread_join(hiloConsola, NULL);
-	//si el exit de consola "apaga" la memoria, pasar un parámetro que vuelva en el join
-	//hacer un if y destruir el resto de los hilos ahí, después finalizar
+	pthread_join(hiloConsola, (void*)&fin);
+	if(fin == 0){
+		pthread_kill(gestorConexiones);
+		//pthread_kill(journalTemporal);
+		//pthread_kill(gossipTemporal);
+		log_info(logger, "Se apagará la memoria de forma correcta");
 
+	}
+	else{
 	pthread_join(gestorConexiones, NULL);
 	//pthread_join(journalTemporal, NULL);
 	//pthread_join(gossipTemporal, NULL);
-	finalizar();
 
+	}
+
+	finalizar();
 	return EXIT_SUCCESS;
 }
 
@@ -334,6 +341,7 @@ int main(void) {
 
  void* consola(void* arg){
 
+	int* fin = malloc(sizeof(int));
 	char* linea;
 	while(1){
 		linea = readline(">");
@@ -403,6 +411,7 @@ int main(void) {
 
  		if(!strncmp(linea,"exit",5)){
  			free(linea);
+ 			fin = 0;
  			break;
  		}
  		free(linea);
