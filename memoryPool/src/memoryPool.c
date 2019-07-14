@@ -14,9 +14,9 @@ void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
 	log_info(logger,"sock: %i",cli);
 
-	char *buffer = malloc(2);
+	char *buffer = malloc(sizeof(char)*2);
 	int b = recvData(cli, buffer, sizeof(char));
-
+	buffer[1] = '\0';
 	log_info(logger, "Bytes recibidos: %d", b);
 	log_info(logger, "Operacion %d", atoi(buffer));
 
@@ -62,7 +62,7 @@ void* recibirOperacion(void * arg){
 					key = atoi(desempaquetado[1]);
 					rta = mSelect(nombreTabla, key);
 					printf("rta %s\n", rta);
-					if(rta!=NULL){
+					if(rta!=3){
 						char* msj = malloc(strlen(rta)+4);
 						msj = empaquetar(0, rta);
 						printf("mensaje %s \n", msj);
@@ -70,7 +70,7 @@ void* recibirOperacion(void * arg){
 					}
 
 					else{
-						sendData(cli, "1", sizeof(char));
+						sendData(cli, "3", sizeof(char)+1);
 					}
 
 					break;
@@ -81,12 +81,13 @@ void* recibirOperacion(void * arg){
 					value = desempaquetado[2];
 					if(strlen(value)+1> maxValue){
 						log_error(logger, "Se intentó insertar un valor mayor al permitido");
-						sendData(cli, "1", sizeof(char));
+						sendData(cli, "1", sizeof(char)+1);
 
 					}else{
 						log_info(logger, "Parametros válidos, se hace un insert");
 						int resp = mInsert(nombreTabla, key, value);
-						sendData(cli, string_itoa(resp), sizeof(char));
+						sendData(cli, string_itoa(resp), sizeof(char)+1);
+						log_info(logger, "Rta insert %d\n", resp);
 					}
 
 					break;
@@ -97,7 +98,7 @@ void* recibirOperacion(void * arg){
 					particiones = atoi(desempaquetado[2]);
 					tiempoCompactacion = atol(desempaquetado[3]);
 					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
-					sendData(cli, string_itoa(resp), sizeof(char));
+					sendData(cli, string_itoa(resp), sizeof(char)+1);
 					break;
 
 				case 3: //DESCRIBE
@@ -109,7 +110,7 @@ void* recibirOperacion(void * arg){
 				case 4: //DROP
 					nombreTabla = desempaquetado[0];
 					resp = mDrop(nombreTabla);
-					sendData(cli, string_itoa(resp), sizeof(char));
+					sendData(cli, string_itoa(resp), sizeof(char)+1);
 
 					break;
 
@@ -210,9 +211,9 @@ int main(void) {
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
-	maxValue = 20;
+	//maxValue = 20;
 	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
 	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
 
@@ -500,7 +501,7 @@ int main(void) {
 	 if(lfsSock == -1){
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
-	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
@@ -511,7 +512,7 @@ int main(void) {
 		 printf("Tamaño value %d\n", t);
 		 value = malloc(t+sizeof(char));
 		 recvData(lfsSock, value, t);
-		 log_info(logger, "Se recibio el valor %c", value);
+		 log_info(logger, "Se recibio el valor %s", value);
 
 	 }
 	 else{
@@ -534,7 +535,7 @@ int main(void) {
 		 if(lfsSock == -1){
 			 log_error(logger, "No se pudo conectar con LFS");
 		 }
-		 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
@@ -550,11 +551,11 @@ int main(void) {
 	 if(nombreTabla!= NULL){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
 		 printf("Paquete describe %s \n", paqueteListo);
-		 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 }
 	 else{
 
-		 sendData(lfsSock,"3000", strlen("3000"));
+		 sendData(lfsSock,"3000", strlen("3000")+1);
 	 }
 
 
@@ -580,7 +581,7 @@ int main(void) {
 	 if(lfsSock == -1){
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
-	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 
@@ -596,7 +597,7 @@ int main(void) {
 	 if(lfsSock == -1){
 	 	 log_error(logger, "No se pudo conectar con LFS");
 	  }
-	 sendData(lfsSock, paqueteListo, strlen(paqueteListo));
+	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 
@@ -943,7 +944,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	}
 	else{
 		log_info(logger,"La memoria esta FULL, no se puede hacer el INSERT");
-		return 1;
+		return 2;
 	}
 	}
 	else{
@@ -976,13 +977,18 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		else{
 			pNueva = crearPagina();
 			valorPagNueva = selectLissandra(nombreTabla,key);
-			pNueva->modificado = 0;
-			agregarPagina(nuevo,pNueva);
-			agregarDato(time(NULL),key,valorPagNueva,pNueva);
-			agregarAListaUsos(pNueva->nroMarco);
-			valor = (char*)conseguirValor(pNueva);
-			log_info(logger, "Se seleccionó el valor %s", valor);
-			return valor;
+			if(valorPagNueva != NULL){
+				pNueva->modificado = 0;
+				agregarPagina(nuevo,pNueva);
+				agregarDato(time(NULL),key,valorPagNueva,pNueva);
+				agregarAListaUsos(pNueva->nroMarco);
+				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
+				return valorPagNueva;
+			}
+			else{
+				return 3;
+			}
+
 		}
 	}
 	else{
@@ -999,7 +1005,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 		}
 		else{
-			return NULL;
+			return 3;
 		}
 	}
 
@@ -1056,7 +1062,7 @@ void mJournal(){
 			long timestamp = *(long*)conseguirTimestamp(pag);
 			u_int16_t key = *(u_int16_t*)conseguirKey(pag);
 			char* value = (char*)conseguirValor(pag);
-			//insertLissandra(nombreSegmento, timestamp, key, value); /////////////////////////////////////////////
+			insertLissandra(nombreSegmento, timestamp, key, value);
 			//acá hay que responder de a 1 al kernel?
 
 		}

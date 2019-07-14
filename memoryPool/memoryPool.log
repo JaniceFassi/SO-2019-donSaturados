@@ -1,107 +1,2739 @@
+[INFO] 19:27:43:594 memoryPool/(7649:7649): Se inicializo la memoria con tamanio 2048
+[INFO] 19:27:43:631 memoryPool/(7649:7649): Tamanio máximo recibido de FS: 30
+[INFO] 19:28:05:660 memoryPool/(7674:7674): Se inicializo la memoria con tamanio 2048
+[INFO] 19:29:08:457 memoryPool/(7701:7701): Se inicializo la memoria con tamanio 2048
+[INFO] 19:29:08:585 memoryPool/(7701:7701): Tamanio máximo recibido de FS: 30
+[INFO] 19:29:35:11 memoryPool/(7590:7711): sock: -1760034786
+[INFO] 19:29:35:15 memoryPool/(7590:7711): Bytes recibidos: 1
+[INFO] 19:29:35:15 memoryPool/(7590:7711): Operacion 2
+[INFO] 19:29:38:12 memoryPool/(7590:7711): error al crear una conexión con lfs
+[INFO] 19:30:05:191 memoryPool/(7725:7725): Se inicializo la memoria con tamanio 2048
+[INFO] 19:30:05:399 memoryPool/(7725:7725): Tamanio máximo recibido de FS: 30
+[INFO] 19:30:21:373 memoryPool/(7752:7752): Se inicializo la memoria con tamanio 2048
+[INFO] 19:30:21:403 memoryPool/(7752:7752): Tamanio máximo recibido de FS: 30
+[INFO] 19:30:31:653 memoryPool/(7752:7759): sock: -1760100346
+[INFO] 19:30:31:659 memoryPool/(7752:7759): Bytes recibidos: 1
+[INFO] 19:30:31:659 memoryPool/(7752:7759): Operacion 2
+[INFO] 19:30:31:692 memoryPool/(7752:7759): se creo una conexión con lfs
+[INFO] 19:30:32:309 memoryPool/(7752:7759): Respuesta del create 0
+[INFO] 19:30:32:309 memoryPool/(7752:7759): La respuesta del create fue 0
+[INFO] 19:30:32:446 memoryPool/(7752:7760): sock: -1760100345
+[INFO] 19:30:32:454 memoryPool/(7752:7760): Bytes recibidos: 1
+[INFO] 19:30:32:454 memoryPool/(7752:7760): Operacion 3
+[INFO] 19:30:32:459 memoryPool/(7752:7760): se creo una conexión con lfs
+[INFO] 19:30:32:980 memoryPool/(7752:7760): Respuesta del describe 01019MARINOS;SC;1;10000
+[INFO] 19:30:33:104 memoryPool/(7752:7761): sock: -1760100344
+[INFO] 19:30:33:109 memoryPool/(7752:7761): Bytes recibidos: 1
+[INFO] 19:30:33:109 memoryPool/(7752:7761): Operacion 1
+[INFO] 19:30:33:109 memoryPool/(7752:7761): Parametros válidos, se hace un insert
+[INFO] 19:30:33:109 memoryPool/(7752:7761): Se creo el segmento MARINOS
+[INFO] 19:30:33:110 memoryPool/(7752:7761): Se agrego una página al segmento MARINOS
+[INFO] 19:30:33:110 memoryPool/(7752:7761): Se agrego el dato Ballena al marco 0
+[INFO] 19:30:33:110 memoryPool/(7752:7761): Se inserto al segmento MARINOS el valor Ballena
+[INFO] 19:30:33:110 memoryPool/(7752:7761): Rta insert 0
 
-[INFO] 17:47:09:544 memoryPool/(4727:4727): Se inicializo la memoria con tamanio 2048
-[INFO] 17:47:14:634 memoryPool/(4727:4727): Tamanio máximo recibido de FS: 30
-[INFO] 17:48:55:593 memoryPool/(4767:4767): Se inicializo la memoria con tamanio 2048
-[INFO] 17:49:05:123 memoryPool/(4767:4767): Tamanio máximo recibido de FS: 30
-[INFO] 17:50:53:254 memoryPool/(4836:4836): Se inicializo la memoria con tamanio 2048
-[INFO] 17:50:53:267 memoryPool/(4836:4836): Tamanio máximo recibido de FS: 20
-[INFO] 17:51:29:201 memoryPool/(4836:4841): Se creo el segmento T
-[INFO] 17:51:29:208 memoryPool/(4836:4841): se creo una conexión con lfs
-[INFO] 17:55:26:978 memoryPool/(4836:4841): Se recibio el valor @
-[INFO] 17:55:26:978 memoryPool/(4836:4841): Se agrego una página al segmento T
-[INFO] 17:55:26:978 memoryPool/(4836:4841): Se agrego el dato @ al marco 0
-[INFO] 17:55:26:979 memoryPool/(4836:4841): Se seleccionó el valor @
-[INFO] 17:56:27:153 memoryPool/(4891:4891): Se inicializo la memoria con tamanio 2048
-[INFO] 17:56:27:153 memoryPool/(4891:4891): Tamanio máximo recibido de FS: 20
-[INFO] 17:57:10:205 memoryPool/(4912:4912): Se inicializo la memoria con tamanio 2048
-[INFO] 17:57:10:212 memoryPool/(4912:4912): Tamanio máximo recibido de FS: 20
-[INFO] 17:57:14:481 memoryPool/(4912:4917): Se creo el segmento T
-[INFO] 17:57:14:503 memoryPool/(4912:4917): se creo una conexión con lfs
-[INFO] 17:58:35:500 memoryPool/(4912:4917): Se recibio el valor hola@
-[INFO] 17:58:35:501 memoryPool/(4912:4917): Se agrego una página al segmento T
-[INFO] 17:58:35:501 memoryPool/(4912:4917): Se agrego el dato hola@ al marco 0
-[INFO] 17:58:35:501 memoryPool/(4912:4917): Se seleccionó el valor hola@
-[INFO] 18:01:45:539 memoryPool/(5134:5134): Se inicializo la memoria con tamanio 2048
-[INFO] 18:01:45:548 memoryPool/(5134:5134): Tamanio máximo recibido de FS: 20
-[INFO] 18:01:51:951 memoryPool/(5134:5139): Se creo el segmento T
-[INFO] 18:01:52:139 memoryPool/(5134:5139): se creo una conexión con lfs
-[INFO] 18:01:52:928 memoryPool/(5134:5139): Se recibio el valor holatenqel s
-[INFO] 18:01:52:928 memoryPool/(5134:5139): Se agrego una página al segmento T
-[INFO] 18:01:52:928 memoryPool/(5134:5139): Se agrego el dato holatenqel s al marco 0
-[INFO] 18:01:52:929 memoryPool/(5134:5139): Se seleccionó el valor holatenqel s
-[INFO] 18:05:43:123 memoryPool/(5291:5291): Se inicializo la memoria con tamanio 2048
-[INFO] 18:05:43:125 memoryPool/(5291:5291): Tamanio máximo recibido de FS: 20
-[INFO] 18:05:50:477 memoryPool/(5291:5296): Se creo el segmento T
-[INFO] 18:05:50:602 memoryPool/(5291:5296): se creo una conexión con lfs
-[INFO] 18:06:41:204 memoryPool/(5341:5341): Se inicializo la memoria con tamanio 2048
-[INFO] 18:06:41:205 memoryPool/(5341:5341): Tamanio máximo recibido de FS: 20
-[INFO] 18:06:46:55 memoryPool/(5341:5347): Se creo el segmento T
-[INFO] 18:06:46:64 memoryPool/(5341:5347): se creo una conexión con lfs
-[INFO] 18:06:46:614 memoryPool/(5341:5347): Se recibio el valor h
-[INFO] 18:06:46:614 memoryPool/(5341:5347): Se recibio el valor o
-[INFO] 18:06:46:614 memoryPool/(5341:5347): Se recibio el valor l
-[INFO] 18:06:46:614 memoryPool/(5341:5347): Se recibio el valor a
-[INFO] 18:06:46:614 memoryPool/(5341:5347): Se recibio el valor @
-[INFO] 18:06:46:615 memoryPool/(5341:5347): Se agrego una página al segmento T
-[INFO] 18:06:46:615 memoryPool/(5341:5347): Se agrego el dato hola@ al marco 0
-[INFO] 18:06:46:616 memoryPool/(5341:5347): Se seleccionó el valor hola@
-[INFO] 18:09:02:596 memoryPool/(5375:5375): Se inicializo la memoria con tamanio 2048
-[INFO] 18:09:02:599 memoryPool/(5375:5375): Tamanio máximo recibido de FS: 20
-[INFO] 18:09:07:560 memoryPool/(5375:5380): Se creo el segmento T
-[INFO] 18:09:07:724 memoryPool/(5375:5380): se creo una conexión con lfs
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se recibio el valor h
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se recibio el valor o
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se recibio el valor l
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se recibio el valor a
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se recibio el valor @
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se agrego una página al segmento T
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se agrego el dato hola@ al marco 0
-[INFO] 18:09:08:545 memoryPool/(5375:5380): Se seleccionó el valor hola@
-[INFO] 18:13:43:313 memoryPool/(5729:5729): Se inicializo la memoria con tamanio 2048
-[INFO] 18:13:43:314 memoryPool/(5729:5729): Tamanio máximo recibido de FS: 20
-[INFO] 18:14:02:521 memoryPool/(5791:5791): Se inicializo la memoria con tamanio 2048
-[INFO] 18:14:02:521 memoryPool/(5791:5791): Tamanio máximo recibido de FS: 20
-[INFO] 18:14:07:775 memoryPool/(5791:5796): Se creo el segmento T
-[INFO] 18:14:07:776 memoryPool/(5791:5796): error al crear una conexión con lfs
-[INFO] 18:14:36:894 memoryPool/(5935:5935): Se inicializo la memoria con tamanio 2048
-[INFO] 18:14:36:897 memoryPool/(5935:5935): Tamanio máximo recibido de FS: 20
-[INFO] 18:14:42:478 memoryPool/(5935:5941): Se creo el segmento T
-[INFO] 18:14:45:476 memoryPool/(5935:5941): error al crear una conexión con lfs
-[INFO] 18:16:29:726 memoryPool/(5969:5969): Se inicializo la memoria con tamanio 2048
-[INFO] 18:16:29:735 memoryPool/(5969:5969): Tamanio máximo recibido de FS: 20
-[INFO] 18:16:33:773 memoryPool/(5969:5974): Se creo el segmento T
-[INFO] 18:16:33:962 memoryPool/(5969:5974): se creo una conexión con lfs
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor h
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor o
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor l
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor a
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor t
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor e
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor n
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se recibio el valor q
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se agrego una página al segmento T
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se agrego el dato holatenq al marco 0
-[INFO] 18:16:34:669 memoryPool/(5969:5974): Se seleccionó el valor holatenq
-[INFO] 18:18:16:771 memoryPool/(6000:6000): Se inicializo la memoria con tamanio 2048
-[INFO] 18:18:16:774 memoryPool/(6000:6000): Tamanio máximo recibido de FS: 20
-[INFO] 18:18:23:103 memoryPool/(6000:6005): Se creo el segmento T
-[INFO] 18:18:23:317 memoryPool/(6000:6005): se creo una conexión con lfs
-[INFO] 18:18:24:55 memoryPool/(6000:6005): Se recibio el valor h
-[INFO] 18:18:24:55 memoryPool/(6000:6005): Se recibio el valor o
-[INFO] 18:18:24:55 memoryPool/(6000:6005): Se recibio el valor l
-[INFO] 18:18:24:55 memoryPool/(6000:6005): Se recibio el valor a
-[INFO] 18:18:24:55 memoryPool/(6000:6005): Se recibio el valor @
-[INFO] 18:18:24:56 memoryPool/(6000:6005): Se agrego una página al segmento T
-[INFO] 18:18:24:56 memoryPool/(6000:6005): Se agrego el dato hola@ al marco 0
-[INFO] 18:18:24:56 memoryPool/(6000:6005): Se seleccionó el valor hola@
-[INFO] 18:21:20:995 memoryPool/(6080:6080): Se inicializo la memoria con tamanio 2048
-[INFO] 18:21:20:0 memoryPool/(6080:6080): Tamanio máximo recibido de FS: 20
-[INFO] 18:21:26:767 memoryPool/(6080:6085): Se creo el segmento T
-[INFO] 18:21:26:921 memoryPool/(6080:6085): se creo una conexión con lfs
-[INFO] 18:21:27:537 memoryPool/(6080:6085): Se recibio el valor h
-[INFO] 18:21:27:537 memoryPool/(6080:6085): Se recibio el valor o
-[INFO] 18:21:27:537 memoryPool/(6080:6085): Se recibio el valor l
-[INFO] 18:21:27:537 memoryPool/(6080:6085): Se recibio el valor a
-[INFO] 18:21:27:537 memoryPool/(6080:6085): Se agrego una página al segmento T
-[INFO] 18:21:27:537 memoryPool/(6080:6085): Se agrego el dato hola al marco 0
-[INFO] 18:21:27:537 memoryPool/(6080:6085): Se seleccionó el valor hola
+[INFO] 19:30:33:276 memoryPool/(7752:7762): sock: -1760100343
+[INFO] 19:30:33:279 memoryPool/(7752:7762): Bytes recibidos: 1
+[INFO] 19:30:33:279 memoryPool/(7752:7762): Operacion 2
+[INFO] 19:30:33:296 memoryPool/(7752:7762): se creo una conexión con lfs
+[INFO] 19:30:33:845 memoryPool/(7752:7762): Respuesta del create 0
+[INFO] 19:30:33:846 memoryPool/(7752:7762): La respuesta del create fue 0
+[INFO] 19:30:33:979 memoryPool/(7752:7763): sock: -1760100342
+[INFO] 19:30:33:984 memoryPool/(7752:7763): Bytes recibidos: 1
+[INFO] 19:30:33:984 memoryPool/(7752:7763): Operacion 1
+[INFO] 19:30:33:984 memoryPool/(7752:7763): Parametros válidos, se hace un insert
+[INFO] 19:30:33:984 memoryPool/(7752:7763): Se creo el segmento POSTRES
+[INFO] 19:30:33:984 memoryPool/(7752:7763): Se agrego una página al segmento POSTRES
+[INFO] 19:30:33:984 memoryPool/(7752:7763): Se agrego el dato Flan al marco 1
+[INFO] 19:30:33:984 memoryPool/(7752:7763): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:30:33:985 memoryPool/(7752:7763): Rta insert 0
+
+[INFO] 19:30:34:118 memoryPool/(7752:7764): sock: -1760100341
+[INFO] 19:30:34:128 memoryPool/(7752:7764): Bytes recibidos: 1
+[INFO] 19:30:34:128 memoryPool/(7752:7764): Operacion 2
+[INFO] 19:30:34:137 memoryPool/(7752:7764): se creo una conexión con lfs
+[INFO] 19:30:34:692 memoryPool/(7752:7764): Respuesta del create 0
+[INFO] 19:30:34:692 memoryPool/(7752:7764): La respuesta del create fue 0
+[INFO] 19:30:34:819 memoryPool/(7752:7765): sock: -1760100340
+[INFO] 19:30:34:828 memoryPool/(7752:7765): Bytes recibidos: 1
+[INFO] 19:30:34:828 memoryPool/(7752:7765): Operacion 2
+[INFO] 19:30:34:834 memoryPool/(7752:7765): se creo una conexión con lfs
+[INFO] 19:30:35:386 memoryPool/(7752:7765): Respuesta del create 0
+[INFO] 19:30:35:386 memoryPool/(7752:7765): La respuesta del create fue 0
+[INFO] 19:30:35:506 memoryPool/(7752:7766): sock: -1760100339
+[INFO] 19:30:35:512 memoryPool/(7752:7766): Bytes recibidos: 1
+[INFO] 19:30:35:513 memoryPool/(7752:7766): Operacion 2
+[INFO] 19:30:35:520 memoryPool/(7752:7766): se creo una conexión con lfs
+[INFO] 19:30:36:65 memoryPool/(7752:7766): Respuesta del create 0
+[INFO] 19:30:36:68 memoryPool/(7752:7766): La respuesta del create fue 0
+[INFO] 19:30:36:212 memoryPool/(7752:7767): sock: -1760100338
+[INFO] 19:30:36:229 memoryPool/(7752:7767): Bytes recibidos: 1
+[INFO] 19:30:36:229 memoryPool/(7752:7767): Operacion 3
+[INFO] 19:30:36:240 memoryPool/(7752:7767): se creo una conexión con lfs
+[INFO] 19:30:36:775 memoryPool/(7752:7767): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:30:36:902 memoryPool/(7752:7768): sock: -1760100337
+[INFO] 19:30:36:937 memoryPool/(7752:7768): Bytes recibidos: 1
+[INFO] 19:30:36:937 memoryPool/(7752:7768): Operacion 1
+[INFO] 19:30:36:937 memoryPool/(7752:7768): Parametros válidos, se hace un insert
+[INFO] 19:30:36:937 memoryPool/(7752:7768): Se creo el segmento FRUTAS
+[INFO] 19:30:36:938 memoryPool/(7752:7768): Se agrego una página al segmento FRUTAS
+[INFO] 19:30:36:938 memoryPool/(7752:7768): Se agrego el dato Manzana al marco 2
+[INFO] 19:30:36:938 memoryPool/(7752:7768): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:30:36:938 memoryPool/(7752:7768): Rta insert 0
+
+[INFO] 19:30:37:58 memoryPool/(7752:7769): sock: -1760100336
+[INFO] 19:30:37:62 memoryPool/(7752:7769): Bytes recibidos: 1
+[INFO] 19:30:37:62 memoryPool/(7752:7769): Operacion 1
+[INFO] 19:30:37:62 memoryPool/(7752:7769): Parametros válidos, se hace un insert
+[INFO] 19:30:37:62 memoryPool/(7752:7769): Se agrego una página al segmento POSTRES
+[INFO] 19:30:37:63 memoryPool/(7752:7769): Se agrego el dato Chocotorta al marco 3
+[INFO] 19:30:37:63 memoryPool/(7752:7769): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:30:37:63 memoryPool/(7752:7769): Rta insert 0
+
+[INFO] 19:30:37:186 memoryPool/(7752:7770): sock: -1760100335
+[INFO] 19:30:37:266 memoryPool/(7752:7770): Bytes recibidos: 1
+[INFO] 19:30:37:266 memoryPool/(7752:7770): Operacion 1
+[INFO] 19:30:37:266 memoryPool/(7752:7770): Parametros válidos, se hace un insert
+[INFO] 19:30:37:266 memoryPool/(7752:7770): Se agrego una página al segmento FRUTAS
+[INFO] 19:30:37:267 memoryPool/(7752:7770): Se agrego el dato Banana al marco 4
+[INFO] 19:30:37:267 memoryPool/(7752:7770): Se inserto al segmento FRUTAS el valor Banana
+[INFO] 19:30:37:267 memoryPool/(7752:7770): Rta insert 0
+
+[INFO] 19:30:37:400 memoryPool/(7752:7771): sock: -1760100334
+[INFO] 19:30:37:405 memoryPool/(7752:7771): Bytes recibidos: 1
+[INFO] 19:30:37:405 memoryPool/(7752:7771): Operacion 1
+[INFO] 19:30:37:406 memoryPool/(7752:7771): Parametros válidos, se hace un insert
+[INFO] 19:30:37:406 memoryPool/(7752:7771): Se agrego una página al segmento MARINOS
+[INFO] 19:30:37:406 memoryPool/(7752:7771): Se agrego el dato Pulpo al marco 5
+[INFO] 19:30:37:406 memoryPool/(7752:7771): Se inserto al segmento MARINOS el valor Pulpo
+[INFO] 19:30:37:406 memoryPool/(7752:7771): Rta insert 0
+
+[INFO] 19:30:37:541 memoryPool/(7752:7772): sock: -1760100333
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Bytes recibidos: 1
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Operacion 1
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Parametros válidos, se hace un insert
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Se creo el segmento AVES
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Se agrego una página al segmento AVES
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Se agrego el dato Paloma al marco 6
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Se inserto al segmento AVES el valor Paloma
+[INFO] 19:30:37:545 memoryPool/(7752:7772): Rta insert 0
+
+[INFO] 19:30:37:679 memoryPool/(7752:7773): sock: -1760100332
+[INFO] 19:30:37:679 memoryPool/(7752:7773): Bytes recibidos: 1
+[INFO] 19:30:37:679 memoryPool/(7752:7773): Operacion 1
+[INFO] 19:30:37:679 memoryPool/(7752:7773): Parametros válidos, se hace un insert
+[INFO] 19:30:37:679 memoryPool/(7752:7773): Se creo el segmento MAMIFEROS
+[INFO] 19:30:37:679 memoryPool/(7752:7773): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:30:37:679 memoryPool/(7752:7773): Se agrego el dato Gato al marco 7
+[INFO] 19:30:37:679 memoryPool/(7752:7773): Se inserto al segmento MAMIFEROS el valor Gato
+[INFO] 19:30:37:680 memoryPool/(7752:7773): Rta insert 0
+
+[INFO] 19:30:37:803 memoryPool/(7752:7774): sock: -1760100331
+[INFO] 19:30:37:814 memoryPool/(7752:7774): Bytes recibidos: 1
+[INFO] 19:30:37:814 memoryPool/(7752:7774): Operacion 1
+[INFO] 19:30:37:814 memoryPool/(7752:7774): Parametros válidos, se hace un insert
+[INFO] 19:30:37:814 memoryPool/(7752:7774): Se agrego una página al segmento POSTRES
+[INFO] 19:30:37:814 memoryPool/(7752:7774): Se agrego el dato Tiramisu al marco 8
+[INFO] 19:30:37:814 memoryPool/(7752:7774): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:30:37:814 memoryPool/(7752:7774): Rta insert 0
+
+[INFO] 19:30:37:962 memoryPool/(7752:7775): sock: -1760100330
+[INFO] 19:30:37:979 memoryPool/(7752:7775): Bytes recibidos: 1
+[INFO] 19:30:37:979 memoryPool/(7752:7775): Operacion 2
+[INFO] 19:30:37:983 memoryPool/(7752:7775): se creo una conexión con lfs
+[INFO] 19:30:38:560 memoryPool/(7752:7775): Respuesta del create 0
+[INFO] 19:30:38:560 memoryPool/(7752:7775): La respuesta del create fue 0
+[INFO] 19:30:38:694 memoryPool/(7752:7776): sock: -1760100329
+[INFO] 19:30:38:698 memoryPool/(7752:7776): Bytes recibidos: 1
+[INFO] 19:30:38:698 memoryPool/(7752:7776): Operacion 3
+[INFO] 19:30:38:703 memoryPool/(7752:7776): se creo una conexión con lfs
+[INFO] 19:30:39:212 memoryPool/(7752:7776): Respuesta del describe 01019POSTRES;SC;3;60000
+[INFO] 19:30:39:339 memoryPool/(7752:7777): sock: -1760100328
+[INFO] 19:30:39:364 memoryPool/(7752:7777): Bytes recibidos: 1
+[INFO] 19:30:39:372 memoryPool/(7752:7777): Operacion 1
+[INFO] 19:30:39:372 memoryPool/(7752:7777): Parametros válidos, se hace un insert
+[INFO] 19:30:39:372 memoryPool/(7752:7777): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:30:39:372 memoryPool/(7752:7777): Se agrego el dato Perro al marco 9
+[INFO] 19:30:39:372 memoryPool/(7752:7777): Se inserto al segmento MAMIFEROS el valor Perro
+[INFO] 19:30:39:372 memoryPool/(7752:7777): Rta insert 0
+
+[INFO] 19:30:39:506 memoryPool/(7752:7778): sock: -1760100327
+[INFO] 19:30:39:510 memoryPool/(7752:7778): Bytes recibidos: 1
+[INFO] 19:30:39:510 memoryPool/(7752:7778): Operacion 1
+[INFO] 19:30:39:510 memoryPool/(7752:7778): Parametros válidos, se hace un insert
+[INFO] 19:30:39:510 memoryPool/(7752:7778): Se agrego una página al segmento MARINOS
+[INFO] 19:30:39:510 memoryPool/(7752:7778): Se agrego el dato Delfin al marco 10
+[INFO] 19:30:39:511 memoryPool/(7752:7778): Se inserto al segmento MARINOS el valor Delfin
+[INFO] 19:30:39:511 memoryPool/(7752:7778): Rta insert 0
+
+[INFO] 19:30:39:628 memoryPool/(7752:7779): sock: -1760100326
+[INFO] 19:30:39:631 memoryPool/(7752:7779): Bytes recibidos: 1
+[INFO] 19:30:39:631 memoryPool/(7752:7779): Operacion 1
+[INFO] 19:30:39:631 memoryPool/(7752:7779): Parametros válidos, se hace un insert
+[INFO] 19:30:39:632 memoryPool/(7752:7779): Se agrego el dato Halcon al marco 6
+[INFO] 19:30:39:632 memoryPool/(7752:7779): Se inserto al segmento AVES el valor Halcon
+[INFO] 19:30:39:632 memoryPool/(7752:7779): Rta insert 0
+
+[INFO] 19:30:39:748 memoryPool/(7752:7780): sock: -1760100325
+[INFO] 19:30:39:751 memoryPool/(7752:7780): Bytes recibidos: 1
+[INFO] 19:30:39:752 memoryPool/(7752:7780): Operacion 1
+[INFO] 19:30:39:752 memoryPool/(7752:7780): Parametros válidos, se hace un insert
+[INFO] 19:30:39:752 memoryPool/(7752:7780): Se agrego una página al segmento FRUTAS
+[INFO] 19:30:39:752 memoryPool/(7752:7780): Se agrego el dato Pera al marco 11
+[INFO] 19:30:39:752 memoryPool/(7752:7780): Se inserto al segmento FRUTAS el valor Pera
+[INFO] 19:30:39:752 memoryPool/(7752:7780): Rta insert 0
+
+[INFO] 19:30:39:889 memoryPool/(7752:7781): sock: -1760100324
+[INFO] 19:30:39:889 memoryPool/(7752:7781): Bytes recibidos: 1
+[INFO] 19:30:39:894 memoryPool/(7752:7781): Operacion 0
+[INFO] 19:30:39:894 memoryPool/(7752:7781): Se seleccionó el valor Banana
+[INFO] 19:30:40:29 memoryPool/(7752:7782): sock: -1760100323
+[INFO] 19:30:40:29 memoryPool/(7752:7782): Bytes recibidos: 1
+[INFO] 19:30:40:30 memoryPool/(7752:7782): Operacion 1
+[INFO] 19:30:40:30 memoryPool/(7752:7782): Parametros válidos, se hace un insert
+[INFO] 19:30:40:30 memoryPool/(7752:7782): Se agrego el dato Helado al marco 3
+[INFO] 19:30:40:30 memoryPool/(7752:7782): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:30:40:30 memoryPool/(7752:7782): Rta insert 0
+
+[INFO] 19:30:40:154 memoryPool/(7752:7783): sock: -1760100322
+[INFO] 19:30:40:159 memoryPool/(7752:7783): Bytes recibidos: 1
+[INFO] 19:30:40:159 memoryPool/(7752:7783): Operacion 0
+[INFO] 19:30:40:159 memoryPool/(7752:7783): Se seleccionó el valor Halcon
+[INFO] 19:30:40:271 memoryPool/(7752:7784): sock: -1760100321
+[INFO] 19:30:40:281 memoryPool/(7752:7784): Bytes recibidos: 1
+[INFO] 19:30:40:281 memoryPool/(7752:7784): Operacion 1
+[INFO] 19:30:40:281 memoryPool/(7752:7784): Parametros válidos, se hace un insert
+[INFO] 19:30:40:281 memoryPool/(7752:7784): Se agrego el dato Orca al marco 0
+[INFO] 19:30:40:281 memoryPool/(7752:7784): Se inserto al segmento MARINOS el valor Orca
+[INFO] 19:30:40:281 memoryPool/(7752:7784): Rta insert 0
+
+[INFO] 19:30:40:408 memoryPool/(7752:7785): sock: -1760100320
+[INFO] 19:30:40:414 memoryPool/(7752:7785): Bytes recibidos: 1
+[INFO] 19:30:40:414 memoryPool/(7752:7785): Operacion 3
+[INFO] 19:30:40:442 memoryPool/(7752:7785): se creo una conexión con lfs
+[INFO] 19:30:40:952 memoryPool/(7752:7785): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:30:41:68 memoryPool/(7752:7786): sock: -1760100319
+[INFO] 19:30:41:76 memoryPool/(7752:7786): Bytes recibidos: 1
+[INFO] 19:30:41:76 memoryPool/(7752:7786): Operacion 0
+[INFO] 19:30:41:76 memoryPool/(7752:7786): Se seleccionó el valor Helado
+[INFO] 19:30:41:191 memoryPool/(7752:7787): sock: -1760100318
+[INFO] 19:30:41:195 memoryPool/(7752:7787): Bytes recibidos: 1
+[INFO] 19:30:41:195 memoryPool/(7752:7787): Operacion 1
+[INFO] 19:30:41:195 memoryPool/(7752:7787): Parametros válidos, se hace un insert
+[INFO] 19:30:41:195 memoryPool/(7752:7787): Se agrego el dato Almendrado al marco 3
+[INFO] 19:30:41:195 memoryPool/(7752:7787): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:30:41:196 memoryPool/(7752:7787): Rta insert 0
+
+[INFO] 19:30:41:345 memoryPool/(7752:7788): sock: -1760100317
+[INFO] 19:30:41:347 memoryPool/(7752:7788): Bytes recibidos: 1
+[INFO] 19:30:41:347 memoryPool/(7752:7788): Operacion 1
+[INFO] 19:30:41:347 memoryPool/(7752:7788): Parametros válidos, se hace un insert
+[INFO] 19:30:41:347 memoryPool/(7752:7788): Se agrego una página al segmento FRUTAS
+[INFO] 19:30:41:347 memoryPool/(7752:7788): Se agrego el dato Uva al marco 12
+[INFO] 19:30:41:347 memoryPool/(7752:7788): Se inserto al segmento FRUTAS el valor Uva
+[INFO] 19:30:41:347 memoryPool/(7752:7788): Rta insert 0
+
+[INFO] 19:30:41:577 memoryPool/(7752:7789): sock: -1760100316
+[INFO] 19:30:41:585 memoryPool/(7752:7789): Bytes recibidos: 1
+[INFO] 19:30:41:585 memoryPool/(7752:7789): Operacion 3
+[INFO] 19:30:41:589 memoryPool/(7752:7789): se creo una conexión con lfs
+[INFO] 19:30:42:112 memoryPool/(7752:7789): Respuesta del describe 01018FRUTAS;SC;2;50000
+[INFO] 19:30:42:248 memoryPool/(7752:7790): sock: -1760100315
+[INFO] 19:30:42:252 memoryPool/(7752:7790): Bytes recibidos: 1
+[INFO] 19:30:42:252 memoryPool/(7752:7790): Operacion 1
+[INFO] 19:30:42:253 memoryPool/(7752:7790): Parametros válidos, se hace un insert
+[INFO] 19:30:42:253 memoryPool/(7752:7790): Se creo el segmento BEBIDAS
+[INFO] 19:30:42:253 memoryPool/(7752:7790): Se agrego una página al segmento BEBIDAS
+[INFO] 19:30:42:253 memoryPool/(7752:7790): Se agrego el dato Pepsi al marco 13
+[INFO] 19:30:42:253 memoryPool/(7752:7790): Se inserto al segmento BEBIDAS el valor Pepsi
+[INFO] 19:30:42:253 memoryPool/(7752:7790): Rta insert 0
+
+[INFO] 19:30:42:415 memoryPool/(7752:7791): sock: -1760100314
+[INFO] 19:30:42:421 memoryPool/(7752:7791): Bytes recibidos: 1
+[INFO] 19:30:42:421 memoryPool/(7752:7791): Operacion 1
+[INFO] 19:30:42:422 memoryPool/(7752:7791): Parametros válidos, se hace un insert
+[INFO] 19:30:42:422 memoryPool/(7752:7791): Se agrego una página al segmento BEBIDAS
+[INFO] 19:30:42:422 memoryPool/(7752:7791): Se agrego el dato Coca Cola al marco 14
+[INFO] 19:30:42:422 memoryPool/(7752:7791): Se inserto al segmento BEBIDAS el valor Coca Cola
+[INFO] 19:30:42:422 memoryPool/(7752:7791): Rta insert 0
+
+[INFO] 19:30:42:556 memoryPool/(7752:7792): sock: -1760100313
+[INFO] 19:30:42:571 memoryPool/(7752:7792): Bytes recibidos: 1
+[INFO] 19:30:42:571 memoryPool/(7752:7792): Operacion 0
+[INFO] 19:30:42:572 memoryPool/(7752:7792): Se seleccionó el valor Coca Cola
+[INFO] 19:30:42:704 memoryPool/(7752:7793): sock: -1760100312
+[INFO] 19:30:42:706 memoryPool/(7752:7793): Bytes recibidos: 1
+[INFO] 19:30:42:706 memoryPool/(7752:7793): Operacion 1
+[INFO] 19:30:42:707 memoryPool/(7752:7793): Parametros válidos, se hace un insert
+[INFO] 19:30:42:707 memoryPool/(7752:7793): Se agrego el dato Sprite al marco 14
+[INFO] 19:30:42:707 memoryPool/(7752:7793): Se inserto al segmento BEBIDAS el valor Sprite
+[INFO] 19:30:42:707 memoryPool/(7752:7793): Rta insert 0
+
+[INFO] 19:30:42:835 memoryPool/(7752:7794): sock: -1760100311
+[INFO] 19:30:42:866 memoryPool/(7752:7794): Bytes recibidos: 1
+[INFO] 19:30:42:866 memoryPool/(7752:7794): Operacion 0
+[INFO] 19:30:42:866 memoryPool/(7752:7794): Se seleccionó el valor Almendrado
+[INFO] 19:30:43:23 memoryPool/(7752:7795): sock: -1760100310
+[INFO] 19:30:43:38 memoryPool/(7752:7795): Bytes recibidos: 1
+[INFO] 19:30:43:38 memoryPool/(7752:7795): Operacion 1
+[INFO] 19:30:43:39 memoryPool/(7752:7795): Parametros válidos, se hace un insert
+[INFO] 19:30:43:39 memoryPool/(7752:7795): Se agrego una página al segmento POSTRES
+[INFO] 19:30:43:39 memoryPool/(7752:7795): Se agrego el dato Bizcochuelo al marco 15
+[INFO] 19:30:43:39 memoryPool/(7752:7795): Se inserto al segmento POSTRES el valor Bizcochuelo
+[INFO] 19:30:43:39 memoryPool/(7752:7795): Rta insert 0
+
+[INFO] 19:30:43:201 memoryPool/(7752:7796): sock: -1760100309
+[INFO] 19:30:43:202 memoryPool/(7752:7796): Bytes recibidos: 1
+[INFO] 19:30:43:202 memoryPool/(7752:7796): Operacion 1
+[INFO] 19:30:43:202 memoryPool/(7752:7796): Parametros válidos, se hace un insert
+[INFO] 19:30:43:202 memoryPool/(7752:7796): Se agrego una página al segmento BEBIDAS
+[INFO] 19:30:43:202 memoryPool/(7752:7796): Se agrego el dato Limonada al marco 16
+[INFO] 19:30:43:202 memoryPool/(7752:7796): Se inserto al segmento BEBIDAS el valor Limonada
+[INFO] 19:30:43:202 memoryPool/(7752:7796): Rta insert 0
+
+[INFO] 19:30:43:434 memoryPool/(7752:7797): sock: -1760100308
+[INFO] 19:30:43:454 memoryPool/(7752:7797): Bytes recibidos: 1
+[INFO] 19:30:43:454 memoryPool/(7752:7797): Operacion 1
+[INFO] 19:30:43:454 memoryPool/(7752:7797): Parametros válidos, se hace un insert
+[INFO] 19:30:43:454 memoryPool/(7752:7797): Se agrego el dato Melon al marco 12
+[INFO] 19:30:43:454 memoryPool/(7752:7797): Se inserto al segmento FRUTAS el valor Melon
+[INFO] 19:30:43:454 memoryPool/(7752:7797): Rta insert 0
+
+[INFO] 19:30:43:615 memoryPool/(7752:7798): sock: -1760100307
+[INFO] 19:30:43:615 memoryPool/(7752:7798): Bytes recibidos: 1
+[INFO] 19:30:43:616 memoryPool/(7752:7798): Operacion 1
+[INFO] 19:30:43:616 memoryPool/(7752:7798): Parametros válidos, se hace un insert
+[INFO] 19:30:43:616 memoryPool/(7752:7798): Se agrego el dato Manzana al marco 4
+[INFO] 19:30:43:616 memoryPool/(7752:7798): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:30:43:616 memoryPool/(7752:7798): Rta insert 0
+
+[INFO] 19:30:43:771 memoryPool/(7752:7799): sock: -1760100306
+[INFO] 19:30:43:794 memoryPool/(7752:7799): Bytes recibidos: 1
+[INFO] 19:30:43:794 memoryPool/(7752:7799): Operacion 0
+[INFO] 19:30:43:794 memoryPool/(7752:7799): Se seleccionó el valor Sprite
+[INFO] 19:30:43:963 memoryPool/(7752:7800): sock: -1760100305
+[INFO] 19:30:43:972 memoryPool/(7752:7800): Bytes recibidos: 1
+[INFO] 19:30:43:972 memoryPool/(7752:7800): Operacion 1
+[INFO] 19:30:43:972 memoryPool/(7752:7800): Parametros válidos, se hace un insert
+[INFO] 19:30:43:973 memoryPool/(7752:7800): Se agrego una página al segmento POSTRES
+[INFO] 19:30:43:973 memoryPool/(7752:7800): Se agrego el dato Budin de pan al marco 17
+[INFO] 19:30:43:973 memoryPool/(7752:7800): Se inserto al segmento POSTRES el valor Budin de pan
+[INFO] 19:30:43:973 memoryPool/(7752:7800): Rta insert 0
+
+[INFO] 19:30:44:159 memoryPool/(7752:7801): sock: -1760100304
+[INFO] 19:30:44:167 memoryPool/(7752:7801): Bytes recibidos: 1
+[INFO] 19:30:44:167 memoryPool/(7752:7801): Operacion 1
+[INFO] 19:30:44:167 memoryPool/(7752:7801): Parametros válidos, se hace un insert
+[INFO] 19:30:44:167 memoryPool/(7752:7801): Se agrego el dato Sandia al marco 2
+[INFO] 19:30:44:167 memoryPool/(7752:7801): Se inserto al segmento FRUTAS el valor Sandia
+[INFO] 19:30:44:167 memoryPool/(7752:7801): Rta insert 0
+
+[INFO] 19:30:44:300 memoryPool/(7752:7802): sock: -1760100303
+[INFO] 19:30:44:320 memoryPool/(7752:7802): Bytes recibidos: 1
+[INFO] 19:30:44:320 memoryPool/(7752:7802): Operacion 1
+[INFO] 19:30:44:320 memoryPool/(7752:7802): Parametros válidos, se hace un insert
+[INFO] 19:30:44:320 memoryPool/(7752:7802): Se agrego una página al segmento BEBIDAS
+[INFO] 19:30:44:320 memoryPool/(7752:7802): Se agrego el dato Exprimido al marco 18
+[INFO] 19:30:44:320 memoryPool/(7752:7802): Se inserto al segmento BEBIDAS el valor Exprimido
+[INFO] 19:30:44:320 memoryPool/(7752:7802): Rta insert 0
+
+[INFO] 19:30:44:435 memoryPool/(7752:7803): sock: -1760100302
+[INFO] 19:30:44:442 memoryPool/(7752:7803): Bytes recibidos: 1
+[INFO] 19:30:44:442 memoryPool/(7752:7803): Operacion 1
+[INFO] 19:30:44:442 memoryPool/(7752:7803): Parametros válidos, se hace un insert
+[INFO] 19:30:44:443 memoryPool/(7752:7803): Se agrego el dato Agua con gas al marco 16
+[INFO] 19:30:44:443 memoryPool/(7752:7803): Se inserto al segmento BEBIDAS el valor Agua con gas
+[INFO] 19:30:44:443 memoryPool/(7752:7803): Rta insert 0
+
+[INFO] 19:30:44:575 memoryPool/(7752:7804): sock: -1760100301
+[INFO] 19:30:44:582 memoryPool/(7752:7804): Bytes recibidos: 1
+[INFO] 19:30:44:582 memoryPool/(7752:7804): Operacion 1
+[INFO] 19:30:44:583 memoryPool/(7752:7804): Parametros válidos, se hace un insert
+[INFO] 19:30:44:583 memoryPool/(7752:7804): Se agrego el dato Manzana al marco 2
+[INFO] 19:30:44:583 memoryPool/(7752:7804): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:30:44:583 memoryPool/(7752:7804): Rta insert 0
+
+[INFO] 19:30:44:737 memoryPool/(7752:7810): sock: -1760100300
+[INFO] 19:30:44:740 memoryPool/(7752:7810): Bytes recibidos: 1
+[INFO] 19:30:44:741 memoryPool/(7752:7810): Operacion 3
+[INFO] 19:30:51:762 memoryPool/(7752:7810): se creo una conexión con lfs
+[INFO] 19:30:52:277 memoryPool/(7752:7810): Respuesta del describe 01019BEBIDAS;SC;6;10000
+[INFO] 19:30:52:411 memoryPool/(7752:7811): sock: -1760100299
+[INFO] 19:30:52:434 memoryPool/(7752:7811): Bytes recibidos: 1
+[INFO] 19:30:52:435 memoryPool/(7752:7811): Operacion 1
+[INFO] 19:30:52:435 memoryPool/(7752:7811): Parametros válidos, se hace un insert
+[INFO] 19:30:52:435 memoryPool/(7752:7811): Se agrego el dato Cereza al marco 4
+[INFO] 19:30:52:435 memoryPool/(7752:7811): Se inserto al segmento FRUTAS el valor Cereza
+[INFO] 19:30:52:435 memoryPool/(7752:7811): Rta insert 0
+
+[INFO] 19:30:52:573 memoryPool/(7752:7812): sock: -1760100298
+[INFO] 19:30:52:580 memoryPool/(7752:7812): Bytes recibidos: 1
+[INFO] 19:30:52:580 memoryPool/(7752:7812): Operacion 0
+[INFO] 19:30:52:580 memoryPool/(7752:7812): Se seleccionó el valor Cereza
+[INFO] 19:30:52:704 memoryPool/(7752:7813): sock: -1760100297
+[INFO] 19:30:52:716 memoryPool/(7752:7813): Bytes recibidos: 1
+[INFO] 19:30:52:717 memoryPool/(7752:7813): Operacion 0
+[INFO] 19:30:52:717 memoryPool/(7752:7813): Se seleccionó el valor Exprimido
+[INFO] 19:30:52:838 memoryPool/(7752:7814): sock: -1760100296
+[INFO] 19:30:52:858 memoryPool/(7752:7814): Bytes recibidos: 1
+[INFO] 19:30:52:858 memoryPool/(7752:7814): Operacion 1
+[INFO] 19:30:52:858 memoryPool/(7752:7814): Parametros válidos, se hace un insert
+[INFO] 19:30:52:858 memoryPool/(7752:7814): Se agrego el dato Frutilla al marco 11
+[INFO] 19:30:52:858 memoryPool/(7752:7814): Se inserto al segmento FRUTAS el valor Frutilla
+[INFO] 19:30:52:858 memoryPool/(7752:7814): Rta insert 0
+
+[INFO] 19:30:53:18 memoryPool/(7752:7815): sock: -1760100295
+[INFO] 19:30:53:26 memoryPool/(7752:7815): Bytes recibidos: 1
+[INFO] 19:30:53:26 memoryPool/(7752:7815): Operacion 1
+[INFO] 19:30:53:26 memoryPool/(7752:7815): Parametros válidos, se hace un insert
+[INFO] 19:30:53:26 memoryPool/(7752:7815): Se agrego el dato Gelatina al marco 8
+[INFO] 19:30:53:26 memoryPool/(7752:7815): Se inserto al segmento POSTRES el valor Gelatina
+[INFO] 19:30:53:27 memoryPool/(7752:7815): Rta insert 0
+
+[INFO] 19:30:53:161 memoryPool/(7752:7816): sock: -1760100294
+[INFO] 19:30:53:176 memoryPool/(7752:7816): Bytes recibidos: 1
+[INFO] 19:30:53:177 memoryPool/(7752:7816): Operacion 1
+[INFO] 19:30:53:177 memoryPool/(7752:7816): Parametros válidos, se hace un insert
+[INFO] 19:30:53:177 memoryPool/(7752:7816): Se agrego el dato Helado al marco 1
+[INFO] 19:30:53:177 memoryPool/(7752:7816): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:30:53:177 memoryPool/(7752:7816): Rta insert 0
+
+[INFO] 19:30:53:384 memoryPool/(7752:7817): sock: -1760100293
+[INFO] 19:30:53:385 memoryPool/(7752:7817): Bytes recibidos: 1
+[INFO] 19:30:53:385 memoryPool/(7752:7817): Operacion 1
+[INFO] 19:30:53:385 memoryPool/(7752:7817): Parametros válidos, se hace un insert
+[INFO] 19:30:53:385 memoryPool/(7752:7817): Se agrego el dato Almendrado al marco 3
+[INFO] 19:30:53:385 memoryPool/(7752:7817): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:30:53:386 memoryPool/(7752:7817): Rta insert 0
+
+[INFO] 19:30:53:511 memoryPool/(7752:7818): sock: -1760100292
+[INFO] 19:30:53:516 memoryPool/(7752:7818): Bytes recibidos: 1
+[INFO] 19:30:53:516 memoryPool/(7752:7818): Operacion 0
+[INFO] 19:30:53:516 memoryPool/(7752:7818): Se seleccionó el valor Sprite
+[INFO] 19:30:53:647 memoryPool/(7752:7819): sock: -1760100291
+[INFO] 19:30:53:651 memoryPool/(7752:7819): Bytes recibidos: 1
+[INFO] 19:30:53:652 memoryPool/(7752:7819): Operacion 2
+[INFO] 19:30:53:656 memoryPool/(7752:7819): se creo una conexión con lfs
+[INFO] 19:30:54:196 memoryPool/(7752:7819): Respuesta del create 0
+[INFO] 19:30:54:197 memoryPool/(7752:7819): La respuesta del create fue 0
+[INFO] 19:30:54:356 memoryPool/(7752:7820): sock: -1760100290
+[INFO] 19:30:54:362 memoryPool/(7752:7820): Bytes recibidos: 1
+[INFO] 19:30:54:367 memoryPool/(7752:7820): Operacion 1
+[INFO] 19:30:54:367 memoryPool/(7752:7820): Parametros válidos, se hace un insert
+[INFO] 19:30:54:367 memoryPool/(7752:7820): Se agrego una página al segmento POSTRES
+[INFO] 19:30:54:367 memoryPool/(7752:7820): Se agrego el dato Flan al marco 19
+[INFO] 19:30:54:367 memoryPool/(7752:7820): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:30:54:367 memoryPool/(7752:7820): Rta insert 0
+
+[INFO] 19:30:54:558 memoryPool/(7752:7821): sock: -1760100289
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Bytes recibidos: 1
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Operacion 1
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Parametros válidos, se hace un insert
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Se creo el segmento PLATOS_PRINCIPALES
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Se agrego el dato Milanesa al marco 20
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Se inserto al segmento PLATOS_PRINCIPALES el valor Milanesa
+[INFO] 19:30:54:564 memoryPool/(7752:7821): Rta insert 0
+
+[INFO] 19:30:54:703 memoryPool/(7752:7822): sock: -1760100288
+[INFO] 19:30:54:751 memoryPool/(7752:7822): Bytes recibidos: 1
+[INFO] 19:30:54:751 memoryPool/(7752:7822): Operacion 1
+[INFO] 19:30:54:751 memoryPool/(7752:7822): Parametros válidos, se hace un insert
+[INFO] 19:30:54:751 memoryPool/(7752:7822): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:30:54:751 memoryPool/(7752:7822): Se agrego el dato Omelette al marco 21
+[INFO] 19:30:54:751 memoryPool/(7752:7822): Se inserto al segmento PLATOS_PRINCIPALES el valor Omelette
+[INFO] 19:30:54:751 memoryPool/(7752:7822): Rta insert 0
+
+[INFO] 19:30:54:934 memoryPool/(7752:7823): sock: -1760100287
+[INFO] 19:30:54:942 memoryPool/(7752:7823): Bytes recibidos: 1
+[INFO] 19:30:54:942 memoryPool/(7752:7823): Operacion 1
+[INFO] 19:30:54:942 memoryPool/(7752:7823): Parametros válidos, se hace un insert
+[INFO] 19:30:54:942 memoryPool/(7752:7823): Se agrego el dato Tiramisu al marco 15
+[INFO] 19:30:54:943 memoryPool/(7752:7823): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:30:54:943 memoryPool/(7752:7823): Rta insert 0
+
+[INFO] 19:30:55:156 memoryPool/(7752:7824): sock: -1760100286
+[INFO] 19:30:55:171 memoryPool/(7752:7824): Bytes recibidos: 1
+[INFO] 19:30:55:171 memoryPool/(7752:7824): Operacion 0
+[INFO] 19:30:55:171 memoryPool/(7752:7824): Se seleccionó el valor Manzana
+[INFO] 19:30:55:302 memoryPool/(7752:7825): sock: -1760100285
+[INFO] 19:30:55:325 memoryPool/(7752:7825): Bytes recibidos: 1
+[INFO] 19:30:55:326 memoryPool/(7752:7825): Operacion 0
+[INFO] 19:30:55:326 memoryPool/(7752:7825): Se seleccionó el valor Flan
+[INFO] 19:30:55:448 memoryPool/(7752:7826): sock: -1760100284
+[INFO] 19:30:55:461 memoryPool/(7752:7826): Bytes recibidos: 1
+[INFO] 19:30:55:461 memoryPool/(7752:7826): Operacion 0
+[INFO] 19:30:55:461 memoryPool/(7752:7826): Se seleccionó el valor Exprimido
+[INFO] 19:30:55:594 memoryPool/(7752:7827): sock: -1760100283
+[INFO] 19:30:55:606 memoryPool/(7752:7827): Bytes recibidos: 1
+[INFO] 19:30:55:612 memoryPool/(7752:7827): Operacion 0
+[INFO] 19:30:55:612 memoryPool/(7752:7827): Se seleccionó el valor Tiramisu
+[INFO] 19:30:55:776 memoryPool/(7752:7828): sock: -1760100282
+[INFO] 19:30:55:786 memoryPool/(7752:7828): Bytes recibidos: 1
+[INFO] 19:30:55:786 memoryPool/(7752:7828): Operacion 1
+[INFO] 19:30:55:786 memoryPool/(7752:7828): Parametros válidos, se hace un insert
+[INFO] 19:30:55:786 memoryPool/(7752:7828): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:30:55:786 memoryPool/(7752:7828): Se agrego el dato Hamburguesa al marco 22
+[INFO] 19:30:55:786 memoryPool/(7752:7828): Se inserto al segmento PLATOS_PRINCIPALES el valor Hamburguesa
+[INFO] 19:30:55:787 memoryPool/(7752:7828): Rta insert 0
+
+[INFO] 19:30:56:8 memoryPool/(7752:7829): sock: -1760100281
+[INFO] 19:30:56:15 memoryPool/(7752:7829): Bytes recibidos: 1
+[INFO] 19:30:56:16 memoryPool/(7752:7829): Operacion 0
+[INFO] 19:30:56:16 memoryPool/(7752:7829): Se seleccionó el valor Milanesa
+[INFO] 19:30:56:154 memoryPool/(7752:7830): sock: -1760100280
+[INFO] 19:30:56:164 memoryPool/(7752:7830): Bytes recibidos: 1
+[INFO] 19:30:56:164 memoryPool/(7752:7830): Operacion 1
+[INFO] 19:30:56:164 memoryPool/(7752:7830): Parametros válidos, se hace un insert
+[INFO] 19:30:56:164 memoryPool/(7752:7830): Se agrego el dato Pizza al marco 20
+[INFO] 19:30:56:164 memoryPool/(7752:7830): Se inserto al segmento PLATOS_PRINCIPALES el valor Pizza
+[INFO] 19:30:56:164 memoryPool/(7752:7830): Rta insert 0
+
+[INFO] 19:30:56:321 memoryPool/(7752:7831): sock: -1760100279
+[INFO] 19:30:56:334 memoryPool/(7752:7831): Bytes recibidos: 1
+[INFO] 19:30:56:334 memoryPool/(7752:7831): Operacion 1
+[INFO] 19:30:56:335 memoryPool/(7752:7831): Parametros válidos, se hace un insert
+[INFO] 19:30:56:335 memoryPool/(7752:7831): Se agrego el dato Fanta al marco 13
+[INFO] 19:30:56:335 memoryPool/(7752:7831): Se inserto al segmento BEBIDAS el valor Fanta
+[INFO] 19:30:56:335 memoryPool/(7752:7831): Rta insert 0
+
+[INFO] 19:30:56:456 memoryPool/(7752:7832): sock: -1760100278
+[INFO] 19:30:56:477 memoryPool/(7752:7832): Bytes recibidos: 1
+[INFO] 19:30:56:477 memoryPool/(7752:7832): Operacion 1
+[INFO] 19:30:56:477 memoryPool/(7752:7832): Parametros válidos, se hace un insert
+[INFO] 19:30:56:477 memoryPool/(7752:7832): Se agrego el dato Empanadas al marco 21
+[INFO] 19:30:56:477 memoryPool/(7752:7832): Se inserto al segmento PLATOS_PRINCIPALES el valor Empanadas
+[INFO] 19:30:56:477 memoryPool/(7752:7832): Rta insert 0
+
+[INFO] 19:30:56:637 memoryPool/(7752:7833): sock: -1760100277
+[INFO] 19:30:56:647 memoryPool/(7752:7833): Bytes recibidos: 1
+[INFO] 19:30:56:647 memoryPool/(7752:7833): Operacion 1
+[INFO] 19:30:56:647 memoryPool/(7752:7833): Parametros válidos, se hace un insert
+[INFO] 19:30:56:647 memoryPool/(7752:7833): Se agrego el dato Helado al marco 17
+[INFO] 19:30:56:647 memoryPool/(7752:7833): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:30:56:648 memoryPool/(7752:7833): Rta insert 0
+
+[INFO] 19:30:56:768 memoryPool/(7752:7834): sock: -1760100276
+[INFO] 19:30:56:777 memoryPool/(7752:7834): Bytes recibidos: 1
+[INFO] 19:30:56:777 memoryPool/(7752:7834): Operacion 1
+[INFO] 19:30:56:778 memoryPool/(7752:7834): Parametros válidos, se hace un insert
+[INFO] 19:30:56:778 memoryPool/(7752:7834): Se agrego el dato Chocotorta al marco 1
+[INFO] 19:30:56:778 memoryPool/(7752:7834): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:30:56:778 memoryPool/(7752:7834): Rta insert 0
+
+[INFO] 19:30:56:958 memoryPool/(7752:7840): sock: -1760100275
+[INFO] 19:30:56:968 memoryPool/(7752:7840): Bytes recibidos: 1
+[INFO] 19:30:56:969 memoryPool/(7752:7840): Operacion 1
+[INFO] 19:30:56:969 memoryPool/(7752:7840): Parametros válidos, se hace un insert
+[INFO] 19:30:56:969 memoryPool/(7752:7840): Se agrego el dato Mate al marco 14
+[INFO] 19:30:56:969 memoryPool/(7752:7840): Se inserto al segmento BEBIDAS el valor Mate
+[INFO] 19:30:56:969 memoryPool/(7752:7840): Rta insert 0
+
+[INFO] 19:30:57:112 memoryPool/(7752:7841): sock: -1760100274
+[INFO] 19:30:57:112 memoryPool/(7752:7841): Bytes recibidos: 1
+[INFO] 19:30:57:113 memoryPool/(7752:7841): Operacion 0
+[INFO] 19:30:57:113 memoryPool/(7752:7841): Se seleccionó el valor Frutilla
+[INFO] 19:30:57:236 memoryPool/(7752:7842): sock: -1760100273
+[INFO] 19:30:57:256 memoryPool/(7752:7842): Bytes recibidos: 1
+[INFO] 19:30:57:256 memoryPool/(7752:7842): Operacion 0
+[INFO] 19:30:57:266 memoryPool/(7752:7842): se creo una conexión con lfs
+[INFO] 19:30:57:787 memoryPool/(7752:7842): No existe un valor con esa key en LFS
+[INFO] 19:30:57:787 memoryPool/(7752:7842): Se agrego una página al segmento FRUTAS
+[INFO] 19:35:46:681 memoryPool/(7888:7888): Se inicializo la memoria con tamanio 2048
+[INFO] 19:35:59:983 memoryPool/(7903:7903): Se inicializo la memoria con tamanio 2048
+[INFO] 19:36:00:114 memoryPool/(7903:7903): Tamanio máximo recibido de FS: 30
+[INFO] 19:36:20:39 memoryPool/(7903:7918): sock: -1760100346
+[INFO] 19:36:20:59 memoryPool/(7903:7918): Bytes recibidos: 1
+[INFO] 19:36:20:60 memoryPool/(7903:7918): Operacion 2
+[INFO] 19:36:20:60 memoryPool/(7903:7919): sock: -1760100345
+[INFO] 19:36:20:98 memoryPool/(7903:7919): Bytes recibidos: 1
+[INFO] 19:36:20:98 memoryPool/(7903:7919): Operacion 2
+[INFO] 19:36:20:165 memoryPool/(7903:7918): se creo una conexión con lfs
+[INFO] 19:36:20:166 memoryPool/(7903:7919): se creo una conexión con lfs
+[INFO] 19:36:43:387 memoryPool/(7903:7918): Respuesta del create 0
+[INFO] 19:36:43:387 memoryPool/(7903:7918): La respuesta del create fue 0
+[INFO] 19:36:43:395 memoryPool/(7903:7919): Respuesta del create 0
+[INFO] 19:36:43:396 memoryPool/(7903:7919): La respuesta del create fue 0
+[INFO] 19:36:43:532 memoryPool/(7903:7921): sock: -1760100343
+[INFO] 19:36:43:532 memoryPool/(7903:7920): sock: -1760100343
+[INFO] 19:36:43:540 memoryPool/(7903:7921): Bytes recibidos: 1
+[INFO] 19:36:43:540 memoryPool/(7903:7921): Operacion 1
+[INFO] 19:36:43:540 memoryPool/(7903:7921): Parametros válidos, se hace un insert
+[INFO] 19:36:43:540 memoryPool/(7903:7921): Se creo el segmento POSTRES
+[INFO] 19:36:43:540 memoryPool/(7903:7921): Se agrego una página al segmento POSTRES
+[INFO] 19:36:43:541 memoryPool/(7903:7921): Se agrego el dato Flan al marco 0
+[INFO] 19:36:43:541 memoryPool/(7903:7921): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:36:43:541 memoryPool/(7903:7921): Rta insert 0
+
+[INFO] 19:36:43:554 memoryPool/(7903:7920): Bytes recibidos: 65535
+[INFO] 19:36:43:554 memoryPool/(7903:7920): Operacion 0
+[INFO] 19:37:45:872 memoryPool/(7934:7934): Se inicializo la memoria con tamanio 2048
+[INFO] 19:37:57:340 memoryPool/(7948:7948): Se inicializo la memoria con tamanio 2048
+[INFO] 19:37:57:479 memoryPool/(7948:7948): Tamanio máximo recibido de FS: 30
+[INFO] 19:38:02:867 memoryPool/(7948:7956): sock: -1760100346
+[INFO] 19:38:02:870 memoryPool/(7948:7956): Bytes recibidos: 1
+[INFO] 19:38:02:870 memoryPool/(7948:7956): Operacion 27
+[INFO] 19:38:02:871 memoryPool/(7948:7957): sock: -1760100345
+[INFO] 19:38:02:874 memoryPool/(7948:7957): Bytes recibidos: 1
+[INFO] 19:38:02:874 memoryPool/(7948:7957): Operacion 2
+[INFO] 19:38:02:882 memoryPool/(7948:7957): se creo una conexión con lfs
+[INFO] 19:38:03:664 memoryPool/(7948:7957): Respuesta del create 0
+[INFO] 19:38:03:664 memoryPool/(7948:7957): La respuesta del create fue 0
+[INFO] 19:38:03:804 memoryPool/(7948:7958): sock: -1760100344
+[INFO] 19:38:03:821 memoryPool/(7948:7958): Bytes recibidos: 1
+[INFO] 19:38:03:822 memoryPool/(7948:7958): Operacion 1
+[INFO] 19:38:03:822 memoryPool/(7948:7958): Parametros válidos, se hace un insert
+[INFO] 19:38:03:822 memoryPool/(7948:7958): Se creo el segmento POSTRES
+[INFO] 19:38:03:822 memoryPool/(7948:7958): Se agrego una página al segmento POSTRES
+[INFO] 19:38:03:822 memoryPool/(7948:7958): Se agrego el dato Flan al marco 0
+[INFO] 19:38:03:822 memoryPool/(7948:7958): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:38:03:822 memoryPool/(7948:7958): Rta insert 0
+
+[INFO] 19:38:03:943 memoryPool/(7948:7959): sock: -1760100343
+[INFO] 19:38:03:947 memoryPool/(7948:7959): Bytes recibidos: 1
+[INFO] 19:38:03:948 memoryPool/(7948:7959): Operacion 27
+[INFO] 19:39:36:41 memoryPool/(8003:8003): Se inicializo la memoria con tamanio 2048
+[INFO] 19:39:36:86 memoryPool/(8003:8003): Tamanio máximo recibido de FS: 30
+[INFO] 19:39:41:886 memoryPool/(8003:8012): sock: -1760100345
+[INFO] 19:39:41:886 memoryPool/(8003:8011): sock: -1760100345
+[INFO] 19:39:41:891 memoryPool/(8003:8012): Bytes recibidos: 1
+[INFO] 19:39:41:891 memoryPool/(8003:8012): Operacion 2
+[INFO] 19:39:41:900 memoryPool/(8003:8012): se creo una conexión con lfs
+[INFO] 19:39:42:476 memoryPool/(8003:8012): Respuesta del create 0
+[INFO] 19:39:42:477 memoryPool/(8003:8012): La respuesta del create fue 0
+[INFO] 19:39:42:502 memoryPool/(8003:8011): Bytes recibidos: 65535
+[INFO] 19:39:42:502 memoryPool/(8003:8011): Operacion 0
+[INFO] 19:42:00:350 memoryPool/(8264:8264): Se inicializo la memoria con tamanio 2048
+[INFO] 19:42:00:507 memoryPool/(8264:8264): Tamanio máximo recibido de FS: 30
+[INFO] 19:42:20:29 memoryPool/(8304:8304): Se inicializo la memoria con tamanio 2048
+[INFO] 19:42:21:992 memoryPool/(8304:8304): Tamanio máximo recibido de FS: 30
+[INFO] 19:42:27:200 memoryPool/(8304:8313): sock: -1760100345
+[INFO] 19:42:27:200 memoryPool/(8304:8312): sock: -1760100345
+[INFO] 19:42:27:204 memoryPool/(8304:8313): Bytes recibidos: 1
+[INFO] 19:42:27:204 memoryPool/(8304:8313): Operacion 2
+[INFO] 19:42:30:216 memoryPool/(8304:8313): se creo una conexión con lfs
+[INFO] 19:42:30:765 memoryPool/(8304:8313): Respuesta del create 0
+[INFO] 19:42:30:765 memoryPool/(8304:8313): La respuesta del create fue 0
+[INFO] 19:42:30:783 memoryPool/(8304:8312): Bytes recibidos: 65535
+[INFO] 19:42:30:783 memoryPool/(8304:8312): Operacion 0
+[INFO] 19:44:16:359 memoryPool/(8342:8342): Se inicializo la memoria con tamanio 2048
+[INFO] 19:44:33:758 memoryPool/(8356:8356): Se inicializo la memoria con tamanio 2048
+[INFO] 19:44:33:860 memoryPool/(8356:8356): Tamanio máximo recibido de FS: 30
+[INFO] 19:44:39:353 memoryPool/(8356:8363): sock: -1760100346
+[INFO] 19:44:39:399 memoryPool/(8356:8363): Bytes recibidos: 1
+[INFO] 19:44:39:399 memoryPool/(8356:8363): Operacion 2
+[INFO] 19:44:39:412 memoryPool/(8356:8363): se creo una conexión con lfs
+[INFO] 19:44:39:975 memoryPool/(8356:8363): Respuesta del create 0
+[INFO] 19:44:39:976 memoryPool/(8356:8363): La respuesta del create fue 0
+[INFO] 19:44:40:128 memoryPool/(8356:8364): sock: -1760100345
+[INFO] 19:44:40:140 memoryPool/(8356:8364): Bytes recibidos: 1
+[INFO] 19:44:40:140 memoryPool/(8356:8364): Operacion 3
+[INFO] 19:44:40:151 memoryPool/(8356:8364): se creo una conexión con lfs
+[INFO] 19:44:40:674 memoryPool/(8356:8364): Respuesta del describe 01019MARINOS;SC;1;10000
+[INFO] 19:44:40:795 memoryPool/(8356:8365): sock: -1760100344
+[INFO] 19:44:40:802 memoryPool/(8356:8365): Bytes recibidos: 1
+[INFO] 19:44:40:802 memoryPool/(8356:8365): Operacion 1
+[INFO] 19:44:40:802 memoryPool/(8356:8365): Parametros válidos, se hace un insert
+[INFO] 19:44:40:802 memoryPool/(8356:8365): Se creo el segmento MARINOS
+[INFO] 19:44:40:802 memoryPool/(8356:8365): Se agrego una página al segmento MARINOS
+[INFO] 19:44:40:803 memoryPool/(8356:8365): Se agrego el dato Ballena al marco 0
+[INFO] 19:44:40:803 memoryPool/(8356:8365): Se inserto al segmento MARINOS el valor Ballena
+[INFO] 19:44:40:807 memoryPool/(8356:8365): Rta insert 0
+
+[INFO] 19:44:40:928 memoryPool/(8356:8366): sock: -1760100343
+[INFO] 19:44:40:934 memoryPool/(8356:8366): Bytes recibidos: 1
+[INFO] 19:44:40:935 memoryPool/(8356:8366): Operacion 2
+[INFO] 19:44:40:941 memoryPool/(8356:8366): se creo una conexión con lfs
+[INFO] 19:44:41:482 memoryPool/(8356:8366): Respuesta del create 0
+[INFO] 19:44:41:483 memoryPool/(8356:8366): La respuesta del create fue 0
+[INFO] 19:44:41:628 memoryPool/(8356:8368): sock: -1760100342
+[INFO] 19:44:41:640 memoryPool/(8356:8368): Bytes recibidos: 1
+[INFO] 19:44:41:640 memoryPool/(8356:8368): Operacion 1
+[INFO] 19:44:41:640 memoryPool/(8356:8368): Parametros válidos, se hace un insert
+[INFO] 19:44:41:640 memoryPool/(8356:8368): Se creo el segmento POSTRES
+[INFO] 19:44:41:640 memoryPool/(8356:8368): Se agrego una página al segmento POSTRES
+[INFO] 19:44:41:640 memoryPool/(8356:8368): Se agrego el dato Flan al marco 1
+[INFO] 19:44:41:641 memoryPool/(8356:8368): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:44:41:641 memoryPool/(8356:8368): Rta insert 0
+
+[INFO] 19:44:41:771 memoryPool/(8356:8369): sock: -1760100341
+[INFO] 19:44:41:775 memoryPool/(8356:8369): Bytes recibidos: 1
+[INFO] 19:44:41:775 memoryPool/(8356:8369): Operacion 2
+[INFO] 19:44:41:783 memoryPool/(8356:8369): se creo una conexión con lfs
+[INFO] 19:44:42:319 memoryPool/(8356:8369): Respuesta del create 0
+[INFO] 19:44:42:319 memoryPool/(8356:8369): La respuesta del create fue 0
+[INFO] 19:44:42:459 memoryPool/(8356:8370): sock: -1760100340
+[INFO] 19:44:42:468 memoryPool/(8356:8370): Bytes recibidos: 1
+[INFO] 19:44:42:469 memoryPool/(8356:8370): Operacion 2
+[INFO] 19:44:42:474 memoryPool/(8356:8370): se creo una conexión con lfs
+[INFO] 19:44:43:35 memoryPool/(8356:8370): Respuesta del create 0
+[INFO] 19:44:43:35 memoryPool/(8356:8370): La respuesta del create fue 0
+[INFO] 19:44:43:179 memoryPool/(8356:8371): sock: -1760100339
+[INFO] 19:44:43:186 memoryPool/(8356:8371): Bytes recibidos: 1
+[INFO] 19:44:43:186 memoryPool/(8356:8371): Operacion 2
+[INFO] 19:44:43:195 memoryPool/(8356:8371): se creo una conexión con lfs
+[INFO] 19:44:43:742 memoryPool/(8356:8371): Respuesta del create 0
+[INFO] 19:44:43:742 memoryPool/(8356:8371): La respuesta del create fue 0
+[INFO] 19:44:43:868 memoryPool/(8356:8372): sock: -1760100338
+[INFO] 19:44:43:882 memoryPool/(8356:8372): Bytes recibidos: 1
+[INFO] 19:44:43:883 memoryPool/(8356:8372): Operacion 3
+[INFO] 19:44:43:889 memoryPool/(8356:8372): se creo una conexión con lfs
+[INFO] 19:44:44:421 memoryPool/(8356:8372): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:44:44:535 memoryPool/(8356:8373): sock: -1760100337
+[INFO] 19:44:44:540 memoryPool/(8356:8373): Bytes recibidos: 1
+[INFO] 19:44:44:540 memoryPool/(8356:8373): Operacion 1
+[INFO] 19:44:44:540 memoryPool/(8356:8373): Parametros válidos, se hace un insert
+[INFO] 19:44:44:540 memoryPool/(8356:8373): Se creo el segmento FRUTAS
+[INFO] 19:44:44:540 memoryPool/(8356:8373): Se agrego una página al segmento FRUTAS
+[INFO] 19:44:44:541 memoryPool/(8356:8373): Se agrego el dato Manzana al marco 2
+[INFO] 19:44:44:541 memoryPool/(8356:8373): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:44:44:541 memoryPool/(8356:8373): Rta insert 0
+
+[INFO] 19:44:44:654 memoryPool/(8356:8374): sock: -1760100336
+[INFO] 19:44:44:658 memoryPool/(8356:8374): Bytes recibidos: 1
+[INFO] 19:44:44:658 memoryPool/(8356:8374): Operacion 1
+[INFO] 19:44:44:658 memoryPool/(8356:8374): Parametros válidos, se hace un insert
+[INFO] 19:44:44:658 memoryPool/(8356:8374): Se agrego una página al segmento POSTRES
+[INFO] 19:44:44:658 memoryPool/(8356:8374): Se agrego el dato Chocotorta al marco 3
+[INFO] 19:44:44:658 memoryPool/(8356:8374): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:44:44:658 memoryPool/(8356:8374): Rta insert 0
+
+[INFO] 19:44:44:787 memoryPool/(8356:8375): sock: -1760100335
+[INFO] 19:44:44:791 memoryPool/(8356:8375): Bytes recibidos: 1
+[INFO] 19:44:44:791 memoryPool/(8356:8375): Operacion 1
+[INFO] 19:44:44:791 memoryPool/(8356:8375): Parametros válidos, se hace un insert
+[INFO] 19:44:44:791 memoryPool/(8356:8375): Se agrego una página al segmento FRUTAS
+[INFO] 19:44:44:791 memoryPool/(8356:8375): Se agrego el dato Banana al marco 4
+[INFO] 19:44:44:791 memoryPool/(8356:8375): Se inserto al segmento FRUTAS el valor Banana
+[INFO] 19:44:44:791 memoryPool/(8356:8375): Rta insert 0
+
+[INFO] 19:44:44:918 memoryPool/(8356:8376): sock: -1760100334
+[INFO] 19:44:44:926 memoryPool/(8356:8376): Bytes recibidos: 1
+[INFO] 19:44:44:926 memoryPool/(8356:8376): Operacion 1
+[INFO] 19:44:44:926 memoryPool/(8356:8376): Parametros válidos, se hace un insert
+[INFO] 19:44:44:926 memoryPool/(8356:8376): Se agrego una página al segmento MARINOS
+[INFO] 19:44:44:926 memoryPool/(8356:8376): Se agrego el dato Pulpo al marco 5
+[INFO] 19:44:44:926 memoryPool/(8356:8376): Se inserto al segmento MARINOS el valor Pulpo
+[INFO] 19:44:44:926 memoryPool/(8356:8376): Rta insert 0
+
+[INFO] 19:44:45:82 memoryPool/(8356:8377): sock: -1760100333
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Bytes recibidos: 1
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Operacion 1
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Parametros válidos, se hace un insert
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Se creo el segmento AVES
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Se agrego una página al segmento AVES
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Se agrego el dato Paloma al marco 6
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Se inserto al segmento AVES el valor Paloma
+[INFO] 19:44:45:88 memoryPool/(8356:8377): Rta insert 0
+
+[INFO] 19:44:45:236 memoryPool/(8356:8378): sock: -1760100332
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Bytes recibidos: 1
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Operacion 1
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Parametros válidos, se hace un insert
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Se creo el segmento MAMIFEROS
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Se agrego el dato Gato al marco 7
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Se inserto al segmento MAMIFEROS el valor Gato
+[INFO] 19:44:45:241 memoryPool/(8356:8378): Rta insert 0
+
+[INFO] 19:44:45:355 memoryPool/(8356:8379): sock: -1760100331
+[INFO] 19:44:45:358 memoryPool/(8356:8379): Bytes recibidos: 1
+[INFO] 19:44:45:358 memoryPool/(8356:8379): Operacion 1
+[INFO] 19:44:45:358 memoryPool/(8356:8379): Parametros válidos, se hace un insert
+[INFO] 19:44:45:358 memoryPool/(8356:8379): Se agrego una página al segmento POSTRES
+[INFO] 19:44:45:359 memoryPool/(8356:8379): Se agrego el dato Tiramisu al marco 8
+[INFO] 19:44:45:359 memoryPool/(8356:8379): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:44:45:359 memoryPool/(8356:8379): Rta insert 0
+
+[INFO] 19:44:45:479 memoryPool/(8356:8380): sock: -1760100330
+[INFO] 19:44:45:486 memoryPool/(8356:8380): Bytes recibidos: 1
+[INFO] 19:44:45:486 memoryPool/(8356:8380): Operacion 2
+[INFO] 19:44:45:492 memoryPool/(8356:8380): se creo una conexión con lfs
+[INFO] 19:44:46:31 memoryPool/(8356:8380): Respuesta del create 0
+[INFO] 19:44:46:31 memoryPool/(8356:8380): La respuesta del create fue 0
+[INFO] 19:44:46:166 memoryPool/(8356:8381): sock: -1760100329
+[INFO] 19:44:46:172 memoryPool/(8356:8381): Bytes recibidos: 1
+[INFO] 19:44:46:172 memoryPool/(8356:8381): Operacion 3
+[INFO] 19:44:46:177 memoryPool/(8356:8381): se creo una conexión con lfs
+[INFO] 19:44:46:701 memoryPool/(8356:8381): Respuesta del describe 01019POSTRES;SC;3;60000
+[INFO] 19:44:46:844 memoryPool/(8356:8382): sock: -1760100328
+[INFO] 19:44:46:851 memoryPool/(8356:8382): Bytes recibidos: 1
+[INFO] 19:44:46:851 memoryPool/(8356:8382): Operacion 1
+[INFO] 19:44:46:852 memoryPool/(8356:8382): Parametros válidos, se hace un insert
+[INFO] 19:44:46:852 memoryPool/(8356:8382): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:44:46:852 memoryPool/(8356:8382): Se agrego el dato Perro al marco 9
+[INFO] 19:44:46:852 memoryPool/(8356:8382): Se inserto al segmento MAMIFEROS el valor Perro
+[INFO] 19:44:46:852 memoryPool/(8356:8382): Rta insert 0
+
+[INFO] 19:44:46:988 memoryPool/(8356:8383): sock: -1760100327
+[INFO] 19:44:46:992 memoryPool/(8356:8383): Bytes recibidos: 1
+[INFO] 19:44:46:992 memoryPool/(8356:8383): Operacion 1
+[INFO] 19:44:46:992 memoryPool/(8356:8383): Parametros válidos, se hace un insert
+[INFO] 19:44:46:992 memoryPool/(8356:8383): Se agrego una página al segmento MARINOS
+[INFO] 19:44:46:992 memoryPool/(8356:8383): Se agrego el dato Delfin al marco 10
+[INFO] 19:44:46:992 memoryPool/(8356:8383): Se inserto al segmento MARINOS el valor Delfin
+[INFO] 19:44:46:992 memoryPool/(8356:8383): Rta insert 0
+
+[INFO] 19:44:47:108 memoryPool/(8356:8384): sock: -1760100326
+[INFO] 19:44:47:111 memoryPool/(8356:8384): Bytes recibidos: 1
+[INFO] 19:44:47:111 memoryPool/(8356:8384): Operacion 1
+[INFO] 19:44:47:112 memoryPool/(8356:8384): Parametros válidos, se hace un insert
+[INFO] 19:44:47:112 memoryPool/(8356:8384): Se agrego el dato Halcon al marco 6
+[INFO] 19:44:47:112 memoryPool/(8356:8384): Se inserto al segmento AVES el valor Halcon
+[INFO] 19:44:47:112 memoryPool/(8356:8384): Rta insert 0
+
+[INFO] 19:44:47:236 memoryPool/(8356:8385): sock: -1760100325
+[INFO] 19:44:47:241 memoryPool/(8356:8385): Bytes recibidos: 1
+[INFO] 19:44:47:241 memoryPool/(8356:8385): Operacion 1
+[INFO] 19:44:47:241 memoryPool/(8356:8385): Parametros válidos, se hace un insert
+[INFO] 19:44:47:241 memoryPool/(8356:8385): Se agrego una página al segmento FRUTAS
+[INFO] 19:44:47:241 memoryPool/(8356:8385): Se agrego el dato Pera al marco 11
+[INFO] 19:44:47:241 memoryPool/(8356:8385): Se inserto al segmento FRUTAS el valor Pera
+[INFO] 19:44:47:241 memoryPool/(8356:8385): Rta insert 0
+
+[INFO] 19:44:47:372 memoryPool/(8356:8386): sock: -1760100324
+[INFO] 19:44:47:372 memoryPool/(8356:8386): Bytes recibidos: 1
+[INFO] 19:44:47:372 memoryPool/(8356:8386): Operacion 0
+[INFO] 19:44:47:372 memoryPool/(8356:8386): Se seleccionó el valor Banana
+[INFO] 19:44:47:511 memoryPool/(8356:8387): sock: -1760100323
+[INFO] 19:44:47:512 memoryPool/(8356:8387): Bytes recibidos: 1
+[INFO] 19:44:47:512 memoryPool/(8356:8387): Operacion 1
+[INFO] 19:44:47:513 memoryPool/(8356:8387): Parametros válidos, se hace un insert
+[INFO] 19:44:47:516 memoryPool/(8356:8387): Se agrego el dato Helado al marco 3
+[INFO] 19:44:47:516 memoryPool/(8356:8387): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:44:47:516 memoryPool/(8356:8387): Rta insert 0
+
+[INFO] 19:44:47:649 memoryPool/(8356:8388): sock: -1760100322
+[INFO] 19:44:47:660 memoryPool/(8356:8388): Bytes recibidos: 1
+[INFO] 19:44:47:660 memoryPool/(8356:8388): Operacion 0
+[INFO] 19:44:47:660 memoryPool/(8356:8388): Se seleccionó el valor Halcon
+[INFO] 19:44:47:862 memoryPool/(8356:8389): sock: -1760100321
+[INFO] 19:44:47:868 memoryPool/(8356:8389): Bytes recibidos: 1
+[INFO] 19:44:47:868 memoryPool/(8356:8389): Operacion 1
+[INFO] 19:44:47:869 memoryPool/(8356:8389): Parametros válidos, se hace un insert
+[INFO] 19:44:47:869 memoryPool/(8356:8389): Se agrego el dato Orca al marco 0
+[INFO] 19:44:47:869 memoryPool/(8356:8389): Se inserto al segmento MARINOS el valor Orca
+[INFO] 19:44:47:869 memoryPool/(8356:8389): Rta insert 0
+
+[INFO] 19:44:47:995 memoryPool/(8356:8390): sock: -1760100320
+[INFO] 19:44:48:12 memoryPool/(8356:8390): Bytes recibidos: 1
+[INFO] 19:44:48:13 memoryPool/(8356:8390): Operacion 3
+[INFO] 19:44:48:18 memoryPool/(8356:8390): se creo una conexión con lfs
+[INFO] 19:44:48:546 memoryPool/(8356:8390): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:44:48:672 memoryPool/(8356:8391): sock: -1760100319
+[INFO] 19:44:48:683 memoryPool/(8356:8391): Bytes recibidos: 1
+[INFO] 19:44:48:684 memoryPool/(8356:8391): Operacion 0
+[INFO] 19:44:48:684 memoryPool/(8356:8391): Se seleccionó el valor Helado
+[INFO] 19:44:48:820 memoryPool/(8356:8392): sock: -1760100318
+[INFO] 19:44:48:831 memoryPool/(8356:8392): Bytes recibidos: 1
+[INFO] 19:44:48:831 memoryPool/(8356:8392): Operacion 1
+[INFO] 19:44:48:832 memoryPool/(8356:8392): Parametros válidos, se hace un insert
+[INFO] 19:44:48:832 memoryPool/(8356:8392): Se agrego el dato Almendrado al marco 3
+[INFO] 19:44:48:832 memoryPool/(8356:8392): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:44:48:832 memoryPool/(8356:8392): Rta insert 0
+
+[INFO] 19:44:48:953 memoryPool/(8356:8393): sock: -1760100317
+[INFO] 19:44:48:957 memoryPool/(8356:8393): Bytes recibidos: 1
+[INFO] 19:44:48:957 memoryPool/(8356:8393): Operacion 1
+[INFO] 19:44:48:957 memoryPool/(8356:8393): Parametros válidos, se hace un insert
+[INFO] 19:44:48:958 memoryPool/(8356:8393): Se agrego una página al segmento FRUTAS
+[INFO] 19:44:48:958 memoryPool/(8356:8393): Se agrego el dato Uva al marco 12
+[INFO] 19:44:48:958 memoryPool/(8356:8393): Se inserto al segmento FRUTAS el valor Uva
+[INFO] 19:44:48:958 memoryPool/(8356:8393): Rta insert 0
+
+[INFO] 19:44:49:192 memoryPool/(8356:8394): sock: -1760100316
+[INFO] 19:44:49:195 memoryPool/(8356:8394): Bytes recibidos: 1
+[INFO] 19:44:49:195 memoryPool/(8356:8394): Operacion 3
+[INFO] 19:44:49:200 memoryPool/(8356:8394): se creo una conexión con lfs
+[INFO] 19:44:49:723 memoryPool/(8356:8394): Respuesta del describe 01018FRUTAS;SC;2;50000
+[INFO] 19:44:49:854 memoryPool/(8356:8395): sock: -1760100315
+[INFO] 19:44:49:863 memoryPool/(8356:8395): Bytes recibidos: 1
+[INFO] 19:44:49:863 memoryPool/(8356:8395): Operacion 1
+[INFO] 19:44:49:864 memoryPool/(8356:8395): Parametros válidos, se hace un insert
+[INFO] 19:44:49:864 memoryPool/(8356:8395): Se creo el segmento BEBIDAS
+[INFO] 19:44:49:864 memoryPool/(8356:8395): Se agrego una página al segmento BEBIDAS
+[INFO] 19:44:49:864 memoryPool/(8356:8395): Se agrego el dato Pepsi al marco 13
+[INFO] 19:44:49:864 memoryPool/(8356:8395): Se inserto al segmento BEBIDAS el valor Pepsi
+[INFO] 19:44:49:864 memoryPool/(8356:8395): Rta insert 0
+
+[INFO] 19:44:49:996 memoryPool/(8356:8396): sock: -1760100314
+[INFO] 19:44:49:0 memoryPool/(8356:8396): Bytes recibidos: 1
+[INFO] 19:44:49:0 memoryPool/(8356:8396): Operacion 1
+[INFO] 19:44:49:0 memoryPool/(8356:8396): Parametros válidos, se hace un insert
+[INFO] 19:44:49:0 memoryPool/(8356:8396): Se agrego una página al segmento BEBIDAS
+[INFO] 19:44:49:0 memoryPool/(8356:8396): Se agrego el dato Coca Cola al marco 14
+[INFO] 19:44:49:1 memoryPool/(8356:8396): Se inserto al segmento BEBIDAS el valor Coca Cola
+[INFO] 19:44:49:1 memoryPool/(8356:8396): Rta insert 0
+
+[INFO] 19:44:50:120 memoryPool/(8356:8397): sock: -1760100313
+[INFO] 19:44:50:120 memoryPool/(8356:8397): Bytes recibidos: 1
+[INFO] 19:44:50:120 memoryPool/(8356:8397): Operacion 0
+[INFO] 19:44:50:120 memoryPool/(8356:8397): Se seleccionó el valor Coca Cola
+[INFO] 19:44:50:245 memoryPool/(8356:8398): sock: -1760100312
+[INFO] 19:44:50:250 memoryPool/(8356:8398): Bytes recibidos: 1
+[INFO] 19:44:50:251 memoryPool/(8356:8398): Operacion 1
+[INFO] 19:44:50:251 memoryPool/(8356:8398): Parametros válidos, se hace un insert
+[INFO] 19:44:50:251 memoryPool/(8356:8398): Se agrego el dato Sprite al marco 14
+[INFO] 19:44:50:251 memoryPool/(8356:8398): Se inserto al segmento BEBIDAS el valor Sprite
+[INFO] 19:44:50:251 memoryPool/(8356:8398): Rta insert 0
+
+[INFO] 19:44:50:373 memoryPool/(8356:8399): sock: -1760100311
+[INFO] 19:44:50:376 memoryPool/(8356:8399): Bytes recibidos: 1
+[INFO] 19:44:50:377 memoryPool/(8356:8399): Operacion 0
+[INFO] 19:44:50:377 memoryPool/(8356:8399): Se seleccionó el valor Almendrado
+[INFO] 19:44:50:509 memoryPool/(8356:8400): sock: -1760100310
+[INFO] 19:44:50:517 memoryPool/(8356:8400): Bytes recibidos: 1
+[INFO] 19:44:50:517 memoryPool/(8356:8400): Operacion 1
+[INFO] 19:44:50:517 memoryPool/(8356:8400): Parametros válidos, se hace un insert
+[INFO] 19:44:50:517 memoryPool/(8356:8400): Se agrego una página al segmento POSTRES
+[INFO] 19:44:50:517 memoryPool/(8356:8400): Se agrego el dato Bizcochuelo al marco 15
+[INFO] 19:44:50:518 memoryPool/(8356:8400): Se inserto al segmento POSTRES el valor Bizcochuelo
+[INFO] 19:44:50:518 memoryPool/(8356:8400): Rta insert 0
+
+[INFO] 19:44:50:643 memoryPool/(8356:8401): sock: -1760100309
+[INFO] 19:44:50:652 memoryPool/(8356:8401): Bytes recibidos: 1
+[INFO] 19:44:50:652 memoryPool/(8356:8401): Operacion 1
+[INFO] 19:44:50:652 memoryPool/(8356:8401): Parametros válidos, se hace un insert
+[INFO] 19:44:50:652 memoryPool/(8356:8401): Se agrego una página al segmento BEBIDAS
+[INFO] 19:44:50:652 memoryPool/(8356:8401): Se agrego el dato Limonada al marco 16
+[INFO] 19:44:50:652 memoryPool/(8356:8401): Se inserto al segmento BEBIDAS el valor Limonada
+[INFO] 19:44:50:652 memoryPool/(8356:8401): Rta insert 0
+
+[INFO] 19:44:50:783 memoryPool/(8356:8402): sock: -1760100308
+[INFO] 19:44:50:792 memoryPool/(8356:8402): Bytes recibidos: 1
+[INFO] 19:44:50:792 memoryPool/(8356:8402): Operacion 1
+[INFO] 19:44:50:792 memoryPool/(8356:8402): Parametros válidos, se hace un insert
+[INFO] 19:44:50:792 memoryPool/(8356:8402): Se agrego el dato Melon al marco 12
+[INFO] 19:44:50:792 memoryPool/(8356:8402): Se inserto al segmento FRUTAS el valor Melon
+[INFO] 19:44:50:792 memoryPool/(8356:8402): Rta insert 0
+
+[INFO] 19:44:50:909 memoryPool/(8356:8403): sock: -1760100307
+[INFO] 19:44:50:914 memoryPool/(8356:8403): Bytes recibidos: 1
+[INFO] 19:44:50:914 memoryPool/(8356:8403): Operacion 1
+[INFO] 19:44:50:914 memoryPool/(8356:8403): Parametros válidos, se hace un insert
+[INFO] 19:44:50:914 memoryPool/(8356:8403): Se agrego el dato Manzana al marco 4
+[INFO] 19:44:50:914 memoryPool/(8356:8403): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:44:50:915 memoryPool/(8356:8403): Rta insert 0
+
+[INFO] 19:44:51:45 memoryPool/(8356:8404): sock: -1760100306
+[INFO] 19:44:51:56 memoryPool/(8356:8404): Bytes recibidos: 1
+[INFO] 19:44:51:56 memoryPool/(8356:8404): Operacion 0
+[INFO] 19:44:51:57 memoryPool/(8356:8404): Se seleccionó el valor Sprite
+[INFO] 19:44:51:187 memoryPool/(8356:8405): sock: -1760100305
+[INFO] 19:44:51:193 memoryPool/(8356:8405): Bytes recibidos: 1
+[INFO] 19:44:51:193 memoryPool/(8356:8405): Operacion 1
+[INFO] 19:44:51:193 memoryPool/(8356:8405): Parametros válidos, se hace un insert
+[INFO] 19:44:51:193 memoryPool/(8356:8405): Se agrego una página al segmento POSTRES
+[INFO] 19:44:51:193 memoryPool/(8356:8405): Se agrego el dato Budin de pan al marco 17
+[INFO] 19:44:51:193 memoryPool/(8356:8405): Se inserto al segmento POSTRES el valor Budin de pan
+[INFO] 19:44:51:194 memoryPool/(8356:8405): Rta insert 0
+
+[INFO] 19:44:51:310 memoryPool/(8356:8406): sock: -1760100304
+[INFO] 19:44:51:314 memoryPool/(8356:8406): Bytes recibidos: 1
+[INFO] 19:44:51:314 memoryPool/(8356:8406): Operacion 1
+[INFO] 19:44:51:314 memoryPool/(8356:8406): Parametros válidos, se hace un insert
+[INFO] 19:44:51:314 memoryPool/(8356:8406): Se agrego el dato Sandia al marco 2
+[INFO] 19:44:51:314 memoryPool/(8356:8406): Se inserto al segmento FRUTAS el valor Sandia
+[INFO] 19:44:51:314 memoryPool/(8356:8406): Rta insert 0
+
+[INFO] 19:44:51:432 memoryPool/(8356:8407): sock: -1760100303
+[INFO] 19:44:51:436 memoryPool/(8356:8407): Bytes recibidos: 1
+[INFO] 19:44:51:437 memoryPool/(8356:8407): Operacion 1
+[INFO] 19:44:51:437 memoryPool/(8356:8407): Parametros válidos, se hace un insert
+[INFO] 19:44:51:437 memoryPool/(8356:8407): Se agrego una página al segmento BEBIDAS
+[INFO] 19:44:51:437 memoryPool/(8356:8407): Se agrego el dato Exprimido al marco 18
+[INFO] 19:44:51:437 memoryPool/(8356:8407): Se inserto al segmento BEBIDAS el valor Exprimido
+[INFO] 19:44:51:437 memoryPool/(8356:8407): Rta insert 0
+
+[INFO] 19:44:51:561 memoryPool/(8356:8408): sock: -1760100302
+[INFO] 19:44:51:565 memoryPool/(8356:8408): Bytes recibidos: 1
+[INFO] 19:44:51:565 memoryPool/(8356:8408): Operacion 1
+[INFO] 19:44:51:566 memoryPool/(8356:8408): Parametros válidos, se hace un insert
+[INFO] 19:44:51:566 memoryPool/(8356:8408): Se agrego el dato Agua con gas al marco 16
+[INFO] 19:44:51:566 memoryPool/(8356:8408): Se inserto al segmento BEBIDAS el valor Agua con gas
+[INFO] 19:44:51:566 memoryPool/(8356:8408): Rta insert 0
+
+[INFO] 19:44:51:689 memoryPool/(8356:8409): sock: -1760100301
+[INFO] 19:44:51:699 memoryPool/(8356:8409): Bytes recibidos: 1
+[INFO] 19:44:51:699 memoryPool/(8356:8409): Operacion 1
+[INFO] 19:44:51:699 memoryPool/(8356:8409): Parametros válidos, se hace un insert
+[INFO] 19:44:51:699 memoryPool/(8356:8409): Se agrego el dato Manzana al marco 2
+[INFO] 19:44:51:699 memoryPool/(8356:8409): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:44:51:699 memoryPool/(8356:8409): Rta insert 0
+
+[INFO] 19:44:51:820 memoryPool/(8356:8410): sock: -1760100300
+[INFO] 19:44:51:824 memoryPool/(8356:8410): Bytes recibidos: 1
+[INFO] 19:44:51:824 memoryPool/(8356:8410): Operacion 3
+[INFO] 19:44:51:828 memoryPool/(8356:8410): se creo una conexión con lfs
+[INFO] 19:44:52:339 memoryPool/(8356:8410): Respuesta del describe 01019BEBIDAS;SC;6;10000
+[INFO] 19:44:52:474 memoryPool/(8356:8411): sock: -1760100299
+[INFO] 19:44:52:479 memoryPool/(8356:8411): Bytes recibidos: 1
+[INFO] 19:44:52:479 memoryPool/(8356:8411): Operacion 1
+[INFO] 19:44:52:479 memoryPool/(8356:8411): Parametros válidos, se hace un insert
+[INFO] 19:44:52:479 memoryPool/(8356:8411): Se agrego el dato Cereza al marco 4
+[INFO] 19:44:52:479 memoryPool/(8356:8411): Se inserto al segmento FRUTAS el valor Cereza
+[INFO] 19:44:52:479 memoryPool/(8356:8411): Rta insert 0
+
+[INFO] 19:44:52:602 memoryPool/(8356:8412): sock: -1760100298
+[INFO] 19:44:52:608 memoryPool/(8356:8412): Bytes recibidos: 1
+[INFO] 19:44:52:608 memoryPool/(8356:8412): Operacion 0
+[INFO] 19:44:52:608 memoryPool/(8356:8412): Se seleccionó el valor Cereza
+[INFO] 19:44:52:729 memoryPool/(8356:8413): sock: -1760100297
+[INFO] 19:44:52:739 memoryPool/(8356:8413): Bytes recibidos: 1
+[INFO] 19:44:52:739 memoryPool/(8356:8413): Operacion 0
+[INFO] 19:44:52:739 memoryPool/(8356:8413): Se seleccionó el valor Exprimido
+[INFO] 19:44:52:877 memoryPool/(8356:8414): sock: -1760100296
+[INFO] 19:44:52:891 memoryPool/(8356:8414): Bytes recibidos: 1
+[INFO] 19:44:52:891 memoryPool/(8356:8414): Operacion 1
+[INFO] 19:44:52:891 memoryPool/(8356:8414): Parametros válidos, se hace un insert
+[INFO] 19:44:52:891 memoryPool/(8356:8414): Se agrego el dato Frutilla al marco 11
+[INFO] 19:44:52:891 memoryPool/(8356:8414): Se inserto al segmento FRUTAS el valor Frutilla
+[INFO] 19:44:52:892 memoryPool/(8356:8414): Rta insert 0
+
+[INFO] 19:44:53:23 memoryPool/(8356:8415): sock: -1760100295
+[INFO] 19:44:53:23 memoryPool/(8356:8415): Bytes recibidos: 1
+[INFO] 19:44:53:23 memoryPool/(8356:8415): Operacion 1
+[INFO] 19:44:53:23 memoryPool/(8356:8415): Parametros válidos, se hace un insert
+[INFO] 19:44:53:23 memoryPool/(8356:8415): Se agrego el dato Gelatina al marco 8
+[INFO] 19:44:53:23 memoryPool/(8356:8415): Se inserto al segmento POSTRES el valor Gelatina
+[INFO] 19:44:53:23 memoryPool/(8356:8415): Rta insert 0
+
+[INFO] 19:44:53:161 memoryPool/(8356:8416): sock: -1760100294
+[INFO] 19:44:53:168 memoryPool/(8356:8416): Bytes recibidos: 1
+[INFO] 19:44:53:169 memoryPool/(8356:8416): Operacion 1
+[INFO] 19:44:53:169 memoryPool/(8356:8416): Parametros válidos, se hace un insert
+[INFO] 19:44:53:169 memoryPool/(8356:8416): Se agrego el dato Helado al marco 1
+[INFO] 19:44:53:169 memoryPool/(8356:8416): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:44:53:169 memoryPool/(8356:8416): Rta insert 0
+
+[INFO] 19:44:53:297 memoryPool/(8356:8417): sock: -1760100293
+[INFO] 19:44:53:303 memoryPool/(8356:8417): Bytes recibidos: 1
+[INFO] 19:44:53:303 memoryPool/(8356:8417): Operacion 1
+[INFO] 19:44:53:303 memoryPool/(8356:8417): Parametros válidos, se hace un insert
+[INFO] 19:44:53:303 memoryPool/(8356:8417): Se agrego el dato Almendrado al marco 3
+[INFO] 19:44:53:303 memoryPool/(8356:8417): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:44:53:303 memoryPool/(8356:8417): Rta insert 0
+
+[INFO] 19:44:53:438 memoryPool/(8356:8418): sock: -1760100292
+[INFO] 19:44:53:442 memoryPool/(8356:8418): Bytes recibidos: 1
+[INFO] 19:44:53:442 memoryPool/(8356:8418): Operacion 0
+[INFO] 19:44:53:442 memoryPool/(8356:8418): Se seleccionó el valor Sprite
+[INFO] 19:44:53:567 memoryPool/(8356:8419): sock: -1760100291
+[INFO] 19:44:53:575 memoryPool/(8356:8419): Bytes recibidos: 1
+[INFO] 19:44:53:575 memoryPool/(8356:8419): Operacion 2
+[INFO] 19:44:53:582 memoryPool/(8356:8419): se creo una conexión con lfs
+[INFO] 19:44:54:107 memoryPool/(8356:8419): Respuesta del create 0
+[INFO] 19:44:54:107 memoryPool/(8356:8419): La respuesta del create fue 0
+[INFO] 19:44:54:236 memoryPool/(8356:8420): sock: -1760100290
+[INFO] 19:44:54:237 memoryPool/(8356:8420): Bytes recibidos: 1
+[INFO] 19:44:54:237 memoryPool/(8356:8420): Operacion 1
+[INFO] 19:44:54:237 memoryPool/(8356:8420): Parametros válidos, se hace un insert
+[INFO] 19:44:54:237 memoryPool/(8356:8420): Se agrego una página al segmento POSTRES
+[INFO] 19:44:54:237 memoryPool/(8356:8420): Se agrego el dato Flan al marco 19
+[INFO] 19:44:54:237 memoryPool/(8356:8420): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:44:54:237 memoryPool/(8356:8420): Rta insert 0
+
+[INFO] 19:44:54:356 memoryPool/(8356:8421): sock: -1760100289
+[INFO] 19:44:54:366 memoryPool/(8356:8421): Bytes recibidos: 1
+[INFO] 19:44:54:366 memoryPool/(8356:8421): Operacion 1
+[INFO] 19:44:54:366 memoryPool/(8356:8421): Parametros válidos, se hace un insert
+[INFO] 19:44:54:366 memoryPool/(8356:8421): Se creo el segmento PLATOS_PRINCIPALES
+[INFO] 19:44:54:366 memoryPool/(8356:8421): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:44:54:366 memoryPool/(8356:8421): Se agrego el dato Milanesa al marco 20
+[INFO] 19:44:54:366 memoryPool/(8356:8421): Se inserto al segmento PLATOS_PRINCIPALES el valor Milanesa
+[INFO] 19:44:54:367 memoryPool/(8356:8421): Rta insert 0
+
+[INFO] 19:44:54:483 memoryPool/(8356:8422): sock: -1760100288
+[INFO] 19:44:54:488 memoryPool/(8356:8422): Bytes recibidos: 1
+[INFO] 19:44:54:488 memoryPool/(8356:8422): Operacion 1
+[INFO] 19:44:54:488 memoryPool/(8356:8422): Parametros válidos, se hace un insert
+[INFO] 19:44:54:488 memoryPool/(8356:8422): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:44:54:488 memoryPool/(8356:8422): Se agrego el dato Omelette al marco 21
+[INFO] 19:44:54:488 memoryPool/(8356:8422): Se inserto al segmento PLATOS_PRINCIPALES el valor Omelette
+[INFO] 19:44:54:488 memoryPool/(8356:8422): Rta insert 0
+
+[INFO] 19:44:54:622 memoryPool/(8356:8423): sock: -1760100287
+[INFO] 19:44:54:630 memoryPool/(8356:8423): Bytes recibidos: 1
+[INFO] 19:44:54:630 memoryPool/(8356:8423): Operacion 1
+[INFO] 19:44:54:630 memoryPool/(8356:8423): Parametros válidos, se hace un insert
+[INFO] 19:44:54:630 memoryPool/(8356:8423): Se agrego el dato Tiramisu al marco 15
+[INFO] 19:44:54:630 memoryPool/(8356:8423): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:44:54:631 memoryPool/(8356:8423): Rta insert 0
+
+[INFO] 19:44:54:756 memoryPool/(8356:8424): sock: -1760100286
+[INFO] 19:44:54:761 memoryPool/(8356:8424): Bytes recibidos: 1
+[INFO] 19:44:54:762 memoryPool/(8356:8424): Operacion 0
+[INFO] 19:44:54:762 memoryPool/(8356:8424): Se seleccionó el valor Manzana
+[INFO] 19:44:54:879 memoryPool/(8356:8425): sock: -1760100285
+[INFO] 19:44:54:882 memoryPool/(8356:8425): Bytes recibidos: 1
+[INFO] 19:44:54:882 memoryPool/(8356:8425): Operacion 0
+[INFO] 19:44:54:882 memoryPool/(8356:8425): Se seleccionó el valor Flan
+[INFO] 19:44:54:991 memoryPool/(8356:8426): sock: -1760100284
+[INFO] 19:44:54:995 memoryPool/(8356:8426): Bytes recibidos: 1
+[INFO] 19:44:54:995 memoryPool/(8356:8426): Operacion 0
+[INFO] 19:44:54:995 memoryPool/(8356:8426): Se seleccionó el valor Exprimido
+[INFO] 19:44:55:119 memoryPool/(8356:8427): sock: -1760100283
+[INFO] 19:44:55:123 memoryPool/(8356:8427): Bytes recibidos: 1
+[INFO] 19:44:55:123 memoryPool/(8356:8427): Operacion 0
+[INFO] 19:44:55:123 memoryPool/(8356:8427): Se seleccionó el valor Tiramisu
+[INFO] 19:44:55:239 memoryPool/(8356:8428): sock: -1760100282
+[INFO] 19:44:55:243 memoryPool/(8356:8428): Bytes recibidos: 1
+[INFO] 19:44:55:243 memoryPool/(8356:8428): Operacion 1
+[INFO] 19:44:55:243 memoryPool/(8356:8428): Parametros válidos, se hace un insert
+[INFO] 19:44:55:243 memoryPool/(8356:8428): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:44:55:243 memoryPool/(8356:8428): Se agrego el dato Hamburguesa al marco 22
+[INFO] 19:44:55:243 memoryPool/(8356:8428): Se inserto al segmento PLATOS_PRINCIPALES el valor Hamburguesa
+[INFO] 19:44:55:243 memoryPool/(8356:8428): Rta insert 0
+
+[INFO] 19:44:55:381 memoryPool/(8356:8429): sock: -1760100281
+[INFO] 19:44:55:388 memoryPool/(8356:8429): Bytes recibidos: 1
+[INFO] 19:44:55:388 memoryPool/(8356:8429): Operacion 0
+[INFO] 19:44:55:389 memoryPool/(8356:8429): Se seleccionó el valor Milanesa
+[INFO] 19:44:55:512 memoryPool/(8356:8430): sock: -1760100280
+[INFO] 19:44:55:523 memoryPool/(8356:8430): Bytes recibidos: 1
+[INFO] 19:44:55:524 memoryPool/(8356:8430): Operacion 1
+[INFO] 19:44:55:524 memoryPool/(8356:8430): Parametros válidos, se hace un insert
+[INFO] 19:44:55:524 memoryPool/(8356:8430): Se agrego el dato Pizza al marco 20
+[INFO] 19:44:55:524 memoryPool/(8356:8430): Se inserto al segmento PLATOS_PRINCIPALES el valor Pizza
+[INFO] 19:44:55:524 memoryPool/(8356:8430): Rta insert 0
+
+[INFO] 19:44:55:642 memoryPool/(8356:8431): sock: -1760100279
+[INFO] 19:44:55:645 memoryPool/(8356:8431): Bytes recibidos: 1
+[INFO] 19:44:55:645 memoryPool/(8356:8431): Operacion 1
+[INFO] 19:44:55:645 memoryPool/(8356:8431): Parametros válidos, se hace un insert
+[INFO] 19:44:55:645 memoryPool/(8356:8431): Se agrego el dato Fanta al marco 13
+[INFO] 19:44:55:645 memoryPool/(8356:8431): Se inserto al segmento BEBIDAS el valor Fanta
+[INFO] 19:44:55:645 memoryPool/(8356:8431): Rta insert 0
+
+[INFO] 19:44:55:767 memoryPool/(8356:8432): sock: -1760100278
+[INFO] 19:44:55:772 memoryPool/(8356:8432): Bytes recibidos: 1
+[INFO] 19:44:55:772 memoryPool/(8356:8432): Operacion 1
+[INFO] 19:44:55:772 memoryPool/(8356:8432): Parametros válidos, se hace un insert
+[INFO] 19:44:55:772 memoryPool/(8356:8432): Se agrego el dato Empanadas al marco 21
+[INFO] 19:44:55:772 memoryPool/(8356:8432): Se inserto al segmento PLATOS_PRINCIPALES el valor Empanadas
+[INFO] 19:44:55:772 memoryPool/(8356:8432): Rta insert 0
+
+[INFO] 19:44:55:912 memoryPool/(8356:8433): sock: -1760100277
+[INFO] 19:44:55:924 memoryPool/(8356:8433): Bytes recibidos: 1
+[INFO] 19:44:55:924 memoryPool/(8356:8433): Operacion 1
+[INFO] 19:44:55:924 memoryPool/(8356:8433): Parametros válidos, se hace un insert
+[INFO] 19:44:55:924 memoryPool/(8356:8433): Se agrego el dato Helado al marco 17
+[INFO] 19:44:55:924 memoryPool/(8356:8433): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:44:55:924 memoryPool/(8356:8433): Rta insert 0
+
+[INFO] 19:44:56:47 memoryPool/(8356:8434): sock: -1760100276
+[INFO] 19:44:56:56 memoryPool/(8356:8434): Bytes recibidos: 1
+[INFO] 19:44:56:56 memoryPool/(8356:8434): Operacion 1
+[INFO] 19:44:56:56 memoryPool/(8356:8434): Parametros válidos, se hace un insert
+[INFO] 19:44:56:56 memoryPool/(8356:8434): Se agrego el dato Chocotorta al marco 1
+[INFO] 19:44:56:56 memoryPool/(8356:8434): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:44:56:56 memoryPool/(8356:8434): Rta insert 0
+
+[INFO] 19:44:56:182 memoryPool/(8356:8435): sock: -1760100275
+[INFO] 19:44:56:189 memoryPool/(8356:8435): Bytes recibidos: 1
+[INFO] 19:44:56:189 memoryPool/(8356:8435): Operacion 1
+[INFO] 19:44:56:189 memoryPool/(8356:8435): Parametros válidos, se hace un insert
+[INFO] 19:44:56:189 memoryPool/(8356:8435): Se agrego el dato Mate al marco 14
+[INFO] 19:44:56:189 memoryPool/(8356:8435): Se inserto al segmento BEBIDAS el valor Mate
+[INFO] 19:44:56:189 memoryPool/(8356:8435): Rta insert 0
+
+[INFO] 19:44:56:317 memoryPool/(8356:8436): sock: -1760100274
+[INFO] 19:44:56:333 memoryPool/(8356:8436): Bytes recibidos: 1
+[INFO] 19:44:56:333 memoryPool/(8356:8436): Operacion 0
+[INFO] 19:44:56:333 memoryPool/(8356:8436): Se seleccionó el valor Frutilla
+[INFO] 19:44:56:457 memoryPool/(8356:8437): sock: -1760100273
+[INFO] 19:44:56:461 memoryPool/(8356:8437): Bytes recibidos: 1
+[INFO] 19:44:56:461 memoryPool/(8356:8437): Operacion 0
+[INFO] 19:44:56:465 memoryPool/(8356:8437): se creo una conexión con lfs
+[INFO] 19:44:56:975 memoryPool/(8356:8437): No existe un valor con esa key en LFS
+[INFO] 19:44:56:976 memoryPool/(8356:8437): Se agrego una página al segmento FRUTAS
+[INFO] 19:51:37:192 memoryPool/(8595:8595): Se inicializo la memoria con tamanio 2048
+[INFO] 19:51:37:401 memoryPool/(8595:8595): Tamanio máximo recibido de FS: 30
+[INFO] 19:51:49:651 memoryPool/(8595:8602): sock: -1760100346
+[INFO] 19:51:49:655 memoryPool/(8595:8602): Bytes recibidos: 1
+[INFO] 19:51:49:655 memoryPool/(8595:8602): Operacion 2
+[INFO] 19:51:49:664 memoryPool/(8595:8602): se creo una conexión con lfs
+[INFO] 19:51:50:289 memoryPool/(8595:8602): Respuesta del create 0
+[INFO] 19:51:50:290 memoryPool/(8595:8602): La respuesta del create fue 0
+[INFO] 19:51:50:429 memoryPool/(8595:8603): sock: -1760100345
+[INFO] 19:51:50:437 memoryPool/(8595:8603): Bytes recibidos: 1
+[INFO] 19:51:50:437 memoryPool/(8595:8603): Operacion 3
+[INFO] 19:51:50:461 memoryPool/(8595:8603): se creo una conexión con lfs
+[INFO] 19:51:51:7 memoryPool/(8595:8603): Respuesta del describe 01019MARINOS;SC;1;10000
+[INFO] 19:51:51:477 memoryPool/(8595:8604): sock: -1760100344
+[INFO] 19:51:51:484 memoryPool/(8595:8604): Bytes recibidos: 1
+[INFO] 19:51:51:484 memoryPool/(8595:8604): Operacion 1
+[INFO] 19:51:51:484 memoryPool/(8595:8604): Parametros válidos, se hace un insert
+[INFO] 19:51:51:484 memoryPool/(8595:8604): Se creo el segmento MARINOS
+[INFO] 19:51:51:484 memoryPool/(8595:8604): Se agrego una página al segmento MARINOS
+[INFO] 19:51:51:484 memoryPool/(8595:8604): Se agrego el dato Ballena al marco 0
+[INFO] 19:51:51:484 memoryPool/(8595:8604): Se inserto al segmento MARINOS el valor Ballena
+[INFO] 19:51:51:485 memoryPool/(8595:8604): Rta insert 0
+
+[INFO] 19:51:51:608 memoryPool/(8595:8605): sock: -1760100343
+[INFO] 19:51:51:617 memoryPool/(8595:8605): Bytes recibidos: 1
+[INFO] 19:51:51:617 memoryPool/(8595:8605): Operacion 2
+[INFO] 19:51:51:626 memoryPool/(8595:8605): se creo una conexión con lfs
+[INFO] 19:51:52:223 memoryPool/(8595:8605): Respuesta del create 0
+[INFO] 19:51:52:224 memoryPool/(8595:8605): La respuesta del create fue 0
+[INFO] 19:51:52:359 memoryPool/(8595:8606): sock: -1760100342
+[INFO] 19:51:52:363 memoryPool/(8595:8606): Bytes recibidos: 1
+[INFO] 19:51:52:363 memoryPool/(8595:8606): Operacion 1
+[INFO] 19:51:52:363 memoryPool/(8595:8606): Parametros válidos, se hace un insert
+[INFO] 19:51:52:363 memoryPool/(8595:8606): Se creo el segmento POSTRES
+[INFO] 19:51:52:363 memoryPool/(8595:8606): Se agrego una página al segmento POSTRES
+[INFO] 19:51:52:363 memoryPool/(8595:8606): Se agrego el dato Flan al marco 1
+[INFO] 19:51:52:363 memoryPool/(8595:8606): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:51:52:364 memoryPool/(8595:8606): Rta insert 0
+
+[INFO] 19:51:52:478 memoryPool/(8595:8607): sock: -1760100341
+[INFO] 19:51:52:484 memoryPool/(8595:8607): Bytes recibidos: 1
+[INFO] 19:51:52:484 memoryPool/(8595:8607): Operacion 2
+[INFO] 19:51:52:492 memoryPool/(8595:8607): se creo una conexión con lfs
+[INFO] 19:51:53:77 memoryPool/(8595:8607): Respuesta del create 0
+[INFO] 19:51:53:77 memoryPool/(8595:8607): La respuesta del create fue 0
+[INFO] 19:51:53:217 memoryPool/(8595:8608): sock: -1760100340
+[INFO] 19:51:53:227 memoryPool/(8595:8608): Bytes recibidos: 1
+[INFO] 19:51:53:227 memoryPool/(8595:8608): Operacion 2
+[INFO] 19:51:53:237 memoryPool/(8595:8608): se creo una conexión con lfs
+[INFO] 19:51:53:791 memoryPool/(8595:8608): Respuesta del create 0
+[INFO] 19:51:53:791 memoryPool/(8595:8608): La respuesta del create fue 0
+[INFO] 19:51:53:917 memoryPool/(8595:8609): sock: -1760100339
+[INFO] 19:51:53:922 memoryPool/(8595:8609): Bytes recibidos: 1
+[INFO] 19:51:53:922 memoryPool/(8595:8609): Operacion 2
+[INFO] 19:51:53:933 memoryPool/(8595:8609): se creo una conexión con lfs
+[INFO] 19:51:54:486 memoryPool/(8595:8609): Respuesta del create 0
+[INFO] 19:51:54:486 memoryPool/(8595:8609): La respuesta del create fue 0
+[INFO] 19:51:54:638 memoryPool/(8595:8610): sock: -1760100338
+[INFO] 19:51:54:655 memoryPool/(8595:8610): Bytes recibidos: 1
+[INFO] 19:51:54:656 memoryPool/(8595:8610): Operacion 3
+[INFO] 19:51:54:692 memoryPool/(8595:8610): se creo una conexión con lfs
+[INFO] 19:51:55:222 memoryPool/(8595:8610): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:51:55:351 memoryPool/(8595:8611): sock: -1760100337
+[INFO] 19:51:55:355 memoryPool/(8595:8611): Bytes recibidos: 1
+[INFO] 19:51:55:355 memoryPool/(8595:8611): Operacion 1
+[INFO] 19:51:55:355 memoryPool/(8595:8611): Parametros válidos, se hace un insert
+[INFO] 19:51:55:356 memoryPool/(8595:8611): Se creo el segmento FRUTAS
+[INFO] 19:51:55:356 memoryPool/(8595:8611): Se agrego una página al segmento FRUTAS
+[INFO] 19:51:55:356 memoryPool/(8595:8611): Se agrego el dato Manzana al marco 2
+[INFO] 19:51:55:356 memoryPool/(8595:8611): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:51:55:356 memoryPool/(8595:8611): Rta insert 0
+
+[INFO] 19:51:55:473 memoryPool/(8595:8612): sock: -1760100336
+[INFO] 19:51:55:478 memoryPool/(8595:8612): Bytes recibidos: 1
+[INFO] 19:51:55:478 memoryPool/(8595:8612): Operacion 1
+[INFO] 19:51:55:478 memoryPool/(8595:8612): Parametros válidos, se hace un insert
+[INFO] 19:51:55:478 memoryPool/(8595:8612): Se agrego una página al segmento POSTRES
+[INFO] 19:51:55:478 memoryPool/(8595:8612): Se agrego el dato Chocotorta al marco 3
+[INFO] 19:51:55:478 memoryPool/(8595:8612): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:51:55:478 memoryPool/(8595:8612): Rta insert 0
+
+[INFO] 19:51:55:603 memoryPool/(8595:8613): sock: -1760100335
+[INFO] 19:51:55:614 memoryPool/(8595:8613): Bytes recibidos: 1
+[INFO] 19:51:55:614 memoryPool/(8595:8613): Operacion 1
+[INFO] 19:51:55:614 memoryPool/(8595:8613): Parametros válidos, se hace un insert
+[INFO] 19:51:55:614 memoryPool/(8595:8613): Se agrego una página al segmento FRUTAS
+[INFO] 19:51:55:614 memoryPool/(8595:8613): Se agrego el dato Banana al marco 4
+[INFO] 19:51:55:615 memoryPool/(8595:8613): Se inserto al segmento FRUTAS el valor Banana
+[INFO] 19:51:55:615 memoryPool/(8595:8613): Rta insert 0
+
+[INFO] 19:51:55:752 memoryPool/(8595:8614): sock: -1760100334
+[INFO] 19:51:55:756 memoryPool/(8595:8614): Bytes recibidos: 1
+[INFO] 19:51:55:756 memoryPool/(8595:8614): Operacion 1
+[INFO] 19:51:55:756 memoryPool/(8595:8614): Parametros válidos, se hace un insert
+[INFO] 19:51:55:757 memoryPool/(8595:8614): Se agrego una página al segmento MARINOS
+[INFO] 19:51:55:757 memoryPool/(8595:8614): Se agrego el dato Pulpo al marco 5
+[INFO] 19:51:55:757 memoryPool/(8595:8614): Se inserto al segmento MARINOS el valor Pulpo
+[INFO] 19:51:55:757 memoryPool/(8595:8614): Rta insert 0
+
+[INFO] 19:51:55:901 memoryPool/(8595:8615): sock: -1760100333
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Bytes recibidos: 1
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Operacion 1
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Parametros válidos, se hace un insert
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Se creo el segmento AVES
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Se agrego una página al segmento AVES
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Se agrego el dato Paloma al marco 6
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Se inserto al segmento AVES el valor Paloma
+[INFO] 19:51:55:901 memoryPool/(8595:8615): Rta insert 0
+
+[INFO] 19:51:56:29 memoryPool/(8595:8616): sock: -1760100332
+[INFO] 19:51:56:34 memoryPool/(8595:8616): Bytes recibidos: 1
+[INFO] 19:51:56:35 memoryPool/(8595:8616): Operacion 1
+[INFO] 19:51:56:35 memoryPool/(8595:8616): Parametros válidos, se hace un insert
+[INFO] 19:51:56:35 memoryPool/(8595:8616): Se creo el segmento MAMIFEROS
+[INFO] 19:51:56:35 memoryPool/(8595:8616): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:51:56:35 memoryPool/(8595:8616): Se agrego el dato Gato al marco 7
+[INFO] 19:51:56:35 memoryPool/(8595:8616): Se inserto al segmento MAMIFEROS el valor Gato
+[INFO] 19:51:56:35 memoryPool/(8595:8616): Rta insert 0
+
+[INFO] 19:51:56:168 memoryPool/(8595:8617): sock: -1760100331
+[INFO] 19:51:56:171 memoryPool/(8595:8617): Bytes recibidos: 1
+[INFO] 19:51:56:171 memoryPool/(8595:8617): Operacion 1
+[INFO] 19:51:56:172 memoryPool/(8595:8617): Parametros válidos, se hace un insert
+[INFO] 19:51:56:172 memoryPool/(8595:8617): Se agrego una página al segmento POSTRES
+[INFO] 19:51:56:172 memoryPool/(8595:8617): Se agrego el dato Tiramisu al marco 8
+[INFO] 19:51:56:172 memoryPool/(8595:8617): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:51:56:172 memoryPool/(8595:8617): Rta insert 0
+
+[INFO] 19:51:56:310 memoryPool/(8595:8618): sock: -1760100330
+[INFO] 19:51:56:344 memoryPool/(8595:8618): Bytes recibidos: 1
+[INFO] 19:51:56:344 memoryPool/(8595:8618): Operacion 2
+[INFO] 19:51:56:349 memoryPool/(8595:8618): se creo una conexión con lfs
+[INFO] 19:51:57:44 memoryPool/(8595:8618): Respuesta del create 0
+[INFO] 19:51:57:44 memoryPool/(8595:8618): La respuesta del create fue 0
+[INFO] 19:51:57:184 memoryPool/(8595:8619): sock: -1760100329
+[INFO] 19:51:57:188 memoryPool/(8595:8619): Bytes recibidos: 1
+[INFO] 19:51:57:188 memoryPool/(8595:8619): Operacion 3
+[INFO] 19:51:57:201 memoryPool/(8595:8619): se creo una conexión con lfs
+[INFO] 19:51:57:726 memoryPool/(8595:8619): Respuesta del describe 01019POSTRES;SC;3;60000
+[INFO] 19:51:57:870 memoryPool/(8595:8620): sock: -1760100328
+[INFO] 19:51:57:883 memoryPool/(8595:8620): Bytes recibidos: 1
+[INFO] 19:51:57:884 memoryPool/(8595:8620): Operacion 1
+[INFO] 19:51:57:884 memoryPool/(8595:8620): Parametros válidos, se hace un insert
+[INFO] 19:51:57:884 memoryPool/(8595:8620): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:51:57:884 memoryPool/(8595:8620): Se agrego el dato Perro al marco 9
+[INFO] 19:51:57:884 memoryPool/(8595:8620): Se inserto al segmento MAMIFEROS el valor Perro
+[INFO] 19:51:57:884 memoryPool/(8595:8620): Rta insert 0
+
+[INFO] 19:51:57:0 memoryPool/(8595:8621): sock: -1760100327
+[INFO] 19:51:57:1 memoryPool/(8595:8621): Bytes recibidos: 1
+[INFO] 19:51:57:1 memoryPool/(8595:8621): Operacion 1
+[INFO] 19:51:57:1 memoryPool/(8595:8621): Parametros válidos, se hace un insert
+[INFO] 19:51:57:1 memoryPool/(8595:8621): Se agrego una página al segmento MARINOS
+[INFO] 19:51:57:1 memoryPool/(8595:8621): Se agrego el dato Delfin al marco 10
+[INFO] 19:51:57:1 memoryPool/(8595:8621): Se inserto al segmento MARINOS el valor Delfin
+[INFO] 19:51:57:1 memoryPool/(8595:8621): Rta insert 0
+
+[INFO] 19:51:58:121 memoryPool/(8595:8622): sock: -1760100326
+[INFO] 19:51:58:124 memoryPool/(8595:8622): Bytes recibidos: 1
+[INFO] 19:51:58:124 memoryPool/(8595:8622): Operacion 1
+[INFO] 19:51:58:124 memoryPool/(8595:8622): Parametros válidos, se hace un insert
+[INFO] 19:51:58:125 memoryPool/(8595:8622): Se agrego el dato Halcon al marco 6
+[INFO] 19:51:58:125 memoryPool/(8595:8622): Se inserto al segmento AVES el valor Halcon
+[INFO] 19:51:58:125 memoryPool/(8595:8622): Rta insert 0
+
+[INFO] 19:51:58:251 memoryPool/(8595:8623): sock: -1760100325
+[INFO] 19:51:58:254 memoryPool/(8595:8623): Bytes recibidos: 1
+[INFO] 19:51:58:254 memoryPool/(8595:8623): Operacion 1
+[INFO] 19:51:58:254 memoryPool/(8595:8623): Parametros válidos, se hace un insert
+[INFO] 19:51:58:254 memoryPool/(8595:8623): Se agrego una página al segmento FRUTAS
+[INFO] 19:51:58:254 memoryPool/(8595:8623): Se agrego el dato Pera al marco 11
+[INFO] 19:51:58:254 memoryPool/(8595:8623): Se inserto al segmento FRUTAS el valor Pera
+[INFO] 19:51:58:254 memoryPool/(8595:8623): Rta insert 0
+
+[INFO] 19:51:58:413 memoryPool/(8595:8624): sock: -1760100324
+[INFO] 19:51:58:426 memoryPool/(8595:8624): Bytes recibidos: 1
+[INFO] 19:51:58:426 memoryPool/(8595:8624): Operacion 0
+[INFO] 19:51:58:426 memoryPool/(8595:8624): Se seleccionó el valor Banana
+[INFO] 19:51:58:551 memoryPool/(8595:8625): sock: -1760100323
+[INFO] 19:51:58:557 memoryPool/(8595:8625): Bytes recibidos: 1
+[INFO] 19:51:58:557 memoryPool/(8595:8625): Operacion 1
+[INFO] 19:51:58:557 memoryPool/(8595:8625): Parametros válidos, se hace un insert
+[INFO] 19:51:58:557 memoryPool/(8595:8625): Se agrego el dato Helado al marco 3
+[INFO] 19:51:58:557 memoryPool/(8595:8625): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:51:58:558 memoryPool/(8595:8625): Rta insert 0
+
+[INFO] 19:51:58:685 memoryPool/(8595:8626): sock: -1760100322
+[INFO] 19:51:58:691 memoryPool/(8595:8626): Bytes recibidos: 1
+[INFO] 19:51:58:691 memoryPool/(8595:8626): Operacion 0
+[INFO] 19:51:58:691 memoryPool/(8595:8626): Se seleccionó el valor Halcon
+[INFO] 19:51:58:824 memoryPool/(8595:8627): sock: -1760100321
+[INFO] 19:51:58:839 memoryPool/(8595:8627): Bytes recibidos: 1
+[INFO] 19:51:58:839 memoryPool/(8595:8627): Operacion 1
+[INFO] 19:51:58:840 memoryPool/(8595:8627): Parametros válidos, se hace un insert
+[INFO] 19:51:58:840 memoryPool/(8595:8627): Se agrego el dato Orca al marco 0
+[INFO] 19:51:58:840 memoryPool/(8595:8627): Se inserto al segmento MARINOS el valor Orca
+[INFO] 19:51:58:840 memoryPool/(8595:8627): Rta insert 0
+
+[INFO] 19:51:58:971 memoryPool/(8595:8628): sock: -1760100320
+[INFO] 19:51:58:972 memoryPool/(8595:8628): Bytes recibidos: 1
+[INFO] 19:51:58:972 memoryPool/(8595:8628): Operacion 3
+[INFO] 19:51:58:976 memoryPool/(8595:8628): se creo una conexión con lfs
+[INFO] 19:51:59:490 memoryPool/(8595:8628): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:51:59:651 memoryPool/(8595:8629): sock: -1760100319
+[INFO] 19:51:59:657 memoryPool/(8595:8629): Bytes recibidos: 1
+[INFO] 19:51:59:657 memoryPool/(8595:8629): Operacion 0
+[INFO] 19:51:59:657 memoryPool/(8595:8629): Se seleccionó el valor Helado
+[INFO] 19:51:59:788 memoryPool/(8595:8630): sock: -1760100318
+[INFO] 19:51:59:816 memoryPool/(8595:8630): Bytes recibidos: 1
+[INFO] 19:51:59:817 memoryPool/(8595:8630): Operacion 1
+[INFO] 19:51:59:817 memoryPool/(8595:8630): Parametros válidos, se hace un insert
+[INFO] 19:51:59:817 memoryPool/(8595:8630): Se agrego el dato Almendrado al marco 3
+[INFO] 19:51:59:817 memoryPool/(8595:8630): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:51:59:817 memoryPool/(8595:8630): Rta insert 0
+
+[INFO] 19:51:59:949 memoryPool/(8595:8631): sock: -1760100317
+[INFO] 19:51:59:953 memoryPool/(8595:8631): Bytes recibidos: 1
+[INFO] 19:51:59:953 memoryPool/(8595:8631): Operacion 1
+[INFO] 19:51:59:953 memoryPool/(8595:8631): Parametros válidos, se hace un insert
+[INFO] 19:51:59:953 memoryPool/(8595:8631): Se agrego una página al segmento FRUTAS
+[INFO] 19:51:59:953 memoryPool/(8595:8631): Se agrego el dato Uva al marco 12
+[INFO] 19:51:59:953 memoryPool/(8595:8631): Se inserto al segmento FRUTAS el valor Uva
+[INFO] 19:51:59:953 memoryPool/(8595:8631): Rta insert 0
+
+[INFO] 19:52:00:172 memoryPool/(8595:8632): sock: -1760100316
+[INFO] 19:52:00:185 memoryPool/(8595:8632): Bytes recibidos: 1
+[INFO] 19:52:00:186 memoryPool/(8595:8632): Operacion 3
+[INFO] 19:52:00:192 memoryPool/(8595:8632): se creo una conexión con lfs
+[INFO] 19:52:00:712 memoryPool/(8595:8632): Respuesta del describe 01018FRUTAS;SC;2;50000
+[INFO] 19:52:00:852 memoryPool/(8595:8633): sock: -1760100315
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Bytes recibidos: 1
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Operacion 1
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Parametros válidos, se hace un insert
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Se creo el segmento BEBIDAS
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Se agrego una página al segmento BEBIDAS
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Se agrego el dato Pepsi al marco 13
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Se inserto al segmento BEBIDAS el valor Pepsi
+[INFO] 19:52:00:856 memoryPool/(8595:8633): Rta insert 0
+
+[INFO] 19:52:00:985 memoryPool/(8595:8634): sock: -1760100314
+[INFO] 19:52:00:989 memoryPool/(8595:8634): Bytes recibidos: 1
+[INFO] 19:52:00:989 memoryPool/(8595:8634): Operacion 1
+[INFO] 19:52:00:989 memoryPool/(8595:8634): Parametros válidos, se hace un insert
+[INFO] 19:52:00:989 memoryPool/(8595:8634): Se agrego una página al segmento BEBIDAS
+[INFO] 19:52:00:989 memoryPool/(8595:8634): Se agrego el dato Coca Cola al marco 14
+[INFO] 19:52:00:989 memoryPool/(8595:8634): Se inserto al segmento BEBIDAS el valor Coca Cola
+[INFO] 19:52:00:989 memoryPool/(8595:8634): Rta insert 0
+
+[INFO] 19:52:01:128 memoryPool/(8595:8635): sock: -1760100313
+[INFO] 19:52:01:134 memoryPool/(8595:8635): Bytes recibidos: 1
+[INFO] 19:52:01:135 memoryPool/(8595:8635): Operacion 0
+[INFO] 19:52:01:135 memoryPool/(8595:8635): Se seleccionó el valor Coca Cola
+[INFO] 19:52:01:257 memoryPool/(8595:8636): sock: -1760100312
+[INFO] 19:52:01:265 memoryPool/(8595:8636): Bytes recibidos: 1
+[INFO] 19:52:01:265 memoryPool/(8595:8636): Operacion 1
+[INFO] 19:52:01:265 memoryPool/(8595:8636): Parametros válidos, se hace un insert
+[INFO] 19:52:01:265 memoryPool/(8595:8636): Se agrego el dato Sprite al marco 14
+[INFO] 19:52:01:265 memoryPool/(8595:8636): Se inserto al segmento BEBIDAS el valor Sprite
+[INFO] 19:52:01:266 memoryPool/(8595:8636): Rta insert 0
+
+[INFO] 19:52:01:390 memoryPool/(8595:8637): sock: -1760100311
+[INFO] 19:52:01:397 memoryPool/(8595:8637): Bytes recibidos: 1
+[INFO] 19:52:01:397 memoryPool/(8595:8637): Operacion 0
+[INFO] 19:52:01:397 memoryPool/(8595:8637): Se seleccionó el valor Almendrado
+[INFO] 19:52:01:526 memoryPool/(8595:8638): sock: -1760100310
+[INFO] 19:52:01:529 memoryPool/(8595:8638): Bytes recibidos: 1
+[INFO] 19:52:01:529 memoryPool/(8595:8638): Operacion 1
+[INFO] 19:52:01:530 memoryPool/(8595:8638): Parametros válidos, se hace un insert
+[INFO] 19:52:01:530 memoryPool/(8595:8638): Se agrego una página al segmento POSTRES
+[INFO] 19:52:01:530 memoryPool/(8595:8638): Se agrego el dato Bizcochuelo al marco 15
+[INFO] 19:52:01:530 memoryPool/(8595:8638): Se inserto al segmento POSTRES el valor Bizcochuelo
+[INFO] 19:52:01:530 memoryPool/(8595:8638): Rta insert 0
+
+[INFO] 19:52:01:646 memoryPool/(8595:8639): sock: -1760100309
+[INFO] 19:52:01:651 memoryPool/(8595:8639): Bytes recibidos: 1
+[INFO] 19:52:01:651 memoryPool/(8595:8639): Operacion 1
+[INFO] 19:52:01:652 memoryPool/(8595:8639): Parametros válidos, se hace un insert
+[INFO] 19:52:01:652 memoryPool/(8595:8639): Se agrego una página al segmento BEBIDAS
+[INFO] 19:52:01:652 memoryPool/(8595:8639): Se agrego el dato Limonada al marco 16
+[INFO] 19:52:01:652 memoryPool/(8595:8639): Se inserto al segmento BEBIDAS el valor Limonada
+[INFO] 19:52:01:652 memoryPool/(8595:8639): Rta insert 0
+
+[INFO] 19:52:01:799 memoryPool/(8595:8640): sock: -1760100308
+[INFO] 19:52:01:800 memoryPool/(8595:8640): Bytes recibidos: 1
+[INFO] 19:52:01:800 memoryPool/(8595:8640): Operacion 1
+[INFO] 19:52:01:800 memoryPool/(8595:8640): Parametros válidos, se hace un insert
+[INFO] 19:52:01:800 memoryPool/(8595:8640): Se agrego el dato Melon al marco 12
+[INFO] 19:52:01:800 memoryPool/(8595:8640): Se inserto al segmento FRUTAS el valor Melon
+[INFO] 19:52:01:800 memoryPool/(8595:8640): Rta insert 0
+
+[INFO] 19:52:01:921 memoryPool/(8595:8641): sock: -1760100307
+[INFO] 19:52:01:928 memoryPool/(8595:8641): Bytes recibidos: 1
+[INFO] 19:52:01:929 memoryPool/(8595:8641): Operacion 1
+[INFO] 19:52:01:929 memoryPool/(8595:8641): Parametros válidos, se hace un insert
+[INFO] 19:52:01:929 memoryPool/(8595:8641): Se agrego el dato Manzana al marco 4
+[INFO] 19:52:01:929 memoryPool/(8595:8641): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:52:01:929 memoryPool/(8595:8641): Rta insert 0
+
+[INFO] 19:52:02:44 memoryPool/(8595:8642): sock: -1760100306
+[INFO] 19:52:02:47 memoryPool/(8595:8642): Bytes recibidos: 1
+[INFO] 19:52:02:47 memoryPool/(8595:8642): Operacion 0
+[INFO] 19:52:02:47 memoryPool/(8595:8642): Se seleccionó el valor Sprite
+[INFO] 19:52:02:160 memoryPool/(8595:8643): sock: -1760100305
+[INFO] 19:52:02:169 memoryPool/(8595:8643): Bytes recibidos: 1
+[INFO] 19:52:02:169 memoryPool/(8595:8643): Operacion 1
+[INFO] 19:52:02:169 memoryPool/(8595:8643): Parametros válidos, se hace un insert
+[INFO] 19:52:02:169 memoryPool/(8595:8643): Se agrego una página al segmento POSTRES
+[INFO] 19:52:02:169 memoryPool/(8595:8643): Se agrego el dato Budin de pan al marco 17
+[INFO] 19:52:02:169 memoryPool/(8595:8643): Se inserto al segmento POSTRES el valor Budin de pan
+[INFO] 19:52:02:170 memoryPool/(8595:8643): Rta insert 0
+
+[INFO] 19:52:02:289 memoryPool/(8595:8644): sock: -1760100304
+[INFO] 19:52:02:294 memoryPool/(8595:8644): Bytes recibidos: 1
+[INFO] 19:52:02:294 memoryPool/(8595:8644): Operacion 1
+[INFO] 19:52:02:294 memoryPool/(8595:8644): Parametros válidos, se hace un insert
+[INFO] 19:52:02:294 memoryPool/(8595:8644): Se agrego el dato Sandia al marco 2
+[INFO] 19:52:02:294 memoryPool/(8595:8644): Se inserto al segmento FRUTAS el valor Sandia
+[INFO] 19:52:02:294 memoryPool/(8595:8644): Rta insert 0
+
+[INFO] 19:52:02:413 memoryPool/(8595:8645): sock: -1760100303
+[INFO] 19:52:02:422 memoryPool/(8595:8645): Bytes recibidos: 1
+[INFO] 19:52:02:422 memoryPool/(8595:8645): Operacion 1
+[INFO] 19:52:02:422 memoryPool/(8595:8645): Parametros válidos, se hace un insert
+[INFO] 19:52:02:422 memoryPool/(8595:8645): Se agrego una página al segmento BEBIDAS
+[INFO] 19:52:02:422 memoryPool/(8595:8645): Se agrego el dato Exprimido al marco 18
+[INFO] 19:52:02:422 memoryPool/(8595:8645): Se inserto al segmento BEBIDAS el valor Exprimido
+[INFO] 19:52:02:422 memoryPool/(8595:8645): Rta insert 0
+
+[INFO] 19:52:02:562 memoryPool/(8595:8646): sock: -1760100302
+[INFO] 19:52:02:562 memoryPool/(8595:8646): Bytes recibidos: 1
+[INFO] 19:52:02:562 memoryPool/(8595:8646): Operacion 1
+[INFO] 19:52:02:562 memoryPool/(8595:8646): Parametros válidos, se hace un insert
+[INFO] 19:52:02:562 memoryPool/(8595:8646): Se agrego el dato Agua con gas al marco 16
+[INFO] 19:52:02:562 memoryPool/(8595:8646): Se inserto al segmento BEBIDAS el valor Agua con gas
+[INFO] 19:52:02:563 memoryPool/(8595:8646): Rta insert 0
+
+[INFO] 19:52:02:683 memoryPool/(8595:8647): sock: -1760100301
+[INFO] 19:52:02:689 memoryPool/(8595:8647): Bytes recibidos: 1
+[INFO] 19:52:02:689 memoryPool/(8595:8647): Operacion 1
+[INFO] 19:52:02:689 memoryPool/(8595:8647): Parametros válidos, se hace un insert
+[INFO] 19:52:02:689 memoryPool/(8595:8647): Se agrego el dato Manzana al marco 2
+[INFO] 19:52:02:689 memoryPool/(8595:8647): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:52:02:689 memoryPool/(8595:8647): Rta insert 0
+
+[INFO] 19:52:02:808 memoryPool/(8595:8648): sock: -1760100300
+[INFO] 19:52:02:812 memoryPool/(8595:8648): Bytes recibidos: 1
+[INFO] 19:52:02:812 memoryPool/(8595:8648): Operacion 3
+[INFO] 19:52:02:819 memoryPool/(8595:8648): se creo una conexión con lfs
+[INFO] 19:52:03:333 memoryPool/(8595:8648): Respuesta del describe 01019BEBIDAS;SC;6;10000
+[INFO] 19:52:03:480 memoryPool/(8595:8649): sock: -1760100299
+[INFO] 19:52:03:483 memoryPool/(8595:8649): Bytes recibidos: 1
+[INFO] 19:52:03:483 memoryPool/(8595:8649): Operacion 1
+[INFO] 19:52:03:483 memoryPool/(8595:8649): Parametros válidos, se hace un insert
+[INFO] 19:52:03:483 memoryPool/(8595:8649): Se agrego el dato Cereza al marco 4
+[INFO] 19:52:03:483 memoryPool/(8595:8649): Se inserto al segmento FRUTAS el valor Cereza
+[INFO] 19:52:03:484 memoryPool/(8595:8649): Rta insert 0
+
+[INFO] 19:52:03:620 memoryPool/(8595:8650): sock: -1760100298
+[INFO] 19:52:03:624 memoryPool/(8595:8650): Bytes recibidos: 1
+[INFO] 19:52:03:624 memoryPool/(8595:8650): Operacion 0
+[INFO] 19:52:03:624 memoryPool/(8595:8650): Se seleccionó el valor Cereza
+[INFO] 19:52:03:767 memoryPool/(8595:8651): sock: -1760100297
+[INFO] 19:52:03:774 memoryPool/(8595:8651): Bytes recibidos: 1
+[INFO] 19:52:03:774 memoryPool/(8595:8651): Operacion 0
+[INFO] 19:52:03:774 memoryPool/(8595:8651): Se seleccionó el valor Exprimido
+[INFO] 19:52:03:898 memoryPool/(8595:8652): sock: -1760100296
+[INFO] 19:52:03:909 memoryPool/(8595:8652): Bytes recibidos: 1
+[INFO] 19:52:03:909 memoryPool/(8595:8652): Operacion 1
+[INFO] 19:52:03:909 memoryPool/(8595:8652): Parametros válidos, se hace un insert
+[INFO] 19:52:03:909 memoryPool/(8595:8652): Se agrego el dato Frutilla al marco 11
+[INFO] 19:52:03:909 memoryPool/(8595:8652): Se inserto al segmento FRUTAS el valor Frutilla
+[INFO] 19:52:03:910 memoryPool/(8595:8652): Rta insert 0
+
+[INFO] 19:52:04:43 memoryPool/(8595:8653): sock: -1760100295
+[INFO] 19:52:04:47 memoryPool/(8595:8653): Bytes recibidos: 1
+[INFO] 19:52:04:47 memoryPool/(8595:8653): Operacion 1
+[INFO] 19:52:04:47 memoryPool/(8595:8653): Parametros válidos, se hace un insert
+[INFO] 19:52:04:47 memoryPool/(8595:8653): Se agrego el dato Gelatina al marco 8
+[INFO] 19:52:04:47 memoryPool/(8595:8653): Se inserto al segmento POSTRES el valor Gelatina
+[INFO] 19:52:04:48 memoryPool/(8595:8653): Rta insert 0
+
+[INFO] 19:52:04:165 memoryPool/(8595:8654): sock: -1760100294
+[INFO] 19:52:04:181 memoryPool/(8595:8654): Bytes recibidos: 1
+[INFO] 19:52:04:181 memoryPool/(8595:8654): Operacion 1
+[INFO] 19:52:04:181 memoryPool/(8595:8654): Parametros válidos, se hace un insert
+[INFO] 19:52:04:181 memoryPool/(8595:8654): Se agrego el dato Helado al marco 1
+[INFO] 19:52:04:181 memoryPool/(8595:8654): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:52:04:181 memoryPool/(8595:8654): Rta insert 0
+
+[INFO] 19:52:04:317 memoryPool/(8595:8655): sock: -1760100293
+[INFO] 19:52:04:338 memoryPool/(8595:8655): Bytes recibidos: 1
+[INFO] 19:52:04:338 memoryPool/(8595:8655): Operacion 1
+[INFO] 19:52:04:338 memoryPool/(8595:8655): Parametros válidos, se hace un insert
+[INFO] 19:52:04:338 memoryPool/(8595:8655): Se agrego el dato Almendrado al marco 3
+[INFO] 19:52:04:338 memoryPool/(8595:8655): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:52:04:338 memoryPool/(8595:8655): Rta insert 0
+
+[INFO] 19:52:04:464 memoryPool/(8595:8656): sock: -1760100292
+[INFO] 19:52:04:470 memoryPool/(8595:8656): Bytes recibidos: 1
+[INFO] 19:52:04:470 memoryPool/(8595:8656): Operacion 0
+[INFO] 19:52:04:470 memoryPool/(8595:8656): Se seleccionó el valor Sprite
+[INFO] 19:52:04:601 memoryPool/(8595:8657): sock: -1760100291
+[INFO] 19:52:04:624 memoryPool/(8595:8657): Bytes recibidos: 1
+[INFO] 19:52:04:624 memoryPool/(8595:8657): Operacion 2
+[INFO] 19:52:04:630 memoryPool/(8595:8657): se creo una conexión con lfs
+[INFO] 19:52:05:201 memoryPool/(8595:8657): Respuesta del create 0
+[INFO] 19:52:05:201 memoryPool/(8595:8657): La respuesta del create fue 0
+[INFO] 19:52:05:332 memoryPool/(8595:8658): sock: -1760100290
+[INFO] 19:52:05:354 memoryPool/(8595:8658): Bytes recibidos: 1
+[INFO] 19:52:05:354 memoryPool/(8595:8658): Operacion 1
+[INFO] 19:52:05:355 memoryPool/(8595:8658): Parametros válidos, se hace un insert
+[INFO] 19:52:05:355 memoryPool/(8595:8658): Se agrego una página al segmento POSTRES
+[INFO] 19:52:05:355 memoryPool/(8595:8658): Se agrego el dato Flan al marco 19
+[INFO] 19:52:05:355 memoryPool/(8595:8658): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:52:05:355 memoryPool/(8595:8658): Rta insert 0
+
+[INFO] 19:52:05:500 memoryPool/(8595:8659): sock: -1760100289
+[INFO] 19:52:05:505 memoryPool/(8595:8659): Bytes recibidos: 1
+[INFO] 19:52:05:505 memoryPool/(8595:8659): Operacion 1
+[INFO] 19:52:05:505 memoryPool/(8595:8659): Parametros válidos, se hace un insert
+[INFO] 19:52:05:505 memoryPool/(8595:8659): Se creo el segmento PLATOS_PRINCIPALES
+[INFO] 19:52:05:505 memoryPool/(8595:8659): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:52:05:506 memoryPool/(8595:8659): Se agrego el dato Milanesa al marco 20
+[INFO] 19:52:05:506 memoryPool/(8595:8659): Se inserto al segmento PLATOS_PRINCIPALES el valor Milanesa
+[INFO] 19:52:05:506 memoryPool/(8595:8659): Rta insert 0
+
+[INFO] 19:52:05:681 memoryPool/(8595:8660): sock: -1760100288
+[INFO] 19:52:05:682 memoryPool/(8595:8660): Bytes recibidos: 1
+[INFO] 19:52:05:682 memoryPool/(8595:8660): Operacion 1
+[INFO] 19:52:05:682 memoryPool/(8595:8660): Parametros válidos, se hace un insert
+[INFO] 19:52:05:682 memoryPool/(8595:8660): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:52:05:682 memoryPool/(8595:8660): Se agrego el dato Omelette al marco 21
+[INFO] 19:52:05:682 memoryPool/(8595:8660): Se inserto al segmento PLATOS_PRINCIPALES el valor Omelette
+[INFO] 19:52:05:682 memoryPool/(8595:8660): Rta insert 0
+
+[INFO] 19:52:05:799 memoryPool/(8595:8661): sock: -1760100287
+[INFO] 19:52:05:805 memoryPool/(8595:8661): Bytes recibidos: 1
+[INFO] 19:52:05:806 memoryPool/(8595:8661): Operacion 1
+[INFO] 19:52:05:806 memoryPool/(8595:8661): Parametros válidos, se hace un insert
+[INFO] 19:52:05:806 memoryPool/(8595:8661): Se agrego el dato Tiramisu al marco 15
+[INFO] 19:52:05:806 memoryPool/(8595:8661): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:52:05:806 memoryPool/(8595:8661): Rta insert 0
+
+[INFO] 19:52:05:933 memoryPool/(8595:8662): sock: -1760100286
+[INFO] 19:52:05:939 memoryPool/(8595:8662): Bytes recibidos: 1
+[INFO] 19:52:05:939 memoryPool/(8595:8662): Operacion 0
+[INFO] 19:52:05:939 memoryPool/(8595:8662): Se seleccionó el valor Manzana
+[INFO] 19:52:06:97 memoryPool/(8595:8663): sock: -1760100285
+[INFO] 19:52:06:106 memoryPool/(8595:8663): Bytes recibidos: 1
+[INFO] 19:52:06:106 memoryPool/(8595:8663): Operacion 0
+[INFO] 19:52:06:106 memoryPool/(8595:8663): Se seleccionó el valor Flan
+[INFO] 19:52:06:239 memoryPool/(8595:8664): sock: -1760100284
+[INFO] 19:52:06:246 memoryPool/(8595:8664): Bytes recibidos: 1
+[INFO] 19:52:06:246 memoryPool/(8595:8664): Operacion 0
+[INFO] 19:52:06:246 memoryPool/(8595:8664): Se seleccionó el valor Exprimido
+[INFO] 19:52:06:387 memoryPool/(8595:8665): sock: -1760100283
+[INFO] 19:52:06:393 memoryPool/(8595:8665): Bytes recibidos: 1
+[INFO] 19:52:06:393 memoryPool/(8595:8665): Operacion 0
+[INFO] 19:52:06:394 memoryPool/(8595:8665): Se seleccionó el valor Tiramisu
+[INFO] 19:52:06:521 memoryPool/(8595:8666): sock: -1760100282
+[INFO] 19:52:06:568 memoryPool/(8595:8666): Bytes recibidos: 1
+[INFO] 19:52:06:568 memoryPool/(8595:8666): Operacion 1
+[INFO] 19:52:06:568 memoryPool/(8595:8666): Parametros válidos, se hace un insert
+[INFO] 19:52:06:568 memoryPool/(8595:8666): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:52:06:568 memoryPool/(8595:8666): Se agrego el dato Hamburguesa al marco 22
+[INFO] 19:52:06:568 memoryPool/(8595:8666): Se inserto al segmento PLATOS_PRINCIPALES el valor Hamburguesa
+[INFO] 19:52:06:569 memoryPool/(8595:8666): Rta insert 0
+
+[INFO] 19:52:06:732 memoryPool/(8595:8667): sock: -1760100281
+[INFO] 19:52:06:751 memoryPool/(8595:8667): Bytes recibidos: 1
+[INFO] 19:52:06:751 memoryPool/(8595:8667): Operacion 0
+[INFO] 19:52:06:751 memoryPool/(8595:8667): Se seleccionó el valor Milanesa
+[INFO] 19:52:06:879 memoryPool/(8595:8668): sock: -1760100280
+[INFO] 19:52:06:883 memoryPool/(8595:8668): Bytes recibidos: 1
+[INFO] 19:52:06:883 memoryPool/(8595:8668): Operacion 1
+[INFO] 19:52:06:883 memoryPool/(8595:8668): Parametros válidos, se hace un insert
+[INFO] 19:52:06:883 memoryPool/(8595:8668): Se agrego el dato Pizza al marco 20
+[INFO] 19:52:06:883 memoryPool/(8595:8668): Se inserto al segmento PLATOS_PRINCIPALES el valor Pizza
+[INFO] 19:52:06:883 memoryPool/(8595:8668): Rta insert 0
+
+[INFO] 19:52:07:15 memoryPool/(8595:8669): sock: -1760100279
+[INFO] 19:52:07:43 memoryPool/(8595:8669): Bytes recibidos: 1
+[INFO] 19:52:07:43 memoryPool/(8595:8669): Operacion 1
+[INFO] 19:52:07:44 memoryPool/(8595:8669): Parametros válidos, se hace un insert
+[INFO] 19:52:07:44 memoryPool/(8595:8669): Se agrego el dato Fanta al marco 13
+[INFO] 19:52:07:44 memoryPool/(8595:8669): Se inserto al segmento BEBIDAS el valor Fanta
+[INFO] 19:52:07:44 memoryPool/(8595:8669): Rta insert 0
+
+[INFO] 19:52:07:183 memoryPool/(8595:8670): sock: -1760100278
+[INFO] 19:52:07:197 memoryPool/(8595:8670): Bytes recibidos: 1
+[INFO] 19:52:07:197 memoryPool/(8595:8670): Operacion 1
+[INFO] 19:52:07:198 memoryPool/(8595:8670): Parametros válidos, se hace un insert
+[INFO] 19:52:07:198 memoryPool/(8595:8670): Se agrego el dato Empanadas al marco 21
+[INFO] 19:52:07:198 memoryPool/(8595:8670): Se inserto al segmento PLATOS_PRINCIPALES el valor Empanadas
+[INFO] 19:52:07:198 memoryPool/(8595:8670): Rta insert 0
+
+[INFO] 19:52:07:317 memoryPool/(8595:8671): sock: -1760100277
+[INFO] 19:52:07:317 memoryPool/(8595:8671): Bytes recibidos: 1
+[INFO] 19:52:07:317 memoryPool/(8595:8671): Operacion 1
+[INFO] 19:52:07:317 memoryPool/(8595:8671): Parametros válidos, se hace un insert
+[INFO] 19:52:07:318 memoryPool/(8595:8671): Se agrego el dato Helado al marco 17
+[INFO] 19:52:07:318 memoryPool/(8595:8671): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:52:07:318 memoryPool/(8595:8671): Rta insert 0
+
+[INFO] 19:52:07:440 memoryPool/(8595:8672): sock: -1760100276
+[INFO] 19:52:07:459 memoryPool/(8595:8672): Bytes recibidos: 1
+[INFO] 19:52:07:459 memoryPool/(8595:8672): Operacion 1
+[INFO] 19:52:07:459 memoryPool/(8595:8672): Parametros válidos, se hace un insert
+[INFO] 19:52:07:459 memoryPool/(8595:8672): Se agrego el dato Chocotorta al marco 1
+[INFO] 19:52:07:459 memoryPool/(8595:8672): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:52:07:459 memoryPool/(8595:8672): Rta insert 0
+
+[INFO] 19:52:07:594 memoryPool/(8595:8673): sock: -1760100275
+[INFO] 19:52:07:604 memoryPool/(8595:8673): Bytes recibidos: 1
+[INFO] 19:52:07:604 memoryPool/(8595:8673): Operacion 1
+[INFO] 19:52:07:604 memoryPool/(8595:8673): Parametros válidos, se hace un insert
+[INFO] 19:52:07:604 memoryPool/(8595:8673): Se agrego el dato Mate al marco 14
+[INFO] 19:52:07:604 memoryPool/(8595:8673): Se inserto al segmento BEBIDAS el valor Mate
+[INFO] 19:52:07:604 memoryPool/(8595:8673): Rta insert 0
+
+[INFO] 19:52:07:718 memoryPool/(8595:8674): sock: -1760100274
+[INFO] 19:52:07:723 memoryPool/(8595:8674): Bytes recibidos: 1
+[INFO] 19:52:07:724 memoryPool/(8595:8674): Operacion 0
+[INFO] 19:52:07:724 memoryPool/(8595:8674): Se seleccionó el valor Frutilla
+[INFO] 19:52:07:844 memoryPool/(8595:8675): sock: -1760100273
+[INFO] 19:52:07:850 memoryPool/(8595:8675): Bytes recibidos: 1
+[INFO] 19:52:07:850 memoryPool/(8595:8675): Operacion 0
+[INFO] 19:53:13:996 memoryPool/(8595:8675): error al crear una conexión con lfs
+[INFO] 19:54:19:595 memoryPool/(8696:8696): Se inicializo la memoria con tamanio 2048
+[INFO] 19:54:42:485 memoryPool/(8713:8713): Se inicializo la memoria con tamanio 2048
+[INFO] 19:55:00:532 memoryPool/(8729:8729): Se inicializo la memoria con tamanio 2048
+[INFO] 19:55:00:758 memoryPool/(8729:8729): Tamanio máximo recibido de FS: 30
+[INFO] 19:55:05:552 memoryPool/(8729:8736): sock: -1760100346
+[INFO] 19:55:05:576 memoryPool/(8729:8736): Bytes recibidos: 1
+[INFO] 19:55:05:577 memoryPool/(8729:8736): Operacion 2
+[INFO] 19:55:05:659 memoryPool/(8729:8736): se creo una conexión con lfs
+[INFO] 19:55:06:326 memoryPool/(8729:8736): Respuesta del create 0
+[INFO] 19:55:06:327 memoryPool/(8729:8736): La respuesta del create fue 0
+[INFO] 19:55:06:471 memoryPool/(8729:8737): sock: -1760100345
+[INFO] 19:55:06:481 memoryPool/(8729:8737): Bytes recibidos: 1
+[INFO] 19:55:06:481 memoryPool/(8729:8737): Operacion 3
+[INFO] 19:55:06:491 memoryPool/(8729:8737): se creo una conexión con lfs
+[INFO] 19:55:07:8 memoryPool/(8729:8737): Respuesta del describe 01019MARINOS;SC;1;10000
+[INFO] 19:55:07:224 memoryPool/(8729:8738): sock: -1760100344
+[INFO] 19:55:07:228 memoryPool/(8729:8738): Bytes recibidos: 1
+[INFO] 19:55:07:228 memoryPool/(8729:8738): Operacion 1
+[INFO] 19:55:07:228 memoryPool/(8729:8738): Parametros válidos, se hace un insert
+[INFO] 19:55:07:228 memoryPool/(8729:8738): Se creo el segmento MARINOS
+[INFO] 19:55:07:228 memoryPool/(8729:8738): Se agrego una página al segmento MARINOS
+[INFO] 19:55:07:229 memoryPool/(8729:8738): Se agrego el dato Ballena al marco 0
+[INFO] 19:55:07:229 memoryPool/(8729:8738): Se inserto al segmento MARINOS el valor Ballena
+[INFO] 19:55:07:229 memoryPool/(8729:8738): Rta insert 0
+
+[INFO] 19:55:07:354 memoryPool/(8729:8739): sock: -1760100343
+[INFO] 19:55:07:367 memoryPool/(8729:8739): Bytes recibidos: 1
+[INFO] 19:55:07:367 memoryPool/(8729:8739): Operacion 2
+[INFO] 19:55:07:376 memoryPool/(8729:8739): se creo una conexión con lfs
+[INFO] 19:55:07:933 memoryPool/(8729:8739): Respuesta del create 0
+[INFO] 19:55:07:934 memoryPool/(8729:8739): La respuesta del create fue 0
+[INFO] 19:55:08:95 memoryPool/(8729:8740): sock: -1760100342
+[INFO] 19:55:08:106 memoryPool/(8729:8740): Bytes recibidos: 1
+[INFO] 19:55:08:106 memoryPool/(8729:8740): Operacion 1
+[INFO] 19:55:08:106 memoryPool/(8729:8740): Parametros válidos, se hace un insert
+[INFO] 19:55:08:106 memoryPool/(8729:8740): Se creo el segmento POSTRES
+[INFO] 19:55:08:106 memoryPool/(8729:8740): Se agrego una página al segmento POSTRES
+[INFO] 19:55:08:107 memoryPool/(8729:8740): Se agrego el dato Flan al marco 1
+[INFO] 19:55:08:107 memoryPool/(8729:8740): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:55:08:107 memoryPool/(8729:8740): Rta insert 0
+
+[INFO] 19:55:08:249 memoryPool/(8729:8741): sock: -1760100341
+[INFO] 19:55:08:253 memoryPool/(8729:8741): Bytes recibidos: 1
+[INFO] 19:55:08:253 memoryPool/(8729:8741): Operacion 2
+[INFO] 19:55:08:261 memoryPool/(8729:8741): se creo una conexión con lfs
+[INFO] 19:55:08:795 memoryPool/(8729:8741): Respuesta del create 0
+[INFO] 19:55:08:795 memoryPool/(8729:8741): La respuesta del create fue 0
+[INFO] 19:55:08:944 memoryPool/(8729:8742): sock: -1760100340
+[INFO] 19:55:08:950 memoryPool/(8729:8742): Bytes recibidos: 1
+[INFO] 19:55:08:950 memoryPool/(8729:8742): Operacion 2
+[INFO] 19:55:08:963 memoryPool/(8729:8742): se creo una conexión con lfs
+[INFO] 19:55:09:522 memoryPool/(8729:8742): Respuesta del create 0
+[INFO] 19:55:09:523 memoryPool/(8729:8742): La respuesta del create fue 0
+[INFO] 19:55:09:688 memoryPool/(8729:8743): sock: -1760100339
+[INFO] 19:55:09:689 memoryPool/(8729:8743): Bytes recibidos: 1
+[INFO] 19:55:09:689 memoryPool/(8729:8743): Operacion 2
+[INFO] 19:55:09:693 memoryPool/(8729:8743): se creo una conexión con lfs
+[INFO] 19:55:10:219 memoryPool/(8729:8743): Respuesta del create 0
+[INFO] 19:55:10:219 memoryPool/(8729:8743): La respuesta del create fue 0
+[INFO] 19:55:10:348 memoryPool/(8729:8744): sock: -1760100338
+[INFO] 19:55:10:355 memoryPool/(8729:8744): Bytes recibidos: 1
+[INFO] 19:55:10:355 memoryPool/(8729:8744): Operacion 3
+[INFO] 19:55:10:371 memoryPool/(8729:8744): se creo una conexión con lfs
+[INFO] 19:55:10:890 memoryPool/(8729:8744): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:55:11:13 memoryPool/(8729:8745): sock: -1760100337
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Bytes recibidos: 1
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Operacion 1
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Parametros válidos, se hace un insert
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Se creo el segmento FRUTAS
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Se agrego una página al segmento FRUTAS
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Se agrego el dato Manzana al marco 2
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:55:11:17 memoryPool/(8729:8745): Rta insert 0
+
+[INFO] 19:55:11:135 memoryPool/(8729:8746): sock: -1760100336
+[INFO] 19:55:11:140 memoryPool/(8729:8746): Bytes recibidos: 1
+[INFO] 19:55:11:141 memoryPool/(8729:8746): Operacion 1
+[INFO] 19:55:11:141 memoryPool/(8729:8746): Parametros válidos, se hace un insert
+[INFO] 19:55:11:141 memoryPool/(8729:8746): Se agrego una página al segmento POSTRES
+[INFO] 19:55:11:141 memoryPool/(8729:8746): Se agrego el dato Chocotorta al marco 3
+[INFO] 19:55:11:141 memoryPool/(8729:8746): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:55:11:141 memoryPool/(8729:8746): Rta insert 0
+
+[INFO] 19:55:11:261 memoryPool/(8729:8747): sock: -1760100335
+[INFO] 19:55:11:268 memoryPool/(8729:8747): Bytes recibidos: 1
+[INFO] 19:55:11:268 memoryPool/(8729:8747): Operacion 1
+[INFO] 19:55:11:269 memoryPool/(8729:8747): Parametros válidos, se hace un insert
+[INFO] 19:55:11:269 memoryPool/(8729:8747): Se agrego una página al segmento FRUTAS
+[INFO] 19:55:11:269 memoryPool/(8729:8747): Se agrego el dato Banana al marco 4
+[INFO] 19:55:11:269 memoryPool/(8729:8747): Se inserto al segmento FRUTAS el valor Banana
+[INFO] 19:55:11:269 memoryPool/(8729:8747): Rta insert 0
+
+[INFO] 19:55:11:407 memoryPool/(8729:8748): sock: -1760100334
+[INFO] 19:55:11:414 memoryPool/(8729:8748): Bytes recibidos: 1
+[INFO] 19:55:11:414 memoryPool/(8729:8748): Operacion 1
+[INFO] 19:55:11:415 memoryPool/(8729:8748): Parametros válidos, se hace un insert
+[INFO] 19:55:11:415 memoryPool/(8729:8748): Se agrego una página al segmento MARINOS
+[INFO] 19:55:11:415 memoryPool/(8729:8748): Se agrego el dato Pulpo al marco 5
+[INFO] 19:55:11:415 memoryPool/(8729:8748): Se inserto al segmento MARINOS el valor Pulpo
+[INFO] 19:55:11:415 memoryPool/(8729:8748): Rta insert 0
+
+[INFO] 19:55:11:553 memoryPool/(8729:8749): sock: -1760100333
+[INFO] 19:55:11:556 memoryPool/(8729:8749): Bytes recibidos: 1
+[INFO] 19:55:11:556 memoryPool/(8729:8749): Operacion 1
+[INFO] 19:55:11:556 memoryPool/(8729:8749): Parametros válidos, se hace un insert
+[INFO] 19:55:11:556 memoryPool/(8729:8749): Se creo el segmento AVES
+[INFO] 19:55:11:556 memoryPool/(8729:8749): Se agrego una página al segmento AVES
+[INFO] 19:55:11:556 memoryPool/(8729:8749): Se agrego el dato Paloma al marco 6
+[INFO] 19:55:11:557 memoryPool/(8729:8749): Se inserto al segmento AVES el valor Paloma
+[INFO] 19:55:11:557 memoryPool/(8729:8749): Rta insert 0
+
+[INFO] 19:55:11:728 memoryPool/(8729:8750): sock: -1760100332
+[INFO] 19:55:11:733 memoryPool/(8729:8750): Bytes recibidos: 1
+[INFO] 19:55:11:733 memoryPool/(8729:8750): Operacion 1
+[INFO] 19:55:11:734 memoryPool/(8729:8750): Parametros válidos, se hace un insert
+[INFO] 19:55:11:734 memoryPool/(8729:8750): Se creo el segmento MAMIFEROS
+[INFO] 19:55:11:734 memoryPool/(8729:8750): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:55:11:734 memoryPool/(8729:8750): Se agrego el dato Gato al marco 7
+[INFO] 19:55:11:734 memoryPool/(8729:8750): Se inserto al segmento MAMIFEROS el valor Gato
+[INFO] 19:55:11:734 memoryPool/(8729:8750): Rta insert 0
+
+[INFO] 19:55:11:867 memoryPool/(8729:8751): sock: -1760100331
+[INFO] 19:55:11:875 memoryPool/(8729:8751): Bytes recibidos: 1
+[INFO] 19:55:11:876 memoryPool/(8729:8751): Operacion 1
+[INFO] 19:55:11:876 memoryPool/(8729:8751): Parametros válidos, se hace un insert
+[INFO] 19:55:11:876 memoryPool/(8729:8751): Se agrego una página al segmento POSTRES
+[INFO] 19:55:11:876 memoryPool/(8729:8751): Se agrego el dato Tiramisu al marco 8
+[INFO] 19:55:11:876 memoryPool/(8729:8751): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:55:11:876 memoryPool/(8729:8751): Rta insert 0
+
+[INFO] 19:55:12:5 memoryPool/(8729:8752): sock: -1760100330
+[INFO] 19:55:12:5 memoryPool/(8729:8752): Bytes recibidos: 1
+[INFO] 19:55:12:5 memoryPool/(8729:8752): Operacion 2
+[INFO] 19:55:12:9 memoryPool/(8729:8752): se creo una conexión con lfs
+[INFO] 19:55:12:568 memoryPool/(8729:8752): Respuesta del create 0
+[INFO] 19:55:12:568 memoryPool/(8729:8752): La respuesta del create fue 0
+[INFO] 19:55:12:703 memoryPool/(8729:8755): sock: -1760100329
+[INFO] 19:55:12:740 memoryPool/(8729:8755): Bytes recibidos: 1
+[INFO] 19:55:12:740 memoryPool/(8729:8755): Operacion 3
+[INFO] 19:55:12:747 memoryPool/(8729:8755): se creo una conexión con lfs
+[INFO] 19:55:13:270 memoryPool/(8729:8755): Respuesta del describe 01019POSTRES;SC;3;60000
+[INFO] 19:55:13:403 memoryPool/(8729:8756): sock: -1760100328
+[INFO] 19:55:13:429 memoryPool/(8729:8756): Bytes recibidos: 1
+[INFO] 19:55:13:429 memoryPool/(8729:8756): Operacion 1
+[INFO] 19:55:13:429 memoryPool/(8729:8756): Parametros válidos, se hace un insert
+[INFO] 19:55:13:430 memoryPool/(8729:8756): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:55:13:430 memoryPool/(8729:8756): Se agrego el dato Perro al marco 9
+[INFO] 19:55:13:430 memoryPool/(8729:8756): Se inserto al segmento MAMIFEROS el valor Perro
+[INFO] 19:55:13:430 memoryPool/(8729:8756): Rta insert 0
+
+[INFO] 19:55:13:551 memoryPool/(8729:8757): sock: -1760100327
+[INFO] 19:55:13:573 memoryPool/(8729:8757): Bytes recibidos: 1
+[INFO] 19:55:13:573 memoryPool/(8729:8757): Operacion 1
+[INFO] 19:55:13:573 memoryPool/(8729:8757): Parametros válidos, se hace un insert
+[INFO] 19:55:13:573 memoryPool/(8729:8757): Se agrego una página al segmento MARINOS
+[INFO] 19:55:13:573 memoryPool/(8729:8757): Se agrego el dato Delfin al marco 10
+[INFO] 19:55:13:573 memoryPool/(8729:8757): Se inserto al segmento MARINOS el valor Delfin
+[INFO] 19:55:13:573 memoryPool/(8729:8757): Rta insert 0
+
+[INFO] 19:55:13:724 memoryPool/(8729:8758): sock: -1760100326
+[INFO] 19:55:13:777 memoryPool/(8729:8758): Bytes recibidos: 1
+[INFO] 19:55:13:778 memoryPool/(8729:8758): Operacion 1
+[INFO] 19:55:13:778 memoryPool/(8729:8758): Parametros válidos, se hace un insert
+[INFO] 19:55:13:778 memoryPool/(8729:8758): Se agrego el dato Halcon al marco 6
+[INFO] 19:55:13:778 memoryPool/(8729:8758): Se inserto al segmento AVES el valor Halcon
+[INFO] 19:55:13:778 memoryPool/(8729:8758): Rta insert 0
+
+[INFO] 19:55:13:974 memoryPool/(8729:8759): sock: -1760100325
+[INFO] 19:55:13:989 memoryPool/(8729:8759): Bytes recibidos: 1
+[INFO] 19:55:13:989 memoryPool/(8729:8759): Operacion 1
+[INFO] 19:55:13:989 memoryPool/(8729:8759): Parametros válidos, se hace un insert
+[INFO] 19:55:13:989 memoryPool/(8729:8759): Se agrego una página al segmento FRUTAS
+[INFO] 19:55:13:989 memoryPool/(8729:8759): Se agrego el dato Pera al marco 11
+[INFO] 19:55:13:989 memoryPool/(8729:8759): Se inserto al segmento FRUTAS el valor Pera
+[INFO] 19:55:13:989 memoryPool/(8729:8759): Rta insert 0
+
+[INFO] 19:55:14:129 memoryPool/(8729:8760): sock: -1760100324
+[INFO] 19:55:14:135 memoryPool/(8729:8760): Bytes recibidos: 1
+[INFO] 19:55:14:135 memoryPool/(8729:8760): Operacion 0
+[INFO] 19:55:14:135 memoryPool/(8729:8760): Se seleccionó el valor Banana
+[INFO] 19:55:14:308 memoryPool/(8729:8761): sock: -1760100323
+[INFO] 19:55:14:312 memoryPool/(8729:8761): Bytes recibidos: 1
+[INFO] 19:55:14:312 memoryPool/(8729:8761): Operacion 1
+[INFO] 19:55:14:313 memoryPool/(8729:8761): Parametros válidos, se hace un insert
+[INFO] 19:55:14:313 memoryPool/(8729:8761): Se agrego el dato Helado al marco 3
+[INFO] 19:55:14:313 memoryPool/(8729:8761): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:55:14:313 memoryPool/(8729:8761): Rta insert 0
+
+[INFO] 19:55:14:448 memoryPool/(8729:8762): sock: -1760100322
+[INFO] 19:55:14:449 memoryPool/(8729:8762): Bytes recibidos: 1
+[INFO] 19:55:14:449 memoryPool/(8729:8762): Operacion 0
+[INFO] 19:55:14:450 memoryPool/(8729:8762): Se seleccionó el valor Halcon
+[INFO] 19:55:14:579 memoryPool/(8729:8763): sock: -1760100321
+[INFO] 19:55:14:589 memoryPool/(8729:8763): Bytes recibidos: 1
+[INFO] 19:55:14:590 memoryPool/(8729:8763): Operacion 1
+[INFO] 19:55:14:590 memoryPool/(8729:8763): Parametros válidos, se hace un insert
+[INFO] 19:55:14:590 memoryPool/(8729:8763): Se agrego el dato Orca al marco 0
+[INFO] 19:55:14:590 memoryPool/(8729:8763): Se inserto al segmento MARINOS el valor Orca
+[INFO] 19:55:14:590 memoryPool/(8729:8763): Rta insert 0
+
+[INFO] 19:55:14:721 memoryPool/(8729:8764): sock: -1760100320
+[INFO] 19:55:14:733 memoryPool/(8729:8764): Bytes recibidos: 1
+[INFO] 19:55:14:733 memoryPool/(8729:8764): Operacion 3
+[INFO] 19:55:14:751 memoryPool/(8729:8764): se creo una conexión con lfs
+[INFO] 19:55:15:273 memoryPool/(8729:8764): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:55:15:399 memoryPool/(8729:8765): sock: -1760100319
+[INFO] 19:55:15:400 memoryPool/(8729:8765): Bytes recibidos: 1
+[INFO] 19:55:15:401 memoryPool/(8729:8765): Operacion 0
+[INFO] 19:55:15:401 memoryPool/(8729:8765): Se seleccionó el valor Helado
+[INFO] 19:55:15:519 memoryPool/(8729:8766): sock: -1760100318
+[INFO] 19:55:15:524 memoryPool/(8729:8766): Bytes recibidos: 1
+[INFO] 19:55:15:524 memoryPool/(8729:8766): Operacion 1
+[INFO] 19:55:15:525 memoryPool/(8729:8766): Parametros válidos, se hace un insert
+[INFO] 19:55:15:525 memoryPool/(8729:8766): Se agrego el dato Almendrado al marco 3
+[INFO] 19:55:15:525 memoryPool/(8729:8766): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:55:15:525 memoryPool/(8729:8766): Rta insert 0
+
+[INFO] 19:55:15:692 memoryPool/(8729:8767): sock: -1760100317
+[INFO] 19:55:15:714 memoryPool/(8729:8767): Bytes recibidos: 1
+[INFO] 19:55:15:714 memoryPool/(8729:8767): Operacion 1
+[INFO] 19:55:15:715 memoryPool/(8729:8767): Parametros válidos, se hace un insert
+[INFO] 19:55:15:715 memoryPool/(8729:8767): Se agrego una página al segmento FRUTAS
+[INFO] 19:55:15:715 memoryPool/(8729:8767): Se agrego el dato Uva al marco 12
+[INFO] 19:55:15:715 memoryPool/(8729:8767): Se inserto al segmento FRUTAS el valor Uva
+[INFO] 19:55:15:715 memoryPool/(8729:8767): Rta insert 0
+
+[INFO] 19:55:15:936 memoryPool/(8729:8768): sock: -1760100316
+[INFO] 19:55:15:939 memoryPool/(8729:8768): Bytes recibidos: 1
+[INFO] 19:55:15:939 memoryPool/(8729:8768): Operacion 3
+[INFO] 19:55:15:944 memoryPool/(8729:8768): se creo una conexión con lfs
+[INFO] 19:55:16:461 memoryPool/(8729:8768): Respuesta del describe 01018FRUTAS;SC;2;50000
+[INFO] 19:55:16:591 memoryPool/(8729:8769): sock: -1760100315
+[INFO] 19:55:16:600 memoryPool/(8729:8769): Bytes recibidos: 1
+[INFO] 19:55:16:600 memoryPool/(8729:8769): Operacion 1
+[INFO] 19:55:16:600 memoryPool/(8729:8769): Parametros válidos, se hace un insert
+[INFO] 19:55:16:600 memoryPool/(8729:8769): Se creo el segmento BEBIDAS
+[INFO] 19:55:16:601 memoryPool/(8729:8769): Se agrego una página al segmento BEBIDAS
+[INFO] 19:55:16:601 memoryPool/(8729:8769): Se agrego el dato Pepsi al marco 13
+[INFO] 19:55:16:601 memoryPool/(8729:8769): Se inserto al segmento BEBIDAS el valor Pepsi
+[INFO] 19:55:16:601 memoryPool/(8729:8769): Rta insert 0
+
+[INFO] 19:55:16:726 memoryPool/(8729:8770): sock: -1760100314
+[INFO] 19:55:16:731 memoryPool/(8729:8770): Bytes recibidos: 1
+[INFO] 19:55:16:731 memoryPool/(8729:8770): Operacion 1
+[INFO] 19:55:16:731 memoryPool/(8729:8770): Parametros válidos, se hace un insert
+[INFO] 19:55:16:731 memoryPool/(8729:8770): Se agrego una página al segmento BEBIDAS
+[INFO] 19:55:16:731 memoryPool/(8729:8770): Se agrego el dato Coca Cola al marco 14
+[INFO] 19:55:16:731 memoryPool/(8729:8770): Se inserto al segmento BEBIDAS el valor Coca Cola
+[INFO] 19:55:16:732 memoryPool/(8729:8770): Rta insert 0
+
+[INFO] 19:55:16:851 memoryPool/(8729:8771): sock: -1760100313
+[INFO] 19:55:16:855 memoryPool/(8729:8771): Bytes recibidos: 1
+[INFO] 19:55:16:855 memoryPool/(8729:8771): Operacion 0
+[INFO] 19:55:16:855 memoryPool/(8729:8771): Se seleccionó el valor Coca Cola
+[INFO] 19:55:16:975 memoryPool/(8729:8772): sock: -1760100312
+[INFO] 19:55:16:980 memoryPool/(8729:8772): Bytes recibidos: 1
+[INFO] 19:55:16:981 memoryPool/(8729:8772): Operacion 1
+[INFO] 19:55:16:981 memoryPool/(8729:8772): Parametros válidos, se hace un insert
+[INFO] 19:55:16:981 memoryPool/(8729:8772): Se agrego el dato Sprite al marco 14
+[INFO] 19:55:16:981 memoryPool/(8729:8772): Se inserto al segmento BEBIDAS el valor Sprite
+[INFO] 19:55:16:981 memoryPool/(8729:8772): Rta insert 0
+
+[INFO] 19:55:17:134 memoryPool/(8729:8773): sock: -1760100311
+[INFO] 19:55:17:135 memoryPool/(8729:8773): Bytes recibidos: 1
+[INFO] 19:55:17:135 memoryPool/(8729:8773): Operacion 0
+[INFO] 19:55:17:135 memoryPool/(8729:8773): Se seleccionó el valor Almendrado
+[INFO] 19:55:17:260 memoryPool/(8729:8774): sock: -1760100310
+[INFO] 19:55:17:269 memoryPool/(8729:8774): Bytes recibidos: 1
+[INFO] 19:55:17:269 memoryPool/(8729:8774): Operacion 1
+[INFO] 19:55:17:269 memoryPool/(8729:8774): Parametros válidos, se hace un insert
+[INFO] 19:55:17:269 memoryPool/(8729:8774): Se agrego una página al segmento POSTRES
+[INFO] 19:55:17:269 memoryPool/(8729:8774): Se agrego el dato Bizcochuelo al marco 15
+[INFO] 19:55:17:269 memoryPool/(8729:8774): Se inserto al segmento POSTRES el valor Bizcochuelo
+[INFO] 19:55:17:269 memoryPool/(8729:8774): Rta insert 0
+
+[INFO] 19:55:17:416 memoryPool/(8729:8775): sock: -1760100309
+[INFO] 19:55:17:428 memoryPool/(8729:8775): Bytes recibidos: 1
+[INFO] 19:55:17:428 memoryPool/(8729:8775): Operacion 1
+[INFO] 19:55:17:429 memoryPool/(8729:8775): Parametros válidos, se hace un insert
+[INFO] 19:55:17:429 memoryPool/(8729:8775): Se agrego una página al segmento BEBIDAS
+[INFO] 19:55:17:429 memoryPool/(8729:8775): Se agrego el dato Limonada al marco 16
+[INFO] 19:55:17:429 memoryPool/(8729:8775): Se inserto al segmento BEBIDAS el valor Limonada
+[INFO] 19:55:17:429 memoryPool/(8729:8775): Rta insert 0
+
+[INFO] 19:55:17:562 memoryPool/(8729:8776): sock: -1760100308
+[INFO] 19:55:17:566 memoryPool/(8729:8776): Bytes recibidos: 1
+[INFO] 19:55:17:566 memoryPool/(8729:8776): Operacion 1
+[INFO] 19:55:17:566 memoryPool/(8729:8776): Parametros válidos, se hace un insert
+[INFO] 19:55:17:566 memoryPool/(8729:8776): Se agrego el dato Melon al marco 12
+[INFO] 19:55:17:566 memoryPool/(8729:8776): Se inserto al segmento FRUTAS el valor Melon
+[INFO] 19:55:17:566 memoryPool/(8729:8776): Rta insert 0
+
+[INFO] 19:55:17:688 memoryPool/(8729:8777): sock: -1760100307
+[INFO] 19:55:17:696 memoryPool/(8729:8777): Bytes recibidos: 1
+[INFO] 19:55:17:696 memoryPool/(8729:8777): Operacion 1
+[INFO] 19:55:17:697 memoryPool/(8729:8777): Parametros válidos, se hace un insert
+[INFO] 19:55:17:697 memoryPool/(8729:8777): Se agrego el dato Manzana al marco 4
+[INFO] 19:55:17:697 memoryPool/(8729:8777): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:55:17:697 memoryPool/(8729:8777): Rta insert 0
+
+[INFO] 19:55:17:832 memoryPool/(8729:8778): sock: -1760100306
+[INFO] 19:55:17:838 memoryPool/(8729:8778): Bytes recibidos: 1
+[INFO] 19:55:17:838 memoryPool/(8729:8778): Operacion 0
+[INFO] 19:55:17:838 memoryPool/(8729:8778): Se seleccionó el valor Sprite
+[INFO] 19:55:17:968 memoryPool/(8729:8779): sock: -1760100305
+[INFO] 19:55:17:973 memoryPool/(8729:8779): Bytes recibidos: 1
+[INFO] 19:55:17:973 memoryPool/(8729:8779): Operacion 1
+[INFO] 19:55:17:973 memoryPool/(8729:8779): Parametros válidos, se hace un insert
+[INFO] 19:55:17:973 memoryPool/(8729:8779): Se agrego una página al segmento POSTRES
+[INFO] 19:55:17:973 memoryPool/(8729:8779): Se agrego el dato Budin de pan al marco 17
+[INFO] 19:55:17:974 memoryPool/(8729:8779): Se inserto al segmento POSTRES el valor Budin de pan
+[INFO] 19:55:17:974 memoryPool/(8729:8779): Rta insert 0
+
+[INFO] 19:55:18:99 memoryPool/(8729:8780): sock: -1760100304
+[INFO] 19:55:18:102 memoryPool/(8729:8780): Bytes recibidos: 1
+[INFO] 19:55:18:103 memoryPool/(8729:8780): Operacion 1
+[INFO] 19:55:18:103 memoryPool/(8729:8780): Parametros válidos, se hace un insert
+[INFO] 19:55:18:103 memoryPool/(8729:8780): Se agrego el dato Sandia al marco 2
+[INFO] 19:55:18:103 memoryPool/(8729:8780): Se inserto al segmento FRUTAS el valor Sandia
+[INFO] 19:55:18:103 memoryPool/(8729:8780): Rta insert 0
+
+[INFO] 19:55:18:224 memoryPool/(8729:8781): sock: -1760100303
+[INFO] 19:55:18:233 memoryPool/(8729:8781): Bytes recibidos: 1
+[INFO] 19:55:18:233 memoryPool/(8729:8781): Operacion 1
+[INFO] 19:55:18:233 memoryPool/(8729:8781): Parametros válidos, se hace un insert
+[INFO] 19:55:18:233 memoryPool/(8729:8781): Se agrego una página al segmento BEBIDAS
+[INFO] 19:55:18:233 memoryPool/(8729:8781): Se agrego el dato Exprimido al marco 18
+[INFO] 19:55:18:233 memoryPool/(8729:8781): Se inserto al segmento BEBIDAS el valor Exprimido
+[INFO] 19:55:18:233 memoryPool/(8729:8781): Rta insert 0
+
+[INFO] 19:55:18:411 memoryPool/(8729:8782): sock: -1760100302
+[INFO] 19:55:18:417 memoryPool/(8729:8782): Bytes recibidos: 1
+[INFO] 19:55:18:417 memoryPool/(8729:8782): Operacion 1
+[INFO] 19:55:18:417 memoryPool/(8729:8782): Parametros válidos, se hace un insert
+[INFO] 19:55:18:418 memoryPool/(8729:8782): Se agrego el dato Agua con gas al marco 16
+[INFO] 19:55:18:418 memoryPool/(8729:8782): Se inserto al segmento BEBIDAS el valor Agua con gas
+[INFO] 19:55:18:418 memoryPool/(8729:8782): Rta insert 0
+
+[INFO] 19:55:18:578 memoryPool/(8729:8783): sock: -1760100301
+[INFO] 19:55:18:592 memoryPool/(8729:8783): Bytes recibidos: 1
+[INFO] 19:55:18:592 memoryPool/(8729:8783): Operacion 1
+[INFO] 19:55:18:592 memoryPool/(8729:8783): Parametros válidos, se hace un insert
+[INFO] 19:55:18:592 memoryPool/(8729:8783): Se agrego el dato Manzana al marco 2
+[INFO] 19:55:18:592 memoryPool/(8729:8783): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:55:18:592 memoryPool/(8729:8783): Rta insert 0
+
+[INFO] 19:55:18:713 memoryPool/(8729:8784): sock: -1760100300
+[INFO] 19:55:18:716 memoryPool/(8729:8784): Bytes recibidos: 1
+[INFO] 19:55:18:717 memoryPool/(8729:8784): Operacion 3
+[INFO] 19:55:18:722 memoryPool/(8729:8784): se creo una conexión con lfs
+[INFO] 19:55:19:273 memoryPool/(8729:8784): Respuesta del describe 01019BEBIDAS;SC;6;10000
+[INFO] 19:55:19:407 memoryPool/(8729:8785): sock: -1760100299
+[INFO] 19:55:19:412 memoryPool/(8729:8785): Bytes recibidos: 1
+[INFO] 19:55:19:412 memoryPool/(8729:8785): Operacion 1
+[INFO] 19:55:19:413 memoryPool/(8729:8785): Parametros válidos, se hace un insert
+[INFO] 19:55:19:413 memoryPool/(8729:8785): Se agrego el dato Cereza al marco 4
+[INFO] 19:55:19:413 memoryPool/(8729:8785): Se inserto al segmento FRUTAS el valor Cereza
+[INFO] 19:55:19:413 memoryPool/(8729:8785): Rta insert 0
+
+[INFO] 19:55:19:552 memoryPool/(8729:8786): sock: -1760100298
+[INFO] 19:55:19:565 memoryPool/(8729:8786): Bytes recibidos: 1
+[INFO] 19:55:19:565 memoryPool/(8729:8786): Operacion 0
+[INFO] 19:55:19:565 memoryPool/(8729:8786): Se seleccionó el valor Cereza
+[INFO] 19:55:19:704 memoryPool/(8729:8787): sock: -1760100297
+[INFO] 19:55:19:717 memoryPool/(8729:8787): Bytes recibidos: 1
+[INFO] 19:55:19:717 memoryPool/(8729:8787): Operacion 0
+[INFO] 19:55:19:717 memoryPool/(8729:8787): Se seleccionó el valor Exprimido
+[INFO] 19:55:19:834 memoryPool/(8729:8788): sock: -1760100296
+[INFO] 19:55:19:836 memoryPool/(8729:8788): Bytes recibidos: 1
+[INFO] 19:55:19:836 memoryPool/(8729:8788): Operacion 1
+[INFO] 19:55:19:836 memoryPool/(8729:8788): Parametros válidos, se hace un insert
+[INFO] 19:55:19:836 memoryPool/(8729:8788): Se agrego el dato Frutilla al marco 11
+[INFO] 19:55:19:836 memoryPool/(8729:8788): Se inserto al segmento FRUTAS el valor Frutilla
+[INFO] 19:55:19:837 memoryPool/(8729:8788): Rta insert 0
+
+[INFO] 19:55:19:952 memoryPool/(8729:8789): sock: -1760100295
+[INFO] 19:55:19:965 memoryPool/(8729:8789): Bytes recibidos: 1
+[INFO] 19:55:19:965 memoryPool/(8729:8789): Operacion 1
+[INFO] 19:55:19:965 memoryPool/(8729:8789): Parametros válidos, se hace un insert
+[INFO] 19:55:19:965 memoryPool/(8729:8789): Se agrego el dato Gelatina al marco 8
+[INFO] 19:55:19:965 memoryPool/(8729:8789): Se inserto al segmento POSTRES el valor Gelatina
+[INFO] 19:55:19:966 memoryPool/(8729:8789): Rta insert 0
+
+[INFO] 19:55:20:90 memoryPool/(8729:8790): sock: -1760100294
+[INFO] 19:55:20:98 memoryPool/(8729:8790): Bytes recibidos: 1
+[INFO] 19:55:20:98 memoryPool/(8729:8790): Operacion 1
+[INFO] 19:55:20:99 memoryPool/(8729:8790): Parametros válidos, se hace un insert
+[INFO] 19:55:20:99 memoryPool/(8729:8790): Se agrego el dato Helado al marco 1
+[INFO] 19:55:20:99 memoryPool/(8729:8790): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:55:20:99 memoryPool/(8729:8790): Rta insert 0
+
+[INFO] 19:55:20:221 memoryPool/(8729:8791): sock: -1760100293
+[INFO] 19:55:20:225 memoryPool/(8729:8791): Bytes recibidos: 1
+[INFO] 19:55:20:225 memoryPool/(8729:8791): Operacion 1
+[INFO] 19:55:20:225 memoryPool/(8729:8791): Parametros válidos, se hace un insert
+[INFO] 19:55:20:225 memoryPool/(8729:8791): Se agrego el dato Almendrado al marco 3
+[INFO] 19:55:20:225 memoryPool/(8729:8791): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:55:20:225 memoryPool/(8729:8791): Rta insert 0
+
+[INFO] 19:55:20:339 memoryPool/(8729:8792): sock: -1760100292
+[INFO] 19:55:20:347 memoryPool/(8729:8792): Bytes recibidos: 1
+[INFO] 19:55:20:347 memoryPool/(8729:8792): Operacion 0
+[INFO] 19:55:20:347 memoryPool/(8729:8792): Se seleccionó el valor Sprite
+[INFO] 19:55:20:470 memoryPool/(8729:8793): sock: -1760100291
+[INFO] 19:55:20:480 memoryPool/(8729:8793): Bytes recibidos: 1
+[INFO] 19:55:20:481 memoryPool/(8729:8793): Operacion 2
+[INFO] 19:55:20:488 memoryPool/(8729:8793): se creo una conexión con lfs
+[INFO] 19:55:21:66 memoryPool/(8729:8793): Respuesta del create 0
+[INFO] 19:55:21:66 memoryPool/(8729:8793): La respuesta del create fue 0
+[INFO] 19:55:21:184 memoryPool/(8729:8794): sock: -1760100290
+[INFO] 19:55:21:190 memoryPool/(8729:8794): Bytes recibidos: 1
+[INFO] 19:55:21:190 memoryPool/(8729:8794): Operacion 1
+[INFO] 19:55:21:191 memoryPool/(8729:8794): Parametros válidos, se hace un insert
+[INFO] 19:55:21:191 memoryPool/(8729:8794): Se agrego una página al segmento POSTRES
+[INFO] 19:55:21:191 memoryPool/(8729:8794): Se agrego el dato Flan al marco 19
+[INFO] 19:55:21:191 memoryPool/(8729:8794): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:55:21:191 memoryPool/(8729:8794): Rta insert 0
+
+[INFO] 19:55:21:313 memoryPool/(8729:8795): sock: -1760100289
+[INFO] 19:55:21:317 memoryPool/(8729:8795): Bytes recibidos: 1
+[INFO] 19:55:21:318 memoryPool/(8729:8795): Operacion 1
+[INFO] 19:55:21:318 memoryPool/(8729:8795): Parametros válidos, se hace un insert
+[INFO] 19:55:21:318 memoryPool/(8729:8795): Se creo el segmento PLATOS_PRINCIPALES
+[INFO] 19:55:21:318 memoryPool/(8729:8795): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:55:21:318 memoryPool/(8729:8795): Se agrego el dato Milanesa al marco 20
+[INFO] 19:55:21:318 memoryPool/(8729:8795): Se inserto al segmento PLATOS_PRINCIPALES el valor Milanesa
+[INFO] 19:55:21:318 memoryPool/(8729:8795): Rta insert 0
+
+[INFO] 19:55:21:463 memoryPool/(8729:8796): sock: -1760100288
+[INFO] 19:55:21:467 memoryPool/(8729:8796): Bytes recibidos: 1
+[INFO] 19:55:21:467 memoryPool/(8729:8796): Operacion 1
+[INFO] 19:55:21:467 memoryPool/(8729:8796): Parametros válidos, se hace un insert
+[INFO] 19:55:21:467 memoryPool/(8729:8796): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:55:21:467 memoryPool/(8729:8796): Se agrego el dato Omelette al marco 21
+[INFO] 19:55:21:467 memoryPool/(8729:8796): Se inserto al segmento PLATOS_PRINCIPALES el valor Omelette
+[INFO] 19:55:21:467 memoryPool/(8729:8796): Rta insert 0
+
+[INFO] 19:55:21:593 memoryPool/(8729:8797): sock: -1760100287
+[INFO] 19:55:21:609 memoryPool/(8729:8797): Bytes recibidos: 1
+[INFO] 19:55:21:609 memoryPool/(8729:8797): Operacion 1
+[INFO] 19:55:21:610 memoryPool/(8729:8797): Parametros válidos, se hace un insert
+[INFO] 19:55:21:610 memoryPool/(8729:8797): Se agrego el dato Tiramisu al marco 15
+[INFO] 19:55:21:610 memoryPool/(8729:8797): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:55:21:610 memoryPool/(8729:8797): Rta insert 0
+
+[INFO] 19:55:21:727 memoryPool/(8729:8798): sock: -1760100286
+[INFO] 19:55:21:731 memoryPool/(8729:8798): Bytes recibidos: 1
+[INFO] 19:55:21:732 memoryPool/(8729:8798): Operacion 0
+[INFO] 19:55:21:732 memoryPool/(8729:8798): Se seleccionó el valor Manzana
+[INFO] 19:55:21:871 memoryPool/(8729:8799): sock: -1760100285
+[INFO] 19:55:21:882 memoryPool/(8729:8799): Bytes recibidos: 1
+[INFO] 19:55:21:882 memoryPool/(8729:8799): Operacion 0
+[INFO] 19:55:21:882 memoryPool/(8729:8799): Se seleccionó el valor Flan
+[INFO] 19:55:22:25 memoryPool/(8729:8800): sock: -1760100284
+[INFO] 19:55:22:48 memoryPool/(8729:8800): Bytes recibidos: 1
+[INFO] 19:55:22:49 memoryPool/(8729:8800): Operacion 0
+[INFO] 19:55:22:49 memoryPool/(8729:8800): Se seleccionó el valor Exprimido
+[INFO] 19:55:22:181 memoryPool/(8729:8801): sock: -1760100283
+[INFO] 19:55:22:188 memoryPool/(8729:8801): Bytes recibidos: 1
+[INFO] 19:55:22:188 memoryPool/(8729:8801): Operacion 0
+[INFO] 19:55:22:188 memoryPool/(8729:8801): Se seleccionó el valor Tiramisu
+[INFO] 19:55:22:307 memoryPool/(8729:8802): sock: -1760100282
+[INFO] 19:55:22:322 memoryPool/(8729:8802): Bytes recibidos: 1
+[INFO] 19:55:22:322 memoryPool/(8729:8802): Operacion 1
+[INFO] 19:55:22:322 memoryPool/(8729:8802): Parametros válidos, se hace un insert
+[INFO] 19:55:22:323 memoryPool/(8729:8802): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:55:22:323 memoryPool/(8729:8802): Se agrego el dato Hamburguesa al marco 22
+[INFO] 19:55:22:323 memoryPool/(8729:8802): Se inserto al segmento PLATOS_PRINCIPALES el valor Hamburguesa
+[INFO] 19:55:22:323 memoryPool/(8729:8802): Rta insert 0
+
+[INFO] 19:55:22:448 memoryPool/(8729:8803): sock: -1760100281
+[INFO] 19:55:22:453 memoryPool/(8729:8803): Bytes recibidos: 1
+[INFO] 19:55:22:453 memoryPool/(8729:8803): Operacion 0
+[INFO] 19:55:22:453 memoryPool/(8729:8803): Se seleccionó el valor Milanesa
+[INFO] 19:55:22:595 memoryPool/(8729:8804): sock: -1760100280
+[INFO] 19:55:22:599 memoryPool/(8729:8804): Bytes recibidos: 1
+[INFO] 19:55:22:599 memoryPool/(8729:8804): Operacion 1
+[INFO] 19:55:22:599 memoryPool/(8729:8804): Parametros válidos, se hace un insert
+[INFO] 19:55:22:599 memoryPool/(8729:8804): Se agrego el dato Pizza al marco 20
+[INFO] 19:55:22:599 memoryPool/(8729:8804): Se inserto al segmento PLATOS_PRINCIPALES el valor Pizza
+[INFO] 19:55:22:599 memoryPool/(8729:8804): Rta insert 0
+
+[INFO] 19:55:22:714 memoryPool/(8729:8805): sock: -1760100279
+[INFO] 19:55:22:719 memoryPool/(8729:8805): Bytes recibidos: 1
+[INFO] 19:55:22:720 memoryPool/(8729:8805): Operacion 1
+[INFO] 19:55:22:720 memoryPool/(8729:8805): Parametros válidos, se hace un insert
+[INFO] 19:55:22:720 memoryPool/(8729:8805): Se agrego el dato Fanta al marco 13
+[INFO] 19:55:22:720 memoryPool/(8729:8805): Se inserto al segmento BEBIDAS el valor Fanta
+[INFO] 19:55:22:720 memoryPool/(8729:8805): Rta insert 0
+
+[INFO] 19:55:22:848 memoryPool/(8729:8806): sock: -1760100278
+[INFO] 19:55:22:852 memoryPool/(8729:8806): Bytes recibidos: 1
+[INFO] 19:55:22:852 memoryPool/(8729:8806): Operacion 1
+[INFO] 19:55:22:852 memoryPool/(8729:8806): Parametros válidos, se hace un insert
+[INFO] 19:55:22:852 memoryPool/(8729:8806): Se agrego el dato Empanadas al marco 21
+[INFO] 19:55:22:852 memoryPool/(8729:8806): Se inserto al segmento PLATOS_PRINCIPALES el valor Empanadas
+[INFO] 19:55:22:852 memoryPool/(8729:8806): Rta insert 0
+
+[INFO] 19:55:22:978 memoryPool/(8729:8807): sock: -1760100277
+[INFO] 19:55:22:989 memoryPool/(8729:8807): Bytes recibidos: 1
+[INFO] 19:55:22:989 memoryPool/(8729:8807): Operacion 1
+[INFO] 19:55:22:990 memoryPool/(8729:8807): Parametros válidos, se hace un insert
+[INFO] 19:55:22:990 memoryPool/(8729:8807): Se agrego el dato Helado al marco 17
+[INFO] 19:55:22:990 memoryPool/(8729:8807): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:55:22:990 memoryPool/(8729:8807): Rta insert 0
+
+[INFO] 19:55:23:120 memoryPool/(8729:8808): sock: -1760100276
+[INFO] 19:55:23:124 memoryPool/(8729:8808): Bytes recibidos: 1
+[INFO] 19:55:23:124 memoryPool/(8729:8808): Operacion 1
+[INFO] 19:55:23:124 memoryPool/(8729:8808): Parametros válidos, se hace un insert
+[INFO] 19:55:23:124 memoryPool/(8729:8808): Se agrego el dato Chocotorta al marco 1
+[INFO] 19:55:23:124 memoryPool/(8729:8808): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:55:23:124 memoryPool/(8729:8808): Rta insert 0
+
+[INFO] 19:55:23:247 memoryPool/(8729:8809): sock: -1760100275
+[INFO] 19:55:23:251 memoryPool/(8729:8809): Bytes recibidos: 1
+[INFO] 19:55:23:251 memoryPool/(8729:8809): Operacion 1
+[INFO] 19:55:23:251 memoryPool/(8729:8809): Parametros válidos, se hace un insert
+[INFO] 19:55:23:251 memoryPool/(8729:8809): Se agrego el dato Mate al marco 14
+[INFO] 19:55:23:251 memoryPool/(8729:8809): Se inserto al segmento BEBIDAS el valor Mate
+[INFO] 19:55:23:251 memoryPool/(8729:8809): Rta insert 0
+
+[INFO] 19:55:23:368 memoryPool/(8729:8810): sock: -1760100274
+[INFO] 19:55:23:368 memoryPool/(8729:8810): Bytes recibidos: 1
+[INFO] 19:55:23:368 memoryPool/(8729:8810): Operacion 0
+[INFO] 19:55:23:368 memoryPool/(8729:8810): Se seleccionó el valor Frutilla
+[INFO] 19:55:23:484 memoryPool/(8729:8811): sock: -1760100273
+[INFO] 19:55:23:488 memoryPool/(8729:8811): Bytes recibidos: 1
+[INFO] 19:55:23:489 memoryPool/(8729:8811): Operacion 0
+[INFO] 19:55:23:494 memoryPool/(8729:8811): se creo una conexión con lfs
+[INFO] 19:55:24:11 memoryPool/(8729:8811): No existe un valor con esa key en LFS
+[INFO] 19:58:16:869 memoryPool/(8883:8883): Se inicializo la memoria con tamanio 2048
+[INFO] 19:58:16:890 memoryPool/(8883:8883): Tamanio máximo recibido de FS: 30
+[INFO] 19:58:50:8 memoryPool/(8907:8907): Se inicializo la memoria con tamanio 2048
+[INFO] 19:58:50:221 memoryPool/(8907:8907): Tamanio máximo recibido de FS: 30
+[INFO] 19:59:27:800 memoryPool/(8907:8919): sock: -1760296954
+[INFO] 19:59:27:809 memoryPool/(8907:8919): Bytes recibidos: 1
+[INFO] 19:59:27:809 memoryPool/(8907:8919): Operacion 2
+[INFO] 19:59:27:998 memoryPool/(8907:8919): se creo una conexión con lfs
+[INFO] 19:59:28:817 memoryPool/(8907:8919): Respuesta del create 0
+[INFO] 19:59:28:817 memoryPool/(8907:8919): La respuesta del create fue 0
+[INFO] 19:59:29:39 memoryPool/(8907:8920): sock: -1760296953
+[INFO] 19:59:29:124 memoryPool/(8907:8920): Bytes recibidos: 1
+[INFO] 19:59:29:124 memoryPool/(8907:8920): Operacion 3
+[INFO] 19:59:29:129 memoryPool/(8907:8920): se creo una conexión con lfs
+[INFO] 19:59:29:738 memoryPool/(8907:8920): Respuesta del describe 01019MARINOS;SC;1;10000
+[INFO] 19:59:29:960 memoryPool/(8907:8921): sock: -1760296952
+[INFO] 19:59:30:46 memoryPool/(8907:8921): Bytes recibidos: 1
+[INFO] 19:59:30:46 memoryPool/(8907:8921): Operacion 1
+[INFO] 19:59:30:47 memoryPool/(8907:8921): Parametros válidos, se hace un insert
+[INFO] 19:59:30:47 memoryPool/(8907:8921): Se creo el segmento MARINOS
+[INFO] 19:59:30:47 memoryPool/(8907:8921): Se agrego una página al segmento MARINOS
+[INFO] 19:59:30:47 memoryPool/(8907:8921): Se agrego el dato Ballena al marco 0
+[INFO] 19:59:30:47 memoryPool/(8907:8921): Se inserto al segmento MARINOS el valor Ballena
+[INFO] 19:59:30:47 memoryPool/(8907:8921): Rta insert 0
+
+[INFO] 19:59:30:256 memoryPool/(8907:8922): sock: -1760296951
+[INFO] 19:59:30:267 memoryPool/(8907:8922): Bytes recibidos: 1
+[INFO] 19:59:30:267 memoryPool/(8907:8922): Operacion 2
+[INFO] 19:59:30:353 memoryPool/(8907:8922): se creo una conexión con lfs
+[INFO] 19:59:30:967 memoryPool/(8907:8922): Respuesta del create 0
+[INFO] 19:59:30:968 memoryPool/(8907:8922): La respuesta del create fue 0
+[INFO] 19:59:31:177 memoryPool/(8907:8923): sock: -1760296950
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Bytes recibidos: 1
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Operacion 1
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Parametros válidos, se hace un insert
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Se creo el segmento POSTRES
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Se agrego una página al segmento POSTRES
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Se agrego el dato Flan al marco 1
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:59:31:182 memoryPool/(8907:8923): Rta insert 0
+
+[INFO] 19:59:31:384 memoryPool/(8907:8924): sock: -1760296949
+[INFO] 19:59:31:389 memoryPool/(8907:8924): Bytes recibidos: 1
+[INFO] 19:59:31:389 memoryPool/(8907:8924): Operacion 2
+[INFO] 19:59:31:394 memoryPool/(8907:8924): se creo una conexión con lfs
+[INFO] 19:59:31:990 memoryPool/(8907:8924): Respuesta del create 0
+[INFO] 19:59:31:990 memoryPool/(8907:8924): La respuesta del create fue 0
+[INFO] 19:59:32:213 memoryPool/(8907:8925): sock: -1760296948
+[INFO] 19:59:32:220 memoryPool/(8907:8925): Bytes recibidos: 1
+[INFO] 19:59:32:220 memoryPool/(8907:8925): Operacion 2
+[INFO] 19:59:32:232 memoryPool/(8907:8925): se creo una conexión con lfs
+[INFO] 19:59:32:848 memoryPool/(8907:8925): Respuesta del create 0
+[INFO] 19:59:32:849 memoryPool/(8907:8925): La respuesta del create fue 0
+[INFO] 19:59:32:984 memoryPool/(8907:8926): sock: -1760296947
+[INFO] 19:59:32:987 memoryPool/(8907:8926): Bytes recibidos: 1
+[INFO] 19:59:32:988 memoryPool/(8907:8926): Operacion 2
+[INFO] 19:59:32:997 memoryPool/(8907:8926): se creo una conexión con lfs
+[INFO] 19:59:33:530 memoryPool/(8907:8926): Respuesta del create 0
+[INFO] 19:59:33:530 memoryPool/(8907:8926): La respuesta del create fue 0
+[INFO] 19:59:33:694 memoryPool/(8907:8927): sock: -1760296946
+[INFO] 19:59:33:697 memoryPool/(8907:8927): Bytes recibidos: 1
+[INFO] 19:59:33:697 memoryPool/(8907:8927): Operacion 3
+[INFO] 19:59:33:702 memoryPool/(8907:8927): se creo una conexión con lfs
+[INFO] 19:59:34:224 memoryPool/(8907:8927): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:59:34:392 memoryPool/(8907:8928): sock: -1760296945
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Bytes recibidos: 1
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Operacion 1
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Parametros válidos, se hace un insert
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Se creo el segmento FRUTAS
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Se agrego una página al segmento FRUTAS
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Se agrego el dato Manzana al marco 2
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:59:34:402 memoryPool/(8907:8928): Rta insert 0
+
+[INFO] 19:59:34:532 memoryPool/(8907:8929): sock: -1760296944
+[INFO] 19:59:34:543 memoryPool/(8907:8929): Bytes recibidos: 1
+[INFO] 19:59:34:543 memoryPool/(8907:8929): Operacion 1
+[INFO] 19:59:34:544 memoryPool/(8907:8929): Parametros válidos, se hace un insert
+[INFO] 19:59:34:544 memoryPool/(8907:8929): Se agrego una página al segmento POSTRES
+[INFO] 19:59:34:544 memoryPool/(8907:8929): Se agrego el dato Chocotorta al marco 3
+[INFO] 19:59:34:544 memoryPool/(8907:8929): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:59:34:544 memoryPool/(8907:8929): Rta insert 0
+
+[INFO] 19:59:34:755 memoryPool/(8907:8930): sock: -1760296943
+[INFO] 19:59:34:761 memoryPool/(8907:8930): Bytes recibidos: 1
+[INFO] 19:59:34:761 memoryPool/(8907:8930): Operacion 1
+[INFO] 19:59:34:761 memoryPool/(8907:8930): Parametros válidos, se hace un insert
+[INFO] 19:59:34:761 memoryPool/(8907:8930): Se agrego una página al segmento FRUTAS
+[INFO] 19:59:34:761 memoryPool/(8907:8930): Se agrego el dato Banana al marco 4
+[INFO] 19:59:34:761 memoryPool/(8907:8930): Se inserto al segmento FRUTAS el valor Banana
+[INFO] 19:59:34:761 memoryPool/(8907:8930): Rta insert 0
+
+[INFO] 19:59:34:961 memoryPool/(8907:8931): sock: -1760296942
+[INFO] 19:59:34:969 memoryPool/(8907:8931): Bytes recibidos: 1
+[INFO] 19:59:34:970 memoryPool/(8907:8931): Operacion 1
+[INFO] 19:59:34:970 memoryPool/(8907:8931): Parametros válidos, se hace un insert
+[INFO] 19:59:34:970 memoryPool/(8907:8931): Se agrego una página al segmento MARINOS
+[INFO] 19:59:34:970 memoryPool/(8907:8931): Se agrego el dato Pulpo al marco 5
+[INFO] 19:59:34:970 memoryPool/(8907:8931): Se inserto al segmento MARINOS el valor Pulpo
+[INFO] 19:59:34:970 memoryPool/(8907:8931): Rta insert 0
+
+[INFO] 19:59:35:174 memoryPool/(8907:8932): sock: -1760296941
+[INFO] 19:59:35:179 memoryPool/(8907:8932): Bytes recibidos: 1
+[INFO] 19:59:35:179 memoryPool/(8907:8932): Operacion 1
+[INFO] 19:59:35:179 memoryPool/(8907:8932): Parametros válidos, se hace un insert
+[INFO] 19:59:35:179 memoryPool/(8907:8932): Se creo el segmento AVES
+[INFO] 19:59:35:179 memoryPool/(8907:8932): Se agrego una página al segmento AVES
+[INFO] 19:59:35:179 memoryPool/(8907:8932): Se agrego el dato Paloma al marco 6
+[INFO] 19:59:35:179 memoryPool/(8907:8932): Se inserto al segmento AVES el valor Paloma
+[INFO] 19:59:35:180 memoryPool/(8907:8932): Rta insert 0
+
+[INFO] 19:59:35:388 memoryPool/(8907:8933): sock: -1760296940
+[INFO] 19:59:35:400 memoryPool/(8907:8933): Bytes recibidos: 1
+[INFO] 19:59:35:400 memoryPool/(8907:8933): Operacion 1
+[INFO] 19:59:35:400 memoryPool/(8907:8933): Parametros válidos, se hace un insert
+[INFO] 19:59:35:400 memoryPool/(8907:8933): Se creo el segmento MAMIFEROS
+[INFO] 19:59:35:400 memoryPool/(8907:8933): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:59:35:400 memoryPool/(8907:8933): Se agrego el dato Gato al marco 7
+[INFO] 19:59:35:400 memoryPool/(8907:8933): Se inserto al segmento MAMIFEROS el valor Gato
+[INFO] 19:59:35:401 memoryPool/(8907:8933): Rta insert 0
+
+[INFO] 19:59:35:586 memoryPool/(8907:8934): sock: -1760296939
+[INFO] 19:59:35:590 memoryPool/(8907:8934): Bytes recibidos: 1
+[INFO] 19:59:35:590 memoryPool/(8907:8934): Operacion 1
+[INFO] 19:59:35:590 memoryPool/(8907:8934): Parametros válidos, se hace un insert
+[INFO] 19:59:35:590 memoryPool/(8907:8934): Se agrego una página al segmento POSTRES
+[INFO] 19:59:35:590 memoryPool/(8907:8934): Se agrego el dato Tiramisu al marco 8
+[INFO] 19:59:35:590 memoryPool/(8907:8934): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:59:35:591 memoryPool/(8907:8934): Rta insert 0
+
+[INFO] 19:59:35:784 memoryPool/(8907:8935): sock: -1760296938
+[INFO] 19:59:35:788 memoryPool/(8907:8935): Bytes recibidos: 1
+[INFO] 19:59:35:789 memoryPool/(8907:8935): Operacion 2
+[INFO] 19:59:35:795 memoryPool/(8907:8935): se creo una conexión con lfs
+[INFO] 19:59:36:497 memoryPool/(8907:8935): Respuesta del create 0
+[INFO] 19:59:36:497 memoryPool/(8907:8935): La respuesta del create fue 0
+[INFO] 19:59:36:652 memoryPool/(8907:8936): sock: -1760296937
+[INFO] 19:59:36:655 memoryPool/(8907:8936): Bytes recibidos: 1
+[INFO] 19:59:36:655 memoryPool/(8907:8936): Operacion 3
+[INFO] 19:59:36:661 memoryPool/(8907:8936): se creo una conexión con lfs
+[INFO] 19:59:37:194 memoryPool/(8907:8936): Respuesta del describe 01019POSTRES;SC;3;60000
+[INFO] 19:59:37:323 memoryPool/(8907:8937): sock: -1760296936
+[INFO] 19:59:37:335 memoryPool/(8907:8937): Bytes recibidos: 1
+[INFO] 19:59:37:335 memoryPool/(8907:8937): Operacion 1
+[INFO] 19:59:37:335 memoryPool/(8907:8937): Parametros válidos, se hace un insert
+[INFO] 19:59:37:335 memoryPool/(8907:8937): Se agrego una página al segmento MAMIFEROS
+[INFO] 19:59:37:335 memoryPool/(8907:8937): Se agrego el dato Perro al marco 9
+[INFO] 19:59:37:335 memoryPool/(8907:8937): Se inserto al segmento MAMIFEROS el valor Perro
+[INFO] 19:59:37:335 memoryPool/(8907:8937): Rta insert 0
+
+[INFO] 19:59:37:455 memoryPool/(8907:8938): sock: -1760296935
+[INFO] 19:59:37:462 memoryPool/(8907:8938): Bytes recibidos: 1
+[INFO] 19:59:37:462 memoryPool/(8907:8938): Operacion 1
+[INFO] 19:59:37:462 memoryPool/(8907:8938): Parametros válidos, se hace un insert
+[INFO] 19:59:37:462 memoryPool/(8907:8938): Se agrego una página al segmento MARINOS
+[INFO] 19:59:37:462 memoryPool/(8907:8938): Se agrego el dato Delfin al marco 10
+[INFO] 19:59:37:462 memoryPool/(8907:8938): Se inserto al segmento MARINOS el valor Delfin
+[INFO] 19:59:37:462 memoryPool/(8907:8938): Rta insert 0
+
+[INFO] 19:59:37:611 memoryPool/(8907:8939): sock: -1760296934
+[INFO] 19:59:37:623 memoryPool/(8907:8939): Bytes recibidos: 1
+[INFO] 19:59:37:623 memoryPool/(8907:8939): Operacion 1
+[INFO] 19:59:37:623 memoryPool/(8907:8939): Parametros válidos, se hace un insert
+[INFO] 19:59:37:624 memoryPool/(8907:8939): Se agrego el dato Halcon al marco 6
+[INFO] 19:59:37:624 memoryPool/(8907:8939): Se inserto al segmento AVES el valor Halcon
+[INFO] 19:59:37:624 memoryPool/(8907:8939): Rta insert 0
+
+[INFO] 19:59:37:753 memoryPool/(8907:8940): sock: -1760296933
+[INFO] 19:59:37:758 memoryPool/(8907:8940): Bytes recibidos: 1
+[INFO] 19:59:37:758 memoryPool/(8907:8940): Operacion 1
+[INFO] 19:59:37:758 memoryPool/(8907:8940): Parametros válidos, se hace un insert
+[INFO] 19:59:37:759 memoryPool/(8907:8940): Se agrego una página al segmento FRUTAS
+[INFO] 19:59:37:759 memoryPool/(8907:8940): Se agrego el dato Pera al marco 11
+[INFO] 19:59:37:759 memoryPool/(8907:8940): Se inserto al segmento FRUTAS el valor Pera
+[INFO] 19:59:37:759 memoryPool/(8907:8940): Rta insert 0
+
+[INFO] 19:59:37:880 memoryPool/(8907:8941): sock: -1760296932
+[INFO] 19:59:37:883 memoryPool/(8907:8941): Bytes recibidos: 1
+[INFO] 19:59:37:883 memoryPool/(8907:8941): Operacion 0
+[INFO] 19:59:37:884 memoryPool/(8907:8941): Se seleccionó el valor Banana
+[INFO] 19:59:37:2 memoryPool/(8907:8942): sock: -1760296931
+[INFO] 19:59:38:44 memoryPool/(8907:8942): Bytes recibidos: 1
+[INFO] 19:59:38:45 memoryPool/(8907:8942): Operacion 1
+[INFO] 19:59:38:45 memoryPool/(8907:8942): Parametros válidos, se hace un insert
+[INFO] 19:59:38:45 memoryPool/(8907:8942): Se agrego el dato Helado al marco 3
+[INFO] 19:59:38:45 memoryPool/(8907:8942): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:59:38:45 memoryPool/(8907:8942): Rta insert 0
+
+[INFO] 19:59:38:208 memoryPool/(8907:8943): sock: -1760296930
+[INFO] 19:59:38:219 memoryPool/(8907:8943): Bytes recibidos: 1
+[INFO] 19:59:38:219 memoryPool/(8907:8943): Operacion 0
+[INFO] 19:59:38:220 memoryPool/(8907:8943): Se seleccionó el valor Halcon
+[INFO] 19:59:38:374 memoryPool/(8907:8944): sock: -1760296929
+[INFO] 19:59:38:385 memoryPool/(8907:8944): Bytes recibidos: 1
+[INFO] 19:59:38:386 memoryPool/(8907:8944): Operacion 1
+[INFO] 19:59:38:386 memoryPool/(8907:8944): Parametros válidos, se hace un insert
+[INFO] 19:59:38:386 memoryPool/(8907:8944): Se agrego el dato Orca al marco 0
+[INFO] 19:59:38:386 memoryPool/(8907:8944): Se inserto al segmento MARINOS el valor Orca
+[INFO] 19:59:38:386 memoryPool/(8907:8944): Rta insert 0
+
+[INFO] 19:59:38:514 memoryPool/(8907:8945): sock: -1760296928
+[INFO] 19:59:38:516 memoryPool/(8907:8945): Bytes recibidos: 1
+[INFO] 19:59:38:516 memoryPool/(8907:8945): Operacion 3
+[INFO] 19:59:38:531 memoryPool/(8907:8945): se creo una conexión con lfs
+[INFO] 19:59:39:97 memoryPool/(8907:8945): Respuesta del describe 01016AVES;SC;5;50000
+[INFO] 19:59:39:235 memoryPool/(8907:8946): sock: -1760296927
+[INFO] 19:59:39:261 memoryPool/(8907:8946): Bytes recibidos: 1
+[INFO] 19:59:39:261 memoryPool/(8907:8946): Operacion 0
+[INFO] 19:59:39:262 memoryPool/(8907:8946): Se seleccionó el valor Helado
+[INFO] 19:59:39:494 memoryPool/(8907:8947): sock: -1760296926
+[INFO] 19:59:39:568 memoryPool/(8907:8947): Bytes recibidos: 1
+[INFO] 19:59:39:568 memoryPool/(8907:8947): Operacion 1
+[INFO] 19:59:39:569 memoryPool/(8907:8947): Parametros válidos, se hace un insert
+[INFO] 19:59:39:569 memoryPool/(8907:8947): Se agrego el dato Almendrado al marco 3
+[INFO] 19:59:39:569 memoryPool/(8907:8947): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:59:39:569 memoryPool/(8907:8947): Rta insert 0
+
+[INFO] 19:59:39:701 memoryPool/(8907:8948): sock: -1760296925
+[INFO] 19:59:39:712 memoryPool/(8907:8948): Bytes recibidos: 1
+[INFO] 19:59:39:712 memoryPool/(8907:8948): Operacion 1
+[INFO] 19:59:39:712 memoryPool/(8907:8948): Parametros válidos, se hace un insert
+[INFO] 19:59:39:712 memoryPool/(8907:8948): Se agrego una página al segmento FRUTAS
+[INFO] 19:59:39:712 memoryPool/(8907:8948): Se agrego el dato Uva al marco 12
+[INFO] 19:59:39:712 memoryPool/(8907:8948): Se inserto al segmento FRUTAS el valor Uva
+[INFO] 19:59:39:713 memoryPool/(8907:8948): Rta insert 0
+
+[INFO] 19:59:39:984 memoryPool/(8907:8949): sock: -1760296924
+[INFO] 19:59:39:989 memoryPool/(8907:8949): Bytes recibidos: 1
+[INFO] 19:59:39:990 memoryPool/(8907:8949): Operacion 3
+[INFO] 19:59:39:996 memoryPool/(8907:8949): se creo una conexión con lfs
+[INFO] 19:59:40:594 memoryPool/(8907:8949): Respuesta del describe 01018FRUTAS;SC;2;50000
+[INFO] 19:59:40:744 memoryPool/(8907:8950): sock: -1760296923
+[INFO] 19:59:40:750 memoryPool/(8907:8950): Bytes recibidos: 1
+[INFO] 19:59:40:750 memoryPool/(8907:8950): Operacion 1
+[INFO] 19:59:40:750 memoryPool/(8907:8950): Parametros válidos, se hace un insert
+[INFO] 19:59:40:750 memoryPool/(8907:8950): Se creo el segmento BEBIDAS
+[INFO] 19:59:40:750 memoryPool/(8907:8950): Se agrego una página al segmento BEBIDAS
+[INFO] 19:59:40:750 memoryPool/(8907:8950): Se agrego el dato Pepsi al marco 13
+[INFO] 19:59:40:750 memoryPool/(8907:8950): Se inserto al segmento BEBIDAS el valor Pepsi
+[INFO] 19:59:40:751 memoryPool/(8907:8950): Rta insert 0
+
+[INFO] 19:59:40:871 memoryPool/(8907:8951): sock: -1760296922
+[INFO] 19:59:40:881 memoryPool/(8907:8951): Bytes recibidos: 1
+[INFO] 19:59:40:881 memoryPool/(8907:8951): Operacion 1
+[INFO] 19:59:40:881 memoryPool/(8907:8951): Parametros válidos, se hace un insert
+[INFO] 19:59:40:881 memoryPool/(8907:8951): Se agrego una página al segmento BEBIDAS
+[INFO] 19:59:40:881 memoryPool/(8907:8951): Se agrego el dato Coca Cola al marco 14
+[INFO] 19:59:40:881 memoryPool/(8907:8951): Se inserto al segmento BEBIDAS el valor Coca Cola
+[INFO] 19:59:40:881 memoryPool/(8907:8951): Rta insert 0
+
+[INFO] 19:59:40:3 memoryPool/(8907:8952): sock: -1760296921
+[INFO] 19:59:41:9 memoryPool/(8907:8952): Bytes recibidos: 1
+[INFO] 19:59:41:9 memoryPool/(8907:8952): Operacion 0
+[INFO] 19:59:41:9 memoryPool/(8907:8952): Se seleccionó el valor Coca Cola
+[INFO] 19:59:41:142 memoryPool/(8907:8953): sock: -1760296920
+[INFO] 19:59:41:152 memoryPool/(8907:8953): Bytes recibidos: 1
+[INFO] 19:59:41:153 memoryPool/(8907:8953): Operacion 1
+[INFO] 19:59:41:153 memoryPool/(8907:8953): Parametros válidos, se hace un insert
+[INFO] 19:59:41:153 memoryPool/(8907:8953): Se agrego el dato Sprite al marco 14
+[INFO] 19:59:41:153 memoryPool/(8907:8953): Se inserto al segmento BEBIDAS el valor Sprite
+[INFO] 19:59:41:153 memoryPool/(8907:8953): Rta insert 0
+
+[INFO] 19:59:41:276 memoryPool/(8907:8954): sock: -1760296919
+[INFO] 19:59:41:283 memoryPool/(8907:8954): Bytes recibidos: 1
+[INFO] 19:59:41:283 memoryPool/(8907:8954): Operacion 0
+[INFO] 19:59:41:283 memoryPool/(8907:8954): Se seleccionó el valor Almendrado
+[INFO] 19:59:41:414 memoryPool/(8907:8956): sock: -1760296918
+[INFO] 19:59:41:421 memoryPool/(8907:8956): Bytes recibidos: 1
+[INFO] 19:59:41:421 memoryPool/(8907:8956): Operacion 1
+[INFO] 19:59:41:421 memoryPool/(8907:8956): Parametros válidos, se hace un insert
+[INFO] 19:59:41:421 memoryPool/(8907:8956): Se agrego una página al segmento POSTRES
+[INFO] 19:59:41:421 memoryPool/(8907:8956): Se agrego el dato Bizcochuelo al marco 15
+[INFO] 19:59:41:422 memoryPool/(8907:8956): Se inserto al segmento POSTRES el valor Bizcochuelo
+[INFO] 19:59:41:422 memoryPool/(8907:8956): Rta insert 0
+
+[INFO] 19:59:41:588 memoryPool/(8907:8957): sock: -1760296917
+[INFO] 19:59:41:602 memoryPool/(8907:8957): Bytes recibidos: 1
+[INFO] 19:59:41:603 memoryPool/(8907:8957): Operacion 1
+[INFO] 19:59:41:603 memoryPool/(8907:8957): Parametros válidos, se hace un insert
+[INFO] 19:59:41:603 memoryPool/(8907:8957): Se agrego una página al segmento BEBIDAS
+[INFO] 19:59:41:603 memoryPool/(8907:8957): Se agrego el dato Limonada al marco 16
+[INFO] 19:59:41:603 memoryPool/(8907:8957): Se inserto al segmento BEBIDAS el valor Limonada
+[INFO] 19:59:41:603 memoryPool/(8907:8957): Rta insert 0
+
+[INFO] 19:59:41:743 memoryPool/(8907:8958): sock: -1760296916
+[INFO] 19:59:41:744 memoryPool/(8907:8958): Bytes recibidos: 1
+[INFO] 19:59:41:744 memoryPool/(8907:8958): Operacion 1
+[INFO] 19:59:41:744 memoryPool/(8907:8958): Parametros válidos, se hace un insert
+[INFO] 19:59:41:744 memoryPool/(8907:8958): Se agrego el dato Melon al marco 12
+[INFO] 19:59:41:744 memoryPool/(8907:8958): Se inserto al segmento FRUTAS el valor Melon
+[INFO] 19:59:41:744 memoryPool/(8907:8958): Rta insert 0
+
+[INFO] 19:59:41:920 memoryPool/(8907:8959): sock: -1760296915
+[INFO] 19:59:41:920 memoryPool/(8907:8959): Bytes recibidos: 1
+[INFO] 19:59:41:920 memoryPool/(8907:8959): Operacion 1
+[INFO] 19:59:41:920 memoryPool/(8907:8959): Parametros válidos, se hace un insert
+[INFO] 19:59:41:920 memoryPool/(8907:8959): Se agrego el dato Manzana al marco 4
+[INFO] 19:59:41:920 memoryPool/(8907:8959): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:59:41:920 memoryPool/(8907:8959): Rta insert 0
+
+[INFO] 19:59:42:385 memoryPool/(8907:8960): sock: -1760296914
+[INFO] 19:59:42:391 memoryPool/(8907:8960): Bytes recibidos: 1
+[INFO] 19:59:42:391 memoryPool/(8907:8960): Operacion 0
+[INFO] 19:59:42:392 memoryPool/(8907:8960): Se seleccionó el valor Sprite
+[INFO] 19:59:42:548 memoryPool/(8907:8961): sock: -1760296913
+[INFO] 19:59:42:555 memoryPool/(8907:8961): Bytes recibidos: 1
+[INFO] 19:59:42:555 memoryPool/(8907:8961): Operacion 1
+[INFO] 19:59:42:556 memoryPool/(8907:8961): Parametros válidos, se hace un insert
+[INFO] 19:59:42:556 memoryPool/(8907:8961): Se agrego una página al segmento POSTRES
+[INFO] 19:59:42:556 memoryPool/(8907:8961): Se agrego el dato Budin de pan al marco 17
+[INFO] 19:59:42:556 memoryPool/(8907:8961): Se inserto al segmento POSTRES el valor Budin de pan
+[INFO] 19:59:42:556 memoryPool/(8907:8961): Rta insert 0
+
+[INFO] 19:59:42:752 memoryPool/(8907:8962): sock: -1760296912
+[INFO] 19:59:42:789 memoryPool/(8907:8962): Bytes recibidos: 1
+[INFO] 19:59:42:789 memoryPool/(8907:8962): Operacion 1
+[INFO] 19:59:42:790 memoryPool/(8907:8962): Parametros válidos, se hace un insert
+[INFO] 19:59:42:790 memoryPool/(8907:8962): Se agrego el dato Sandia al marco 2
+[INFO] 19:59:42:790 memoryPool/(8907:8962): Se inserto al segmento FRUTAS el valor Sandia
+[INFO] 19:59:42:790 memoryPool/(8907:8962): Rta insert 0
+
+[INFO] 19:59:43:152 memoryPool/(8907:8963): sock: -1760296911
+[INFO] 19:59:43:159 memoryPool/(8907:8963): Bytes recibidos: 1
+[INFO] 19:59:43:163 memoryPool/(8907:8963): Operacion 1
+[INFO] 19:59:43:164 memoryPool/(8907:8963): Parametros válidos, se hace un insert
+[INFO] 19:59:43:164 memoryPool/(8907:8963): Se agrego una página al segmento BEBIDAS
+[INFO] 19:59:43:164 memoryPool/(8907:8963): Se agrego el dato Exprimido al marco 18
+[INFO] 19:59:43:164 memoryPool/(8907:8963): Se inserto al segmento BEBIDAS el valor Exprimido
+[INFO] 19:59:43:164 memoryPool/(8907:8963): Rta insert 0
+
+[INFO] 19:59:43:350 memoryPool/(8907:8964): sock: -1760296910
+[INFO] 19:59:43:356 memoryPool/(8907:8964): Bytes recibidos: 1
+[INFO] 19:59:43:356 memoryPool/(8907:8964): Operacion 1
+[INFO] 19:59:43:356 memoryPool/(8907:8964): Parametros válidos, se hace un insert
+[INFO] 19:59:43:356 memoryPool/(8907:8964): Se agrego el dato Agua con gas al marco 16
+[INFO] 19:59:43:356 memoryPool/(8907:8964): Se inserto al segmento BEBIDAS el valor Agua con gas
+[INFO] 19:59:43:356 memoryPool/(8907:8964): Rta insert 0
+
+[INFO] 19:59:43:497 memoryPool/(8907:8965): sock: -1760296909
+[INFO] 19:59:43:510 memoryPool/(8907:8965): Bytes recibidos: 1
+[INFO] 19:59:43:510 memoryPool/(8907:8965): Operacion 1
+[INFO] 19:59:43:510 memoryPool/(8907:8965): Parametros válidos, se hace un insert
+[INFO] 19:59:43:510 memoryPool/(8907:8965): Se agrego el dato Manzana al marco 2
+[INFO] 19:59:43:510 memoryPool/(8907:8965): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 19:59:43:510 memoryPool/(8907:8965): Rta insert 0
+
+[INFO] 19:59:44:75 memoryPool/(8907:8966): sock: -1760296908
+[INFO] 19:59:44:278 memoryPool/(8907:8966): Bytes recibidos: 1
+[INFO] 19:59:44:279 memoryPool/(8907:8966): Operacion 3
+[INFO] 19:59:44:283 memoryPool/(8907:8966): se creo una conexión con lfs
+[INFO] 19:59:44:796 memoryPool/(8907:8966): Respuesta del describe 01019BEBIDAS;SC;6;10000
+[INFO] 19:59:44:933 memoryPool/(8907:8967): sock: -1760296907
+[INFO] 19:59:44:943 memoryPool/(8907:8967): Bytes recibidos: 1
+[INFO] 19:59:44:943 memoryPool/(8907:8967): Operacion 1
+[INFO] 19:59:44:943 memoryPool/(8907:8967): Parametros válidos, se hace un insert
+[INFO] 19:59:44:943 memoryPool/(8907:8967): Se agrego el dato Cereza al marco 4
+[INFO] 19:59:44:943 memoryPool/(8907:8967): Se inserto al segmento FRUTAS el valor Cereza
+[INFO] 19:59:44:943 memoryPool/(8907:8967): Rta insert 0
+
+[INFO] 19:59:45:342 memoryPool/(8907:8968): sock: -1760296906
+[INFO] 19:59:45:346 memoryPool/(8907:8968): Bytes recibidos: 1
+[INFO] 19:59:45:346 memoryPool/(8907:8968): Operacion 0
+[INFO] 19:59:45:346 memoryPool/(8907:8968): Se seleccionó el valor Cereza
+[INFO] 19:59:45:498 memoryPool/(8907:8969): sock: -1760296905
+[INFO] 19:59:45:502 memoryPool/(8907:8969): Bytes recibidos: 1
+[INFO] 19:59:45:502 memoryPool/(8907:8969): Operacion 0
+[INFO] 19:59:45:503 memoryPool/(8907:8969): Se seleccionó el valor Exprimido
+[INFO] 19:59:45:666 memoryPool/(8907:8970): sock: -1760296904
+[INFO] 19:59:45:693 memoryPool/(8907:8970): Bytes recibidos: 1
+[INFO] 19:59:45:693 memoryPool/(8907:8970): Operacion 1
+[INFO] 19:59:45:693 memoryPool/(8907:8970): Parametros válidos, se hace un insert
+[INFO] 19:59:45:693 memoryPool/(8907:8970): Se agrego el dato Frutilla al marco 11
+[INFO] 19:59:45:693 memoryPool/(8907:8970): Se inserto al segmento FRUTAS el valor Frutilla
+[INFO] 19:59:45:693 memoryPool/(8907:8970): Rta insert 0
+
+[INFO] 19:59:45:866 memoryPool/(8907:8971): sock: -1760296903
+[INFO] 19:59:45:870 memoryPool/(8907:8971): Bytes recibidos: 1
+[INFO] 19:59:45:870 memoryPool/(8907:8971): Operacion 1
+[INFO] 19:59:45:870 memoryPool/(8907:8971): Parametros válidos, se hace un insert
+[INFO] 19:59:45:870 memoryPool/(8907:8971): Se agrego el dato Gelatina al marco 8
+[INFO] 19:59:45:870 memoryPool/(8907:8971): Se inserto al segmento POSTRES el valor Gelatina
+[INFO] 19:59:45:870 memoryPool/(8907:8971): Rta insert 0
+
+[INFO] 19:59:46:25 memoryPool/(8907:8972): sock: -1760296902
+[INFO] 19:59:46:25 memoryPool/(8907:8972): Bytes recibidos: 1
+[INFO] 19:59:46:25 memoryPool/(8907:8972): Operacion 1
+[INFO] 19:59:46:26 memoryPool/(8907:8972): Parametros válidos, se hace un insert
+[INFO] 19:59:46:26 memoryPool/(8907:8972): Se agrego el dato Helado al marco 1
+[INFO] 19:59:46:26 memoryPool/(8907:8972): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:59:46:26 memoryPool/(8907:8972): Rta insert 0
+
+[INFO] 19:59:46:171 memoryPool/(8907:8973): sock: -1760296901
+[INFO] 19:59:46:174 memoryPool/(8907:8973): Bytes recibidos: 1
+[INFO] 19:59:46:175 memoryPool/(8907:8973): Operacion 1
+[INFO] 19:59:46:175 memoryPool/(8907:8973): Parametros válidos, se hace un insert
+[INFO] 19:59:46:175 memoryPool/(8907:8973): Se agrego el dato Almendrado al marco 3
+[INFO] 19:59:46:175 memoryPool/(8907:8973): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 19:59:46:175 memoryPool/(8907:8973): Rta insert 0
+
+[INFO] 19:59:46:363 memoryPool/(8907:8974): sock: -1760296900
+[INFO] 19:59:46:371 memoryPool/(8907:8974): Bytes recibidos: 1
+[INFO] 19:59:46:371 memoryPool/(8907:8974): Operacion 0
+[INFO] 19:59:46:371 memoryPool/(8907:8974): Se seleccionó el valor Sprite
+[INFO] 19:59:46:512 memoryPool/(8907:8975): sock: -1760296899
+[INFO] 19:59:46:512 memoryPool/(8907:8975): Bytes recibidos: 1
+[INFO] 19:59:46:512 memoryPool/(8907:8975): Operacion 2
+[INFO] 19:59:46:524 memoryPool/(8907:8975): se creo una conexión con lfs
+[INFO] 19:59:47:351 memoryPool/(8907:8975): Respuesta del create 0
+[INFO] 19:59:47:351 memoryPool/(8907:8975): La respuesta del create fue 0
+[INFO] 19:59:47:577 memoryPool/(8907:8976): sock: -1760296898
+[INFO] 19:59:47:658 memoryPool/(8907:8976): Bytes recibidos: 1
+[INFO] 19:59:47:658 memoryPool/(8907:8976): Operacion 1
+[INFO] 19:59:47:658 memoryPool/(8907:8976): Parametros válidos, se hace un insert
+[INFO] 19:59:47:658 memoryPool/(8907:8976): Se agrego una página al segmento POSTRES
+[INFO] 19:59:47:658 memoryPool/(8907:8976): Se agrego el dato Flan al marco 19
+[INFO] 19:59:47:659 memoryPool/(8907:8976): Se inserto al segmento POSTRES el valor Flan
+[INFO] 19:59:47:659 memoryPool/(8907:8976): Rta insert 0
+
+[INFO] 19:59:47:884 memoryPool/(8907:8977): sock: -1760296897
+[INFO] 19:59:47:966 memoryPool/(8907:8977): Bytes recibidos: 1
+[INFO] 19:59:47:967 memoryPool/(8907:8977): Operacion 1
+[INFO] 19:59:47:967 memoryPool/(8907:8977): Parametros válidos, se hace un insert
+[INFO] 19:59:47:967 memoryPool/(8907:8977): Se creo el segmento PLATOS_PRINCIPALES
+[INFO] 19:59:47:967 memoryPool/(8907:8977): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:59:47:967 memoryPool/(8907:8977): Se agrego el dato Milanesa al marco 20
+[INFO] 19:59:47:967 memoryPool/(8907:8977): Se inserto al segmento PLATOS_PRINCIPALES el valor Milanesa
+[INFO] 19:59:47:967 memoryPool/(8907:8977): Rta insert 0
+
+[INFO] 19:59:48:273 memoryPool/(8907:8978): sock: -1760296896
+[INFO] 19:59:48:281 memoryPool/(8907:8978): Bytes recibidos: 1
+[INFO] 19:59:48:281 memoryPool/(8907:8978): Operacion 1
+[INFO] 19:59:48:282 memoryPool/(8907:8978): Parametros válidos, se hace un insert
+[INFO] 19:59:48:282 memoryPool/(8907:8978): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:59:48:282 memoryPool/(8907:8978): Se agrego el dato Omelette al marco 21
+[INFO] 19:59:48:282 memoryPool/(8907:8978): Se inserto al segmento PLATOS_PRINCIPALES el valor Omelette
+[INFO] 19:59:48:282 memoryPool/(8907:8978): Rta insert 0
+
+[INFO] 19:59:48:595 memoryPool/(8907:8979): sock: -1760296895
+[INFO] 19:59:48:608 memoryPool/(8907:8979): Bytes recibidos: 1
+[INFO] 19:59:48:609 memoryPool/(8907:8979): Operacion 1
+[INFO] 19:59:48:609 memoryPool/(8907:8979): Parametros válidos, se hace un insert
+[INFO] 19:59:48:609 memoryPool/(8907:8979): Se agrego el dato Tiramisu al marco 15
+[INFO] 19:59:48:609 memoryPool/(8907:8979): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 19:59:48:609 memoryPool/(8907:8979): Rta insert 0
+
+[INFO] 19:59:48:747 memoryPool/(8907:8980): sock: -1760296894
+[INFO] 19:59:48:784 memoryPool/(8907:8980): Bytes recibidos: 1
+[INFO] 19:59:48:785 memoryPool/(8907:8980): Operacion 0
+[INFO] 19:59:48:785 memoryPool/(8907:8980): Se seleccionó el valor Manzana
+[INFO] 19:59:48:917 memoryPool/(8907:8981): sock: -1760296893
+[INFO] 19:59:48:925 memoryPool/(8907:8981): Bytes recibidos: 1
+[INFO] 19:59:48:925 memoryPool/(8907:8981): Operacion 0
+[INFO] 19:59:48:925 memoryPool/(8907:8981): Se seleccionó el valor Flan
+[INFO] 19:59:49:61 memoryPool/(8907:8982): sock: -1760296892
+[INFO] 19:59:49:75 memoryPool/(8907:8982): Bytes recibidos: 1
+[INFO] 19:59:49:75 memoryPool/(8907:8982): Operacion 0
+[INFO] 19:59:49:75 memoryPool/(8907:8982): Se seleccionó el valor Exprimido
+[INFO] 19:59:49:208 memoryPool/(8907:8983): sock: -1760296891
+[INFO] 19:59:49:223 memoryPool/(8907:8983): Bytes recibidos: 1
+[INFO] 19:59:49:223 memoryPool/(8907:8983): Operacion 0
+[INFO] 19:59:49:224 memoryPool/(8907:8983): Se seleccionó el valor Tiramisu
+[INFO] 19:59:49:385 memoryPool/(8907:8984): sock: -1760296890
+[INFO] 19:59:49:393 memoryPool/(8907:8984): Bytes recibidos: 1
+[INFO] 19:59:49:393 memoryPool/(8907:8984): Operacion 1
+[INFO] 19:59:49:393 memoryPool/(8907:8984): Parametros válidos, se hace un insert
+[INFO] 19:59:49:393 memoryPool/(8907:8984): Se agrego una página al segmento PLATOS_PRINCIPALES
+[INFO] 19:59:49:393 memoryPool/(8907:8984): Se agrego el dato Hamburguesa al marco 22
+[INFO] 19:59:49:393 memoryPool/(8907:8984): Se inserto al segmento PLATOS_PRINCIPALES el valor Hamburguesa
+[INFO] 19:59:49:393 memoryPool/(8907:8984): Rta insert 0
+
+[INFO] 19:59:49:797 memoryPool/(8907:8985): sock: -1760296889
+[INFO] 19:59:49:810 memoryPool/(8907:8985): Bytes recibidos: 1
+[INFO] 19:59:49:810 memoryPool/(8907:8985): Operacion 0
+[INFO] 19:59:49:810 memoryPool/(8907:8985): Se seleccionó el valor Milanesa
+[INFO] 19:59:49:959 memoryPool/(8907:8986): sock: -1760296888
+[INFO] 19:59:49:972 memoryPool/(8907:8986): Bytes recibidos: 1
+[INFO] 19:59:49:972 memoryPool/(8907:8986): Operacion 1
+[INFO] 19:59:49:973 memoryPool/(8907:8986): Parametros válidos, se hace un insert
+[INFO] 19:59:49:973 memoryPool/(8907:8986): Se agrego el dato Pizza al marco 20
+[INFO] 19:59:49:973 memoryPool/(8907:8986): Se inserto al segmento PLATOS_PRINCIPALES el valor Pizza
+[INFO] 19:59:49:973 memoryPool/(8907:8986): Rta insert 0
+
+[INFO] 19:59:50:157 memoryPool/(8907:8987): sock: -1760296887
+[INFO] 19:59:50:186 memoryPool/(8907:8987): Bytes recibidos: 1
+[INFO] 19:59:50:186 memoryPool/(8907:8987): Operacion 1
+[INFO] 19:59:50:187 memoryPool/(8907:8987): Parametros válidos, se hace un insert
+[INFO] 19:59:50:187 memoryPool/(8907:8987): Se agrego el dato Fanta al marco 13
+[INFO] 19:59:50:187 memoryPool/(8907:8987): Se inserto al segmento BEBIDAS el valor Fanta
+[INFO] 19:59:50:187 memoryPool/(8907:8987): Rta insert 0
+
+[INFO] 19:59:50:325 memoryPool/(8907:8988): sock: -1760296886
+[INFO] 19:59:50:330 memoryPool/(8907:8988): Bytes recibidos: 1
+[INFO] 19:59:50:331 memoryPool/(8907:8988): Operacion 1
+[INFO] 19:59:50:331 memoryPool/(8907:8988): Parametros válidos, se hace un insert
+[INFO] 19:59:50:331 memoryPool/(8907:8988): Se agrego el dato Empanadas al marco 21
+[INFO] 19:59:50:331 memoryPool/(8907:8988): Se inserto al segmento PLATOS_PRINCIPALES el valor Empanadas
+[INFO] 19:59:50:331 memoryPool/(8907:8988): Rta insert 0
+
+[INFO] 19:59:50:526 memoryPool/(8907:8989): sock: -1760296885
+[INFO] 19:59:50:530 memoryPool/(8907:8989): Bytes recibidos: 1
+[INFO] 19:59:50:531 memoryPool/(8907:8989): Operacion 1
+[INFO] 19:59:50:531 memoryPool/(8907:8989): Parametros válidos, se hace un insert
+[INFO] 19:59:50:531 memoryPool/(8907:8989): Se agrego el dato Helado al marco 17
+[INFO] 19:59:50:531 memoryPool/(8907:8989): Se inserto al segmento POSTRES el valor Helado
+[INFO] 19:59:50:531 memoryPool/(8907:8989): Rta insert 0
+
+[INFO] 19:59:51:39 memoryPool/(8907:8990): sock: -1760296884
+[INFO] 19:59:51:147 memoryPool/(8907:8990): Bytes recibidos: 1
+[INFO] 19:59:51:148 memoryPool/(8907:8990): Operacion 1
+[INFO] 19:59:51:148 memoryPool/(8907:8990): Parametros válidos, se hace un insert
+[INFO] 19:59:51:148 memoryPool/(8907:8990): Se agrego el dato Chocotorta al marco 1
+[INFO] 19:59:51:148 memoryPool/(8907:8990): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 19:59:51:148 memoryPool/(8907:8990): Rta insert 0
+
+[INFO] 19:59:51:555 memoryPool/(8907:8991): sock: -1760296883
+[INFO] 19:59:51:568 memoryPool/(8907:8991): Bytes recibidos: 1
+[INFO] 19:59:51:568 memoryPool/(8907:8991): Operacion 1
+[INFO] 19:59:51:568 memoryPool/(8907:8991): Parametros válidos, se hace un insert
+[INFO] 19:59:51:568 memoryPool/(8907:8991): Se agrego el dato Mate al marco 14
+[INFO] 19:59:51:568 memoryPool/(8907:8991): Se inserto al segmento BEBIDAS el valor Mate
+[INFO] 19:59:51:568 memoryPool/(8907:8991): Rta insert 0
+
+[INFO] 19:59:51:866 memoryPool/(8907:8992): sock: -1760296882
+[INFO] 19:59:51:958 memoryPool/(8907:8992): Bytes recibidos: 1
+[INFO] 19:59:51:958 memoryPool/(8907:8992): Operacion 0
+[INFO] 19:59:51:958 memoryPool/(8907:8992): Se seleccionó el valor Frutilla
+[INFO] 19:59:52:189 memoryPool/(8907:8993): sock: -1760296881
+[INFO] 19:59:52:369 memoryPool/(8907:8993): Bytes recibidos: 1
+[INFO] 19:59:52:369 memoryPool/(8907:8993): Operacion 0
+[INFO] 19:59:52:375 memoryPool/(8907:8993): se creo una conexión con lfs
+[INFO] 19:59:52:904 memoryPool/(8907:8993): No existe un valor con esa key en LFS
