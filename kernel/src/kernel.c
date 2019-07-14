@@ -1,5 +1,7 @@
 #include "kernel.h"
-
+//faltan las metricas de cada memoria
+// falta sincronizar algunas cosas?
+// falta borrar la tabla en el drop
 int main(void) {
 	sem_init(&semColasContador,0,0);
 	sem_init(&semColasMutex,0,1);
@@ -22,7 +24,7 @@ int main(void) {
 	m1->estado=1;// inicia disponible
 	list_add(memorias,m1);
 	list_add(criterioSC,m1);
-	pruebas();
+	//pruebas();
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales.lql");
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
@@ -44,10 +46,12 @@ int main(void) {
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/películas.lql");
 	apiKernel();
 	i=0;
-	/*while(i<limiteProcesamiento){
-		pthread_join(hilos[i], NULL);
-		i++;
-	}*/
+	if(queue_size(ready)!=0){
+		while(i<limiteProcesamiento){
+			pthread_join(hilos[i], NULL);
+			i++;
+		}
+	}
 
 //	mostrarResultados();
 	destruir();
@@ -59,7 +63,7 @@ int main(void) {
 
 t_log* init_logger(int i) {
 	if(i==0){
-	return log_create("kernel.log", "kernel",0, LOG_LEVEL_INFO);
+	return log_create("kernel.log", "kernel",1, LOG_LEVEL_INFO);
 	}
 	else return log_create("kernel.log", "kernel",1, LOG_LEVEL_INFO);
 }
@@ -101,7 +105,7 @@ void apiKernel(){
 int conexionMemoria(int puerto, char*ip){
 		u_int16_t sock;
 		u_int16_t port= puerto;
-		if(linkClient(&sock,ip , port,1)!=0){
+		if(linkClient(&sock,ip , port,0)!=0){
 			return -1;
 		}
 		return sock;
@@ -217,11 +221,12 @@ FILE* avanzarLineas(int num,FILE * fp){
 	return fp;
 }
 
-int parsear(char * linea){
+int parsear(char * aux){
 	char ** split;
 	int resultado=1;
+	char *linea= string_substring(aux,0,strlen(aux)-1);
 	if(string_starts_with(linea,"SELECT")){
-		split = string_n_split(linea,3," ");
+		split = string_split(linea," ");
 		resultado=mySelect(split[1],split[2]);
 	}
 	if(string_starts_with(linea,"INSERT")){
@@ -229,15 +234,15 @@ int parsear(char * linea){
 		resultado=insert(split[1],split[2],split[3]);
 	}
 	if(string_starts_with(linea,"DROP")){
-		split = string_n_split(linea,2," ");
+		split = string_split(linea," ");
 		resultado=drop(split[1]);
 	}
 	if(string_starts_with(linea,"CREATE")){
-		split = string_n_split(linea,5," ");
+		split = string_split(linea," ");
 		resultado=create(split[1],split[2],split[3],split[4]);
 	}
 	if(string_starts_with(linea,"DESCRIBE")){
-		split = string_n_split(linea,2," ");
+		split = string_split(linea," ");
 		resultado=describe(split[1]);
 	}
 	if(string_starts_with(linea,"JOURNAL")){
@@ -257,7 +262,7 @@ int parsear(char * linea){
 	}
 	free(split);
 	int retardo= config_get_int_value(config,"SLEEP_EJECUCION");
-	sleep(retardo/(float)1000);
+	usleep(retardo*1000);
 	return resultado;
 }
 
@@ -268,7 +273,7 @@ int mySelect(char * table, char *key){
 
 	int op= 0;
 	char*linea=string_from_format("%s;%s",table,key);
-	int len = strlen(linea);
+	int len = strlen(linea)+1;
 	char* tamanioYop;//= malloc(4);
 	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
@@ -314,6 +319,7 @@ int mySelect(char * table, char *key){
 
 	char * resultado=malloc(2);
 	recvData(sock,resultado,1);
+	resultado[1]='\0';
 	if(atoi(resultado)==0){
 		char *tamanioRta=malloc(4);
 		recvData(sock,tamanioRta,3);
@@ -324,18 +330,25 @@ int mySelect(char * table, char *key){
 			log_info(loggerConsola,"Resultado SELECT : %s",rta);
 		}*/
 	}
-	log_info(logger,"resultado %i" , atoi(resultado));
+	if(atoi(resultado)==3){
+		log_info(loggerConsola,"El select no tiene valor en esa key");
+		close(sock);
+		return 0;
+	}
+	log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
 
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
 			sendData(sock,"6",2);//journal
 			recvData(sock,&resultado,1);
 			if(atoi(resultado)!=0){
+				close(sock);
 				return -1;
 			}
 			sendData(sock,msj,strlen(msj)+1);
 			recvData(sock,&resultado,1);
 			if(atoi(resultado)!=0){
+				close(sock);
 				return -1;
 			}
 		}
@@ -343,10 +356,11 @@ int mySelect(char * table, char *key){
 			return -1;
 		}
 	}
-	free(memAsignada);
+//	free(memAsignada);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
+	close(sock);
 	clock_t fin = clock();
 	double tiempo = (double)(fin-ini);
 	//semaforo
@@ -362,8 +376,8 @@ int insert(char* table ,char* key ,char* value){
 	int op= 1;
 	char **split= string_split(value,"\"");
 	char*linea=string_from_format("%s;%s;%s",table,key,split[0]);
-	int len = strlen(linea);
-	char* tamanioYop;;//= malloc(4);
+	int len = strlen(linea)+1;
+	char* tamanioYop;//= malloc(4);
 	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
 	}
@@ -388,7 +402,7 @@ int insert(char* table ,char* key ,char* value){
 	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
-/*	int c=0;
+	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
 		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency , key);
@@ -404,31 +418,36 @@ int insert(char* table ,char* key ,char* value){
 	sendData(sock,msj,strlen(msj)+1);
 
 	char * resultado=malloc(2);
-	recvData(sock,&resultado,1);
-
+	recvData(sock,resultado,1);
+	resultado[1]='\0';
+	log_info(logger,"resultado INSERT: %i", atoi(resultado));
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
-			sendData(sock,"6",2);//journal
-			recvData(sock,&resultado,1);
+			log_info(logger,"journal");
+			sendData(sock,"5",2);//journal
+			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
+				close(sock);
 				return -1;
 			}
 			sendData(sock,msj,strlen(msj)+1);
-			recvData(sock,&resultado,1);
+			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
+				close(sock);
 				return -1;
 			}
 		}
 		else{
+			close(sock);
 			return -1;
 		}
-	}*/
+	}
 
-	free(memAsignada);
+//	free(memAsignada);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
-
+	close(sock);
 	clock_t fin = clock();
 	double tiempo= (double) (fin-ini);
 	//semaforo
@@ -439,7 +458,17 @@ int insert(char* table ,char* key ,char* value){
 int create(char* table , char* consistency , char* numPart , char* timeComp){
 	int op= 2;
 	char*linea=string_from_format("%s;%s;%s;%s",table,consistency,numPart,timeComp);
-	int len = strlen(linea);
+	char * pepe = string_duplicate(linea);
+	int len = strlen(linea)+1;
+	log_info(loggerConsola,"linea: %s" , linea);
+/*	int i=0;
+	while(i< strlen(timeComp)){
+		log_info(loggerConsola,"pepe: %c" , timeComp[i]);
+		i++;
+	}*/
+
+	log_info(loggerConsola,"tamanio: %i" , strlen(pepe));
+	log_info(loggerConsola,"tamanio %i" , len);
 	char* tamanioYop;//= malloc(4);
 	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
@@ -482,9 +511,12 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	sendData(sock,msj,strlen(msj)+1);
 
 	char * resultado=malloc(2);
-	recvData(sock,&resultado,1);
+	recvData(sock,resultado,1);
+	log_info(logger,"resultado CREATE: %i", atoi(resultado));
+	log_info(loggerConsola,"resultado CREATE: %i", atoi(resultado));
 
 	if(atoi(resultado)!=0){
+		close(sock);
 		return -1;
 	}
 
@@ -495,10 +527,11 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	met->table=string_duplicate(table);
 	list_add(listaMetadata,met);
 
-	free(memAsignada);
+//	free(memAsignada);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
+	close(sock);
 	return 0;
 }
 
@@ -510,23 +543,27 @@ int journal(){
 		int sock=conexionMemoria(m->puerto,m->ip);
 		sendData(sock,"5",2);
 		recvData(sock,resultado,1);
+		resultado[1]='\0';
 		if(atoi(resultado)!=0){
 			ret=1;
 			log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
 		}
+		close(sock);
 	}
 
 	list_iterate(criterioEC,(void*)envioJournal);
 	list_iterate(criterioSC,(void*)envioJournal);
 	list_iterate(criterioSHC,(void*)envioJournal);
+
 	return ret;
 }
 
 int describe(char *table){
 	int tamanio=0;
 	if(table!=NULL){
-		tamanio= strlen(table);
+		tamanio= strlen(table)+1;
 	}
+	log_info(loggerConsola,"tamanio %i" , tamanio);
 	int op=3;//verificar
 	char *msj;
 	if(tamanio==0){
@@ -545,10 +582,12 @@ int describe(char *table){
 	}
 
 	log_info(logger,"DESCRIBE %s",msj);
+	log_info(loggerConsola,"msj:%s",msj);
+	log_info(loggerConsola,"tamanio msj:%i",strlen(msj));
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 	//ver si tengo que usar una memoria asignada al criterio de la tabla
-	/*int c=0;
+	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
 		memAsignada= verMemoriaLibre(memorias);
@@ -567,12 +606,17 @@ int describe(char *table){
 
 	char *resultado=malloc(2);
 	recvData(sock,resultado,1);
+	resultado[1]='\0';
+
+	log_info(logger,"resultado DESCRIBE: %i", atoi(resultado));
+	log_info(loggerConsola,"resultado describe:%i",atoi(resultado));
 
 	if(atoi(resultado)!=0){
+		close(sock);
 		return -1;
 	}
-	char *tamanioRespuesta= malloc(5);
-	recvData(sock,tamanioRespuesta,4);
+//	char *tamanioRespuesta= malloc(5);
+//	recvData(sock,tamanioRespuesta,4);
 	char *cantTablas= malloc(3);
 	recvData(sock,cantTablas,2);
 	int tr= atoi(cantTablas);
@@ -587,6 +631,8 @@ int describe(char *table){
 			recvData(sock,t,3);
 			char *buffer=malloc(atoi(t)+1);
 			recvData(sock,buffer,atoi(t));
+			log_info(loggerConsola,"buffer : %s",buffer);
+			log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
 			//REVISAR
 			struct metadataTabla *metadata= malloc(sizeof(struct metadataTabla));
 			char ** split = string_split(buffer,";");
@@ -621,25 +667,32 @@ int describe(char *table){
 		metadata->numPart=atoi(split[2]);
 		metadata->compTime=atol(split[3]);
 		actualizarMetadataTabla(metadata);
+		log_info(loggerConsola,"buffer : %s",buffer);
+		log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
 
-		free(t);
-		free(buffer);
+
+
 		free(split[0]);
 		free(split[1]);
 		free(split[2]);
 		free(split[3]);
 		free(split);
+		free(t);
+		log_info(loggerConsola,"termino free ");
+		free(buffer);
 	}
 	free(resultado);
-	free(tamanioRespuesta);*/
+//	free(tamanioRespuesta);
 	free(msj);
-	free(memAsignada);
+	log_info(loggerConsola,"entra a free mem ");
+	close(sock);
+	log_info(loggerConsola,"sale fun ");
 	return 0;
 }
 
 int drop(char*table){
 	int op=4;
-	int len=strlen(table);
+	int len=strlen(table)+1;
 
 	char*msj;
 
@@ -681,14 +734,28 @@ int drop(char*table){
 	// deberia borrar la metadata de la tabla? (iria un semaforo)
 
 	if(atoi(resultado)!=0){
+		close(sock);
 		return -1;
 	}
+	void destruirMet(struct metadataTabla *mt){
+		free(mt->consistency);
+		free(mt->table);
+//		free(mt);
+	}
+
+	bool buscar(struct metadataTabla *mt){
+		return strcmp(mt->table,table)!=0;
+	}
+	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
+
+
 	log_info(logger,"INSERT %s",msj);
 
 	free(msj);
 	free(resultado);
 	free(metadata);
-	free(memAsignada);
+//	free(memAsignada);
+	close(sock);
 	return 0;
 }
 
@@ -724,7 +791,9 @@ int add(char* memory , char* consistency){
 				if(atoi(resultado)!=0){
 					ret=1;
 					log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
+
 				}
+				close(sock);
 			}
 			list_iterate(criterioSHC,(void*)envioJournal);
 			return 0;
@@ -767,7 +836,7 @@ int metrics(int modo){
 
 void metricasAutomaticas(){
 	while(terminaHilo==0){
-		sleep(3);
+		sleep(30);
 		metrics(0);
 		//semaforos
 		metrica.cantI=0;
@@ -793,6 +862,7 @@ struct memoria * buscarMemoria(u_int16_t id){
 // borro toda la metadata para no andar actualizando
 void limpiarMetadata(){
 	// agregar semaforo
+	log_info(loggerConsola,"limpiarMeta");
 	void destruirMet(struct metadataTabla *mt){
 		free(mt->consistency);
 		free(mt->table);
@@ -804,16 +874,22 @@ void limpiarMetadata(){
 
 void actualizarMetadataTabla(struct metadataTabla *m){
 	// agregar semaforo
+	log_info(loggerConsola,"actualizarMtadata");
 	void destruirMet(struct metadataTabla *mt){
 		free(mt->consistency);
 		free(mt->table);
-		free(mt);
+//		free(mt);
 	}
 	bool buscar(struct metadataTabla *mt){
 		return strcmp(mt->table,m->table)!=0;
 	}
 	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
+	log_info(loggerConsola,"actualizarMtadataFIN");
 	list_add(listaMetadata,m);
+	log_info(loggerConsola,"consistency %s",m->consistency);
+	log_info(loggerConsola,"table %s",m->table);
+	log_info(loggerConsola," compTime %l",m->compTime);
+	log_info(loggerConsola,"numPart %i",m->numPart);
 }
 
 
