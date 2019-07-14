@@ -1103,6 +1103,9 @@ int mJournal(){
 	}
 	else{
 		log_error(logger, "Algo salió mal al vaciar la lista de segmentos");
+		pthread_mutex_unlock(&lockTablaSeg);
+		//voy a clavar este unlock acá por las dudas hasta que termine la sincro
+		//igual NO DEBERÍA entrar a este else
 		return 1;
 	}
 
