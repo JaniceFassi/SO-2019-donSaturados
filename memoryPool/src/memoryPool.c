@@ -191,9 +191,9 @@ int main(void) {
 
 	pthread_join(hiloConsola, (void*)&fin);
 	if(fin == 0){
-		pthread_kill(gestorConexiones);
-		//pthread_kill(journalTemporal);
-		//pthread_kill(gossipTemporal);
+		pthread_kill(gestorConexiones, 0);
+		//pthread_kill(journalTemporal, 0);
+		//pthread_kill(gossipTemporal, 0);
 		log_info(logger, "Se apagará la memoria de forma correcta");
 
 	}
