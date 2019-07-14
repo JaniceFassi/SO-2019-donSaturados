@@ -82,7 +82,7 @@ int mInsert(char* nombreTabla,u_int16_t key,char* valor);
 int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion );
 char* mDescribe(char* nombreTabla);
 int mDrop(char* nombreTabla);
-void mJournal();
+int mJournal();
 void mGossip();
 
 void finalizar();
@@ -90,7 +90,7 @@ void eliminarMarcos();
 void marcoDestroy(marco *unMarco);
 
 //AUXILIARES DE ARRANQUE
-void inicializar();
+int inicializar();
 void prepararGossiping();
 t_log* init_logger();
 t_config* read_config();

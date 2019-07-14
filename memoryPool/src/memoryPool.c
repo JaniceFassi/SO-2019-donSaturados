@@ -48,7 +48,6 @@ void* recibirOperacion(void * arg){
 	char* nombreTabla;
 	u_int16_t key;
 	char* value;
-	long timestamp;
 	char* consistencia;
 	int particiones;
 	long tiempoCompactacion;
@@ -66,11 +65,11 @@ void* recibirOperacion(void * arg){
 						char* msj = malloc(strlen(rta)+4);
 						msj = empaquetar(0, rta);
 						printf("mensaje %s \n", msj);
-						sendData(cli, msj, strlen(msj)+1);
+						sendData(cli, msj, strlen(msj)*2);
 					}
 
 					else{
-						sendData(cli, rta, sizeof(char)+1);
+						sendData(cli, rta, sizeof(char)*2);
 					}
 
 					break;
@@ -80,8 +79,8 @@ void* recibirOperacion(void * arg){
 					key = atoi(desempaquetado[1]);
 					value = desempaquetado[2];
 
-					int resp = mInsert(nombreTabla, key, value);
-					sendData(cli, string_itoa(resp), sizeof(char)+1);
+					resp = mInsert(nombreTabla, key, value);
+					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					log_info(logger, "Rta insert %d\n", resp);
 
 					break;
@@ -92,7 +91,7 @@ void* recibirOperacion(void * arg){
 					particiones = atoi(desempaquetado[2]);
 					tiempoCompactacion = atol(desempaquetado[3]);
 					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
-					sendData(cli, string_itoa(resp), sizeof(char)+1);
+					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					break;
 
 				case 3: //DESCRIBE
@@ -104,13 +103,13 @@ void* recibirOperacion(void * arg){
 				case 4: //DROP
 					nombreTabla = desempaquetado[0];
 					resp = mDrop(nombreTabla);
-					sendData(cli, string_itoa(resp), sizeof(char)+1);
+					sendData(cli, string_itoa(resp), sizeof(char)*2);
 
 					break;
 
 				case 5: //JOURNAL
-					mJournal();
-					return 0;
+					resp = mJournal();
+					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					break;
 
 				case 6: //GOSSIP
@@ -131,7 +130,15 @@ void* gestionarConexiones (void* arg){
 	char* ipServer = config_get_string_value(configuracion, "IP");
 	u_int16_t server;
 
+
 	int servidorCreado = createServer(ipServer, puertoServer, &server);
+
+	while(servidorCreado!=0){
+		log_error(logger, "No se pudo crear el servidor, se volverá a intentar");
+		servidorCreado = createServer(ipServer, puertoServer, &server);
+	}
+
+	log_info(logger, "Servidor creado exitosamente");
 	listen(server,100);
 	printf("Servidor escuchando\n");
 
@@ -140,7 +147,7 @@ void* gestionarConexiones (void* arg){
 		u_int16_t cliente;
 		int salioBien = acceptConexion(server, &cliente, 0);
 		if(salioBien == 0){
-			printf("Se conecto un cliente\n");
+			log_info(logger, "Recibí una conexión de Kernel");
 			pthread_t atiendeCliente;
 			pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
 			//pthread_join(atiendeCliente, NULL);
@@ -160,9 +167,14 @@ void* gestionarConexiones (void* arg){
 
 int main(void) {
 
-//TODO hay que abortar si no se puede hacer el handshake o el malloc gigante
 
-	inicializar();
+	int exito = inicializar();
+
+	if(exito==1){
+		log_error(logger, "Abortando ejecución");
+		return 1;
+
+	}
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 
@@ -193,7 +205,7 @@ int main(void) {
 //------------------AUXILIARES DE ARRANQUE----------------//
 //-------------------------------------------------------//
 
- void inicializar(){
+ int inicializar(){
 	logger = init_logger();
 	configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
@@ -205,9 +217,21 @@ int main(void) {
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
-	//maxValue = 20;
+
+	if(memoria == NULL){
+		log_error(logger, "Falló el inicio de la memoria principal, abortando ejecución");
+		return 1;
+	}
+
+
 	u_int16_t lfsServidor;
 	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	//maxValue = 20;
+
+	if(maxValue == 1){
+		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
+		return 1;
+	}
 
 	log_info(logger, "Tamanio máximo recibido de FS: %d", maxValue);
 
@@ -227,6 +251,7 @@ int main(void) {
 			list_add(tablaMarcos, unMarco);
 		}
 
+	return 0;
 }
 
  void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
@@ -456,15 +481,16 @@ int main(void) {
  	int id = 1;
  	conexionExitosa = linkClient(&lfsCliente, ipLissandra , puertoLissandra,id);
 
- 		if(conexionExitosa !=0){
- 			perror("Error al conectarse con LFS");
- 		}
+ 	if(conexionExitosa ==1){
+ 		log_error(logger, "No se pudo establecer una conexión con LFS, abortando");
+ 		return 1;
+ 	}
 
- 		sendData(lfsCliente, "6", sizeof(char) );
- 		char* buffer = malloc(sizeof(char)*4);
- 		recvData(lfsCliente, buffer, sizeof(char)*3);
- 		u_int16_t maxV = atoi(buffer);
- 		return maxV;
+ 	sendData(lfsCliente, "6", sizeof(char) );
+ 	char* buffer = malloc(sizeof(char)*4);
+ 	recvData(lfsCliente, buffer, sizeof(char)*3);
+ 	u_int16_t maxV = atoi(buffer);
+ 	return maxV;
  }
 
 
@@ -477,12 +503,12 @@ int main(void) {
  	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
 
  	while(rta!=0){
- 		log_error(logger, "error al crear una conexión con lfs, volverá a intentarse");
+ 		log_error(logger, "No se pudo crear una conexión con LFS, volverá a intentarse");
  	 	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
 
  	}
 
- 	log_info(logger, "se creo una conexión con lfs");
+ 	log_info(logger, "Se creó una conexión con LFS");
 
  	return lfsServer;
  }
@@ -1041,7 +1067,7 @@ int mDrop(char* nombreTabla){
 }
 
 
-void mJournal(){
+int mJournal(){
 	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos");
 	pthread_mutex_lock(&lockTablaSeg);
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
@@ -1056,17 +1082,30 @@ void mJournal(){
 			long timestamp = *(long*)conseguirTimestamp(pag);
 			u_int16_t key = *(u_int16_t*)conseguirKey(pag);
 			char* value = (char*)conseguirValor(pag);
-			insertLissandra(nombreSegmento, timestamp, key, value);
-			//acá hay que responder de a 1 al kernel?
-
+			int insertExitoso = insertLissandra(nombreSegmento, timestamp, key, value);
+			if(insertExitoso==0){
+				log_info(logger, "Se insertó correctamente el valor %s en la tabla %s", value, nombreSegmento);
+			}
+			else{
+				log_info(logger, "No se pudo insertar el valor %s en la tabla %s", value, nombreSegmento);
+			}
 		}
 		list_destroy(paginasMod);
 	}
 
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
-	log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
-	pthread_mutex_unlock(&lockTablaSeg);
+	int listaVacia = list_is_empty(tablaSegmentos);
+	if (listaVacia == 0){
+		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
+		pthread_mutex_unlock(&lockTablaSeg);
+		return 0;
+	}
+	else{
+		log_error(logger, "Algo salió mal al vaciar la lista de segmentos");
+		return 1;
+	}
+
 }
 
 //NROMEM;PUERTO;IP SUPER SEND CON TABLA ENTERA
