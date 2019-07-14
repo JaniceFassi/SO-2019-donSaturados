@@ -79,16 +79,10 @@ void* recibirOperacion(void * arg){
 					nombreTabla = desempaquetado[0];
 					key = atoi(desempaquetado[1]);
 					value = desempaquetado[2];
-					if(strlen(value)+1> maxValue){
-						log_error(logger, "Se intentó insertar un valor mayor al permitido");
-						sendData(cli, "1", sizeof(char)+1);
 
-					}else{
-						log_info(logger, "Parametros válidos, se hace un insert");
-						int resp = mInsert(nombreTabla, key, value);
-						sendData(cli, string_itoa(resp), sizeof(char)+1);
-						log_info(logger, "Rta insert %d\n", resp);
-					}
+					int resp = mInsert(nombreTabla, key, value);
+					sendData(cli, string_itoa(resp), sizeof(char)+1);
+					log_info(logger, "Rta insert %d\n", resp);
 
 					break;
 
