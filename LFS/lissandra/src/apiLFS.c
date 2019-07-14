@@ -11,7 +11,7 @@
 
 int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 	//RETARDO
-	sleep(configLissandra->retardo/1000);
+	usleep(configLissandra->retardo*1000);
 	//Verificar que la tabla exista en el file system.
 	char *path=nivelUnaTabla(param_nameTable, 0);
 	if(folderExist(path)==1){
@@ -46,12 +46,12 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	}
 	//SIGNAL DE MEMTABLE
 	sem_post(criticaMemtable);
-	log_info(logger,"Se ha insertado el registro en la memtable.");
+	log_info(logger,"Se ha insertado el registro con key %i y valor %s en la memtable.",param_key,param_value);
 	return 0;
 }
 
 char *lSelect(char *nameTable, u_int16_t key){
-	sleep(configLissandra->retardo/1000);
+	usleep(configLissandra->retardo*1000);
 	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
 	t_list *obtenidos=list_create();
@@ -69,7 +69,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
-	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
+	//log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 
 	//Escanear la partición objetivo (modo 0)
 	escanearArchivo(nameTable, part, 0,obtenidos);
@@ -111,14 +111,15 @@ char *lSelect(char *nameTable, u_int16_t key){
 			valor=malloc(strlen(obtenido->value)+1);
 			strcpy(valor,obtenido->value);
 			log_info(logger, valor);
+			log_info(logger,"%i",strlen(valor));
 			//FALTA LIBERAR LA FILTRADA
 			list_destroy(filtrada);
 		}else{
-			log_info(logger,"No se ha encontrado el valor.");
+			log_info(logger,"No se ha encontrado el valor con key %i de la tabla %s.",key,nameTable);
 		}
 	}else
 	{
-		log_info(logger,"No se ha encontrado el valor.");
+		log_info(logger,"No se ha encontrado el valor con key %i de la tabla %s.",key,nameTable);
 	}
 	//FALTA LIBERAR EL METATABLA
 	borrarMetadataTabla(metadata);
@@ -131,7 +132,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 
 //*****************************************************************************************************
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
-	sleep(configLissandra->retardo/1000);
+	usleep(configLissandra->retardo*1000);
 	char *nombre=string_duplicate(nameTable);
 	string_to_upper(nombre);	//solo funciona si escribis en minuscula
 	char *path=nivelUnaTabla(nombre, 0);
@@ -193,8 +194,9 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 }
 
 t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
-	sleep(configLissandra->retardo/1000);
+	usleep(configLissandra->retardo*1000);
 	t_list *tablas=list_create();
+	log_info(logger,nameTable);
 	if(nameTable==NULL){
 		if(list_is_empty(directorioP)){
 			log_error(logger,"No hay ninguna tabla cargada en el sistema.");
@@ -233,7 +235,7 @@ t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE 
 }
 
 int drop(char* nameTable){
-	sleep(configLissandra->retardo/1000);
+	usleep(configLissandra->retardo*1000);
 	//Verificar que la tabla exista en el file system.
 	char *pathFolder=nivelUnaTabla(nameTable,0);
 	char *path;

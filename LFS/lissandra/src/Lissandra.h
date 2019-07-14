@@ -20,8 +20,6 @@ typedef enum{
 	DESCRIBE,
 	DROP,
 	EXIT,
-	EXTRA,
-	OTRO,
 	HANDSHAKE
 }op_code;
 
@@ -31,7 +29,7 @@ t_log* init_logger(void);
 t_config* init_config(void);
 void theStart();
 void funcionSenial(int sig);
-void *connectMemory(u_int16_t *server);
+void *connectMemory();
 void *interactuarConMemoria(u_int16_t *arg);
 char* recibirDeMemoria(u_int16_t sock);
 void *inicializarInotify();

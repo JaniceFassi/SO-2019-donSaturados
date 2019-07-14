@@ -15,6 +15,9 @@ int main(void) {
 
 	theStart();
 
+	create("T","SC",3,300000);
+	insert("T",0,"hola",12345678);
+
     /***************PARA USAR TIEMPO DEL DUMP***************/
 
 	alarm(configLissandra->tiempoDump/1000);
@@ -22,18 +25,7 @@ int main(void) {
 
 	/**********************CONEXIONES***********************/
 
-	u_int16_t  server;
-
-	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
-			log_error(logger, "Error al levantar el servidor.");
-			return 1;
-		}else{
-			log_info(logger, "Se levanto el servidor.");
-		}
-
-	listenForClients(server,100);
-
-	pthread_create(&hiloMemoria,NULL,connectMemory,&server);
+	pthread_create(&hiloMemoria,NULL,connectMemory,NULL);
 
 	/************************INOTIFY************************/
 
@@ -79,12 +71,22 @@ void funcionSenial(int sig){
 	return;
 }
 
-void *connectMemory(u_int16_t *server){
+void *connectMemory(){
 
+	u_int16_t  server;
 	u_int16_t socket_client;
 
+	if(createServer(configLissandra->Ip,configLissandra->puerto,&server)!=0){
+		log_error(logger, "Error al levantar el servidor.");
+		return NULL;
+	}else{
+		log_info(logger, "Se levanto el servidor.");
+	}
+
+	listenForClients(server,100);
+
 	while(1){
-		if(acceptConexion( *server, &socket_client,configLissandra->idEsperado)!=0){
+		if(acceptConexion( server, &socket_client,configLissandra->idEsperado)!=0){
 			log_info(logger,"Conexion denegada.");
 			return NULL;
 		}
@@ -225,16 +227,18 @@ void exec_api(op_code mode,u_int16_t sock){
 		}else
 		{
 			if(strlen(valor)<10){
-				respuesta=string_from_format("000%i%s",strlen(valor),valor);
+				respuesta=string_from_format("000%i%s",strlen(valor)+1,valor);
 			}else{
 				if(configLissandra->tamValue<100){
-					respuesta=string_from_format("00%i%s",strlen(valor),valor);
+					respuesta=string_from_format("00%i%s",strlen(valor)+1,valor);
 				}else{
-					respuesta=string_from_format("0%i%s",strlen(valor),valor);
+					respuesta=string_from_format("0%i%s",strlen(valor)+1,valor);
 				}
 			}
 		}
-		sendData(sock,respuesta,strlen(respuesta));
+		log_info(logger,respuesta);
+		int i = sendData(sock,respuesta,strlen(respuesta)+1);
+		log_info(logger,"%i",i);
 		free(respuesta);
 		free(valor);
 		close(sock);
@@ -252,7 +256,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		{
 			respuesta=string_from_format("0");
 		}
-		sendData(sock,respuesta,strlen(respuesta));
+		sendData(sock,respuesta,strlen(respuesta)+1);
 		free(respuesta);
 		close(sock);
 		break;
@@ -269,7 +273,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		{
 			respuesta=string_from_format("0");
 		}
-		sendData(sock,respuesta,strlen(respuesta));
+		sendData(sock,respuesta,strlen(respuesta)+1);
 		free(respuesta);
 		close(sock);
 		break;
@@ -311,7 +315,8 @@ void exec_api(op_code mode,u_int16_t sock){
 			free(paquete);
 			free(canTablas);
 		}
-		sendData(sock,respuesta,strlen(respuesta));
+		log_info(logger,respuesta);
+		sendData(sock,respuesta,strlen(respuesta)+1);
 		free(respuesta);
 		close(sock);
 		break;
@@ -325,7 +330,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		{
 			respuesta=string_from_format("0");
 		}
-		sendData(sock,respuesta,strlen(respuesta));
+		sendData(sock,respuesta,strlen(respuesta)+1);
 		free(respuesta);
 		close(sock);
 		break;
@@ -336,7 +341,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		theEnd();
 		break;
 
-	case 8:
+	case 6:
 		log_info(logger,"PRIMER HANDSHAKE CON MEMORIA");
 		char *maxValue;
 		if(configLissandra->tamValue<10){
