@@ -62,7 +62,7 @@ void* recibirOperacion(void * arg){
 					key = atoi(desempaquetado[1]);
 					rta = mSelect(nombreTabla, key);
 					printf("rta %s\n", rta);
-					if(rta!=3){
+					if(strcmp(rta, "3")==1){
 						char* msj = malloc(strlen(rta)+4);
 						msj = empaquetar(0, rta);
 						printf("mensaje %s \n", msj);
@@ -70,7 +70,7 @@ void* recibirOperacion(void * arg){
 					}
 
 					else{
-						sendData(cli, "3", sizeof(char)+1);
+						sendData(cli, rta, sizeof(char)+1);
 					}
 
 					break;
@@ -963,6 +963,8 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 	pagina* pNueva;
 	char* valorPagNueva;
 	char* valor;
+	char* noExiste = malloc(sizeof(char));
+	strcpy(noExiste, "3");
 
 	if(nuevo!= NULL){
 
@@ -986,7 +988,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				return valorPagNueva;
 			}
 			else{
-				return 3;
+				return noExiste;
 			}
 
 		}
@@ -1005,7 +1007,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 		}
 		else{
-			return 3;
+			return noExiste;
 		}
 	}
 
