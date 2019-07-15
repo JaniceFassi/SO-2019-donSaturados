@@ -1161,6 +1161,13 @@ void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confir
    // sendData(paquete); //como sabe a quien mardalo? ya tiene la ip cargada de antes?
 } //un listen y da el ok a otra mem, tambien envia su tablaMemActivas
 
+int estaRepetido(char*ip){
+	int mismaIp(infoMemActiva* aux){
+		return aux->ip == ip;
+	}
+	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
+}
+
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
 	nueva->ip=ip;
@@ -1173,7 +1180,7 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 		int tam=list_size(tablaMemActivasSecundaria);
 		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
 		while(aux){
-			list_add(tablaMemActivas,aux);
+			if(!estaRepetido(aux->ip))list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
 			//agregar a la config
 			i++;
 			aux=list_get(tablaMemActivasSecundaria,i);
