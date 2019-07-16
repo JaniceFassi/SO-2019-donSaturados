@@ -1298,3 +1298,6 @@ t_config *abrirMetaTabGlobal(char *tabla){
 	return arch;
 }
 
+void liberarTabGlobal(){
+	list_destroy_and_destroy_elements(tablaArchGlobal,(void *)liberarArch);
+}

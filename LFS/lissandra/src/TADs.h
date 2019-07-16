@@ -77,7 +77,7 @@ metaFileSystem *metaLFS;
 int cantBloqGlobal;
 char *pathInicial;
 char *raizDirectorio;
-
+int abortar;
 //semaforos
 sem_t *criticaMemtable;
 sem_t *criticaDirectorio;
@@ -91,7 +91,7 @@ metaArch *abrirArchivo(char *tabla,int nombre,int extension);
 void cerrarArchivo(char *tabla,int extension, metaArch *arch);
 void cerrarMetaTabGlobal(char *tabla,t_config *arch);
 t_config *abrirMetaTabGlobal(char *tabla);
-
+void liberarTabGlobal();
 //FUNCIONES SEMAFOROS
 void inicializarSemGlob();
 void liberarSemaforos();

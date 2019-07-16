@@ -14,18 +14,15 @@
 int main(void) {
 
 	theStart();
-
-
     /***************PARA USAR TIEMPO DEL DUMP***************/
+
 	pthread_create(&hiloDump,NULL,dump,NULL);
 	/**********************CONEXIONES***********************/
 
 	pthread_create(&hiloMemoria,NULL,connectMemory,NULL);
-
 	/************************INOTIFY************************/
 
-	//pthread_create(&hiloInotify,NULL,inicializarInotify,NULL);
-
+	pthread_create(&hiloInotify,NULL,inicializarInotify,NULL);
 	/***********************CONSOLA*************************/
 
 	console();
@@ -46,6 +43,7 @@ void theStart(){
 		crearConfig();										//EN CASO DE QUE NO NOS DEN EL CONFIG. DEBERIA SEGUIR ESTANDO ESTO??
 	}
 	tablaArchGlobal=list_create();
+	abortar=1;
 	inicializarSemGlob();
 	directorioP=list_create();
 	levantarDirectorio();									//Crea todos los niveles del directorio ya teniendo el archivo config listo
@@ -125,32 +123,19 @@ char* recibirDeMemoria(u_int16_t sock){
 }
 
 void *inicializarInotify(){
-	char buffer[BUF_LEN];
-	int file_descriptor = inotify_init();
-	if (file_descriptor < 0) {
-		perror("inotify_init");
-	}
-	int watch_descriptor = inotify_add_watch(file_descriptor, pathInicial, IN_MODIFY );
-	int length = read(file_descriptor, buffer, BUF_LEN);
-	if (length < 0) {
-		perror("read");
-	}
-
-	int offset = 0;
-	estructurarConfig();										//VA EN ALGUN LADO, TMB HAY QUE SINCRONIZAR
-
-	/*while (offset < length) {
-		struct inotify_event *event = (struct inotify_event *) &buffer[offset];
-	if (event->len) {
-			if (event->mask & IN_MODIFY) {
-					printf("The file %s was modified.\n", event->name);
-			}
-		offset += sizeof (struct inotify_event) + event->len;
+	while(abortar){
+		char buffer[BUF_LEN];
+		int file_descriptor = inotify_init();
+		if (file_descriptor < 0) {
+			perror("inotify_init");
 		}
-
+		int watch_descriptor = inotify_add_watch(file_descriptor, pathInicial, IN_MODIFY );
+		int length = read(file_descriptor, buffer, BUF_LEN);
+		if (length < 0) {
+			perror("read");
+		}
+		modificarConfig();
 	}
-*/
-
 	return NULL;
 }
 
@@ -470,21 +455,25 @@ void *console(){
 }
 
 void theEnd(){
+	abortar=0;
+	pthread_join(hiloMemoria,0);
+	pthread_kill(hiloInotify,0);
+	pthread_join(hiloDump,0);
+	log_destroy(dumplog);
 	if(!list_is_empty(memtable)){
 		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
 	}else{
 		list_destroy(memtable);
 	}
-	pthread_kill(hiloMemoria,0);
-	pthread_kill(hiloInotify,0);
 	liberarDirectorioP();
+	log_destroy(compaclog);
+	liberarSemaforos();
 	borrarDatosConfig();
 	borrarMetaLFS();
+	liberarTabGlobal();
 	free(pathInicial);
 	free(raizDirectorio);
 	close(archivoBitmap);
 	bitarray_destroy(bitmap);
-	liberarSemaforos();
 	log_destroy(logger);
-
 }

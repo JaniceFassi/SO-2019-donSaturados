@@ -8,8 +8,11 @@
 #include "Compactor.h"
 void *dump(){
 	//ACA IRIA EL WAIT MUTEX DE LA MEMTABLE
-	while(1){
+	while(abortar){
 		usleep(configLissandra->tiempoDump*1000);
+		if(abortar==0){
+			pthread_exit(NULL);
+		}
 		sem_wait(criticaMemtable);
 		if(list_is_empty(memtable)){
 			log_info(dumplog,"la memtable esta vacia por lo cual no se hace el dump");
@@ -45,15 +48,16 @@ void *dump(){
 			list_destroy(dump);
 		}
 	}
-	return 0;
+	//return 0;
+	pthread_exit(NULL);
 }
 //void compactar(char *nombreTabla, long tiempoCompactacion){
 void compactar(Sdirectorio* nuevo){
-	while(1){
+	while(abortar){
 		usleep(nuevo->time_compact*1000);
 		int borrar;
 		sem_getvalue(&nuevo->borrarTabla,&borrar);
-		if(borrar==0){
+		if(borrar==0 || abortar==0){
 			log_info(compaclog,"No se puede hacer la compactacion de la tabla %s porque hay pedido de borrar",nuevo->nombre);
 			pthread_exit(NULL);
 		}
@@ -168,17 +172,17 @@ void compactar(Sdirectorio* nuevo){
 
 		}
 	}
+	pthread_exit(NULL);
 }
 void liberarDirectorio(Sdirectorio *nuevo){
+	pthread_join(nuevo->hilo,0);
 	free(nuevo->nombre);
-	pthread_kill(nuevo->hilo,0);
 	liberarSemaforosTabla(nuevo);
 	free(nuevo);
 }
 
 void liberarDirectorioP(){
-	list_iterate(directorioP,(void *)liberarDirectorio);
-	list_destroy(directorioP);
+	list_destroy_and_destroy_elements(directorioP,(void *)liberarDirectorio);
 }
 
 void semaforosTabla(Sdirectorio *nuevo){
