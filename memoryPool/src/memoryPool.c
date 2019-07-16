@@ -173,10 +173,6 @@ void* gestionarConexiones (void* arg){
 
 
 	}
-
-
-
-
 	return NULL;
 }
 
@@ -279,7 +275,7 @@ int main(void) {
 }
 
  void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
-	 idMemoria = 0; //Unico de cada proceso
+	 idMemoria = config_get_int_value(configuracion,"MEMORY_NUMBER"); //Unico de cada proceso
 	 tablaMemActivas = list_create();
 	 tablaMemActivasSecundaria = list_create();
 	 ipSeeds = config_get_array_value(configuracion,"IP_SEEDS");
@@ -1137,13 +1133,27 @@ int mJournal(){
 
 }
 
-//NROMEM;PUERTO;IP SUPER SEND CON TABLA ENTERA
+//NROMEM;IP;PUERTO SUPER SEND CON TABLA ENTERA
 
-void agregarMemActivasAConfig(){} //agrega tablaMemActivas a la config del arch sin repetidos
-void enviarTablaAlKernel(){} //un listen y cuando el kernel pide empaqueta y manda la tablaMemActivas
+char* formatearTablaGossip(int nro,char*ip,char*puerto){
+	char* paquetin = string_from_format("%s;%s;%s;",string_itoa(nro),ip,puerto);
+	return paquetin;
+}
 
-char* empaquetarTablaActivas(){}
-t_list* desempaquetarTablaSecundaria(){} // desempaqueta la tabla recibida y la devuelve
+void enviarTablaAlKernel(){} //cuando el kernel pide empaqueta y manda la tablaMemActivas //METER EN API
+
+char* empaquetarTablaActivas(){
+	int i=0;
+	char* paquetote=string_new();
+	infoMemActiva* aux = list_get(tablaMemActivas,i); //Necesita el tamanio el kernel?????
+	while(aux){
+		string_append(&paquetote,formatearTablaGossip(aux->nroMem,aux->ip,aux->puerto));
+		i++;
+		aux = list_get(tablaMemActivas,i);
+	}
+	return paquetote;
+}
+void desempaquetarTablaSecundaria(){} // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
 
 int pedirConfirmacion(char*ip,char* puerto){
@@ -1163,7 +1173,7 @@ void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confir
 
 int estaRepetido(char*ip){
 	int mismaIp(infoMemActiva* aux){
-		return aux->ip == ip;
+		return aux->ip == ip; //no son INT HAY QUE HACER STRCMP //////////////// /// / / / / /
 	}
 	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
 }
@@ -1213,9 +1223,9 @@ void mGossip(){
 
     while(ipSeeds[i]){
 
-    	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){ //falta casteo
+    	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
-    		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]); //aca tambien
+    		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
     		estaEnActivaElim(ipSeeds[i]);
     	}
