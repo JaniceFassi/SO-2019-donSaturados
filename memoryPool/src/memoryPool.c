@@ -194,8 +194,8 @@ int main(void) {
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 
-	pthread_t gestorConexiones;
-	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
+//	pthread_t gestorConexiones;
+//	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
 	//pthread_t journalTemporal;
@@ -203,7 +203,7 @@ int main(void) {
 
 
 	pthread_join(hiloConsola, (void*)&fin);
-	if(fin == 0){
+/*	if(fin == 0){
 		pthread_kill(gestorConexiones, 0);
 		//pthread_kill(journalTemporal, 0);
 		//pthread_kill(gossipTemporal, 0);
@@ -216,7 +216,7 @@ int main(void) {
 	//pthread_join(gossipTemporal, NULL);
 
 	}
-
+*/
 	finalizar();
 	return EXIT_SUCCESS;
 }
@@ -245,8 +245,8 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
-	//maxValue = 20;
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS); //////////solo para probar
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -1153,7 +1153,21 @@ char* empaquetarTablaActivas(){
 	}
 	return paquetote;
 }
-void desempaquetarTablaSecundaria(){} // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
+void desempaquetarTablaSecundaria(char* paquete){
+	int i=0;
+	char** split = string_split(paquete,";");
+
+	while(split[i]){
+		infoMemActiva* aux = malloc(sizeof(infoMemActiva));
+		aux->nroMem = atoi(split[i]);
+		i++;
+		aux->ip = split[i];
+		i++;
+		aux->puerto = split[i];
+		i++;
+		list_add(tablaMemActivasSecundaria,aux);
+	}
+} // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
 
 int pedirConfirmacion(char*ip,char* puerto){
@@ -1173,7 +1187,7 @@ void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confir
 
 int estaRepetido(char*ip){
 	int mismaIp(infoMemActiva* aux){
-		return aux->ip == ip; //no son INT HAY QUE HACER STRCMP //////////////// /// / / / / /
+		return (strcmp(aux->ip,ip)==0);
 	}
 	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
 }
@@ -1195,12 +1209,11 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 			i++;
 			aux=list_get(tablaMemActivasSecundaria,i);
 		}
-
 	}
 }
 
 int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
-	infoMemActiva* aux = list_get(tablaMemActivasSecundaria,0);
+	infoMemActiva* aux = list_get(tablaMemActivasSecundaria,0); //es la posicion cero porque como confirmo hay una nueva tabla secundaria
 	return aux->nroMem;
 }
 

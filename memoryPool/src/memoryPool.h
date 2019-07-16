@@ -145,6 +145,17 @@ int todosModificados(segmento* aux);
 
 //GOSSIPING
 void agregarMemActiva(int id,char* ip,char* puerto);
+void enviarTablaAlKernel();
+char* empaquetarTablaActivas();
+char* formatearTablaGossip(int nro,char*ip,char*puerto);
+void desempaquetarTablaSecundaria(char* paquete);
+int pedirConfirmacion(char*ip,char* puerto);
+void confirmarActivo();
+int estaRepetido(char*ip);
+void agregarMemActiva(int id,char* ip,char*puerto);
+int conseguirIdSecundaria();
+void estaEnActivaElim(char*ip);
+
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
