@@ -283,11 +283,13 @@ int drop(char* nameTable){
 		//sacar la tabla del directorio
 		int index2=calcularIndexName(nameTable);
 		sem_wait(criticaDirectorio);
-		Sdirectorio *nuevo=list_remove(directorioP,index2);
+		Sdirectorio *nuevo=list_remove(directorioP,index2-1);
 		liberarDirectorio(nuevo);
 		sem_post(criticaDirectorio);
 		//Eliminar carpeta
-		borrarCarpeta(pathFolder);
+		if(borrarCarpeta(pathFolder)){
+			log_info(logger,"no se pudo eliminar la carpeta de %s",nameTable);
+		}
 		free(pathFolder);
 		log_info(logger,"Se ha eliminado la tabla %s",nameTable);
 	}else{
