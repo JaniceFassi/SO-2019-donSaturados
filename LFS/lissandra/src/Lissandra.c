@@ -15,20 +15,16 @@ int main(void) {
 
 	theStart();
 
-	create("T","SC",3,300000);
-	insert("T",0,"hola",12345678);
 
     /***************PARA USAR TIEMPO DEL DUMP***************/
-	alarm(configLissandra->tiempoDump/1000);
-	signal(SIGALRM, funcionSenial);
-
+	pthread_create(&hiloDump,NULL,dump,NULL);
 	/**********************CONEXIONES***********************/
 
 	pthread_create(&hiloMemoria,NULL,connectMemory,NULL);
 
 	/************************INOTIFY************************/
 
-	pthread_create(&hiloInotify,NULL,inicializarInotify,NULL);
+	//pthread_create(&hiloInotify,NULL,inicializarInotify,NULL);
 
 	/***********************CONSOLA*************************/
 
@@ -42,7 +38,7 @@ void theStart(){
 	strcpy(pathInicial,"/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
 	raizDirectorio=malloc(strlen("/home/utnso")+1);
 	strcpy(raizDirectorio,"/home/utnso");
-	logger = init_logger();									//Inicia el logger global
+	logger = init_logger();//Inicia el logger global
 	memtable= list_create();								//Inicia la memtable global
 	if(archivoValido(pathInicial)!=0){
 		estructurarConfig();								//Si existe el config en el path inicial crea la estructura, si no lo crea
@@ -53,6 +49,8 @@ void theStart(){
 	inicializarSemGlob();
 	directorioP=list_create();
 	levantarDirectorio();									//Crea todos los niveles del directorio ya teniendo el archivo config listo
+	dumplog=log_create("dump.log","Lissandra",0,LOG_LEVEL_INFO);
+	compaclog=log_create("compact.log","Lissandra",0,LOG_LEVEL_INFO);
 }
 
 t_log* init_logger() {
@@ -251,10 +249,10 @@ void exec_api(op_code mode,u_int16_t sock){
 		long time=atol(subCadena[3]);
 		if(insert(subCadena[0], key,subCadena[2],time)==1){
 			respuesta=string_from_format("1");
-		}else
-		{
+		}else{
 			respuesta=string_from_format("0");
 		}
+		log_info(logger,respuesta);
 		sendData(sock,respuesta,strlen(respuesta)+1);
 		free(respuesta);
 		close(sock);
@@ -272,6 +270,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		{
 			respuesta=string_from_format("0");
 		}
+		log_info(logger,respuesta);
 		sendData(sock,respuesta,strlen(respuesta)+1);
 		free(respuesta);
 		close(sock);
@@ -329,6 +328,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		{
 			respuesta=string_from_format("0");
 		}
+		log_info(logger,respuesta);
 		sendData(sock,respuesta,strlen(respuesta)+1);
 		free(respuesta);
 		close(sock);

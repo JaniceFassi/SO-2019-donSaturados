@@ -67,6 +67,8 @@ typedef struct{
 }datosConfig;
 
 t_log* logger;
+t_log* dumplog;
+t_log* compaclog;
 t_list *memtable;
 t_bitarray* bitmap;
 int archivoBitmap;

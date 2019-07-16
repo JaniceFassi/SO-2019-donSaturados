@@ -31,7 +31,7 @@ void liberarSemaforosTabla(Sdirectorio *nuevo);
 
 
 void compactar(Sdirectorio *nuevo);
-int dump();
+void *dump();
 void levantarDirectorio();
 void liberarDirectorio(Sdirectorio *nuevo);
 void liberarDirectorioP();

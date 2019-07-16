@@ -22,7 +22,7 @@ typedef enum{
 	EXIT,
 	HANDSHAKE
 }op_code;
-
+pthread_t hiloDump;
 pthread_t hiloMemoria;
 pthread_t hiloInotify;
 t_log* init_logger(void);

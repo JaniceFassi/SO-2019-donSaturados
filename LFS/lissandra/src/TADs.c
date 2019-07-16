@@ -87,7 +87,7 @@ char *array_A_String(char **array,int cantBloques){
 }
 
 char *concatRegistro(Registry *registro){
-	char *linea=string_from_format("%ld;%i;%s",registro->timestamp,registro->key,registro->value);
+	char *linea=string_from_format("%ld;%i;%s;",registro->timestamp,registro->key,registro->value);
 	return linea;
 }
 
@@ -102,7 +102,6 @@ char *cadenaDeRegistros(t_list *lista){
 			strcpy(buffer,linea);
 			vacio++;
 		}else{
-			buffer=ponerSeparador(buffer);
 			buffer=realloc(buffer,strlen(linea)+strlen(buffer)+1);
 			strcat(buffer,linea);
 		}
@@ -255,8 +254,7 @@ t_list *deChar_Registros(char *buffer){
 		free(substring[2]);
 		seguir=0;
 		if(substring[3]!=NULL){
-			buffer=malloc(strlen(substring[3])+1);
-			strcpy(buffer,substring[3]);
+			buffer=string_duplicate(substring[3]);
 			free(substring[3]);
 			seguir=1;
 		}
@@ -515,14 +513,14 @@ void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){
 }
 
 void modificarConfig(){
-	t_config *config = init_config();
+	t_config *config = config_create(pathInicial);
 	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
 	configLissandra->retardo= config_get_int_value(config, "RETARDO");
 	config_destroy(config);
 }
 
 void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
-	t_config *config = init_config();				//Crea una estructura datosConfig en configLissandra, variable global
+	t_config *config = config_create(pathInicial);				//Crea una estructura datosConfig en configLissandra, variable global
 	configLissandra=malloc(sizeof(datosConfig));
 	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
 	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
@@ -610,16 +608,19 @@ void crearConfig(){
 void escribirArchB(char *path,char *buffer){
 	FILE *bloque=fopen(path,"wb");
 	fwrite(buffer,1,strlen(buffer)*sizeof(char)+1,bloque);
-	fflush(bloque);
+//	fflush();
+	fflush(stdin);
 	fclose(bloque);
 }
 
 char *leerArchBinario(char *path,int tamanio){
 	FILE *arch;
 	arch=fopen(path,"rb");
-	char *datos=malloc(tamanio);
-	fread(datos, 1, tamanio*sizeof(char), arch);
+	char *buffer=malloc(tamanio);
+	//fflush(arch);
+	fread(buffer,1, tamanio*sizeof(char)/***/, arch);
 	fclose(arch);
+	char *datos=string_substring(buffer,0,tamanio);
 	return datos;
 }
 
@@ -918,8 +919,7 @@ Registry *createRegistry(u_int16_t key, char *val, long time){
 
 	data->timestamp = time;
 	data->key = key;
-	data ->value=malloc(strlen(val)+1);
-	strcpy(data->value,val);
+	data ->value=string_duplicate(val);
 
 	return data;
 }
@@ -1193,7 +1193,8 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 						break;
 					}else{
 						if(tablaDirec->pedido_extension==0){
-							log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							//log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
 							nuevoArch(tabla,extension);
@@ -1210,7 +1211,8 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 						break;
 					}else{
 						if(tablaDirec->pedido_extension==1){
-							log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							//log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
 							nuevoArch(tabla,extension);
@@ -1227,7 +1229,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 						break;
 					}else{
 						if(tablaDirec->pedido_extension==2){
-							log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
 							nuevoArch(tabla,extension);
@@ -1235,7 +1237,6 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 							break;
 						}
 					}
-
 		}
 	}
 	free(path);

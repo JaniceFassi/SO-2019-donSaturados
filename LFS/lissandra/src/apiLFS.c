@@ -99,7 +99,6 @@ char *lSelect(char *nameTable, u_int16_t key){
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
 	//log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
-
 	//Escanear la partición objetivo (modo 0)
 	escanearArchivo(nameTable, part, 0,obtenidos);
 
@@ -117,7 +116,6 @@ char *lSelect(char *nameTable, u_int16_t key){
 			valor=malloc(strlen(obtenido->value)+1);
 			strcpy(valor,obtenido->value);
 			log_info(logger, valor);
-			log_info(logger,"%i",strlen(valor));
 			//FALTA LIBERAR LA FILTRADA
 			list_destroy(filtrada);
 		}else{
@@ -202,7 +200,6 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
 	usleep(configLissandra->retardo*1000);
 	t_list *tablas=list_create();
-	log_info(logger,nameTable);
 	if(nameTable==NULL){
 		if(list_is_empty(directorioP)){
 			log_error(logger,"No hay ninguna tabla cargada en el sistema.");
