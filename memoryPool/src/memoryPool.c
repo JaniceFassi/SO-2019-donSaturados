@@ -1140,7 +1140,13 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto){
 	return paquetin;
 }
 
-void enviarTablaAlKernel(){} //cuando el kernel pide empaqueta y manda la tablaMemActivas //METER EN API
+void enviarTablaAlKernel(u_int16_t kernelClient){
+	char* paquete = empaquetarTablaActivas();
+	u_int16_t tam = strlen(paquete);
+	sendData(kernelClient,tam,sizeof(u_int16_t));
+	sendData(kernelClient,paquete,tam);
+
+} //cuando el kernel pide empaqueta y manda la tablaMemActivas //METER EN API
 
 char* empaquetarTablaActivas(){
 	int i=0;
@@ -1171,19 +1177,33 @@ void desempaquetarTablaSecundaria(char* paquete){
 
 
 int pedirConfirmacion(char*ip,char* puerto){
-    //funciones de la shared
-    //char*paqueteEnvio = empaquetarTablaActivas();
-    //sendData(paqueteEnvio);
-    //recvData(paqueteRecv);
-    //tablaSecundaria = desempaquetarTablaSecundaria(char* paqueteRecv);
+	u_int16_t kernelCliente;
+	char*buffer;
+	int conexion = linkClient(&kernelCliente,ip,puerto,1);
+
+	if(conexion ==1){
+		return 0; // no esta activa la memoria
+	}
+
+	u_int16_t tamTabla;
+	recvData(kernelCliente,tamTabla,sizeof(u_int16_t));
+	recvData(kernelCliente,buffer,tamTabla); //averiguar esto //tendria que hacer otro recv con el tamanio del paquete no?
+	desempaquetarTablaSecundaria(buffer);
+
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
 void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
-    char* paquete;
-   // paquete=empaquetarTablaActivas();
-   // sendData(paquete); //como sabe a quien mardalo? ya tiene la ip cargada de antes?
-} //un listen y da el ok a otra mem, tambien envia su tablaMemActivas
+    char* paquete=empaquetarTablaActivas();
+    int tam = strlen(paquete);
+    u_int16_t server;
+    u_int16_t sockClient;
+    createServer(ipSeeds[0],puertoSeeds[0],&server);
+    listenForClients(server,100);
+    acceptConexion(server,&sockClient,1);
+    sendData(sockClient,paquete,tam);
+
+} //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
 int estaRepetido(char*ip){
 	int mismaIp(infoMemActiva* aux){

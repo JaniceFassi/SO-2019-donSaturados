@@ -145,7 +145,7 @@ int todosModificados(segmento* aux);
 
 //GOSSIPING
 void agregarMemActiva(int id,char* ip,char* puerto);
-void enviarTablaAlKernel();
+void enviarTablaAlKernel(u_int16_t kernelClient);
 char* empaquetarTablaActivas();
 char* formatearTablaGossip(int nro,char*ip,char*puerto);
 void desempaquetarTablaSecundaria(char* paquete);
