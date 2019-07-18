@@ -1259,11 +1259,13 @@ int estaRepetido(char*ip){
 }
 
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
+	if(!estaRepetido(ip)){
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
 	nueva->ip=ip;
 	nueva->puerto=puerto;
 	nueva->nroMem=id;
 	list_add(tablaMemActivas,nueva);
+	}
 
 	if(tablaMemActivasSecundaria){ //es decir, si se recibio una tablaSecundaria
 		int i=1; //la 0 ya la agregamos arriba
