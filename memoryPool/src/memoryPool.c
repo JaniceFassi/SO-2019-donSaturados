@@ -172,7 +172,6 @@ void* gestionarConexiones (void* arg){
 }
 
 
-
 int main(void) {
 
 
@@ -183,6 +182,7 @@ int main(void) {
 		return 1;
 
 	}
+	/*
 	mInsert("POSTRES", 1, "FLAN");
 	mInsert("POSTRES", 2, "HELADO");
 	mInsert("POSTRES", 3, "HELADO");
@@ -192,7 +192,7 @@ int main(void) {
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
-
+	*/
 
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
@@ -1280,8 +1280,12 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 				list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
 				char* ipsAux = config_get_string_value(configuracion,"IP_SEEDS");
 				char* seedsAux = config_get_string_value(configuracion,"PUERTO_SEEDS");
-				string_append(&ipsAux,aux->ip);
-				string_append(&seedsAux,aux->puerto);
+				char* nuevaIP = aux->ip;
+				char* nuevoPuerto = aux->puerto;
+				string_append(&nuevaIP,";");
+				string_append(&nuevoPuerto,";");
+				string_append(&ipsAux,nuevaIP);
+				string_append(&seedsAux,nuevoPuerto);
 				config_set_value(configuracion,"IP_SEEDS",ipsAux);
 				config_set_value(configuracion,"PUERTO_SEEDS",seedsAux);
 				//agrega a la config (se podria delegar)
