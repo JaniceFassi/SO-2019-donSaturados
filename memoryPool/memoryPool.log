@@ -1,876 +1,101 @@
-[INFO] 20:41:53:4 memoryPool/(5019:5019): Se inicializo la memoria con tamanio 2048
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Tamanio máximo recibido de FS: 20
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se creo el segmento POSTRES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento POSTRES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato FLAN al marco 0
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento POSTRES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato HELADO al marco 1
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento POSTRES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato HELADO al marco 2
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se creo el segmento PROFESIONES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento PROFESIONES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento PROFESIONES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento PROFESIONES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato CHEF al marco 5
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se creo el segmento ANIMALES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento ANIMALES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato GATO al marco 6
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento ANIMALES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato PERRO al marco 7
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego una página al segmento ANIMALES
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:41:54:5 memoryPool/(5019:5019): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:41:54:5 memoryPool/(5019:5025): Servidor creado exitosamente
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inicializo la memoria con tamanio 2048
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Tamanio máximo recibido de FS: 20
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se creo el segmento POSTRES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento POSTRES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato FLAN al marco 0
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento POSTRES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato HELADO al marco 1
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento POSTRES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato HELADO al marco 2
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se creo el segmento PROFESIONES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento PROFESIONES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento PROFESIONES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento PROFESIONES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato CHEF al marco 5
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se creo el segmento ANIMALES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento ANIMALES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato GATO al marco 6
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento ANIMALES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato PERRO al marco 7
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego una página al segmento ANIMALES
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:42:06:444 memoryPool/(5045:5045): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:42:06:453 memoryPool/(5045:5054): Servidor creado exitosamente
-[INFO] 20:42:31:414 memoryPool/(5045:5053): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:43:35:533 memoryPool/(5045:5053): Rta insert LFS 0
-[INFO] 20:43:39:215 memoryPool/(5045:5053): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 20:43:45:405 memoryPool/(5045:5053): Rta insert LFS 0
-[INFO] 20:43:47:413 memoryPool/(5045:5053): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:45:10:911 memoryPool/(5179:5179): Se inicializo la memoria con tamanio 2048
-[INFO] 20:45:10:911 memoryPool/(5179:5179): Tamanio máximo recibido de FS: 20
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se creo el segmento POSTRES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento POSTRES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato FLAN al marco 0
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento POSTRES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato HELADO al marco 1
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento POSTRES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato HELADO al marco 2
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se creo el segmento PROFESIONES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento PROFESIONES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento PROFESIONES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento PROFESIONES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato CHEF al marco 5
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se creo el segmento ANIMALES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento ANIMALES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato GATO al marco 6
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento ANIMALES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato PERRO al marco 7
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego una página al segmento ANIMALES
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:45:10:912 memoryPool/(5179:5179): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:45:10:912 memoryPool/(5179:5185): Servidor creado exitosamente
-[INFO] 20:45:14:710 memoryPool/(5179:5184): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Rta insert LFS 0
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 20:45:14:711 memoryPool/(5179:5184): Fin del journal, procede a borrar datos existentes
-[ERROR] 20:45:14:711 memoryPool/(5179:5184): Algo salió mal al vaciar la lista de segmentos
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inicializo la memoria con tamanio 2048
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Tamanio máximo recibido de FS: 20
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se creo el segmento POSTRES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego una página al segmento POSTRES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego el dato FLAN al marco 0
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego una página al segmento POSTRES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego el dato HELADO al marco 1
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego una página al segmento POSTRES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego el dato HELADO al marco 2
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se creo el segmento PROFESIONES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego una página al segmento PROFESIONES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego una página al segmento PROFESIONES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego una página al segmento PROFESIONES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego el dato CHEF al marco 5
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se creo el segmento ANIMALES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego una página al segmento ANIMALES
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se agrego el dato GATO al marco 6
-[INFO] 20:45:47:475 memoryPool/(5211:5211): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:45:47:476 memoryPool/(5211:5211): Se agrego una página al segmento ANIMALES
-[INFO] 20:45:47:476 memoryPool/(5211:5211): Se agrego el dato PERRO al marco 7
-[INFO] 20:45:47:476 memoryPool/(5211:5211): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:45:47:476 memoryPool/(5211:5211): Se agrego una página al segmento ANIMALES
-[INFO] 20:45:47:476 memoryPool/(5211:5211): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:45:47:476 memoryPool/(5211:5211): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:45:47:485 memoryPool/(5211:5220): Servidor creado exitosamente
-[INFO] 20:45:55:752 memoryPool/(5211:5219): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:46:01:32 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:46:01:407 memoryPool/(5211:5219): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 20:46:02:845 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:46:03:136 memoryPool/(5211:5219): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:46:04:343 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:46:04:647 memoryPool/(5211:5219): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:46:05:111 memoryPool/(5211:5219): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 20:46:08:836 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:46:09:647 memoryPool/(5211:5219): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 20:46:11:566 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:46:11:872 memoryPool/(5211:5219): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 20:46:14:329 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:46:14:900 memoryPool/(5211:5219): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 20:46:18:148 memoryPool/(5211:5219): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 20:46:46:805 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:47:00:979 memoryPool/(5211:5219): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 20:47:04:933 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:47:06:283 memoryPool/(5211:5219): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 20:47:08:864 memoryPool/(5211:5219): Rta insert LFS 0
-[INFO] 20:47:09:875 memoryPool/(5211:5219): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 20:47:12:222 memoryPool/(5211:5219): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 20:47:19:303 memoryPool/(5211:5219): Fin del journal, procede a borrar datos existentes
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inicializo la memoria con tamanio 2048
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Tamanio máximo recibido de FS: 20
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se creo el segmento POSTRES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento POSTRES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato FLAN al marco 0
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento POSTRES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato HELADO al marco 1
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento POSTRES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato HELADO al marco 2
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se creo el segmento PROFESIONES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento PROFESIONES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento PROFESIONES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento PROFESIONES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato CHEF al marco 5
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se creo el segmento ANIMALES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento ANIMALES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato GATO al marco 6
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento ANIMALES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato PERRO al marco 7
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego una página al segmento ANIMALES
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:49:13:113 memoryPool/(5378:5378): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:49:13:125 memoryPool/(5378:5390): Servidor creado exitosamente
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Rta insert LFS 0
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 20:49:19:829 memoryPool/(5378:5389): Fin del journal, procede a borrar datos existentes
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inicializo la memoria con tamanio 2048
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Tamanio máximo recibido de FS: 20
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se creo el segmento POSTRES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento POSTRES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato FLAN al marco 0
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento POSTRES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato HELADO al marco 1
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento POSTRES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato HELADO al marco 2
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se creo el segmento PROFESIONES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento PROFESIONES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento PROFESIONES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento PROFESIONES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato CHEF al marco 5
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se creo el segmento ANIMALES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento ANIMALES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato GATO al marco 6
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento ANIMALES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato PERRO al marco 7
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego una página al segmento ANIMALES
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:51:23:427 memoryPool/(5449:5449): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:51:23:433 memoryPool/(5449:5458): Servidor creado exitosamente
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:586 memoryPool/(5449:5457): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Rta insert LFS 0
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 20:51:33:587 memoryPool/(5449:5457): Fin del journal, procede a borrar datos existentes
-[ERROR] 20:52:18:974 memoryPool/(5449:5457): Algo salió mal al vaciar la lista de segmentos
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se inicializo la memoria con tamanio 2048
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Tamanio máximo recibido de FS: 20
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se creo el segmento POSTRES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego una página al segmento POSTRES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego el dato FLAN al marco 0
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego una página al segmento POSTRES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego el dato HELADO al marco 1
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego una página al segmento POSTRES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego el dato HELADO al marco 2
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se creo el segmento PROFESIONES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego una página al segmento PROFESIONES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego una página al segmento PROFESIONES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego una página al segmento PROFESIONES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego el dato CHEF al marco 5
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se creo el segmento ANIMALES
-[INFO] 20:52:56:844 memoryPool/(5544:5544): Se agrego una página al segmento ANIMALES
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se agrego el dato GATO al marco 6
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se agrego una página al segmento ANIMALES
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se agrego el dato PERRO al marco 7
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se agrego una página al segmento ANIMALES
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:52:56:845 memoryPool/(5544:5544): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:52:56:856 memoryPool/(5544:5553): Servidor creado exitosamente
-[INFO] 20:53:02:638 memoryPool/(5544:5552): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:53:02:638 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:638 memoryPool/(5544:5552): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Rta insert LFS 0
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 20:53:02:639 memoryPool/(5544:5552): Fin del journal, procede a borrar datos existentes
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se inicializo la memoria con tamanio 2048
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Tamanio máximo recibido de FS: 20
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se creo el segmento POSTRES
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se agrego una página al segmento POSTRES
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se agrego el dato FLAN al marco 0
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se agrego una página al segmento POSTRES
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se agrego el dato HELADO al marco 1
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se agrego una página al segmento POSTRES
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se agrego el dato HELADO al marco 2
-[INFO] 20:54:42:1 memoryPool/(5620:5620): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se creo el segmento PROFESIONES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego una página al segmento PROFESIONES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego el dato DOCTOR al marco 3
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego una página al segmento PROFESIONES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego el dato MAESTRO al marco 4
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego una página al segmento PROFESIONES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego el dato CHEF al marco 5
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se creo el segmento ANIMALES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego una página al segmento ANIMALES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego el dato GATO al marco 6
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego una página al segmento ANIMALES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego el dato PERRO al marco 7
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego una página al segmento ANIMALES
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se agrego el dato JIRAFA al marco 8
-[INFO] 20:54:42:2 memoryPool/(5620:5620): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 20:54:43:9 memoryPool/(5620:5631): Servidor creado exitosamente
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 20:54:49:598 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:54:49:599 memoryPool/(5620:5630): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 20:54:49:599 memoryPool/(5620:5630): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 20:54:49:599 memoryPool/(5620:5630): Fin del journal, procede a borrar datos existentes
-[INFO] 20:54:57:437 memoryPool/(5620:5630): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 20:55:39:651 memoryPool/(5620:5630): Se creo el segmento PROFESIONES
-[INFO] 20:55:39:651 memoryPool/(5620:5630): Se agrego una página al segmento PROFESIONES
-[INFO] 20:55:39:651 memoryPool/(5620:5630): Se agrego el dato CARNICERO al marco 0
-[INFO] 20:55:39:651 memoryPool/(5620:5630): Se inserto al segmento PROFESIONES el valor CARNICERO
-[INFO] 20:57:59:299 memoryPool/(5620:5630): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 20:57:59:299 memoryPool/(5620:5630): Rta insert LFS 0
-[INFO] 20:57:59:299 memoryPool/(5620:5630): Se insertó correctamente el valor CARNICERO en la tabla PROFESIONES
-[INFO] 20:57:59:299 memoryPool/(5620:5630): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 20:57:59:299 memoryPool/(5620:5630): Fin del journal, procede a borrar datos existentes
-[INFO] 20:58:01:148 memoryPool/(5620:5630): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 20:58:17:55 memoryPool/(5620:5630): Se creo el segmento PROFESIONES
-[INFO] 00:17:38:647 memoryPool/(6085:6085): Se inicializo la memoria con tamanio 2048
-[INFO] 00:17:38:669 memoryPool/(6085:6085): Tamanio máximo recibido de FS: 20
-[INFO] 00:18:51:641 memoryPool/(6121:6121): Se inicializo la memoria con tamanio 2048
-[INFO] 00:18:59:683 memoryPool/(6121:6121): Tamanio máximo recibido de FS: 20
-[INFO] 00:20:29:850 memoryPool/(6315:6315): Se inicializo la memoria con tamanio 2048
-[INFO] 00:20:29:850 memoryPool/(6315:6315): Tamanio máximo recibido de FS: 20
-[INFO] 00:22:01:941 memoryPool/(6395:6395): Se inicializo la memoria con tamanio 2048
-[INFO] 00:22:01:941 memoryPool/(6395:6395): Tamanio máximo recibido de FS: 20
-[INFO] 00:22:01:941 memoryPool/(6395:6395): Se creo el segmento POSTRES
-[INFO] 00:22:01:941 memoryPool/(6395:6395): Se agrego una página al segmento POSTRES
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego el dato FLAN al marco 0
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego una página al segmento POSTRES
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego el dato HELADO al marco 1
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego una página al segmento POSTRES
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego el dato HELADO al marco 2
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se creo el segmento PROFESIONES
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego una página al segmento PROFESIONES
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego una página al segmento PROFESIONES
-[INFO] 00:22:01:942 memoryPool/(6395:6395): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego una página al segmento PROFESIONES
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego el dato CHEF al marco 5
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se creo el segmento ANIMALES
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego una página al segmento ANIMALES
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego el dato GATO al marco 6
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego una página al segmento ANIMALES
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego el dato PERRO al marco 7
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego una página al segmento ANIMALES
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:22:01:943 memoryPool/(6395:6395): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:22:17:858 memoryPool/(6395:6400): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:23:15:942 memoryPool/(6432:6432): Se inicializo la memoria con tamanio 2048
-[INFO] 00:23:15:942 memoryPool/(6432:6432): Tamanio máximo recibido de FS: 20
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se creo el segmento POSTRES
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego una página al segmento POSTRES
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego el dato FLAN al marco 0
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego una página al segmento POSTRES
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego el dato HELADO al marco 1
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego una página al segmento POSTRES
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego el dato HELADO al marco 2
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se creo el segmento PROFESIONES
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego una página al segmento PROFESIONES
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego una página al segmento PROFESIONES
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:23:19:489 memoryPool/(6432:6432): Se agrego una página al segmento PROFESIONES
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se agrego el dato CHEF al marco 5
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se creo el segmento ANIMALES
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se agrego una página al segmento ANIMALES
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se agrego el dato GATO al marco 6
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se agrego una página al segmento ANIMALES
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se agrego el dato PERRO al marco 7
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se agrego una página al segmento ANIMALES
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:23:19:490 memoryPool/(6432:6432): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:23:28:964 memoryPool/(6432:6445): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:25:17:711 memoryPool/(6556:6556): Se inicializo la memoria con tamanio 2048
-[INFO] 00:25:17:716 memoryPool/(6556:6556): Tamanio máximo recibido de FS: 20
-[INFO] 00:25:17:716 memoryPool/(6556:6556): Se creo el segmento POSTRES
-[INFO] 00:25:17:716 memoryPool/(6556:6556): Se agrego una página al segmento POSTRES
-[INFO] 00:25:17:717 memoryPool/(6556:6556): Se agrego el dato FLAN al marco 0
-[INFO] 00:25:17:717 memoryPool/(6556:6556): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:25:17:717 memoryPool/(6556:6556): Se agrego una página al segmento POSTRES
-[INFO] 00:25:17:717 memoryPool/(6556:6556): Se agrego el dato HELADO al marco 1
-[INFO] 00:25:17:717 memoryPool/(6556:6556): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego una página al segmento POSTRES
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego el dato HELADO al marco 2
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se creo el segmento PROFESIONES
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego una página al segmento PROFESIONES
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego una página al segmento PROFESIONES
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego una página al segmento PROFESIONES
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se agrego el dato CHEF al marco 5
-[INFO] 00:25:17:718 memoryPool/(6556:6556): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se creo el segmento ANIMALES
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se agrego una página al segmento ANIMALES
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se agrego el dato GATO al marco 6
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se agrego una página al segmento ANIMALES
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se agrego el dato PERRO al marco 7
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se agrego una página al segmento ANIMALES
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:25:17:719 memoryPool/(6556:6556): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:25:46:771 memoryPool/(6574:6574): Se inicializo la memoria con tamanio 2048
-[INFO] 00:25:46:772 memoryPool/(6574:6574): Tamanio máximo recibido de FS: 20
-[INFO] 00:25:46:772 memoryPool/(6574:6574): Se creo el segmento POSTRES
-[INFO] 00:25:46:772 memoryPool/(6574:6574): Se agrego una página al segmento POSTRES
-[INFO] 00:25:46:774 memoryPool/(6574:6574): Se agrego el dato FLAN al marco 0
-[INFO] 00:25:46:774 memoryPool/(6574:6574): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:25:46:774 memoryPool/(6574:6574): Se agrego una página al segmento POSTRES
-[INFO] 00:25:46:775 memoryPool/(6574:6574): Se agrego el dato HELADO al marco 1
-[INFO] 00:25:46:775 memoryPool/(6574:6574): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:25:46:775 memoryPool/(6574:6574): Se agrego una página al segmento POSTRES
-[INFO] 00:25:46:775 memoryPool/(6574:6574): Se agrego el dato HELADO al marco 2
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se creo el segmento PROFESIONES
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se agrego una página al segmento PROFESIONES
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se agrego una página al segmento PROFESIONES
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:25:46:777 memoryPool/(6574:6574): Se agrego una página al segmento PROFESIONES
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se agrego el dato CHEF al marco 5
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se creo el segmento ANIMALES
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se agrego una página al segmento ANIMALES
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se agrego el dato GATO al marco 6
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se agrego una página al segmento ANIMALES
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se agrego el dato PERRO al marco 7
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:25:46:778 memoryPool/(6574:6574): Se agrego una página al segmento ANIMALES
-[INFO] 00:25:46:781 memoryPool/(6574:6574): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:25:46:781 memoryPool/(6574:6574): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:25:55:883 memoryPool/(6574:6579): Se seleccionó el valor HELADO
-[INFO] 00:25:59:628 memoryPool/(6574:6579): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:26:21:585 memoryPool/(6604:6604): Se inicializo la memoria con tamanio 2048
-[INFO] 00:26:21:585 memoryPool/(6604:6604): Tamanio máximo recibido de FS: 20
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se creo el segmento POSTRES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego una página al segmento POSTRES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego el dato FLAN al marco 0
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego una página al segmento POSTRES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego el dato HELADO al marco 1
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego una página al segmento POSTRES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego el dato HELADO al marco 2
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se creo el segmento PROFESIONES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego una página al segmento PROFESIONES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego una página al segmento PROFESIONES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego una página al segmento PROFESIONES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego el dato CHEF al marco 5
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se creo el segmento ANIMALES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego una página al segmento ANIMALES
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se agrego el dato GATO al marco 6
-[INFO] 00:26:22:685 memoryPool/(6604:6604): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:26:22:686 memoryPool/(6604:6604): Se agrego una página al segmento ANIMALES
-[INFO] 00:26:22:686 memoryPool/(6604:6604): Se agrego el dato PERRO al marco 7
-[INFO] 00:26:22:686 memoryPool/(6604:6604): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:26:22:686 memoryPool/(6604:6604): Se agrego una página al segmento ANIMALES
-[INFO] 00:26:22:686 memoryPool/(6604:6604): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:26:22:686 memoryPool/(6604:6604): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:26:28:739 memoryPool/(6604:6616): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:27:41:416 memoryPool/(6702:6702): Se inicializo la memoria con tamanio 2048
-[INFO] 00:27:41:416 memoryPool/(6702:6702): Tamanio máximo recibido de FS: 20
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se creo el segmento POSTRES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego una página al segmento POSTRES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego el dato FLAN al marco 0
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego una página al segmento POSTRES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego el dato HELADO al marco 1
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego una página al segmento POSTRES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego el dato HELADO al marco 2
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se creo el segmento PROFESIONES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego una página al segmento PROFESIONES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego una página al segmento PROFESIONES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego una página al segmento PROFESIONES
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se agrego el dato CHEF al marco 5
-[INFO] 00:27:42:540 memoryPool/(6702:6702): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se creo el segmento ANIMALES
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se agrego una página al segmento ANIMALES
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se agrego el dato GATO al marco 6
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se agrego una página al segmento ANIMALES
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se agrego el dato PERRO al marco 7
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se agrego una página al segmento ANIMALES
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:27:42:541 memoryPool/(6702:6702): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:27:48:433 memoryPool/(6702:6714): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:28:05:994 memoryPool/(6702:6714): Paquete insert POSTRES;1;FLAN;1563420462
-[INFO] 00:28:07:924 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:08:962 memoryPool/(6702:6714): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 00:28:10:747 memoryPool/(6702:6714): Paquete insert POSTRES;2;HELADO;1563420462
-[INFO] 00:28:10:907 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:11:228 memoryPool/(6702:6714): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:28:12:775 memoryPool/(6702:6714): Paquete insert POSTRES;3;HELADO;1563420462
-[INFO] 00:28:12:946 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:13:833 memoryPool/(6702:6714): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:28:14:343 memoryPool/(6702:6714): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 00:28:19:239 memoryPool/(6702:6714): Paquete insert PROFESIONES;1;DOCTOR;1563420462
-[INFO] 00:28:19:586 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:20:9 memoryPool/(6702:6714): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 00:28:21:250 memoryPool/(6702:6714): Paquete insert PROFESIONES;2;MAESTRO;1563420462
-[INFO] 00:28:21:437 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:21:996 memoryPool/(6702:6714): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 00:28:23:910 memoryPool/(6702:6714): Paquete insert PROFESIONES;5;CHEF;1563420462
-[INFO] 00:28:24:60 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:24:462 memoryPool/(6702:6714): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 00:28:24:852 memoryPool/(6702:6714): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 00:28:29:286 memoryPool/(6702:6714): Paquete insert ANIMALES;1;GATO;1563420462
-[INFO] 00:28:29:458 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:30:134 memoryPool/(6702:6714): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 00:28:33:188 memoryPool/(6702:6714): Paquete insert ANIMALES;2;PERRO;1563420462
-[INFO] 00:28:33:405 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:33:774 memoryPool/(6702:6714): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 00:28:35:432 memoryPool/(6702:6714): Paquete insert ANIMALES;3;JIRAFA;1563420462
-[INFO] 00:28:35:921 memoryPool/(6702:6714): Rta insert LFS 0
-[INFO] 00:28:36:278 memoryPool/(6702:6714): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 00:28:37:24 memoryPool/(6702:6714): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 00:28:39:574 memoryPool/(6702:6714): Fin del journal, procede a borrar datos existentes
-[INFO] 00:28:43:372 memoryPool/(6702:6714): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 00:29:13:787 memoryPool/(6866:6866): Se inicializo la memoria con tamanio 2048
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Tamanio máximo recibido de FS: 20
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Se creo el segmento POSTRES
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Se agrego una página al segmento POSTRES
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Se agrego el dato FLAN al marco 0
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Se agrego una página al segmento POSTRES
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Se agrego el dato HELADO al marco 1
-[INFO] 00:29:13:794 memoryPool/(6866:6866): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:29:13:795 memoryPool/(6866:6866): Se agrego una página al segmento POSTRES
-[INFO] 00:29:13:795 memoryPool/(6866:6866): Se agrego el dato HELADO al marco 2
-[INFO] 00:29:13:795 memoryPool/(6866:6866): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se creo el segmento PROFESIONES
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego una página al segmento PROFESIONES
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego una página al segmento PROFESIONES
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego una página al segmento PROFESIONES
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego el dato CHEF al marco 5
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se creo el segmento ANIMALES
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego una página al segmento ANIMALES
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego el dato GATO al marco 6
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego una página al segmento ANIMALES
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se agrego el dato PERRO al marco 7
-[INFO] 00:29:13:796 memoryPool/(6866:6866): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:29:13:797 memoryPool/(6866:6866): Se agrego una página al segmento ANIMALES
-[INFO] 00:29:13:797 memoryPool/(6866:6866): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:29:13:797 memoryPool/(6866:6866): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Paquete insert POSTRES;1;FLAN;1563420553
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Paquete insert POSTRES;2;HELADO;1563420553
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Paquete insert POSTRES;3;HELADO;1563420553
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Paquete insert PROFESIONES;1;DOCTOR;1563420553
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Paquete insert PROFESIONES;2;MAESTRO;1563420553
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Paquete insert PROFESIONES;5;CHEF;1563420553
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Paquete insert ANIMALES;1;GATO;1563420553
-[INFO] 00:29:18:125 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Paquete insert ANIMALES;2;PERRO;1563420553
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Paquete insert ANIMALES;3;JIRAFA;1563420553
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Fin del journal, procede a borrar datos existentes
-[INFO] 00:29:18:126 memoryPool/(6866:6871): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 00:29:34:813 memoryPool/(6866:6871): Se creo el segmento ANIMALES
-[INFO] 00:29:34:813 memoryPool/(6866:6871): Se agrego una página al segmento ANIMALES
-[INFO] 00:29:34:813 memoryPool/(6866:6871): Se agrego el dato PERRO al marco 0
-[INFO] 00:29:34:813 memoryPool/(6866:6871): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:29:40:800 memoryPool/(6866:6871): Se seleccionó el valor PERRO
-[INFO] 00:29:51:981 memoryPool/(6866:6871): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:29:51:981 memoryPool/(6866:6871): Paquete insert ANIMALES;12;PERRO;1563420574
-[INFO] 00:29:51:981 memoryPool/(6866:6871): Rta insert LFS 0
-[INFO] 00:29:51:981 memoryPool/(6866:6871): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 00:29:51:981 memoryPool/(6866:6871): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 00:29:51:981 memoryPool/(6866:6871): Fin del journal, procede a borrar datos existentes
-[INFO] 00:29:51:981 memoryPool/(6866:6871): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 00:29:54:349 memoryPool/(6866:6871): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:29:54:349 memoryPool/(6866:6871): Fin del journal, procede a borrar datos existentes
-[INFO] 00:29:54:349 memoryPool/(6866:6871): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 00:41:50:877 memoryPool/(7677:7677): Se inicializo la memoria con tamanio 2048
-[INFO] 00:41:50:879 memoryPool/(7677:7677): Tamanio máximo recibido de FS: 20
-[INFO] 00:41:50:879 memoryPool/(7677:7677): Se creo el segmento POSTRES
-[INFO] 00:41:50:879 memoryPool/(7677:7677): Se agrego una página al segmento POSTRES
-[INFO] 00:41:50:879 memoryPool/(7677:7677): Se agrego el dato FLAN al marco 0
-[INFO] 00:41:50:879 memoryPool/(7677:7677): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego una página al segmento POSTRES
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego el dato HELADO al marco 1
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego una página al segmento POSTRES
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego el dato HELADO al marco 2
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se creo el segmento PROFESIONES
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego una página al segmento PROFESIONES
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego una página al segmento PROFESIONES
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:41:50:880 memoryPool/(7677:7677): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se agrego una página al segmento PROFESIONES
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se agrego el dato CHEF al marco 5
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se creo el segmento ANIMALES
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se agrego una página al segmento ANIMALES
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se agrego el dato GATO al marco 6
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se agrego una página al segmento ANIMALES
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se agrego el dato PERRO al marco 7
-[INFO] 00:41:50:881 memoryPool/(7677:7677): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:41:50:882 memoryPool/(7677:7677): Se agrego una página al segmento ANIMALES
-[INFO] 00:41:50:882 memoryPool/(7677:7677): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:41:50:882 memoryPool/(7677:7677): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:42:10:497 memoryPool/(7677:7682): Se creo el segmento COSAS
-[INFO] 00:42:10:497 memoryPool/(7677:7682): Se agrego una página al segmento COSAS
-[INFO] 00:42:10:497 memoryPool/(7677:7682): Se agrego el dato TAZA al marco 9
-[INFO] 00:42:10:497 memoryPool/(7677:7682): Se inserto al segmento COSAS el valor TAZA
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Paquete insert POSTRES;1;FLAN;1563421310
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Paquete insert POSTRES;2;HELADO;1563421310
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:42:17:832 memoryPool/(7677:7682): Paquete insert POSTRES;3;HELADO;1563421310
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Paquete insert PROFESIONES;1;DOCTOR;1563421310
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Paquete insert PROFESIONES;2;MAESTRO;1563421310
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Paquete insert PROFESIONES;5;CHEF;1563421310
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Paquete insert ANIMALES;1;GATO;1563421310
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Paquete insert ANIMALES;2;PERRO;1563421310
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Paquete insert ANIMALES;3;JIRAFA;1563421310
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Paquete insert COSAS;1;TAZA;1563421330
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Rta insert LFS 0
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se insertó correctamente el valor TAZA en la tabla COSAS
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Se borra la lista de modificados para el segmento COSAS
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Fin del journal, procede a borrar datos existentes
-[INFO] 00:42:17:833 memoryPool/(7677:7682): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 00:45:51:195 memoryPool/(7812:7812): Se inicializo la memoria con tamanio 2048
-[INFO] 00:45:51:201 memoryPool/(7812:7812): Tamanio máximo recibido de FS: 20
-[INFO] 00:45:51:201 memoryPool/(7812:7812): Se creo el segmento POSTRES
-[INFO] 00:45:51:201 memoryPool/(7812:7812): Se agrego una página al segmento POSTRES
-[INFO] 00:45:51:201 memoryPool/(7812:7812): Se agrego el dato FLAN al marco 0
-[INFO] 00:45:51:201 memoryPool/(7812:7812): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 00:45:51:201 memoryPool/(7812:7812): Se agrego una página al segmento POSTRES
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego el dato HELADO al marco 1
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego una página al segmento POSTRES
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego el dato HELADO al marco 2
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se creo el segmento PROFESIONES
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego una página al segmento PROFESIONES
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego el dato DOCTOR al marco 3
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego una página al segmento PROFESIONES
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego el dato MAESTRO al marco 4
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego una página al segmento PROFESIONES
-[INFO] 00:45:51:206 memoryPool/(7812:7812): Se agrego el dato CHEF al marco 5
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se creo el segmento ANIMALES
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se agrego una página al segmento ANIMALES
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se agrego el dato GATO al marco 6
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se agrego una página al segmento ANIMALES
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se agrego el dato PERRO al marco 7
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se agrego una página al segmento ANIMALES
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se agrego el dato JIRAFA al marco 8
-[INFO] 00:45:51:207 memoryPool/(7812:7812): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Inicio del journal, se bloquea la tabla de segmentos
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Paquete insert POSTRES;1;FLAN;1563421551
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Se insertó correctamente el valor FLAN en la tabla POSTRES
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Paquete insert POSTRES;2;HELADO;1563421551
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Paquete insert POSTRES;3;HELADO;1563421551
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Se insertó correctamente el valor HELADO en la tabla POSTRES
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Se borra la lista de modificados para el segmento POSTRES
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Paquete insert PROFESIONES;1;DOCTOR;1563421551
-[INFO] 00:45:55:12 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se insertó correctamente el valor DOCTOR en la tabla PROFESIONES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Paquete insert PROFESIONES;2;MAESTRO;1563421551
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se insertó correctamente el valor MAESTRO en la tabla PROFESIONES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Paquete insert PROFESIONES;5;CHEF;1563421551
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se insertó correctamente el valor CHEF en la tabla PROFESIONES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se borra la lista de modificados para el segmento PROFESIONES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Paquete insert ANIMALES;1;GATO;1563421551
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se insertó correctamente el valor GATO en la tabla ANIMALES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Paquete insert ANIMALES;2;PERRO;1563421551
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se insertó correctamente el valor PERRO en la tabla ANIMALES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Paquete insert ANIMALES;3;JIRAFA;1563421551
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Rta insert LFS 0
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se insertó correctamente el valor JIRAFA en la tabla ANIMALES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Se borra la lista de modificados para el segmento ANIMALES
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Fin del journal, procede a borrar datos existentes
-[INFO] 00:45:55:13 memoryPool/(7812:7817): Datos borrados, se desbloquea la tabla de segmentos
-[INFO] 00:45:58:200 memoryPool/(7812:7812): Memoria limpia, adiós mundo cruel
+[INFO] 14:53:31:186 memoryPool/(3690:3690): Se inicializo la memoria con tamanio 2048
+[INFO] 14:53:31:983 memoryPool/(3690:3690): Tamanio máximo recibido de FS: 60
+[INFO] 14:53:31:984 memoryPool/(3690:3690): Se creo el segmento POSTRES
+[INFO] 14:53:31:984 memoryPool/(3690:3690): Se agrego una página al segmento POSTRES
+[INFO] 14:53:31:984 memoryPool/(3690:3690): Se agrego el dato FLAN al marco 0
+[INFO] 14:53:31:984 memoryPool/(3690:3690): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 14:53:31:984 memoryPool/(3690:3690): Se agrego una página al segmento POSTRES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato HELADO al marco 1
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento POSTRES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato HELADO al marco 2
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se creo el segmento PROFESIONES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento PROFESIONES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato DOCTOR al marco 3
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento PROFESIONES el valor DOCTOR
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento PROFESIONES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato MAESTRO al marco 4
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento PROFESIONES el valor MAESTRO
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento PROFESIONES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato CHEF al marco 5
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento PROFESIONES el valor CHEF
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se creo el segmento ANIMALES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento ANIMALES
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato GATO al marco 6
+[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego una página al segmento ANIMALES
+[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego el dato PERRO al marco 7
+[INFO] 14:53:31:986 memoryPool/(3690:3690): Se inserto al segmento ANIMALES el valor PERRO
+[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego una página al segmento ANIMALES
+[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego el dato JIRAFA al marco 8
+[INFO] 14:53:31:986 memoryPool/(3690:3690): Se inserto al segmento ANIMALES el valor JIRAFA
+[INFO] 15:01:49:9 memoryPool/(3690:3698): Se seleccionó el valor JIRAFA
+[INFO] 15:05:33:706 memoryPool/(4048:4048): Se inicializo la memoria con tamanio 2048
+[INFO] 15:05:33:707 memoryPool/(4048:4048): Tamanio máximo recibido de FS: 20
+[INFO] 15:05:33:707 memoryPool/(4048:4048): Se creo el segmento POSTRES
+[INFO] 15:05:33:707 memoryPool/(4048:4048): Se agrego una página al segmento POSTRES
+[INFO] 15:05:33:708 memoryPool/(4048:4048): Se agrego el dato FLAN al marco 0
+[INFO] 15:05:33:709 memoryPool/(4048:4048): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego una página al segmento POSTRES
+[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego el dato HELADO al marco 1
+[INFO] 15:05:33:709 memoryPool/(4048:4048): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego una página al segmento POSTRES
+[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego el dato HELADO al marco 2
+[INFO] 15:05:33:709 memoryPool/(4048:4048): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se creo el segmento PROFESIONES
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego una página al segmento PROFESIONES
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego el dato DOCTOR al marco 3
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se inserto al segmento PROFESIONES el valor DOCTOR
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego una página al segmento PROFESIONES
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego el dato MAESTRO al marco 4
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se inserto al segmento PROFESIONES el valor MAESTRO
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego una página al segmento PROFESIONES
+[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego el dato CHEF al marco 5
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento PROFESIONES el valor CHEF
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se creo el segmento ANIMALES
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego una página al segmento ANIMALES
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego el dato GATO al marco 6
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego una página al segmento ANIMALES
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego el dato PERRO al marco 7
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento ANIMALES el valor PERRO
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego una página al segmento ANIMALES
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego el dato JIRAFA al marco 8
+[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento ANIMALES el valor JIRAFA
+[INFO] 15:06:31:478 memoryPool/(4048:4057): Se modificó la config
+[INFO] 15:06:52:429 memoryPool/(4048:4059): Se seleccionó el valor GATO
+[INFO] 15:07:22:545 memoryPool/(4048:4057): Se modificó la config
+[INFO] 15:07:34:435 memoryPool/(4121:4121): Se inicializo la memoria con tamanio 2048
+[INFO] 15:07:34:438 memoryPool/(4121:4121): Tamanio máximo recibido de FS: 20
+[INFO] 15:07:34:438 memoryPool/(4121:4121): Se creo el segmento POSTRES
+[INFO] 15:07:34:438 memoryPool/(4121:4121): Se agrego una página al segmento POSTRES
+[INFO] 15:07:34:441 memoryPool/(4121:4121): Se agrego el dato FLAN al marco 0
+[INFO] 15:07:34:441 memoryPool/(4121:4121): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 15:07:34:441 memoryPool/(4121:4121): Se agrego una página al segmento POSTRES
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato HELADO al marco 1
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento POSTRES
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato HELADO al marco 2
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se creo el segmento PROFESIONES
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento PROFESIONES
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato DOCTOR al marco 3
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento PROFESIONES el valor DOCTOR
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento PROFESIONES
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato MAESTRO al marco 4
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento PROFESIONES el valor MAESTRO
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento PROFESIONES
+[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato CHEF al marco 5
+[INFO] 15:07:34:453 memoryPool/(4121:4121): Se inserto al segmento PROFESIONES el valor CHEF
+[INFO] 15:07:34:453 memoryPool/(4121:4121): Se creo el segmento ANIMALES
+[INFO] 15:07:34:454 memoryPool/(4121:4121): Se agrego una página al segmento ANIMALES
+[INFO] 15:07:34:454 memoryPool/(4121:4121): Se agrego el dato GATO al marco 6
+[INFO] 15:07:34:458 memoryPool/(4121:4121): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego una página al segmento ANIMALES
+[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego el dato PERRO al marco 7
+[INFO] 15:07:34:458 memoryPool/(4121:4121): Se inserto al segmento ANIMALES el valor PERRO
+[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego una página al segmento ANIMALES
+[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego el dato JIRAFA al marco 8
+[INFO] 15:07:34:460 memoryPool/(4121:4121): Se inserto al segmento ANIMALES el valor JIRAFA
+[INFO] 15:07:40:793 memoryPool/(4121:4129): Se modificó la config

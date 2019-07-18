@@ -9,6 +9,8 @@
  */
 
 #include "memoryPool.h"
+#define EVENT_SIZE  ( sizeof (struct inotify_event) + 100 )
+#define BUF_LEN     ( 1024 * EVENT_SIZE )
 
 void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
@@ -170,9 +172,36 @@ void* gestionarConexiones (void* arg){
 	}
 	return NULL;
 }
+void* correrInotify(void*arg){
+
+	while(abortar){
+			char buffer[BUF_LEN];
+			int file_descriptor = inotify_init();
+			if (file_descriptor < 0) {
+				perror("inotify_init");
+			}
+			int watch_descriptor = inotify_add_watch(file_descriptor, pathConfig, IN_MODIFY );
+			int length = read(file_descriptor, buffer, BUF_LEN);
+			if (length < 0) {
+				perror("read");
+			}
+			modificarConfig();
+		}
+
+	return NULL;
+}
+
+void modificarConfig(){
+	t_config *configInotify;
+	configInotify = read_config();
+	retardoJournal = config_get_int_value(configInotify,"RETARDO_JOURNAL")*1000;
+	retardoGossip = config_get_int_value(configInotify, "RETARDO_GOSSIPING")*10000;
+	log_info(logger, "Se modificó la config");
+	config_destroy(configInotify);
 
 
 
+}
 int main(void) {
 
 
@@ -193,7 +222,8 @@ int main(void) {
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
 
-
+	pthread_t inotify;
+	pthread_create(&inotify, NULL, correrInotify, NULL);
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 	int *fin;
@@ -236,6 +266,12 @@ int main(void) {
 	configuracion = read_config();
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
 	u_int16_t puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
+	retardoJournal = config_get_int_value(configuracion,"RETARDO_JOURNAL")*1000;
+	retardoGossip = config_get_int_value(configuracion, "RETARDO_GOSSIPING")*10000;
+	pathConfig = malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config")+1);
+	strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
+	abortar = 1;
+
 	char* ipFS = malloc(15);
 	strcpy(ipFS, config_get_string_value(configuracion,"IP_FS"));
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
@@ -442,9 +478,9 @@ int main(void) {
 
  void* journalProgramado(void *arg){
 
- 	int retardo = config_get_int_value(configuracion,"RETARDO_JOURNAL")*1000;
+
  	while(1){
- 		usleep(retardo);
+ 		usleep(retardoJournal);
  		log_info(logger,"Se realiza un journal programado");
  		mJournal();
 
@@ -454,11 +490,11 @@ int main(void) {
  }
 
  void* gossipProgramado(void* arg){
- 	int retardo = config_get_int_value(configuracion, "RETARDO_GOSSIPING")*10000;
+
  	while(1){
  		log_info(logger, "Se realiza un gossip programado");
  		mGossip();
- 		usleep(retardo);
+ 		usleep(retardoGossip);
  	}
 
  	return NULL;

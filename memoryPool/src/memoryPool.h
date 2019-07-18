@@ -17,6 +17,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/inotify.h>
 
 
 #include<commons/log.h>
@@ -31,6 +32,10 @@
 //VARIABLES GLOBALES
 t_log *logger;
 t_config *configuracion;
+char* pathConfig;
+int retardoJournal;
+int retardoGossip;
+int abortar;
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* listaDeUsos;
@@ -112,6 +117,7 @@ void* recibirOperacion(void * arg);
 void* gestionarConexiones(void *arg);
 void* journalProgramado(void* arg);
 void* gossipProgramado(void* arg);
+void* correrInotify(void*arg);
 
 
 
@@ -165,5 +171,6 @@ void* conseguirValor(pagina* pNueva);
 void* conseguirTimestamp(pagina *pag);
 void* conseguirKey(pagina *pag);
 void mostrarMemoria();
+void modificarConfig();
 
 #endif /* MEMORYPOOL_H_ */
