@@ -476,6 +476,9 @@ int main(void) {
 			if(resultado)log_info(logger,"La memoria esta FULL");
 			if(!resultado)log_info(logger,"La memoria NO esta FULL");
  		}
+		if(!strncmp(linea,"GOSSIP",6)){
+					mGossip();
+		 		}
 
  		if(!strncmp(linea,"exit",5)){
  			free(linea);
@@ -1266,7 +1269,7 @@ void desempaquetarTablaSecundaria(char* paquete){
 int pedirConfirmacion(char*ip,char* puerto){
 	u_int16_t cliente;
 	char* codOpe = "6";
-	int conexion = linkClient(&cliente,ip,puerto,1);
+	int conexion = linkClient(&cliente,ip,atoi(puerto),0);
 
 	if(conexion ==1){
 		return 0; // no esta activa la memoria
