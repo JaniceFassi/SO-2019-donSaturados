@@ -51,6 +51,7 @@ int cantMarcos;
 int posicionUltimoUso; // Lo usa el LRU
 pthread_mutex_t lockTablaSeg;
 pthread_mutex_t lockTablaMarcos;
+pthread_mutex_t lockLog;
 
 //ESTRUCTURA MEMORIA
 typedef struct {
@@ -153,12 +154,11 @@ int todosModificados(segmento* aux);
 
 //GOSSIPING
 void agregarMemActiva(int id,char* ip,char* puerto);
-void enviarTablaAlKernel(u_int16_t kernelClient);
 char* empaquetarTablaActivas();
 char* formatearTablaGossip(int nro,char*ip,char*puerto);
 void desempaquetarTablaSecundaria(char* paquete);
 int pedirConfirmacion(char*ip,char* puerto);
-void confirmarActivo();
+char* confirmarActivo();
 int estaRepetido(char*ip);
 void agregarMemActiva(int id,char* ip,char*puerto);
 int conseguirIdSecundaria();

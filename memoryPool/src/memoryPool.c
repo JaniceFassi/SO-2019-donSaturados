@@ -54,6 +54,7 @@ void* recibirOperacion(void * arg){
 	long tiempoCompactacion;
 	int resp;
 	char* rta;
+	char* tabla;
 
 
 	switch (operacion) {
@@ -128,8 +129,9 @@ void* recibirOperacion(void * arg){
 					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					break;
 
-				case 6: //GOSSIP
-					mGossip();
+				case 6: //DEVOLVER TABLA DE ACTIVOS
+					tabla =confirmarActivo();
+					sendData(cli, tabla, strlen(tabla)+1);
 					break;
 
 
@@ -153,7 +155,7 @@ void* gestionarConexiones (void* arg){
 	}
 
 	log_info(logger, "Servidor creado exitosamente");
-	listen(server,100);
+	listen(server,100000000);
 	log_info(logger, "Servidor escuchando\n");
 
 	while(1){
@@ -161,7 +163,7 @@ void* gestionarConexiones (void* arg){
 		u_int16_t cliente;
 		int salioBien = acceptConexion(server, &cliente, 0);
 		if(salioBien == 0){
-			log_info(logger, "Recibí una conexión de Kernel");
+			log_info(logger, "Recibí una conexión");
 			pthread_t atiendeCliente;
 			pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
 			pthread_detach(atiendeCliente);
@@ -214,7 +216,7 @@ int main(void) {
 		return 1;
 
 	}
-
+/*
 	mInsert("POSTRES", 1, "FLAN");
 	mInsert("POSTRES", 2, "HELADO");
 	mInsert("POSTRES", 3, "HELADO");
@@ -224,7 +226,7 @@ int main(void) {
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
-
+*/
 	pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 
@@ -236,8 +238,8 @@ int main(void) {
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 
-//	pthread_t gestorConexiones;
-//	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
+	pthread_t gestorConexiones;
+	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
 	//pthread_t journalTemporal;
@@ -293,9 +295,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	maxValue = 20;
+	//maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -622,16 +624,16 @@ int main(void) {
 
 		 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 		 char* paqueteListo = empaquetar(1, datos);
-		// u_int16_t lfsSock = crearConexionLFS();
+		u_int16_t lfsSock = crearConexionLFS();
 		 log_info(logger, "Paquete insert %s", datos);
-		 /*sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
 		 int rta = atoi(buffer);
 		 return rta;
-*/
-		 return 0;
+
+
  }
 
  char* describeLissandra(char* nombreTabla){
@@ -1232,13 +1234,6 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto){
 	return paquetin;
 }
 
-void enviarTablaAlKernel(u_int16_t kernelClient){
-	char* paquete = empaquetarTablaActivas();
-	u_int16_t tam = strlen(paquete);
-	sendData(kernelClient,tam,sizeof(u_int16_t));
-	sendData(kernelClient,paquete,tam);
-
-} //cuando el kernel pide empaqueta y manda la tablaMemActivas //METER EN API
 
 char* empaquetarTablaActivas(){
 	int i=0;
@@ -1269,32 +1264,30 @@ void desempaquetarTablaSecundaria(char* paquete){
 
 
 int pedirConfirmacion(char*ip,char* puerto){
-	u_int16_t kernelCliente;
-	char*buffer;
-	int conexion = linkClient(&kernelCliente,ip,puerto,1);
+	u_int16_t cliente;
+	char* codOpe = "6";
+	int conexion = linkClient(&cliente,ip,puerto,1);
 
 	if(conexion ==1){
 		return 0; // no esta activa la memoria
 	}
 
-	u_int16_t tamTabla;
-	recvData(kernelCliente,tamTabla,sizeof(u_int16_t));
-	recvData(kernelCliente,buffer,tamTabla); //averiguar esto //tendria que hacer otro recv con el tamanio del paquete no?
+	char* rta=malloc(sizeof(char)*2);
+	sendData(cliente,codOpe,sizeof(char)*2);
+	recvData(cliente,rta,sizeof(char));
+	char* tamTabla=malloc(sizeof(char)*4);
+	recvData(cliente,tamTabla,sizeof(char)*3);
+	char* buffer=malloc(atoi(tamTabla)+1);
+	recvData(cliente,buffer,atoi(tamTabla));
 	desempaquetarTablaSecundaria(buffer);
 
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
-void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
-    char* paquete=empaquetarTablaActivas();
-    int tam = strlen(paquete);
-    u_int16_t server;
-    u_int16_t sockClient;
-    createServer(ipSeeds[0],puertoSeeds[0],&server);
-    listenForClients(server,100);
-    acceptConexion(server,&sockClient,1);
-    sendData(sockClient,paquete,tam);
-
+char* confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
+   char* paquete=empaquetarTablaActivas();
+   char* paqueteListo=empaquetar(0,paquete);
+   return paqueteListo;
 } //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
 int estaRepetido(char*ip){
@@ -1368,9 +1361,11 @@ void mGossip(){
 
     	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
+		log_info("Se confirmo la memoria con id: %i",id);
     		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
     		estaEnActivaElim(ipSeeds[i]);
+		log_info("La memoria con ip : %s no esta activa",ipSeeds[i]);
     	}
     	i++;
     }

@@ -1,101 +1,320 @@
-[INFO] 14:53:31:186 memoryPool/(3690:3690): Se inicializo la memoria con tamanio 2048
-[INFO] 14:53:31:983 memoryPool/(3690:3690): Tamanio máximo recibido de FS: 60
-[INFO] 14:53:31:984 memoryPool/(3690:3690): Se creo el segmento POSTRES
-[INFO] 14:53:31:984 memoryPool/(3690:3690): Se agrego una página al segmento POSTRES
-[INFO] 14:53:31:984 memoryPool/(3690:3690): Se agrego el dato FLAN al marco 0
-[INFO] 14:53:31:984 memoryPool/(3690:3690): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 14:53:31:984 memoryPool/(3690:3690): Se agrego una página al segmento POSTRES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato HELADO al marco 1
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento POSTRES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato HELADO al marco 2
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se creo el segmento PROFESIONES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento PROFESIONES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato DOCTOR al marco 3
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento PROFESIONES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato MAESTRO al marco 4
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento PROFESIONES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato CHEF al marco 5
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se creo el segmento ANIMALES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego una página al segmento ANIMALES
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se agrego el dato GATO al marco 6
-[INFO] 14:53:31:985 memoryPool/(3690:3690): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego una página al segmento ANIMALES
-[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego el dato PERRO al marco 7
-[INFO] 14:53:31:986 memoryPool/(3690:3690): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego una página al segmento ANIMALES
-[INFO] 14:53:31:986 memoryPool/(3690:3690): Se agrego el dato JIRAFA al marco 8
-[INFO] 14:53:31:986 memoryPool/(3690:3690): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 15:01:49:9 memoryPool/(3690:3698): Se seleccionó el valor JIRAFA
-[INFO] 15:05:33:706 memoryPool/(4048:4048): Se inicializo la memoria con tamanio 2048
-[INFO] 15:05:33:707 memoryPool/(4048:4048): Tamanio máximo recibido de FS: 20
-[INFO] 15:05:33:707 memoryPool/(4048:4048): Se creo el segmento POSTRES
-[INFO] 15:05:33:707 memoryPool/(4048:4048): Se agrego una página al segmento POSTRES
-[INFO] 15:05:33:708 memoryPool/(4048:4048): Se agrego el dato FLAN al marco 0
-[INFO] 15:05:33:709 memoryPool/(4048:4048): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego una página al segmento POSTRES
-[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego el dato HELADO al marco 1
-[INFO] 15:05:33:709 memoryPool/(4048:4048): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego una página al segmento POSTRES
-[INFO] 15:05:33:709 memoryPool/(4048:4048): Se agrego el dato HELADO al marco 2
-[INFO] 15:05:33:709 memoryPool/(4048:4048): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se creo el segmento PROFESIONES
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego una página al segmento PROFESIONES
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego el dato DOCTOR al marco 3
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego una página al segmento PROFESIONES
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego el dato MAESTRO al marco 4
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego una página al segmento PROFESIONES
-[INFO] 15:05:33:710 memoryPool/(4048:4048): Se agrego el dato CHEF al marco 5
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se creo el segmento ANIMALES
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego una página al segmento ANIMALES
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego el dato GATO al marco 6
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego una página al segmento ANIMALES
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego el dato PERRO al marco 7
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego una página al segmento ANIMALES
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se agrego el dato JIRAFA al marco 8
-[INFO] 15:05:33:711 memoryPool/(4048:4048): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 15:06:31:478 memoryPool/(4048:4057): Se modificó la config
-[INFO] 15:06:52:429 memoryPool/(4048:4059): Se seleccionó el valor GATO
-[INFO] 15:07:22:545 memoryPool/(4048:4057): Se modificó la config
-[INFO] 15:07:34:435 memoryPool/(4121:4121): Se inicializo la memoria con tamanio 2048
-[INFO] 15:07:34:438 memoryPool/(4121:4121): Tamanio máximo recibido de FS: 20
-[INFO] 15:07:34:438 memoryPool/(4121:4121): Se creo el segmento POSTRES
-[INFO] 15:07:34:438 memoryPool/(4121:4121): Se agrego una página al segmento POSTRES
-[INFO] 15:07:34:441 memoryPool/(4121:4121): Se agrego el dato FLAN al marco 0
-[INFO] 15:07:34:441 memoryPool/(4121:4121): Se inserto al segmento POSTRES el valor FLAN
-[INFO] 15:07:34:441 memoryPool/(4121:4121): Se agrego una página al segmento POSTRES
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato HELADO al marco 1
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento POSTRES
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato HELADO al marco 2
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento POSTRES el valor HELADO
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se creo el segmento PROFESIONES
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento PROFESIONES
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato DOCTOR al marco 3
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento PROFESIONES el valor DOCTOR
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento PROFESIONES
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato MAESTRO al marco 4
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se inserto al segmento PROFESIONES el valor MAESTRO
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego una página al segmento PROFESIONES
-[INFO] 15:07:34:442 memoryPool/(4121:4121): Se agrego el dato CHEF al marco 5
-[INFO] 15:07:34:453 memoryPool/(4121:4121): Se inserto al segmento PROFESIONES el valor CHEF
-[INFO] 15:07:34:453 memoryPool/(4121:4121): Se creo el segmento ANIMALES
-[INFO] 15:07:34:454 memoryPool/(4121:4121): Se agrego una página al segmento ANIMALES
-[INFO] 15:07:34:454 memoryPool/(4121:4121): Se agrego el dato GATO al marco 6
-[INFO] 15:07:34:458 memoryPool/(4121:4121): Se inserto al segmento ANIMALES el valor GATO
-[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego una página al segmento ANIMALES
-[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego el dato PERRO al marco 7
-[INFO] 15:07:34:458 memoryPool/(4121:4121): Se inserto al segmento ANIMALES el valor PERRO
-[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego una página al segmento ANIMALES
-[INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego el dato JIRAFA al marco 8
-[INFO] 15:07:34:460 memoryPool/(4121:4121): Se inserto al segmento ANIMALES el valor JIRAFA
-[INFO] 15:07:40:793 memoryPool/(4121:4129): Se modificó la config
+[INFO] 18:35:20:54 memoryPool/(10591:10591): Se inicializo la memoria con tamanio 2048
+[INFO] 18:35:20:371 memoryPool/(10591:10591): Tamanio máximo recibido de FS: 60
+[INFO] 18:35:20:372 memoryPool/(10591:10599): Servidor creado exitosamente
+[INFO] 18:35:20:372 memoryPool/(10591:10599): Servidor escuchando
+
+[INFO] 18:35:36:969 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:36:969 memoryPool/(10591:10602): sock: -1760100346
+[INFO] 18:35:36:984 memoryPool/(10591:10602): Bytes recibidos: 1
+[INFO] 18:35:36:984 memoryPool/(10591:10602): Operacion 2
+[INFO] 18:35:37:89 memoryPool/(10591:10602): Se creó una conexión con LFS
+[INFO] 18:35:37:89 memoryPool/(10591:10602): Se pidió un create de 2018ANIMALS;EC;2;5000
+[INFO] 18:35:38:320 memoryPool/(10591:10602): Respuesta del create 0
+[INFO] 18:35:38:320 memoryPool/(10591:10602): La respuesta del create fue 0
+[INFO] 18:35:38:550 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:38:550 memoryPool/(10591:10605): sock: -1760100344
+[INFO] 18:35:38:555 memoryPool/(10591:10605): Bytes recibidos: 1
+[INFO] 18:35:38:555 memoryPool/(10591:10605): Operacion 2
+[INFO] 18:35:38:658 memoryPool/(10591:10605): Se creó una conexión con LFS
+[INFO] 18:35:38:658 memoryPool/(10591:10605): Se pidió un create de 2017METALS;EC;3;5000
+[INFO] 18:35:39:772 memoryPool/(10591:10605): Respuesta del create 0
+[INFO] 18:35:39:773 memoryPool/(10591:10605): La respuesta del create fue 0
+[INFO] 18:35:39:889 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:39:892 memoryPool/(10591:10606): sock: -1760100343
+[INFO] 18:35:39:898 memoryPool/(10591:10606): Bytes recibidos: 1
+[INFO] 18:35:39:898 memoryPool/(10591:10606): Operacion 1
+[INFO] 18:35:39:898 memoryPool/(10591:10606): Se creo el segmento ANIMALS
+[INFO] 18:35:39:898 memoryPool/(10591:10606): Se agrego una página al segmento ANIMALS
+[INFO] 18:35:39:898 memoryPool/(10591:10606): Se agrego el dato tigers al marco 0
+[INFO] 18:35:39:898 memoryPool/(10591:10606): Se inserto al segmento ANIMALS el valor tigers
+[INFO] 18:35:39:898 memoryPool/(10591:10606): Rta insert 0
+
+[INFO] 18:35:40:17 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:40:20 memoryPool/(10591:10607): sock: -1760100342
+[INFO] 18:35:40:22 memoryPool/(10591:10607): Bytes recibidos: 1
+[INFO] 18:35:40:22 memoryPool/(10591:10607): Operacion 2
+[INFO] 18:35:40:126 memoryPool/(10591:10607): Se creó una conexión con LFS
+[INFO] 18:35:40:126 memoryPool/(10591:10607): Se pidió un create de 2019POSTRES;SC;3;60000
+[INFO] 18:35:41:343 memoryPool/(10591:10607): Respuesta del create 0
+[INFO] 18:35:41:343 memoryPool/(10591:10607): La respuesta del create fue 0
+[INFO] 18:35:41:459 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:41:461 memoryPool/(10591:10608): sock: -1760100341
+[INFO] 18:35:41:464 memoryPool/(10591:10608): Bytes recibidos: 1
+[INFO] 18:35:41:464 memoryPool/(10591:10608): Operacion 3
+[INFO] 18:35:41:567 memoryPool/(10591:10608): Se creó una conexión con LFS
+[INFO] 18:35:42:796 memoryPool/(10591:10608): Respuesta del describe 01019POSTRES;SC;3;60000
+[INFO] 18:35:42:918 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:42:918 memoryPool/(10591:10609): sock: -1760100340
+[INFO] 18:35:42:942 memoryPool/(10591:10609): Bytes recibidos: 1
+[INFO] 18:35:42:942 memoryPool/(10591:10609): Operacion 1
+[INFO] 18:35:42:942 memoryPool/(10591:10609): Se creo el segmento POSTRES
+[INFO] 18:35:42:942 memoryPool/(10591:10609): Se agrego una página al segmento POSTRES
+[INFO] 18:35:42:942 memoryPool/(10591:10609): Se agrego el dato Flan al marco 1
+[INFO] 18:35:42:942 memoryPool/(10591:10609): Se inserto al segmento POSTRES el valor Flan
+[INFO] 18:35:42:942 memoryPool/(10591:10609): Rta insert 0
+
+[INFO] 18:35:43:78 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:43:78 memoryPool/(10591:10610): sock: -1760100339
+[INFO] 18:35:43:90 memoryPool/(10591:10610): Bytes recibidos: 1
+[INFO] 18:35:43:91 memoryPool/(10591:10610): Operacion 1
+[INFO] 18:35:43:91 memoryPool/(10591:10610): Se agrego una página al segmento ANIMALS
+[INFO] 18:35:43:91 memoryPool/(10591:10610): Se agrego el dato beasts al marco 2
+[INFO] 18:35:43:91 memoryPool/(10591:10610): Se inserto al segmento ANIMALS el valor beasts
+[INFO] 18:35:43:91 memoryPool/(10591:10610): Rta insert 0
+
+[INFO] 18:35:43:227 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:43:228 memoryPool/(10591:10611): sock: -1760100338
+[INFO] 18:35:43:235 memoryPool/(10591:10611): Bytes recibidos: 1
+[INFO] 18:35:43:236 memoryPool/(10591:10611): Operacion 0
+[INFO] 18:35:43:236 memoryPool/(10591:10611): Se seleccionó el valor beasts
+[INFO] 18:35:43:359 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:43:359 memoryPool/(10591:10612): sock: -1760100337
+[INFO] 18:35:43:364 memoryPool/(10591:10612): Bytes recibidos: 1
+[INFO] 18:35:43:364 memoryPool/(10591:10612): Operacion 1
+[INFO] 18:35:43:364 memoryPool/(10591:10612): Se creo el segmento METALS
+[INFO] 18:35:43:364 memoryPool/(10591:10612): Se agrego una página al segmento METALS
+[INFO] 18:35:43:364 memoryPool/(10591:10612): Se agrego el dato aluminiferous al marco 3
+[INFO] 18:35:43:364 memoryPool/(10591:10612): Se inserto al segmento METALS el valor aluminiferous
+[INFO] 18:35:43:365 memoryPool/(10591:10612): Rta insert 0
+
+[INFO] 18:35:43:497 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:43:497 memoryPool/(10591:10613): sock: -1760100336
+[INFO] 18:35:43:501 memoryPool/(10591:10613): Bytes recibidos: 1
+[INFO] 18:35:43:501 memoryPool/(10591:10613): Operacion 2
+[INFO] 18:35:43:602 memoryPool/(10591:10613): Se creó una conexión con LFS
+[INFO] 18:35:43:603 memoryPool/(10591:10613): Se pidió un create de 2018FRUTAS;SC;2;50000
+[INFO] 18:35:44:821 memoryPool/(10591:10613): Respuesta del create 0
+[INFO] 18:35:44:821 memoryPool/(10591:10613): La respuesta del create fue 0
+[INFO] 18:35:44:953 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:44:953 memoryPool/(10591:10614): sock: -1760100335
+[INFO] 18:35:44:957 memoryPool/(10591:10614): Bytes recibidos: 1
+[INFO] 18:35:44:957 memoryPool/(10591:10614): Operacion 3
+[INFO] 18:35:45:59 memoryPool/(10591:10614): Se creó una conexión con LFS
+[INFO] 18:35:46:274 memoryPool/(10591:10614): Respuesta del describe 01018FRUTAS;SC;2;50000
+[INFO] 18:35:46:403 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:46:403 memoryPool/(10591:10615): sock: -1760100334
+[INFO] 18:35:46:424 memoryPool/(10591:10615): Bytes recibidos: 1
+[INFO] 18:35:46:424 memoryPool/(10591:10615): Operacion 1
+[INFO] 18:35:46:424 memoryPool/(10591:10615): Se creo el segmento FRUTAS
+[INFO] 18:35:46:424 memoryPool/(10591:10615): Se agrego una página al segmento FRUTAS
+[INFO] 18:35:46:424 memoryPool/(10591:10615): Se agrego el dato Manzana al marco 4
+[INFO] 18:35:46:424 memoryPool/(10591:10615): Se inserto al segmento FRUTAS el valor Manzana
+[INFO] 18:35:46:424 memoryPool/(10591:10615): Rta insert 0
+
+[INFO] 18:35:46:655 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:46:655 memoryPool/(10591:10616): sock: -1760100333
+[INFO] 18:35:46:683 memoryPool/(10591:10616): Bytes recibidos: 1
+[INFO] 18:35:46:683 memoryPool/(10591:10616): Operacion 0
+[INFO] 18:35:46:683 memoryPool/(10591:10616): Se seleccionó el valor aluminiferous
+[INFO] 18:35:46:904 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:46:904 memoryPool/(10591:10617): sock: -1760100332
+[INFO] 18:35:46:909 memoryPool/(10591:10617): Bytes recibidos: 1
+[INFO] 18:35:46:909 memoryPool/(10591:10617): Operacion 1
+[INFO] 18:35:46:909 memoryPool/(10591:10617): Se agrego una página al segmento POSTRES
+[INFO] 18:35:46:909 memoryPool/(10591:10617): Se agrego el dato Chocotorta al marco 5
+[INFO] 18:35:46:909 memoryPool/(10591:10617): Se inserto al segmento POSTRES el valor Chocotorta
+[INFO] 18:35:46:909 memoryPool/(10591:10617): Rta insert 0
+
+[INFO] 18:35:47:35 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:47:35 memoryPool/(10591:10618): sock: -1760100331
+[INFO] 18:35:47:40 memoryPool/(10591:10618): Bytes recibidos: 1
+[INFO] 18:35:47:40 memoryPool/(10591:10618): Operacion 1
+[INFO] 18:35:47:40 memoryPool/(10591:10618): Se agrego una página al segmento FRUTAS
+[INFO] 18:35:47:40 memoryPool/(10591:10618): Se agrego el dato Banana al marco 6
+[INFO] 18:35:47:40 memoryPool/(10591:10618): Se inserto al segmento FRUTAS el valor Banana
+[INFO] 18:35:47:41 memoryPool/(10591:10618): Rta insert 0
+
+[INFO] 18:35:47:171 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:47:176 memoryPool/(10591:10619): sock: -1760100330
+[INFO] 18:35:47:176 memoryPool/(10591:10619): Bytes recibidos: 1
+[INFO] 18:35:47:176 memoryPool/(10591:10619): Operacion 1
+[INFO] 18:35:47:176 memoryPool/(10591:10619): Se agrego una página al segmento POSTRES
+[INFO] 18:35:47:176 memoryPool/(10591:10619): Se agrego el dato Tiramisu al marco 7
+[INFO] 18:35:47:176 memoryPool/(10591:10619): Se inserto al segmento POSTRES el valor Tiramisu
+[INFO] 18:35:47:176 memoryPool/(10591:10619): Rta insert 0
+
+[INFO] 18:35:47:318 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:47:318 memoryPool/(10591:10620): sock: -1760100329
+[INFO] 18:35:47:323 memoryPool/(10591:10620): Bytes recibidos: 1
+[INFO] 18:35:47:323 memoryPool/(10591:10620): Operacion 1
+[INFO] 18:35:47:323 memoryPool/(10591:10620): Se agrego una página al segmento METALS
+[INFO] 18:35:47:323 memoryPool/(10591:10620): Se agrego el dato ferro al marco 8
+[INFO] 18:35:47:323 memoryPool/(10591:10620): Se inserto al segmento METALS el valor ferro
+[INFO] 18:35:47:323 memoryPool/(10591:10620): Rta insert 0
+
+[INFO] 18:35:47:558 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:47:558 memoryPool/(10591:10621): sock: -1760100328
+[INFO] 18:35:47:563 memoryPool/(10591:10621): Bytes recibidos: 1
+[INFO] 18:35:47:563 memoryPool/(10591:10621): Operacion 1
+[INFO] 18:35:47:563 memoryPool/(10591:10621): Se agrego una página al segmento METALS
+[INFO] 18:35:47:563 memoryPool/(10591:10621): Se agrego el dato ferrous al marco 9
+[INFO] 18:35:47:563 memoryPool/(10591:10621): Se inserto al segmento METALS el valor ferrous
+[INFO] 18:35:47:563 memoryPool/(10591:10621): Rta insert 0
+
+[INFO] 18:35:47:683 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:47:690 memoryPool/(10591:10622): sock: -1760100327
+[INFO] 18:35:47:700 memoryPool/(10591:10622): Bytes recibidos: 1
+[INFO] 18:35:47:700 memoryPool/(10591:10622): Operacion 2
+[INFO] 18:35:47:810 memoryPool/(10591:10622): Se creó una conexión con LFS
+[INFO] 18:35:47:810 memoryPool/(10591:10622): Se pidió un create de 2019BEBIDAS;SC;6;10000
+[INFO] 18:35:49:33 memoryPool/(10591:10622): Respuesta del create 0
+[INFO] 18:35:49:33 memoryPool/(10591:10622): La respuesta del create fue 0
+[INFO] 18:35:49:152 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:49:153 memoryPool/(10591:10623): sock: -1760100326
+[INFO] 18:35:49:157 memoryPool/(10591:10623): Bytes recibidos: 1
+[INFO] 18:35:49:157 memoryPool/(10591:10623): Operacion 3
+[INFO] 18:35:49:259 memoryPool/(10591:10623): Se creó una conexión con LFS
+[INFO] 18:35:50:467 memoryPool/(10591:10623): Respuesta del describe 01019POSTRES;SC;3;60000
+[INFO] 18:35:50:588 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:50:588 memoryPool/(10591:10625): sock: -1760100325
+[INFO] 18:35:50:593 memoryPool/(10591:10625): Bytes recibidos: 1
+[INFO] 18:35:50:593 memoryPool/(10591:10625): Operacion 1
+[INFO] 18:35:50:593 memoryPool/(10591:10625): Se agrego una página al segmento FRUTAS
+[INFO] 18:35:50:593 memoryPool/(10591:10625): Se agrego el dato Pera al marco 10
+[INFO] 18:35:50:593 memoryPool/(10591:10625): Se inserto al segmento FRUTAS el valor Pera
+[INFO] 18:35:50:593 memoryPool/(10591:10625): Rta insert 0
+
+[INFO] 18:35:50:813 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:50:813 memoryPool/(10591:10626): sock: -1760100324
+[INFO] 18:35:50:818 memoryPool/(10591:10626): Bytes recibidos: 1
+[INFO] 18:35:50:818 memoryPool/(10591:10626): Operacion 0
+[INFO] 18:35:50:818 memoryPool/(10591:10626): Se seleccionó el valor aluminiferous
+[INFO] 18:35:51:37 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:51:37 memoryPool/(10591:10627): sock: -1760100323
+[INFO] 18:35:51:42 memoryPool/(10591:10627): Bytes recibidos: 1
+[INFO] 18:35:51:42 memoryPool/(10591:10627): Operacion 0
+[INFO] 18:35:51:42 memoryPool/(10591:10627): Se seleccionó el valor Banana
+[INFO] 18:35:51:162 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:51:162 memoryPool/(10591:10628): sock: -1760100322
+[INFO] 18:35:51:168 memoryPool/(10591:10628): Bytes recibidos: 1
+[INFO] 18:35:51:168 memoryPool/(10591:10628): Operacion 1
+[INFO] 18:35:51:168 memoryPool/(10591:10628): Se agrego el dato Helado al marco 5
+[INFO] 18:35:51:168 memoryPool/(10591:10628): Se inserto al segmento POSTRES el valor Helado
+[INFO] 18:35:51:168 memoryPool/(10591:10628): Rta insert 0
+
+[INFO] 18:35:51:287 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:51:287 memoryPool/(10591:10629): sock: -1760100321
+[INFO] 18:35:51:303 memoryPool/(10591:10629): Bytes recibidos: 1
+[INFO] 18:35:51:303 memoryPool/(10591:10629): Operacion 0
+[INFO] 18:35:51:303 memoryPool/(10591:10629): Se seleccionó el valor Helado
+[INFO] 18:35:51:418 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:51:423 memoryPool/(10591:10630): sock: -1760100320
+[INFO] 18:35:51:424 memoryPool/(10591:10630): Bytes recibidos: 1
+[INFO] 18:35:51:424 memoryPool/(10591:10630): Operacion 1
+[INFO] 18:35:51:424 memoryPool/(10591:10630): Se agrego una página al segmento METALS
+[INFO] 18:35:51:424 memoryPool/(10591:10630): Se agrego el dato moly al marco 11
+[INFO] 18:35:51:425 memoryPool/(10591:10630): Se inserto al segmento METALS el valor moly
+[INFO] 18:35:51:425 memoryPool/(10591:10630): Rta insert 0
+
+[INFO] 18:35:51:656 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:51:656 memoryPool/(10591:10631): sock: -1760100319
+[INFO] 18:35:51:661 memoryPool/(10591:10631): Bytes recibidos: 1
+[INFO] 18:35:51:661 memoryPool/(10591:10631): Operacion 0
+[INFO] 18:35:51:661 memoryPool/(10591:10631): Se seleccionó el valor moly
+[INFO] 18:35:51:803 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:51:803 memoryPool/(10591:10632): sock: -1760100318
+[INFO] 18:35:51:805 memoryPool/(10591:10632): Bytes recibidos: 1
+[INFO] 18:35:51:805 memoryPool/(10591:10632): Operacion 1
+[INFO] 18:35:51:805 memoryPool/(10591:10632): Se agrego el dato Almendrado al marco 5
+[INFO] 18:35:51:805 memoryPool/(10591:10632): Se inserto al segmento POSTRES el valor Almendrado
+[INFO] 18:35:51:805 memoryPool/(10591:10632): Rta insert 0
+
+[INFO] 18:35:51:928 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:51:933 memoryPool/(10591:10633): sock: -1760100317
+[INFO] 18:35:51:933 memoryPool/(10591:10633): Bytes recibidos: 1
+[INFO] 18:35:51:933 memoryPool/(10591:10633): Operacion 1
+[INFO] 18:35:51:933 memoryPool/(10591:10633): Se agrego una página al segmento FRUTAS
+[INFO] 18:35:51:933 memoryPool/(10591:10633): Se agrego el dato Uva al marco 12
+[INFO] 18:35:51:933 memoryPool/(10591:10633): Se inserto al segmento FRUTAS el valor Uva
+[INFO] 18:35:51:933 memoryPool/(10591:10633): Rta insert 0
+
+[INFO] 18:35:52:79 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:52:84 memoryPool/(10591:10634): sock: -1760100316
+[INFO] 18:35:52:87 memoryPool/(10591:10634): Bytes recibidos: 1
+[INFO] 18:35:52:87 memoryPool/(10591:10634): Operacion 3
+[INFO] 18:35:52:191 memoryPool/(10591:10634): Se creó una conexión con LFS
+[INFO] 18:35:53:401 memoryPool/(10591:10634): Respuesta del describe 01018FRUTAS;SC;2;50000
+[INFO] 18:35:53:823 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:53:823 memoryPool/(10591:10635): sock: -1760100315
+[INFO] 18:35:53:828 memoryPool/(10591:10635): Bytes recibidos: 1
+[INFO] 18:35:53:828 memoryPool/(10591:10635): Operacion 3
+[INFO] 18:35:53:932 memoryPool/(10591:10635): Se creó una conexión con LFS
+[INFO] 18:35:55:20 memoryPool/(10591:10635): Respuesta del describe 01019BEBIDAS;SC;6;10000
+[INFO] 18:35:55:191 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:35:55:196 memoryPool/(10591:10636): sock: -1760100314
+[INFO] 18:35:55:197 memoryPool/(10591:10636): Bytes recibidos: 1
+[INFO] 18:35:55:197 memoryPool/(10591:10636): Operacion 1
+[INFO] 18:35:55:197 memoryPool/(10591:10636): Se creo el segmento BEBIDAS
+[INFO] 18:35:55:197 memoryPool/(10591:10636): Se agrego una página al segmento BEBIDAS
+[INFO] 18:35:55:197 memoryPool/(10591:10636): Se agrego el dato Pepsi al marco 13
+[INFO] 18:35:55:197 memoryPool/(10591:10636): Se inserto al segmento BEBIDAS el valor Pepsi
+[INFO] 18:35:55:197 memoryPool/(10591:10636): Rta insert 0
+
+[INFO] 18:37:02:147 memoryPool/(10591:10598): Inicio del journal, se bloquea la tabla de segmentos
+[INFO] 18:37:02:252 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:02:252 memoryPool/(10591:10598): Paquete insert ANIMALS;65;tigers;1563485739
+[INFO] 18:37:03:462 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:03:462 memoryPool/(10591:10598): Se insertó correctamente el valor tigers en la tabla ANIMALS
+[INFO] 18:37:03:563 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:03:564 memoryPool/(10591:10598): Paquete insert ANIMALS;126;beasts;1563485743
+[INFO] 18:37:04:776 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:04:776 memoryPool/(10591:10598): Se insertó correctamente el valor beasts en la tabla ANIMALS
+[INFO] 18:37:04:776 memoryPool/(10591:10598): Se borra la lista de modificados para el segmento ANIMALS
+[INFO] 18:37:04:881 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:04:881 memoryPool/(10591:10598): Paquete insert POSTRES;100;Flan;1563485742
+[INFO] 18:37:06:90 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:06:90 memoryPool/(10591:10598): Se insertó correctamente el valor Flan en la tabla POSTRES
+[INFO] 18:37:06:193 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:06:193 memoryPool/(10591:10598): Paquete insert POSTRES;101;Almendrado;1563485751
+[INFO] 18:37:07:311 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:07:311 memoryPool/(10591:10598): Se insertó correctamente el valor Almendrado en la tabla POSTRES
+[INFO] 18:37:07:416 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:07:416 memoryPool/(10591:10598): Paquete insert POSTRES;4000;Tiramisu;1563485747
+[INFO] 18:37:08:527 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:08:528 memoryPool/(10591:10598): Se insertó correctamente el valor Tiramisu en la tabla POSTRES
+[INFO] 18:37:08:528 memoryPool/(10591:10598): Se borra la lista de modificados para el segmento POSTRES
+[INFO] 18:37:08:632 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:08:632 memoryPool/(10591:10598): Paquete insert METALS;136;aluminiferous;1563485743
+[INFO] 18:37:09:743 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:09:743 memoryPool/(10591:10598): Se insertó correctamente el valor aluminiferous en la tabla METALS
+[INFO] 18:37:09:847 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:09:848 memoryPool/(10591:10598): Paquete insert METALS;66;ferro;1563485747
+[INFO] 18:37:11:60 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:11:60 memoryPool/(10591:10598): Se insertó correctamente el valor ferro en la tabla METALS
+[INFO] 18:37:11:164 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:11:164 memoryPool/(10591:10598): Paquete insert METALS;71;ferrous;1563485747
+[INFO] 18:37:12:403 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:12:403 memoryPool/(10591:10598): Se insertó correctamente el valor ferrous en la tabla METALS
+[INFO] 18:37:12:510 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:12:510 memoryPool/(10591:10598): Paquete insert METALS;64;moly;1563485751
+[INFO] 18:37:13:719 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:13:719 memoryPool/(10591:10598): Se insertó correctamente el valor moly en la tabla METALS
+[INFO] 18:37:13:719 memoryPool/(10591:10598): Se borra la lista de modificados para el segmento METALS
+[INFO] 18:37:13:818 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:13:818 memoryPool/(10591:10598): Paquete insert FRUTAS;222;Manzana;1563485746
+[INFO] 18:37:14:906 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:14:907 memoryPool/(10591:10598): Se insertó correctamente el valor Manzana en la tabla FRUTAS
+[INFO] 18:37:15:12 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:15:12 memoryPool/(10591:10598): Paquete insert FRUTAS;34;Banana;1563485747
+[INFO] 18:37:16:226 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:16:227 memoryPool/(10591:10598): Se insertó correctamente el valor Banana en la tabla FRUTAS
+[INFO] 18:37:16:331 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:16:331 memoryPool/(10591:10598): Paquete insert FRUTAS;10245;Pera;1563485750
+[INFO] 18:37:17:541 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:17:542 memoryPool/(10591:10598): Se insertó correctamente el valor Pera en la tabla FRUTAS
+[INFO] 18:37:17:645 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:17:645 memoryPool/(10591:10598): Paquete insert FRUTAS;621;Uva;1563485751
+[INFO] 18:37:18:857 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:18:857 memoryPool/(10591:10598): Se insertó correctamente el valor Uva en la tabla FRUTAS
+[INFO] 18:37:18:857 memoryPool/(10591:10598): Se borra la lista de modificados para el segmento FRUTAS
+[INFO] 18:37:18:961 memoryPool/(10591:10598): Se creó una conexión con LFS
+[INFO] 18:37:18:961 memoryPool/(10591:10598): Paquete insert BEBIDAS;10;Pepsi;1563485755
+[INFO] 18:37:20:171 memoryPool/(10591:10598): Rta insert LFS 0
+[INFO] 18:37:20:171 memoryPool/(10591:10598): Se insertó correctamente el valor Pepsi en la tabla BEBIDAS
+[INFO] 18:37:20:171 memoryPool/(10591:10598): Se borra la lista de modificados para el segmento BEBIDAS
+[INFO] 18:37:20:171 memoryPool/(10591:10598): Fin del journal, procede a borrar datos existentes
+[INFO] 18:37:20:171 memoryPool/(10591:10598): Datos borrados, se desbloquea la tabla de segmentos
+[INFO] 18:38:29:677 memoryPool/(10591:10599): Recibí una conexión
+[INFO] 18:38:29:677 memoryPool/(10591:10649): sock: -1760100313
+[INFO] 18:38:29:678 memoryPool/(10591:10649): Bytes recibidos: 1
+[INFO] 18:38:29:678 memoryPool/(10591:10649): Operacion 6
