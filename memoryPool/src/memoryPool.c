@@ -174,10 +174,6 @@ void* gestionarConexiones (void* arg){
 
 
 	}
-
-
-
-
 	return NULL;
 }
 
@@ -210,8 +206,8 @@ int main(void) {
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 
-	pthread_t gestorConexiones;
-	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
+//	pthread_t gestorConexiones;
+//	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
 	//pthread_t journalTemporal;
@@ -219,7 +215,7 @@ int main(void) {
 
 
 	pthread_join(hiloConsola, (void*)&fin);
-	if(fin == 0){
+/*	if(fin == 0){
 		pthread_kill(gestorConexiones, 0);
 		//pthread_kill(journalTemporal, 0);
 		//pthread_kill(gossipTemporal, 0);
@@ -232,7 +228,7 @@ int main(void) {
 	//pthread_join(gossipTemporal, NULL);
 
 	}
-
+*/
 	finalizar();
 	return EXIT_SUCCESS;
 }
@@ -261,7 +257,11 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
+<<<<<<< HEAD
 	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+=======
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS); //////////solo para probar
+>>>>>>> 5e9038f651fdceb4b03596f38e7bcde33f8034af
 	maxValue = 20;
 
 	if(maxValue == 1){
@@ -291,7 +291,7 @@ int main(void) {
 }
 
  void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
-	 idMemoria = 0; //Unico de cada proceso
+	 idMemoria = config_get_int_value(configuracion,"MEMORY_NUMBER"); //Unico de cada proceso
 	 tablaMemActivas = list_create();
 	 tablaMemActivasSecundaria = list_create();
 	 ipSeeds = config_get_array_value(configuracion,"IP_SEEDS");
@@ -1162,33 +1162,81 @@ int mJournal(){
 
 }
 
-//NROMEM;PUERTO;IP SUPER SEND CON TABLA ENTERA
+//NROMEM;IP;PUERTO SUPER SEND CON TABLA ENTERA
 
-void agregarMemActivasAConfig(){} //agrega tablaMemActivas a la config del arch sin repetidos
-void enviarTablaAlKernel(){} //un listen y cuando el kernel pide empaqueta y manda la tablaMemActivas
+char* formatearTablaGossip(int nro,char*ip,char*puerto){
+	char* paquetin = string_from_format("%s;%s;%s;",string_itoa(nro),ip,puerto);
+	return paquetin;
+}
 
-char* empaquetarTablaActivas(){}
-t_list* desempaquetarTablaSecundaria(){} // desempaqueta la tabla recibida y la devuelve
+void enviarTablaAlKernel(u_int16_t kernelClient){
+	char* paquete = empaquetarTablaActivas();
+	u_int16_t tam = strlen(paquete);
+	sendData(kernelClient,tam,sizeof(u_int16_t));
+	sendData(kernelClient,paquete,tam);
+
+} //cuando el kernel pide empaqueta y manda la tablaMemActivas //METER EN API
+
+char* empaquetarTablaActivas(){
+	int i=0;
+	char* paquetote=string_new();
+	infoMemActiva* aux = list_get(tablaMemActivas,i); //Necesita el tamanio el kernel?????
+	while(aux){
+		string_append(&paquetote,formatearTablaGossip(aux->nroMem,aux->ip,aux->puerto));
+		i++;
+		aux = list_get(tablaMemActivas,i);
+	}
+	return paquetote;
+}
+void desempaquetarTablaSecundaria(char* paquete){
+	int i=0;
+	char** split = string_split(paquete,";");
+
+	while(split[i]){
+		infoMemActiva* aux = malloc(sizeof(infoMemActiva));
+		aux->nroMem = atoi(split[i]);
+		i++;
+		aux->ip = split[i];
+		i++;
+		aux->puerto = split[i];
+		i++;
+		list_add(tablaMemActivasSecundaria,aux);
+	}
+} // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
 
 int pedirConfirmacion(char*ip,char* puerto){
-    //funciones de la shared
-    //char*paqueteEnvio = empaquetarTablaActivas();
-    //sendData(paqueteEnvio);
-    //recvData(paqueteRecv);
-    //tablaSecundaria = desempaquetarTablaSecundaria(char* paqueteRecv);
+	u_int16_t kernelCliente;
+	char*buffer;
+	int conexion = linkClient(&kernelCliente,ip,puerto,1);
+
+	if(conexion ==1){
+		return 0; // no esta activa la memoria
+	}
+
+	u_int16_t tamTabla;
+	recvData(kernelCliente,tamTabla,sizeof(u_int16_t));
+	recvData(kernelCliente,buffer,tamTabla); //averiguar esto //tendria que hacer otro recv con el tamanio del paquete no?
+	desempaquetarTablaSecundaria(buffer);
+
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
 void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
-    char* paquete;
-   // paquete=empaquetarTablaActivas();
-   // sendData(paquete); //como sabe a quien mardalo? ya tiene la ip cargada de antes?
-} //un listen y da el ok a otra mem, tambien envia su tablaMemActivas
+    char* paquete=empaquetarTablaActivas();
+    int tam = strlen(paquete);
+    u_int16_t server;
+    u_int16_t sockClient;
+    createServer(ipSeeds[0],puertoSeeds[0],&server);
+    listenForClients(server,100);
+    acceptConexion(server,&sockClient,1);
+    sendData(sockClient,paquete,tam);
+
+} //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
 int estaRepetido(char*ip){
 	int mismaIp(infoMemActiva* aux){
-		return aux->ip == ip;
+		return (strcmp(aux->ip,ip)==0);
 	}
 	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
 }
@@ -1210,12 +1258,11 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 			i++;
 			aux=list_get(tablaMemActivasSecundaria,i);
 		}
-
 	}
 }
 
 int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
-	infoMemActiva* aux = list_get(tablaMemActivasSecundaria,0);
+	infoMemActiva* aux = list_get(tablaMemActivasSecundaria,0); //es la posicion cero porque como confirmo hay una nueva tabla secundaria
 	return aux->nroMem;
 }
 
@@ -1238,9 +1285,9 @@ void mGossip(){
 
     while(ipSeeds[i]){
 
-    	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){ //falta casteo
+    	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
-    		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]); //aca tambien
+    		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
     		estaEnActivaElim(ipSeeds[i]);
     	}
