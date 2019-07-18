@@ -67,6 +67,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 
 	//Escanear la memtable
 	t_list *aux;
+	sem_wait(criticaMemtable);
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name_in(nameTable, memtable);
 		if(encontrada!=NULL){
@@ -77,6 +78,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 	}else{
 		aux=list_create();
 	}
+	sem_post(criticaMemtable);
 
 	//Escanear todos los archivos temporales (modo 1)
 	int cantDumps=contarArchivos(nameTable, 1); //PREGUNTAR DILEMA
@@ -245,6 +247,11 @@ int drop(char* nameTable){
 	if(folderExist(pathFolder)==0){
 		Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(nameTable);
 		sem_wait(&tabDirectorio->borrarTabla);
+		if(tabDirectorio->pedido_extension<0){
+			pthread_kill(tabDirectorio->hilo,0);
+		}else{
+			pthread_join(tabDirectorio->hilo,0);
+		}
 		//eliminar archivos binarios con sus respectivos bloques
 		int cantBins=contarArchivos(nameTable, 0);
 		int i=0;
@@ -255,6 +262,7 @@ int drop(char* nameTable){
 			free(path);
 			i++;
 		}
+		sem_post(&tabDirectorio->semaforoBIN);
 		//eliminar archivos temporales con sus respectivos bloques
 		int cantDumps=contarArchivos(nameTable, 1);
 		i=0;
@@ -265,6 +273,7 @@ int drop(char* nameTable){
 			free(path);
 			i++;
 		}
+		sem_post(&tabDirectorio->semaforoTMP);
 		//eliminar archivos tempC con sus respectivos bloques
 		int cantTmpc=contarArchivos(nameTable, 2);
 		i=0;
@@ -275,16 +284,21 @@ int drop(char* nameTable){
 			free(path);
 			i++;
 		}
-		 //eliminar archivo metadata
+		sem_post(&tabDirectorio->semaforoTMPC);
+
+		//eliminar archivo metadata
 		path=nivelUnaTabla(nameTable,1);
 		sem_wait(&tabDirectorio->semaforoMeta);
 		eliminarArchivo(path);
+		sem_post(&tabDirectorio->semaforoMeta);
+
 		free(path);
 		//sacar la tabla del directorio
 		int index2=calcularIndexName(nameTable);
 		sem_wait(criticaDirectorio);
 		Sdirectorio *nuevo=list_remove(directorioP,index2-1);
-		liberarDirectorio(nuevo);
+		sem_post(&tabDirectorio->borrarTabla);
+		liberarTabDirectorio(nuevo);
 		sem_post(criticaDirectorio);
 		//Eliminar carpeta
 		if(borrarCarpeta(pathFolder)){

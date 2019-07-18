@@ -84,6 +84,7 @@ sem_t *criticaDirectorio;
 sem_t *criticaTablaGlobal;
 sem_t *criticaCantBloques;
 sem_t *criticaBitmap;
+sem_t *sem_dump;
 
 
 //FUNCIONES DE TABLA DE ARCHIVOS GLOBAL

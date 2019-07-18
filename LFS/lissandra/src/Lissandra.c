@@ -78,7 +78,7 @@ void *connectMemory(){
 		log_info(logger, "Se levanto el servidor.");
 	}
 
-	listenForClients(server,100);
+	listenForClients(server,1000);
 
 	while(1){
 		if(acceptConexion( server, &socket_client,configLissandra->idEsperado)!=0){
@@ -455,10 +455,11 @@ void *console(){
 }
 
 void theEnd(){
-	abortar=0;
-	pthread_join(hiloMemoria,0);
+	//pthread_join(hiloMemoria,0);
 	pthread_kill(hiloInotify,0);
-	pthread_join(hiloDump,0);
+	sem_wait(sem_dump);
+	pthread_kill(hiloDump,0);
+	sem_post(sem_dump);
 	log_destroy(dumplog);
 	if(!list_is_empty(memtable)){
 		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);

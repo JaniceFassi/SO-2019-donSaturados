@@ -8,11 +8,12 @@
 #include "Compactor.h"
 void *dump(){
 	//ACA IRIA EL WAIT MUTEX DE LA MEMTABLE
-	while(abortar){
+	while(1){
 		usleep(configLissandra->tiempoDump*1000);
-		if(abortar==0){
-			pthread_exit(NULL);
-		}
+		sem_wait(sem_dump);
+		//if(abortar==0){
+			//pthread_exit(NULL);
+		//}
 		sem_wait(criticaMemtable);
 		if(list_is_empty(memtable)){
 			log_info(dumplog,"la memtable esta vacia por lo cual no se hace el dump");
@@ -47,20 +48,22 @@ void *dump(){
 			}
 			list_destroy(dump);
 		}
+		sem_post(sem_dump);
 	}
 	//return 0;
 	pthread_exit(NULL);
 }
 //void compactar(char *nombreTabla, long tiempoCompactacion){
 void compactar(Sdirectorio* nuevo){
-	while(abortar){
+	int seguir=1;
+	while(seguir){
 		usleep(nuevo->time_compact*1000);
-		int borrar;
-		sem_getvalue(&nuevo->borrarTabla,&borrar);
-		if(borrar==0 || abortar==0){
+		sem_getvalue(&nuevo->borrarTabla,&seguir);
+		if(seguir==0){
 			log_info(compaclog,"No se puede hacer la compactacion de la tabla %s porque hay pedido de borrar",nuevo->nombre);
 			pthread_exit(NULL);
 		}
+		nuevo->pedido_extension=3;
 		log_info(compaclog,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
 		char *path=nivelUnaTabla(nuevo->nombre,0);
 		if(folderExist(path)==1){
@@ -164,25 +167,34 @@ void compactar(Sdirectorio* nuevo){
 			log_info(compaclog,"se eliminaron los archivos tmpC de la tabla %s",nuevo->nombre);
 			//SIGNAL MUTEX TMPC DE LA TABLA
 			sem_post(&nuevo->semaforoTMPC);
-			nuevo->pedido_extension=-1;
 			list_destroy(depurado);
 			borrarMetadataTabla(metadata);
 			list_destroy_and_destroy_elements(todosLosRegistros,(void *)destroyRegistry);
 			log_info(compaclog,"Fin de la compactacion de %s",nuevo->nombre);
-
+			nuevo->pedido_extension=-1;
+			sem_getvalue(&nuevo->borrarTabla,&seguir);
 		}
 	}
 	pthread_exit(NULL);
 }
-void liberarDirectorio(Sdirectorio *nuevo){
-	pthread_join(nuevo->hilo,0);
+void liberarTabDirectorio(Sdirectorio *nuevo){
 	free(nuevo->nombre);
 	liberarSemaforosTabla(nuevo);
 	free(nuevo);
 }
+void cerrarTabDirectorio(Sdirectorio *nuevo){
+	if(nuevo->pedido_extension<0){
+		pthread_kill(nuevo->hilo,0);
+	}else{
+		pthread_join(nuevo->hilo,0);
+	}
+	free(nuevo->nombre);
+	liberarSemaforosTabla(nuevo);
+	free(nuevo);
 
+}
 void liberarDirectorioP(){
-	list_destroy_and_destroy_elements(directorioP,(void *)liberarDirectorio);
+	list_destroy_and_destroy_elements(directorioP,(void *)cerrarTabDirectorio);
 }
 
 void semaforosTabla(Sdirectorio *nuevo){

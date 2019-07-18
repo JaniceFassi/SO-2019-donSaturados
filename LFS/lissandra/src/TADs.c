@@ -23,6 +23,8 @@ void inicializarSemGlob(){
 	sem_init(criticaCantBloques,0,1);
 	criticaBitmap=malloc(sizeof(sem_t));
 	sem_init(criticaBitmap,0,1);
+	sem_dump=malloc(sizeof(sem_t));
+	sem_init(sem_dump,0,1);
 }
 void liberarSemaforos(){
 	free(criticaDirectorio);
@@ -35,6 +37,8 @@ void liberarSemaforos(){
 	sem_destroy(criticaCantBloques);
 	free(criticaBitmap);
 	sem_destroy(criticaBitmap);
+	free(sem_dump);
+	sem_destroy(sem_dump);
 }
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
@@ -399,6 +403,8 @@ metaTabla *levantarMetadataTabla(char *nombre){
 	char *path=nivelUnaTabla(nombre,1);
 	t_config *arch=config_create(path);
 	metaTabla *metadata=obtenerMetadataTabla(nombre,arch);
+	config_destroy(arch);
+	free(path);
 	return metadata;
 }
 
@@ -621,6 +627,7 @@ char *leerArchBinario(char *path,int tamanio){
 	fread(buffer,1, tamanio*sizeof(char)/***/, arch);
 	fclose(arch);
 	char *datos=string_substring(buffer,0,tamanio);
+	free(buffer);
 	return datos;
 }
 
