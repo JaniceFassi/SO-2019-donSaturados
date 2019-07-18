@@ -1,10 +1,13 @@
 #include "kernel.h"
-//faltan las metricas de cada memoria
-// falta sincronizar algunas cosas?
-// falta borrar la tabla en el drop
+#define EVENT_SIZE  ( sizeof (struct inotify_event) + 100 )
+#define BUF_LEN     ( 1024 * EVENT_SIZE )
+// tengo que sacar lo de los logs duplicados
 int main(void) {
 	sem_init(&semColasContador,0,0);
 	sem_init(&semColasMutex,0,1);
+	sem_init(&semMemorias,0,1);
+	sem_init(&semMetadata,0,1);
+	sem_init(&semMetricas,0,1);
 	srand(time(NULL));
 	logger = init_logger(0);
 	loggerConsola = init_logger(1);
@@ -16,20 +19,22 @@ int main(void) {
 	metrica.tiempoI=0;
 	metrica.tiempoS=0;
 	quantum = config_get_int_value(config, "QUANTUM");
+	retardoMetadata = config_get_int_value(config, "METADATA_REFRESH");
+	retardo=config_get_int_value(config, "SLEEP_EJECUCION");
 	//inicializa memoria x archivo de configuracion
 	struct memoria *m1=malloc(sizeof(struct memoria));
 	m1->id=0;
 	m1->ip=config_get_string_value(config,"IP_MEMORIA");
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
-	m1->estado=1;// inicia disponible
 	list_add(memorias,m1);
 	list_add(criterioSC,m1);
 	list_add(criterioEC,m1);
 	list_add(criterioSHC,m1);
 	//pruebas();
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
+	//run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
+	config_destroy(config);
 	pthread_t hilos[limiteProcesamiento];
 	int i=0;
 	while(i<limiteProcesamiento){
@@ -41,8 +46,10 @@ int main(void) {
 	pthread_create(&hiloMetricas, NULL, (void*)metricasAutomaticas, NULL);
 	pthread_t hiloDescribe;
 	pthread_create(&hiloDescribe, NULL, (void*)describeGlobal, NULL);
-
-
+	pthread_t hiloGossip;
+	pthread_create(&hiloGossip, NULL, (void*)gossiping, NULL);
+	pthread_t hiloInotify;
+	pthread_create(&hiloInotify, NULL, (void*)inotifyKernel, NULL);
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_1.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_2.lql");
 	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/películas.lql");
@@ -268,15 +275,15 @@ int parsear(char * aux){
 		i++;
 	}
 	free(split);
-	int retardo= config_get_int_value(config,"SLEEP_EJECUCION");
-	//usleep(retardo*1000);
+	usleep(retardo*1000);
 	return resultado;
 }
 
 int mySelect(char * table, char *key){
 	clock_t ini = clock();
-	// va semaforo
+	sem_wait(&semMetricas);
 	metrica.cantS++;
+	sem_post(&semMetricas);
 
 	int op= 0;
 	char*linea=string_from_format("%s;%s",table,key);
@@ -300,7 +307,11 @@ int mySelect(char * table, char *key){
 
 	//aca fijandome la tabla deberia elegir la memoria adecuada
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+
+	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	sem_post(&semMetadata);
+
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
 		return 0;
@@ -310,7 +321,10 @@ int mySelect(char * table, char *key){
 	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
+		sem_wait(&semMemorias);
 		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency, key);
+		sem_post(&semMemorias);
+
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
@@ -369,16 +383,20 @@ int mySelect(char * table, char *key){
 	free(tamanioYop);
 	close(sock);
 	clock_t fin = clock();
-	double tiempo = (double)(fin-ini);
+	double tiempo = (double)(fin-ini)/ CLOCKS_PER_SEC;
 	//semaforo
+	sem_wait(&semMetricas);
 	metrica.tiempoS += tiempo;
+	sem_post(&semMetricas);
 	return 0;
 }
 
 int insert(char* table ,char* key ,char* value){
 	clock_t ini = clock();
-	// va semaforo
+
+	sem_wait(&semMetricas);
 	metrica.cantI++;
+	sem_post(&semMetricas);
 
 	int op= 1;
 	char **split= string_split(value,"\"");
@@ -401,7 +419,9 @@ int insert(char* table ,char* key ,char* value){
 	log_info(logger,"INSERT %s",msj);
 
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	sem_post(&semMetadata);
 
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
@@ -412,7 +432,10 @@ int insert(char* table ,char* key ,char* value){
 	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
+		sem_wait(&semMemorias);
 		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency , key);
+		sem_post(&semMemorias);
+
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
@@ -456,9 +479,12 @@ int insert(char* table ,char* key ,char* value){
 	free(tamanioYop);
 	close(sock);
 	clock_t fin = clock();
-	double tiempo= (double) (fin-ini);
-	//semaforo
+	double tiempo= (double) (fin-ini)/ CLOCKS_PER_SEC;
+
+	sem_wait(&semMetricas);
 	metrica.tiempoI+= tiempo;
+	sem_post(&semMetricas);
+
 	return 0;
 }
 
@@ -505,7 +531,10 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
+		sem_wait(&semMemorias);
 		memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
+		sem_post(&semMemorias);
+
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
@@ -631,6 +660,7 @@ int describe(char *table){
 
 //	me falta un recv de la cantidad de tablas, ademas deberia borrar las tablas que tengo
 //  si tengo un describe de una sola tabla tengo que actualizarla
+	sem_wait(&semMetadata);
 	if(tr>1){
 		limpiarMetadata();
 		while(i<tr){
@@ -688,6 +718,8 @@ int describe(char *table){
 		log_info(loggerConsola,"termino free ");
 		free(buffer);
 	}
+	sem_post(&semMetadata);
+
 	free(resultado);
 //	free(tamanioRespuesta);
 	free(msj);
@@ -712,7 +744,9 @@ int drop(char*table){
 	}
 
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
+	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	sem_post(&semMetadata);
 
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
@@ -723,7 +757,10 @@ int drop(char*table){
 	int c=0;
 	int sock=-1;
 	while(sock==-1 && c<5){
-		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency,NULL);
+		sem_wait(&semMemorias);
+			memAsignada= asignarMemoriaSegunCriterio(metadata->consistency,NULL);
+		sem_post(&semMemorias);
+
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
@@ -747,14 +784,15 @@ int drop(char*table){
 	void destruirMet(struct metadataTabla *mt){
 		free(mt->consistency);
 		free(mt->table);
-//		free(mt);
+		free(mt);// <=== si rompe por doble free es x esto
 	}
 
 	bool buscar(struct metadataTabla *mt){
 		return strcmp(mt->table,table)!=0;
 	}
+	sem_wait(&semMetadata);
 	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
-
+	sem_post(&semMetadata);
 
 	log_info(logger,"INSERT %s",msj);
 
@@ -769,27 +807,39 @@ int drop(char*table){
 int add(char* memory , char* consistency){
 	u_int16_t idMemoria = atoi(memory);
 	struct memoria *memoria;//= malloc(sizeof(struct memoria));
+	sem_wait(&semMemorias);
 	memoria= buscarMemoria(idMemoria);
+	sem_post(&semMemorias);
+
 	if(memoria==NULL){
 		log_info(logger,"La memoria no existe, no se pudo agregar al criterio");
 		return 0;
 	}
 	if(strcmp(consistency,"SC")==0){
-		if(list_size(criterioSC)>0){
+		sem_wait(&semMemorias);
+		int size=list_size(criterioSC);
+		sem_post(&semMemorias);
+		if(size>0){
 			log_info(logger,"No se pudo agregar la memoria %i al criterio SC", idMemoria);
 			return -1;
 		}
 		else{
-			// semN wait (pongo N xq no se si poner un semaforo para cada lista o con poner una sirve)
-			list_add(criterioSC,memoria);
+			sem_wait(&semMemorias);
+				list_add(criterioSC,memoria);
+			sem_post(&semMemorias);			// semN wait (pongo N xq no se si poner un semaforo para cada lista o con poner una sirve)
 			// semN signal
 			return 0;
 		}
 	}
 	if(strcmp(consistency,"SHC")==0){
-		if(!verificaMemoriaRepetida(idMemoria,criterioSHC)){
+		sem_wait(&semMemorias);
+		bool repe=verificaMemoriaRepetida(idMemoria,criterioSHC);
+		sem_post(&semMemorias);
+		if(!repe){
 			int ret=0;
-			list_add(criterioSHC,memoria);
+			sem_wait(&semMemorias);
+				list_add(criterioSHC,memoria);
+			sem_post(&semMemorias);
 			void envioJournal(struct memoria *m){
 				char *resultado= malloc(2);
 				int sock=conexionMemoria(m->puerto,m->ip);
@@ -811,8 +861,14 @@ int add(char* memory , char* consistency){
 		}
 	}
 	if(strcmp(consistency,"EC")==0){
-		if(!verificaMemoriaRepetida(idMemoria,criterioEC)){
+		sem_wait(&semMemorias);
+		bool repe= verificaMemoriaRepetida(idMemoria,criterioEC);
+		sem_post(&semMemorias);
+		if(!repe){
+			sem_wait(&semMemorias);
 			list_add(criterioEC,memoria);
+			sem_post(&semMemorias);
+
 			return 0;
 		}
 		else{
@@ -824,20 +880,36 @@ int add(char* memory , char* consistency){
 }
 
 int metrics(int modo){
-	float promedioS=(float)(metrica.tiempoS/(float)metrica.cantS);
-	float promedioI=(float)(metrica.tiempoI/(float)metrica.cantI);
+	sem_wait(&semMetricas);
+	float promedioS=(float)((metrica.tiempoS *1000)/metrica.cantS);
+	float promedioI=(float)((metrica.tiempoI*1000)/metrica.cantI);
+	log_info(logger,"\n------------METRICAS--------------\n");
+	log_info(logger,"Read Latency: %f",promedioS);
+	log_info(logger,"Write Latency: %f",promedioI);
+	log_info(logger,"Reads: %i",metrica.cantS);
+	log_info(logger,"Writes: %i",metrica.cantI);
+
 	if(modo==1){
-		log_info(logger,"Read Latency: %f",promedioS);
-		log_info(logger,"Write Latency: %f",promedioI);
-		log_info(logger,"Reads: %i",metrica.cantS);
-		log_info(logger,"Writes: %i",metrica.cantI);
+		printf("\n------------METRICAS--------------\n");
+		printf("Read Latency: %f\n",promedioS);
+		printf("Write Latency: %f\n",promedioI);
+		printf("Reads: %i\n",metrica.cantS);
+		printf("Writes: %i\n",metrica.cantI);
+		printf("MEMORY LOAD:\n");
 	}
-	else{
-		log_info(logger,"Read Latency: %f",promedioS);
-		log_info(logger,"Write Latency: %f",promedioI);
-		log_info(logger,"Reads: %i",metrica.cantS);
-		log_info(logger,"Writes: %i",metrica.cantI);
+	log_info(logger,"MEMORY LOAD:");
+	void itera(struct memoria *m){
+		log_info(logger,"En la memoria %i se hicieron %i INSERT/SELECT de los %i totales",m->id,m->cantI+m->cantS,metrica.cantI+metrica.cantS);
+		if(modo==1){
+			printf("En la memoria %i se hicieron %i INSERT/SELECT de los %i totales\n",m->id,m->cantI+m->cantS,metrica.cantI+metrica.cantS);
+		}
+		else{
+			m->cantI=0;
+			m->cantS=0;
+		}
 	}
+	list_iterate(memorias,(void*)itera);
+	sem_post(&semMetricas);
 	return 0;
 }
 
@@ -846,10 +918,12 @@ void metricasAutomaticas(){
 		sleep(30);
 		metrics(0);
 		//semaforos
+		sem_wait(&semMetricas);
 		metrica.cantI=0;
 		metrica.cantS=0;
 		metrica.tiempoI=0;
 		metrica.tiempoS=0;
+		sem_post(&semMetricas);
 	}
 }
 
@@ -875,8 +949,10 @@ void limpiarMetadata(){
 		free(mt->table);
 		free(mt);
 	}
+	sem_wait(&semMetadata);
 	list_destroy_and_destroy_elements(listaMetadata,(void*)destruirMet);
 	listaMetadata=list_create();
+	sem_post(&semMetadata);
 }
 
 void actualizarMetadataTabla(struct metadataTabla *m){
@@ -890,9 +966,11 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 	bool buscar(struct metadataTabla *mt){
 		return strcmp(mt->table,m->table)!=0;
 	}
+	sem_wait(&semMetadata);
 	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
 	log_info(loggerConsola,"actualizarMtadataFIN");
 	list_add(listaMetadata,m);
+	sem_post(&semMetadata);
 	log_info(loggerConsola,"consistency %s",m->consistency);
 	log_info(loggerConsola,"table %s",m->table);
 	log_info(loggerConsola," compTime %l",m->compTime);
@@ -946,7 +1024,6 @@ struct memoria *verMemoriaLibreSHC(int key){
 	}
 }
 
-
 struct memoria *verMemoriaLibre(t_list *lista){
 	int size= list_size(lista);
 	int i= rand()%(size+1);
@@ -961,29 +1038,117 @@ struct metadataTabla * buscarMetadataTabla(char* table){
 }
 
 void describeGlobal(){
-	int tiempo = config_get_int_value(config, "METADATA_REFRESH");
 	while(terminaHilo==0){
-		sleep(tiempo/(float)1000);
-		//describe(NULL);
+		usleep(retardoMetadata*1000);
+		describe(NULL);
 		log_info(logger,"Describe global automático");
 	}
 }
 
+void *gossiping(){
+	while(1){
+		sleep(30);// NO TENGO DE DONDE SACAR ESTE DATO
+		int sock=-1;
+		struct memoria *m ;
+		while(sock==-1){
+			sem_wait(&semMemorias);
+				m=verMemoriaLibre(memorias);
+			sem_post(&semMemorias);
+			sock= conexionMemoria(m->puerto,m->ip);
+		}
+		sendData(sock,"6",2);
+		char *tamanio= malloc(4);
+
+		recvData(sock,tamanio,4);
+		tamanio[3]='\0';
+		char *buffer=malloc(atoi(tamanio)+1);
+		recvData(sock,buffer,atoi(tamanio));
+		close(sock);
+		//toda la bola del gossip
+		sem_wait(&semMemorias);
+
+			void itera(struct memoria *m){
+				m->estado=1;
+			}
+			list_iterate(memorias,(void*) itera);
+			char ** split= string_n_split(buffer,4,";");
+
+			char * bufferAux=NULL;
+
+			int termino=0;
+
+			while(termino==0){
+				if(verificaMemoriaRepetida(atoi(split[0]),memorias)){
+					struct memoria *aux=buscarMemoria(atoi(split[0]));
+					aux->estado=0;
+				}
+				else{
+					struct memoria *aux= malloc(sizeof(struct memoria));
+					aux->cantI=0;
+					aux->cantS=0;
+					aux->estado=0;
+					aux->id=atoi(split[0]);
+					aux->ip=string_duplicate(split[1]);
+					aux->puerto=atoi(split[2]);
+
+					list_add(memorias,aux);
+				}
+				if(split[3]!=NULL){
+					bufferAux= string_duplicate(split[3]);
+				}
+
+				free(split[0]);
+				free(split[1]);
+				free(split[2]);
+				free(split[3]);
+				free(split);
+
+				if(bufferAux==NULL){
+					termino=1;
+				}
+				else{
+					split=string_n_split(bufferAux,4,";");
+				}
+				free(bufferAux);
+				bufferAux=NULL;
+			}
+		sem_post(&semMemorias);
+	}
+	return 0;
+}
+
+void*inotifyKernel(){
+	while(terminaHilo==0){
+			char buffer[BUF_LEN];
+			int file_descriptor = inotify_init();
+			if (file_descriptor < 0) {
+				perror("inotify_init");
+			}
+			int watch_descriptor = inotify_add_watch(file_descriptor, "/home/utnso/tp-2019-1c-donSaturados/kernel/kernel.config", IN_MODIFY );
+			int length = read(file_descriptor, buffer, BUF_LEN);
+			if (length < 0) {
+				perror("read");
+			}
+			t_config *config = config_create("/home/utnso/tp-2019-1c-donSaturados/kernel/kernel.config");
+			quantum=config_get_int_value(config, "QUANTUM");
+			retardo=config_get_int_value(config, "SLEEP_EJECUCION");
+			retardoMetadata=config_get_int_value(config, "REFRESH_METADATA");
+			config_destroy(config);
+		}
+		return NULL;
+}
 
 //---------------- PRUEBAS ----------------------------
 
 void pruebas(){
 	struct memoria *m2= malloc(sizeof(struct memoria));
 	m2->id=1;
-	m2->estado=1;
 	m2->puerto=8002;
 	struct memoria *m3= malloc(sizeof(struct memoria));
 	m3->id=2;
-	m3->estado=1;
 	m3->puerto=8003;
 	struct memoria *m4= malloc(sizeof(struct memoria));
 	m4->id=3;
-	m4->estado=1;
 	m4->puerto=8004;
 	list_add(memorias,m2);
 	list_add(memorias,m3);
@@ -1023,7 +1188,6 @@ void mostrarResultados(){
 
 void destruir(){
 	log_destroy(logger);
-	config_destroy(config);
 
 	list_destroy(criterioEC);
 	list_destroy(criterioSC);

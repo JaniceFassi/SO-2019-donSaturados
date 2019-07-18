@@ -1,10 +1,3 @@
-/*
- * kernel.h
- *
- *  Created on: 18 abr. 2019
- *      Author: utnso
- */
-
 #ifndef KERNEL_H_
 #define KERNEL_H_
 #include <stdio.h>
@@ -25,6 +18,7 @@
 #include<pthread.h>
 #include<semaphore.h>
 #include<sys/time.h>
+#include <sys/inotify.h>
 
 struct metricas{
 	double tiempoS;
@@ -41,13 +35,17 @@ t_config* config;
 t_log* init_logger(int i);
 t_config* read_config(void);
 int quantum;
+int retardo;
+int retardoMetadata;
 
 // lista de memorias que me van a pasar
 struct memoria{
 	u_int16_t id;
-	int estado; // para saber si esta ocupada
 	int puerto; // al ser varias memorias me deberia conectar con cada una?
 	char *ip;
+	int cantS;
+	int cantI;
+	int estado;// es para borrarlas en caso de que en el gossiping no me la nombren
 };
 t_list *memorias;
 // lista de las memorias para cada criterio
@@ -113,10 +111,16 @@ void describeGlobal();
 void limpiarMetadata();
 void actualizarMetadataTabla(struct metadataTabla *m);
 void metricasAutomaticas();
+void * gossiping();
+void * inotifyKernel();
+
 struct memoria *verMemoriaLibreSHC(int key);
 
 static sem_t semColasMutex;
 static sem_t semColasContador;
+static sem_t semMetadata;
+static sem_t semMemorias;
+static sem_t semMetricas;
 
 
 
