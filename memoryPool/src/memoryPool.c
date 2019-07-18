@@ -286,8 +286,8 @@ int main(void) {
 
  void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
 	 
-	 char** ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
-	 char** seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
+	 char* ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
+	 char* seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
 	 
 	 idMemoria = config_get_int_value(configuracion,"MEMORY_NUMBER"); //Unico de cada proceso
 	 tablaMemActivas = list_create();
