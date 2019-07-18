@@ -17,6 +17,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/inotify.h>
 
 
 #include<commons/log.h>
@@ -31,6 +32,10 @@
 //VARIABLES GLOBALES
 t_log *logger;
 t_config *configuracion;
+char* pathConfig;
+int retardoJournal;
+int retardoGossip;
+int abortar;
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* listaDeUsos;
@@ -44,18 +49,20 @@ int offsetMarco;
 u_int16_t maxValue;
 int cantMarcos;
 int posicionUltimoUso; // Lo usa el LRU
-pthread_mutex_t lockMem = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t lockTablaSeg = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lockTablaSeg;
+pthread_mutex_t lockTablaMarcos;
 
 //ESTRUCTURA MEMORIA
 typedef struct {
 	int nroMarco;
 	int estaLibre; //0 si libre 1 si ocupado
+	pthread_mutex_t lockMarco;
 }marco;
 
 typedef struct {
 	char* nombreTabla;
 	t_list* tablaPaginas;
+	pthread_mutex_t lockSegmento;
 }segmento;
 
 typedef struct {
@@ -110,6 +117,7 @@ void* recibirOperacion(void * arg);
 void* gestionarConexiones(void *arg);
 void* journalProgramado(void* arg);
 void* gossipProgramado(void* arg);
+void* correrInotify(void*arg);
 
 
 
@@ -145,6 +153,17 @@ int todosModificados(segmento* aux);
 
 //GOSSIPING
 void agregarMemActiva(int id,char* ip,char* puerto);
+void enviarTablaAlKernel(u_int16_t kernelClient);
+char* empaquetarTablaActivas();
+char* formatearTablaGossip(int nro,char*ip,char*puerto);
+void desempaquetarTablaSecundaria(char* paquete);
+int pedirConfirmacion(char*ip,char* puerto);
+void confirmarActivo();
+int estaRepetido(char*ip);
+void agregarMemActiva(int id,char* ip,char*puerto);
+int conseguirIdSecundaria();
+void estaEnActivaElim(char*ip);
+
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
@@ -152,5 +171,6 @@ void* conseguirValor(pagina* pNueva);
 void* conseguirTimestamp(pagina *pag);
 void* conseguirKey(pagina *pag);
 void mostrarMemoria();
+void modificarConfig();
 
 #endif /* MEMORYPOOL_H_ */
