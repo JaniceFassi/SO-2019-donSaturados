@@ -31,11 +31,9 @@ void* recibirOperacion(void * arg){
 		recvData(cli,tamanioPaq, sizeof(char)*3);
 		int tamanio = atoi(tamanioPaq);
 
-		printf("tamanio paquete en nro %d \n", tamanio);
 		if(tamanio!=0){
 			paquete = malloc(tamanio + sizeof(char));
 			recvData(cli, paquete, tamanio);
-			printf("Paquete %s \n", paquete);
 
 			desempaquetado = string_n_split(paquete, 5, ";");
 
@@ -61,11 +59,10 @@ void* recibirOperacion(void * arg){
 					nombreTabla = desempaquetado[0];
 					key = atoi(desempaquetado[1]);
 					rta = mSelect(nombreTabla, key);
-					printf("rta %s\n", rta);
+
 					if(strcmp(rta, "3")==1){
 						char* msj = malloc(strlen(rta)+4);
 						msj = empaquetar(0, rta);
-						printf("mensaje %s \n", msj);
 						sendData(cli, msj, strlen(msj)*2);
 					}
 
@@ -108,7 +105,6 @@ void* recibirOperacion(void * arg){
 					particiones = atoi(desempaquetado[2]);
 					tiempoCompactacion = atol(desempaquetado[3]);
 					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
-					printf("Rta antes de mandar %d", resp);
 					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					break;
 
@@ -131,8 +127,7 @@ void* recibirOperacion(void * arg){
 					break;
 
 				case 6: //GOSSIP
-					//mGossip();
-					printf("gossip\n");
+					mGossip();
 					break;
 
 
@@ -143,7 +138,6 @@ void* recibirOperacion(void * arg){
 }
 
 void* gestionarConexiones (void* arg){
-	//CREA EL SERVIDOR Y ESTÁ CONTÍNUAMENTE ESCUCHANDO Y ACEPTANDO PEDIDOS
 	u_int16_t puertoServer = config_get_int_value(configuracion, "PUERTO");
 	char* ipServer = config_get_string_value(configuracion, "IP");
 	u_int16_t server;
@@ -158,7 +152,7 @@ void* gestionarConexiones (void* arg){
 
 	log_info(logger, "Servidor creado exitosamente");
 	listen(server,100);
-	printf("Servidor escuchando\n");
+	log_info(logger, "Servidor escuchando\n");
 
 	while(1){
 
@@ -168,7 +162,7 @@ void* gestionarConexiones (void* arg){
 			log_info(logger, "Recibí una conexión de Kernel");
 			pthread_t atiendeCliente;
 			pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
-			//pthread_join(atiendeCliente, NULL);
+			pthread_detach(atiendeCliente);
 
 		}
 
@@ -257,11 +251,8 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-<<<<<<< HEAD
 	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
-=======
-	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS); //////////solo para probar
->>>>>>> 5e9038f651fdceb4b03596f38e7bcde33f8034af
+
 	maxValue = 20;
 
 	if(maxValue == 1){
@@ -277,15 +268,18 @@ int main(void) {
 	listaDeUsos = list_create();
 
 
-
-	//Inicializar los marcos
 	cantMarcos = tamanioMemoria/offsetMarco;
 	for(int i=0; i<cantMarcos; i++){
 			marco* unMarco = malloc(sizeof(marco));
 			unMarco->nroMarco = i;
 			unMarco->estaLibre = 0;
+			pthread_mutex_init(&unMarco->lockMarco, NULL);
 			list_add(tablaMarcos, unMarco);
 		}
+
+	pthread_mutex_init(&lockTablaSeg, NULL);
+	pthread_mutex_init(&lockTablaMarcos, NULL);
+
 
 	return 0;
 }
@@ -304,6 +298,7 @@ int main(void) {
 	nuevoSegmento->nombreTabla = malloc(strlen(nombre)+1);
 	strcpy(nuevoSegmento->nombreTabla,nombre);
 	nuevoSegmento->tablaPaginas = list_create();
+	pthread_mutex_init(&nuevoSegmento->lockSegmento, NULL);
 	log_info(logger, "Se creo el segmento %s", nombre);
 
 	return nuevoSegmento;
@@ -312,10 +307,6 @@ int main(void) {
  pagina *crearPagina(){
 	pagina *pag = malloc(sizeof(pagina));
 	pag->nroMarco = primerMarcoLibre();
-	if(pag->nroMarco == -1){
-		log_error(logger, "No hay espacio para crear una pagina");
-		//acá hay que revisar como manejar el error
-	}
 	return pag;
 }
 
@@ -465,6 +456,7 @@ int main(void) {
  void* gossipProgramado(void* arg){
  	int retardo = config_get_int_value(configuracion, "RETARDO_GOSSIPING")*10000;
  	while(1){
+ 		log_info(logger, "Se realiza un gossip programado");
  		mGossip();
  		usleep(retardo);
  	}
@@ -565,7 +557,6 @@ int main(void) {
 		 char* tam = malloc(sizeof(char)*4);
 		 recvData(lfsSock, tam, sizeof(char)*3);
 		 int t = atoi(tam);
-		 printf("Tamaño value %d\n", t);
 		 value = malloc(t+sizeof(char));
 		 recvData(lfsSock, value, t);
 		 log_info(logger, "Se recibio el valor %s", value);
@@ -585,11 +576,9 @@ int main(void) {
 
 		 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 		 char* paqueteListo = empaquetar(1, datos);
-		 //BORRAR PRINTF
-		 printf("EL PAQUETE ES: %s\n", paqueteListo);
-		/* u_int16_t lfsSock = crearConexionLFS();
-
-		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		// u_int16_t lfsSock = crearConexionLFS();
+		 log_info(logger, "Paquete insert %s", datos);
+		 /*sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
@@ -607,7 +596,6 @@ int main(void) {
 
 	 if(nombreTabla!= NULL){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
-		 printf("Paquete describe %s \n", paqueteListo);
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 }
 	 else{
@@ -709,15 +697,15 @@ int main(void) {
  }
 
  void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
-
-	pthread_mutex_lock(&lockMem);
+	marco *marc = list_get(tablaMarcos, pag->nroMarco);
+	pthread_mutex_lock(&marc->lockMarco);
  	int offset = offsetMarco*(pag->nroMarco);
  	memcpy(memoria+offset, &timestamp, sizeof(long));
  	offset = offset + sizeof(long);
  	memcpy(memoria+offset, &key,sizeof(u_int16_t));
  	int offset2 = offset + sizeof(u_int16_t);
  	memcpy(memoria+offset2, value, strlen(value)+1);
- 	pthread_mutex_unlock(&lockMem);
+ 	pthread_mutex_unlock(&marc->lockMarco);
  	log_info(logger, "Se agrego el dato %s al marco %d", value, pag->nroMarco);
  }
 
@@ -725,14 +713,16 @@ int main(void) {
  int primerMarcoLibre(){
  	int posMarco = -1;
  	int i=0;
- 	marco *unMarco; //habria que hacer un malloc aca? //
-
+ 	marco *unMarco;
+ 	pthread_mutex_lock(&lockTablaMarcos);
  	if(memoriaLlena()){ //Si la memoria NO esta llena puede asignar un marco
 
  		while(i < cantMarcos){
  			unMarco = list_get(tablaMarcos,i);
  			if((unMarco->estaLibre) == 0){
- 				unMarco->estaLibre = 1; //Ya lo ocupo desde aca.
+ 				pthread_mutex_lock(&unMarco->lockMarco);
+ 				unMarco->estaLibre = 1;
+ 				pthread_mutex_unlock(&unMarco->lockMarco);
  				posMarco = unMarco->nroMarco;
  				break;
  			}
@@ -744,16 +734,21 @@ int main(void) {
  	else{
  		posMarco = LRU(); //te devuelve la posicion del marco a ocupar, liberando lo que habia antes
 		unMarco = list_get(tablaMarcos,posMarco);
- 		unMarco->estaLibre = 1;
+		pthread_mutex_lock(&unMarco->lockMarco);
+	 	unMarco->estaLibre = 1;
+	 	pthread_mutex_unlock(&unMarco->lockMarco);
  	}
-
+ 	pthread_mutex_unlock(&lockTablaMarcos);
  	return posMarco;
  }
 
 
  void liberarMarco(int nroMarcoALiberar){
  	marco* nuevo = list_get(tablaMarcos,nroMarcoALiberar);
+ 	pthread_mutex_lock(&nuevo->lockMarco);
  	nuevo->estaLibre = 0;
+ 	pthread_mutex_unlock(&nuevo->lockMarco);
+
  }
 
 
@@ -928,6 +923,7 @@ void paginaDestroy(pagina* pagParaDestruir){
 void segmentoDestroy(segmento* segParaDestruir){
    list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
 	free(segParaDestruir->nombreTabla);
+	pthread_mutex_destroy(&segParaDestruir->lockSegmento);
 	free(segParaDestruir);
 }
 
@@ -937,17 +933,16 @@ void eliminarMarcos(){
 }
 
 void marcoDestroy(marco *unMarco){
+	pthread_mutex_destroy(&unMarco->lockMarco);
 	free(unMarco);
 }
 
 void finalizar(){
-	log_info(logger, "Limpiando la memoria");
-	for(int i = 0; i<(tablaSegmentos->elements_count); i++){
-		segmento *seg = list_get(tablaSegmentos, i);
-		eliminarSegmento(seg);
-	}
-	free(tablaSegmentos);
+	list_destroy_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
+	pthread_mutex_destroy(&lockTablaSeg);
 	eliminarMarcos();
+	pthread_mutex_destroy(&lockTablaMarcos);
+
 
 	free(memoria);
 	config_destroy(configuracion);
@@ -973,7 +968,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	long timestampActual;
 
 	if(seg != NULL){
-
+		pthread_mutex_lock(&seg->lockSegmento);
 		pag = buscarPaginaConKey(seg, key);
 			if (pag == NULL){
 				pag = crearPagina();
@@ -986,15 +981,19 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				pag->modificado = 1;
 				eliminarDeListaUsos(pag->nroMarco);
 			}
-
+			pthread_mutex_unlock(&seg->lockSegmento);
 	}else{
+		pthread_mutex_lock(&lockTablaSeg);
 		seg = crearSegmento(nombreTabla);
+		pthread_mutex_lock(&seg->lockSegmento);
 		list_add(tablaSegmentos, seg);
+		pthread_mutex_unlock(&lockTablaSeg);
 		pagina *pag = crearPagina();
 		agregarPagina(seg,pag);
 		timestampActual = time(NULL);
 		agregarDato(timestampActual, key, valor, pag);
 		pag->modificado = 1;
+		pthread_mutex_unlock(&seg->lockSegmento);
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
 	return 0;
@@ -1015,7 +1014,6 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 
 char* mSelect(char* nombreTabla,u_int16_t key){
-	//BORRAR LOS PRINTFS
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
 	pagina* pNueva;
@@ -1039,7 +1037,9 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			valorPagNueva = selectLissandra(nombreTabla,key);
 			if(valorPagNueva != NULL){
 				pNueva->modificado = 0;
+				pthread_mutex_lock(&nuevo->lockSegmento);
 				agregarPagina(nuevo,pNueva);
+				pthread_mutex_unlock(&nuevo->lockSegmento);
 				agregarDato(time(NULL),key,valorPagNueva,pNueva);
 				agregarAListaUsos(pNueva->nroMarco);
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
@@ -1052,14 +1052,21 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		}
 	}
 	else{
+		pthread_mutex_lock(&lockTablaSeg);
 		nuevo = crearSegmento(nombreTabla);
+		list_add(tablaSegmentos, nuevo);
+		pthread_mutex_unlock(&lockTablaSeg);
 		pNueva = crearPagina();
 		valorPagNueva = selectLissandra(nombreTabla,key);
 		if(valorPagNueva !=NULL){
 			pNueva->modificado = 0;
+			pthread_mutex_lock(&nuevo->lockSegmento);
 			agregarPagina(nuevo,pNueva);
+			pthread_mutex_unlock(&nuevo->lockSegmento);
+
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
 			agregarAListaUsos(pNueva->nroMarco);
+
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 			return valorPagNueva;
 
@@ -1067,6 +1074,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		else{
 			return noExiste;
 		}
+
 	}
 
 
@@ -1096,8 +1104,9 @@ int mDrop(char* nombreTabla){
 	segmento* nuevo = buscarSegmento(nombreTabla);
 
 	if(nuevo != NULL){
-
+		pthread_mutex_lock(&lockTablaSeg);
 		eliminarSegmento(nuevo);
+		pthread_mutex_unlock(&lockTablaSeg);
 		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
 	}
@@ -1110,6 +1119,15 @@ int mDrop(char* nombreTabla){
 int mJournal(){
 	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos");
 	pthread_mutex_lock(&lockTablaSeg);
+	pthread_mutex_lock(&lockTablaMarcos);
+
+
+	for(int i = 0; i<tablaSegmentos->elements_count; i++){
+		segmento *seg = list_get(tablaSegmentos, i);
+		pthread_mutex_lock(&seg->lockSegmento);
+	}
+
+
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
 		char* nombreSegmento = malloc(sizeof(char)*100);
 		segmento *seg = list_get(tablaSegmentos, i);
@@ -1150,13 +1168,12 @@ int mJournal(){
 	if (listaVacia == 1){
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 		pthread_mutex_unlock(&lockTablaSeg);
+		pthread_mutex_unlock(&lockTablaMarcos);
+
 		return 0;
 	}
 	else{
 		log_error(logger, "Algo salió mal al vaciar la lista de segmentos");
-		pthread_mutex_unlock(&lockTablaSeg);
-		//voy a clavar este unlock acá por las dudas hasta que termine la sincro
-		//igual NO DEBERÍA entrar a este else
 		return 1;
 	}
 
