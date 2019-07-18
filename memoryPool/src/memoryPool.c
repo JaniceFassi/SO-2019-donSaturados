@@ -108,6 +108,7 @@ void* recibirOperacion(void * arg){
 					particiones = atoi(desempaquetado[2]);
 					tiempoCompactacion = atol(desempaquetado[3]);
 					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
+					printf("Rta antes de mandar %d", resp);
 					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					break;
 
@@ -192,6 +193,17 @@ int main(void) {
 		return 1;
 
 	}
+	mInsert("POSTRES", 1, "FLAN");
+	mInsert("POSTRES", 2, "HELADO");
+	mInsert("POSTRES", 3, "HELADO");
+	mInsert("PROFESIONES", 1, "DOCTOR");
+	mInsert("PROFESIONES", 2, "MAESTRO");
+	mInsert("PROFESIONES", 5, "CHEF");
+	mInsert("ANIMALES", 1, "GATO");
+	mInsert("ANIMALES", 2, "PERRO");
+	mInsert("ANIMALES", 3, "JIRAFA");
+
+
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 	int *fin;
@@ -249,8 +261,8 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
-	//maxValue = 20;
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -575,15 +587,16 @@ int main(void) {
 		 char* paqueteListo = empaquetar(1, datos);
 		 //BORRAR PRINTF
 		 printf("EL PAQUETE ES: %s\n", paqueteListo);
-		 u_int16_t lfsSock = crearConexionLFS();
+		/* u_int16_t lfsSock = crearConexionLFS();
 
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
 		 int rta = atoi(buffer);
-		 return buffer;
-
+		 return rta;
+*/
+		 return 0;
  }
 
  char* describeLissandra(char* nombreTabla){
@@ -626,6 +639,7 @@ int main(void) {
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+	 log_info(logger, "Se pidió un create de %s", paqueteListo);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 
@@ -1097,32 +1111,43 @@ int mJournal(){
 	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos");
 	pthread_mutex_lock(&lockTablaSeg);
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
-		char* nombreSegmento;
+		char* nombreSegmento = malloc(sizeof(char)*100);
 		segmento *seg = list_get(tablaSegmentos, i);
-		nombreSegmento = seg->nombreTabla;
+		strcpy(nombreSegmento, seg->nombreTabla);
 		t_list *paginasMod;
-		paginasMod = list_filter(seg->tablaPaginas, (void*)estaModificada);
-
-		for(int j=0; j<(paginasMod->elements_count); j++){
-			pagina *pag = list_get(paginasMod, j);
-			long timestamp = *(long*)conseguirTimestamp(pag);
-			u_int16_t key = *(u_int16_t*)conseguirKey(pag);
-			char* value = (char*)conseguirValor(pag);
-			int insertExitoso = insertLissandra(nombreSegmento, timestamp, key, value);
-			if(insertExitoso==0){
-				log_info(logger, "Se insertó correctamente el valor %s en la tabla %s", value, nombreSegmento);
-			}
-			else{
-				log_info(logger, "No se pudo insertar el valor %s en la tabla %s", value, nombreSegmento);
-			}
+		if(list_is_empty(seg->tablaPaginas)){
+			break;
 		}
+		if(list_any_satisfy(seg->tablaPaginas, (void*)estaModificada)){
+			paginasMod = list_filter(seg->tablaPaginas, (void*)estaModificada);
+
+			for(int j=0; j<(paginasMod->elements_count); j++){
+				pagina *pag = list_get(paginasMod, j);
+				long timestamp = *(long*)conseguirTimestamp(pag);
+				u_int16_t key = *(u_int16_t*)conseguirKey(pag);
+				char* value = (char*)conseguirValor(pag);
+				int insertExitoso = insertLissandra(nombreSegmento, timestamp, key, value);
+				log_info(logger, "Rta insert LFS %d", insertExitoso);
+				if(insertExitoso == 0){
+						log_info(logger, "Se insertó correctamente el valor %s en la tabla %s", value, nombreSegmento);
+					}
+				else{
+						log_info(logger, "No se pudo insertar el valor %s en la tabla %s", value, nombreSegmento);
+					}
+		}
+
+		log_info(logger, "Se borra la lista de modificados para el segmento %s", nombreSegmento);
 		list_destroy(paginasMod);
+		free(nombreSegmento);
+		}
+
+
 	}
 
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	int listaVacia = list_is_empty(tablaSegmentos);
-	if (listaVacia == 0){
+	if (listaVacia == 1){
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 		pthread_mutex_unlock(&lockTablaSeg);
 		return 0;
