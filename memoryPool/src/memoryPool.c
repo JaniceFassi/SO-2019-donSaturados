@@ -163,7 +163,7 @@ void* gestionarConexiones (void* arg){
 		u_int16_t cliente;
 		int salioBien = acceptConexion(server, &cliente, 0);
 		if(salioBien == 0){
-			log_info(logger, "Recibí una conexión de Kernel");
+			log_info(logger, "Recibí una conexión");
 			pthread_t atiendeCliente;
 			pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
 			pthread_detach(atiendeCliente);
@@ -216,7 +216,7 @@ int main(void) {
 		return 1;
 
 	}
-
+/*
 	mInsert("POSTRES", 1, "FLAN");
 	mInsert("POSTRES", 2, "HELADO");
 	mInsert("POSTRES", 3, "HELADO");
@@ -226,7 +226,7 @@ int main(void) {
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
-
+*/
 	pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 
@@ -238,8 +238,8 @@ int main(void) {
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 
-//	pthread_t gestorConexiones;
-//	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
+	pthread_t gestorConexiones;
+	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
 	//pthread_t journalTemporal;
@@ -295,9 +295,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	maxValue = 20;
+	//maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -624,16 +624,16 @@ int main(void) {
 
 		 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 		 char* paqueteListo = empaquetar(1, datos);
-		// u_int16_t lfsSock = crearConexionLFS();
+		u_int16_t lfsSock = crearConexionLFS();
 		 log_info(logger, "Paquete insert %s", datos);
-		 /*sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
 		 int rta = atoi(buffer);
 		 return rta;
-*/
-		 return 0;
+
+
  }
 
  char* describeLissandra(char* nombreTabla){
