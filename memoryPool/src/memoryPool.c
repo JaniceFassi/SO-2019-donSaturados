@@ -1270,32 +1270,31 @@ void desempaquetarTablaSecundaria(char* paquete){
 
 
 int pedirConfirmacion(char*ip,char* puerto){
-	u_int16_t kernelCliente;
-	char*buffer;
-	int conexion = linkClient(&kernelCliente,ip,puerto,1);
+	u_int16_t cliente;
+	char* codOpe = "6";
+	int conexion = linkClient(&cliente,ip,puerto,1);
 
 	if(conexion ==1){
 		return 0; // no esta activa la memoria
 	}
 
-	u_int16_t tamTabla;
-	recvData(kernelCliente,tamTabla,sizeof(u_int16_t));
-	recvData(kernelCliente,buffer,tamTabla); //averiguar esto //tendria que hacer otro recv con el tamanio del paquete no?
+	char* tamTabla;
+	char* rta=malloc(sizeof(char)*2);
+	sendData(cliente,codOpe,sizeof(char)*2);
+	recvData(cliente,rta,sizeof(char));
+	char* tamTabla=malloc(sizeof(char)*4);
+	recvData(cliente,tamTabla,sizeof(char)*3);
+	char* buffer=malloc(atoi(tamTabla)+1);
+	recvData(cliente,buffer,atoi(tamTabla));
 	desempaquetarTablaSecundaria(buffer);
 
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
 void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
-    char* paquete=empaquetarTablaActivas();
-    int tam = strlen(paquete);
-    u_int16_t server;
-    u_int16_t sockClient;
-    createServer(ipSeeds[0],puertoSeeds[0],&server);
-    listenForClients(server,100);
-    acceptConexion(server,&sockClient,1);
-    sendData(sockClient,paquete,tam);
-
+   char* paquete=empaquetarTablaActivas();
+   char* paqueteListo=empaquetar(0,paquete);
+   return paqueteListo;
 } //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
 int estaRepetido(char*ip){
@@ -1369,9 +1368,11 @@ void mGossip(){
 
     	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
+		log_info("Se confirmo la memoria con id: %i",id);
     		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
     		estaEnActivaElim(ipSeeds[i]);
+		log_info("La memoria con ip : %s no esta activa",ipSeeds[i]);
     	}
     	i++;
     }
