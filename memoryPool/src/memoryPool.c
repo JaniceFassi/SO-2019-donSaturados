@@ -285,11 +285,15 @@ int main(void) {
 }
 
  void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
+	 
+	 char** ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
+	 char** seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
+	 
 	 idMemoria = config_get_int_value(configuracion,"MEMORY_NUMBER"); //Unico de cada proceso
 	 tablaMemActivas = list_create();
 	 tablaMemActivasSecundaria = list_create();
-	 ipSeeds = config_get_array_value(configuracion,"IP_SEEDS");
-	 puertoSeeds = config_get_array_value(configuracion,"PUERTO_SEEDS");
+	 ipSeeds = string_split(ipsConfig,";");
+	 puertoSeeds = string_split(seedsConfig,";");
 	 agregarMemActiva(idMemoria,ipSeeds[0],puertoSeeds[0]);
  }
 
@@ -1264,7 +1268,7 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 	nueva->ip=ip;
 	nueva->puerto=puerto;
 	nueva->nroMem=id;
-	list_add(tablaMemActivas,nueva);
+	list_add(tablaMemActivas,nueva); //CREO que aca no hace falta guardar en el archivo de config
 	}
 
 	if(tablaMemActivasSecundaria){ //es decir, si se recibio una tablaSecundaria
@@ -1272,8 +1276,16 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 		int tam=list_size(tablaMemActivasSecundaria);
 		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
 		while(aux){
-			if(!estaRepetido(aux->ip))list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
-			//agregar a la config
+			if(!estaRepetido(aux->ip)){
+				list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
+				char* ipsAux = config_get_string_value(configuracion,"IP_SEEDS");
+				char* seedsAux = config_get_string_value(configuracion,"PUERTO_SEEDS");
+				string_append(&ipsAux,aux->ip);
+				string_append(&seedsAux,aux->puerto);
+				config_set_value(configuracion,"IP_SEEDS",ipsAux);
+				config_set_value(configuracion,"PUERTO_SEEDS",seedsAux);
+				//agrega a la config (se podria delegar)
+			}
 			i++;
 			aux=list_get(tablaMemActivasSecundaria,i);
 		}
@@ -1298,9 +1310,12 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
 }
 
 void mGossip(){
-	int i=1;
-	ipSeeds = config_get_array_value(configuracion,"IP_SEEDS");
-    puertoSeeds = config_get_array_value(configuracion,"PUERTO_SEEDS");
+	
+    int i=1;
+    char** ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
+    char** seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
+    ipSeeds = string_split(ipsConfig,";");
+    puertoSeeds = string_split(seedsConfig,";");
 
     while(ipSeeds[i]){
 
