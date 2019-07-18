@@ -199,12 +199,11 @@ void modificarConfig(){
 	log_info(logger, "Se modificó la config");
 	config_destroy(configInotify);
 
-<<<<<<< HEAD
+
 
 
 }
-=======
->>>>>>> 28f2b0b1222d982be2866c70e53aea7163a361c6
+
 int main(void) {
 
 
@@ -215,7 +214,7 @@ int main(void) {
 		return 1;
 
 	}
-	/*
+
 	mInsert("POSTRES", 1, "FLAN");
 	mInsert("POSTRES", 2, "HELADO");
 	mInsert("POSTRES", 3, "HELADO");
@@ -225,14 +224,12 @@ int main(void) {
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
-<<<<<<< HEAD
 
 	pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
-=======
-	*/
 
->>>>>>> 28f2b0b1222d982be2866c70e53aea7163a361c6
+
+
 	//pthread_t gossipTemporal;
 	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 	int *fin;
