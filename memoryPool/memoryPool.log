@@ -99,3 +99,35 @@
 [INFO] 15:07:34:458 memoryPool/(4121:4121): Se agrego el dato JIRAFA al marco 8
 [INFO] 15:07:34:460 memoryPool/(4121:4121): Se inserto al segmento ANIMALES el valor JIRAFA
 [INFO] 15:07:40:793 memoryPool/(4121:4129): Se modificó la config
+[INFO] 15:14:28:367 memoryPool/(4459:4459): Se inicializo la memoria con tamanio 2048
+[INFO] 15:14:28:368 memoryPool/(4459:4459): Tamanio máximo recibido de FS: 20
+[INFO] 15:14:28:368 memoryPool/(4459:4459): Se creo el segmento POSTRES
+[INFO] 15:14:28:368 memoryPool/(4459:4459): Se agrego una página al segmento POSTRES
+[INFO] 15:14:28:368 memoryPool/(4459:4459): Se agrego el dato FLAN al marco 0
+[INFO] 15:14:28:368 memoryPool/(4459:4459): Se inserto al segmento POSTRES el valor FLAN
+[INFO] 15:14:28:368 memoryPool/(4459:4459): Se agrego una página al segmento POSTRES
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se agrego el dato HELADO al marco 1
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se agrego una página al segmento POSTRES
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se agrego el dato HELADO al marco 2
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se inserto al segmento POSTRES el valor HELADO
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se creo el segmento PROFESIONES
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se agrego una página al segmento PROFESIONES
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se agrego el dato DOCTOR al marco 3
+[INFO] 15:14:28:369 memoryPool/(4459:4459): Se inserto al segmento PROFESIONES el valor DOCTOR
+[INFO] 15:14:28:370 memoryPool/(4459:4459): Se agrego una página al segmento PROFESIONES
+[INFO] 15:14:28:370 memoryPool/(4459:4459): Se agrego el dato MAESTRO al marco 4
+[INFO] 15:14:28:370 memoryPool/(4459:4459): Se inserto al segmento PROFESIONES el valor MAESTRO
+[INFO] 15:14:28:370 memoryPool/(4459:4459): Se agrego una página al segmento PROFESIONES
+[INFO] 15:14:28:374 memoryPool/(4459:4459): Se agrego el dato CHEF al marco 5
+[INFO] 15:14:28:374 memoryPool/(4459:4459): Se inserto al segmento PROFESIONES el valor CHEF
+[INFO] 15:14:28:374 memoryPool/(4459:4459): Se creo el segmento ANIMALES
+[INFO] 15:14:28:374 memoryPool/(4459:4459): Se agrego una página al segmento ANIMALES
+[INFO] 15:14:28:374 memoryPool/(4459:4459): Se agrego el dato GATO al marco 6
+[INFO] 15:14:28:375 memoryPool/(4459:4459): Se inserto al segmento ANIMALES el valor GATO
+[INFO] 15:14:28:375 memoryPool/(4459:4459): Se agrego una página al segmento ANIMALES
+[INFO] 15:14:28:379 memoryPool/(4459:4459): Se agrego el dato PERRO al marco 7
+[INFO] 15:14:28:382 memoryPool/(4459:4459): Se inserto al segmento ANIMALES el valor PERRO
+[INFO] 15:14:28:382 memoryPool/(4459:4459): Se agrego una página al segmento ANIMALES
+[INFO] 15:14:28:382 memoryPool/(4459:4459): Se agrego el dato JIRAFA al marco 8
+[INFO] 15:14:28:382 memoryPool/(4459:4459): Se inserto al segmento ANIMALES el valor JIRAFA

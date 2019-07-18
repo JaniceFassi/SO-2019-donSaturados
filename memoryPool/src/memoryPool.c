@@ -128,8 +128,9 @@ void* recibirOperacion(void * arg){
 					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					break;
 
-				case 6: //GOSSIP
-					mGossip();
+				case 6: //DEVOLVER TABLA DE ACTIVOS
+					char*tabla =confirmarActivo();
+					sendData(cli, tabla, strlen(tabla)+1);
 					break;
 
 
@@ -153,7 +154,7 @@ void* gestionarConexiones (void* arg){
 	}
 
 	log_info(logger, "Servidor creado exitosamente");
-	listen(server,100);
+	listen(server,100000000);
 	log_info(logger, "Servidor escuchando\n");
 
 	while(1){
