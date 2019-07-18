@@ -1288,6 +1288,7 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 				string_append(&seedsAux,nuevoPuerto);
 				config_set_value(configuracion,"IP_SEEDS",ipsAux);
 				config_set_value(configuracion,"PUERTO_SEEDS",seedsAux);
+				config_save(configuracion);
 				//agrega a la config (se podria delegar)
 			}
 			i++;
@@ -1316,8 +1317,8 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
 void mGossip(){
 	
     int i=1;
-    char** ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
-    char** seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
+    char* ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
+    char* seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
     ipSeeds = string_split(ipsConfig,";");
     puertoSeeds = string_split(seedsConfig,";");
 
