@@ -54,6 +54,7 @@ void* recibirOperacion(void * arg){
 	long tiempoCompactacion;
 	int resp;
 	char* rta;
+	char* tabla;
 
 
 	switch (operacion) {
@@ -129,7 +130,7 @@ void* recibirOperacion(void * arg){
 					break;
 
 				case 6: //DEVOLVER TABLA DE ACTIVOS
-					char*tabla =confirmarActivo();
+					tabla =confirmarActivo();
 					sendData(cli, tabla, strlen(tabla)+1);
 					break;
 
@@ -1233,13 +1234,6 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto){
 	return paquetin;
 }
 
-void enviarTablaAlKernel(u_int16_t kernelClient){
-	char* paquete = empaquetarTablaActivas();
-	u_int16_t tam = strlen(paquete);
-	sendData(kernelClient,tam,sizeof(u_int16_t));
-	sendData(kernelClient,paquete,tam);
-
-} //cuando el kernel pide empaqueta y manda la tablaMemActivas //METER EN API
 
 char* empaquetarTablaActivas(){
 	int i=0;
@@ -1278,7 +1272,6 @@ int pedirConfirmacion(char*ip,char* puerto){
 		return 0; // no esta activa la memoria
 	}
 
-	char* tamTabla;
 	char* rta=malloc(sizeof(char)*2);
 	sendData(cliente,codOpe,sizeof(char)*2);
 	recvData(cliente,rta,sizeof(char));
@@ -1291,7 +1284,7 @@ int pedirConfirmacion(char*ip,char* puerto){
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
-void confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
+char* confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
    char* paquete=empaquetarTablaActivas();
    char* paqueteListo=empaquetar(0,paquete);
    return paqueteListo;
