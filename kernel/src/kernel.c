@@ -31,10 +31,10 @@ int main(void) {
 	list_add(criterioEC,m1);
 	list_add(criterioSHC,m1);
 	//pruebas();
-	//run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
-	config_destroy(config);
+	//config_destroy(config);
 	pthread_t hilos[limiteProcesamiento];
 	int i=0;
 	while(i<limiteProcesamiento){
@@ -43,9 +43,9 @@ int main(void) {
 	}
 	// aca deberia poder conocer el resto de las memorias
 	pthread_t hiloMetricas;
-	pthread_create(&hiloMetricas, NULL, (void*)metricasAutomaticas, NULL);
+	pthread_create(&hiloMetricas, NULL, metricasAutomaticas, NULL);
 	pthread_t hiloDescribe;
-	pthread_create(&hiloDescribe, NULL, (void*)describeGlobal, NULL);
+	pthread_create(&hiloDescribe, NULL, describeGlobal, NULL);
 	pthread_t hiloGossip;
 	pthread_create(&hiloGossip, NULL, (void*)gossiping, NULL);
 	pthread_t hiloInotify;
@@ -320,7 +320,7 @@ int mySelect(char * table, char *key){
 
 	int c=0;
 	int sock=-1;
-	while(sock==-1 && c<5){
+	while(sock==-1 && c<15){
 		sem_wait(&semMemorias);
 		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency, key);
 		sem_post(&semMemorias);
@@ -913,7 +913,7 @@ int metrics(int modo){
 	return 0;
 }
 
-void metricasAutomaticas(){
+void *metricasAutomaticas(){
 	while(terminaHilo==0){
 		sleep(30);
 		metrics(0);
@@ -925,6 +925,7 @@ void metricasAutomaticas(){
 		metrica.tiempoS=0;
 		sem_post(&semMetricas);
 	}
+	return NULL;
 }
 
 bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio){
@@ -966,11 +967,11 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 	bool buscar(struct metadataTabla *mt){
 		return strcmp(mt->table,m->table)!=0;
 	}
-	sem_wait(&semMetadata);
+	//sem_wait(&semMetadata);
 	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
 	log_info(loggerConsola,"actualizarMtadataFIN");
 	list_add(listaMetadata,m);
-	sem_post(&semMetadata);
+	//sem_post(&semMetadata);
 	log_info(loggerConsola,"consistency %s",m->consistency);
 	log_info(loggerConsola,"table %s",m->table);
 	log_info(loggerConsola," compTime %l",m->compTime);
@@ -1026,7 +1027,7 @@ struct memoria *verMemoriaLibreSHC(int key){
 
 struct memoria *verMemoriaLibre(t_list *lista){
 	int size= list_size(lista);
-	int i= rand()%(size+1);
+	int i= rand()%(size);			//Se le saco el +1
 	return list_get(lista,i);
 }
 
@@ -1037,12 +1038,13 @@ struct metadataTabla * buscarMetadataTabla(char* table){
 	return list_find(listaMetadata,(void*) findTabla);
 }
 
-void describeGlobal(){
+void *describeGlobal(){
 	while(terminaHilo==0){
 		usleep(retardoMetadata*1000);
 		describe(NULL);
 		log_info(logger,"Describe global automático");
 	}
+	return NULL;
 }
 
 void *gossiping(){
