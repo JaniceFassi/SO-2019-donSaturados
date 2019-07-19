@@ -85,21 +85,12 @@ void* recibirOperacion(void * arg){
 					log_info(logger, "Rta insert %d\n", resp);
 					char*buffer=malloc(2);
 					if(resp == 2){
-						recvData(cli,buffer,1);
-						buffer[1]='\0';
-						if(atoi(buffer)==5){
-							int r = mJournal();
-							sendData(cli,string_itoa(r),2);
-							char *msjInsert=malloc(atoi(tamanioPaq) +1);
-							recvData(cli,msjInsert,atoi(tamanioPaq));
-							char ** split= string_n_split(msjInsert,3,";");
-							char *table=split[0];
-							char *keyNuevo=split[1];
-							char *valueNuevo=split[2];
-							resp = mInsert(table, atoi(keyNuevo), valueNuevo);
-							sendData(cli, string_itoa(resp), sizeof(char)*2);
+						mJournal();
+						resp = mInsert(nombreTabla, key, value);
+						sendData(cli, string_itoa(resp), sizeof(char)*2);
+						log_info(logger, "Rta insert después de un journal %d\n", resp);
+
 						}
-					}
 					break;
 
 				case 2: //CREATE
@@ -132,6 +123,11 @@ void* recibirOperacion(void * arg){
 				case 6: //DEVOLVER TABLA DE ACTIVOS
 					tabla =confirmarActivo();
 					sendData(cli, tabla, strlen(tabla)+1);
+					char*tamanio = malloc(sizeof(4));
+					recvData(cli,tamanio,3);
+					char*bufferTabla=malloc(atoi(tamanio)+1);
+					recvData(cli,bufferTabla,atoi(tamanio));
+					desempaquetarTablaSecundaria(bufferTabla);
 					break;
 
 
@@ -247,10 +243,10 @@ int main(void) {
 
 
 	pthread_join(hiloConsola, (void*)&fin);
-/*	if(fin == 0){
-		pthread_kill(gestorConexiones, 0);
-		//pthread_kill(journalTemporal, 0);
-		//pthread_kill(gossipTemporal, 0);
+	if(fin == 0){
+		pthread_cancel(gestorConexiones);
+		//pthread_cancel(journalTemporal);
+		//pthread_cancel(gossipTemporal);
 		log_info(logger, "Se apagará la memoria de forma correcta");
 
 	}
@@ -260,7 +256,7 @@ int main(void) {
 	//pthread_join(gossipTemporal, NULL);
 
 	}
-*/
+
 	finalizar();
 	return EXIT_SUCCESS;
 }
@@ -295,9 +291,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	//maxValue = 20;
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -409,7 +405,7 @@ int main(void) {
 
  void* consola(void* arg){
 
-	int* fin = malloc(sizeof(int));
+	int fin = (int*) arg;
 	char* linea;
 	while(1){
 		linea = readline(">");
@@ -480,7 +476,7 @@ int main(void) {
 					mGossip();
 		 		}
 
- 		if(!strncmp(linea,"exit",5)){
+ 		if(!strncmp(linea,"EXIT",5)){
  			free(linea);
  			fin = 0;
  			break;
@@ -1291,6 +1287,9 @@ int pedirConfirmacion(char*ip,char* puerto){
 	char* buffer=malloc(atoi(tamTabla)+1);
 	recvData(cliente,buffer,atoi(tamTabla));
 	desempaquetarTablaSecundaria(buffer);
+	
+	char*paquete = empaquetarTablaActivas();
+	sendData(cliente,paquete,strlen(paquete)+1);
 
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
@@ -1372,11 +1371,11 @@ void mGossip(){
 
     	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
-		log_info("Se confirmo la memoria con id: %i",id);
+		log_info(logger, "Se confirmo la memoria con id: %i",id);
     		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
     		estaEnActivaElim(ipSeeds[i]);
-		log_info("La memoria con ip : %s no esta activa",ipSeeds[i]);
+		log_info(logger, "La memoria con ip : %s no esta activa",ipSeeds[i]);
     	}
     	i++;
     }
