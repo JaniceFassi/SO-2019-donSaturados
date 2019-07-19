@@ -419,7 +419,7 @@ int main(void) {
  			char **subStrings= string_n_split(linea,3," ");
  			u_int16_t k=atoi(subStrings[2]);
  			mSelect(subStrings[1],k);
- 			//liberarSubstrings(subStrings);
+ 			liberarSubstrings(subStrings);
  		}
 
  	 	if(!strncmp(linea,"INSERT ",7)){//INSERT "NOMBRE" 5/ "VALUE"
@@ -430,8 +430,8 @@ int main(void) {
  	 		mInsert(split[1],key,split[3]);
 
 
- 	 		//liberarSubstrings(cadena);
- 	 		//liberarSubstrings(split);
+ 	 		liberarSubstrings(cadena);
+ 	 		liberarSubstrings(split);
  	 	}
 
  	 	if(!strncmp(linea,"CREATE ",7)){
@@ -440,13 +440,13 @@ int main(void) {
  			long timeCompaction=atol(subStrings[4]);
  			mCreate(subStrings[1],subStrings[2],particiones,timeCompaction);
  			log_info(logger,"Se hizo CREATE de la tabla: %s.",subStrings[1]);
- 			//liberarSubstrings(subStrings);
+ 			liberarSubstrings(subStrings);
  		}
 
  		if(!strncmp(linea,"DESCRIBE",8)){
  			char **subStrings= string_n_split(linea,2," ");
  			mDescribe(subStrings[1]);
- 			//liberarSubstrings(subStrings);
+ 			liberarSubstrings(subStrings);
  		}
 
  		if(!strncmp(linea,"DROP ",5)){
@@ -457,9 +457,9 @@ int main(void) {
  			mDrop(subStrings[1]);
  			log_info(logger,"Se envio el drop a LFS y se borro de memoria la tabla %s");
 
- 			//free(subStrings[0]);
- 			//free(subStrings[1]);
- 			//free(subStrings);
+ 			free(subStrings[0]);
+ 			free(subStrings[1]);
+ 			free(subStrings);
  		}
 
  		if(!strncmp(linea,"JOURNAL",6)){
@@ -986,6 +986,15 @@ void eliminarMarcos(){
 void marcoDestroy(marco *unMarco){
 	pthread_mutex_destroy(&unMarco->lockMarco);
 	free(unMarco);
+}
+
+void liberarSubstrings(char **liberar){
+	int i=1;
+	while(liberar[i-1]!=NULL){
+		free(liberar[i-1]);
+		i++;
+	}
+	free(liberar);
 }
 
 void finalizar(){
