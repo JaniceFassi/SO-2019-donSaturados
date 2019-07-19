@@ -123,6 +123,11 @@ void* recibirOperacion(void * arg){
 				case 6: //DEVOLVER TABLA DE ACTIVOS
 					tabla =confirmarActivo();
 					sendData(cli, tabla, strlen(tabla)+1);
+					char*tamanio = malloc(sizeof(4));
+					recvData(cli,tamanio,3);
+					char*bufferTabla=malloc(atoi(tamanio)+1);
+					recvData(cli,bufferTabla,atoi(tamanio));
+					desempaquetarTablaSecundaria(bufferTabla);
 					break;
 
 
@@ -1282,6 +1287,9 @@ int pedirConfirmacion(char*ip,char* puerto){
 	char* buffer=malloc(atoi(tamTabla)+1);
 	recvData(cliente,buffer,atoi(tamTabla));
 	desempaquetarTablaSecundaria(buffer);
+	
+	char*paquete = empaquetarTablaActivas();
+	sendData(cliente,paquete,strlen(paquete)+1);
 
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
