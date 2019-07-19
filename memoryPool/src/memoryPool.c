@@ -247,10 +247,10 @@ int main(void) {
 
 
 	pthread_join(hiloConsola, (void*)&fin);
-/*	if(fin == 0){
-		pthread_kill(gestorConexiones, 0);
-		//pthread_kill(journalTemporal, 0);
-		//pthread_kill(gossipTemporal, 0);
+	if(fin == 0){
+		pthread_cancel(gestorConexiones);
+		//pthread_cancel(journalTemporal);
+		//pthread_cancel(gossipTemporal);
 		log_info(logger, "Se apagará la memoria de forma correcta");
 
 	}
@@ -260,7 +260,7 @@ int main(void) {
 	//pthread_join(gossipTemporal, NULL);
 
 	}
-*/
+
 	finalizar();
 	return EXIT_SUCCESS;
 }
@@ -409,7 +409,7 @@ int main(void) {
 
  void* consola(void* arg){
 
-	int* fin = malloc(sizeof(int));
+	int fin = (int*) arg;
 	char* linea;
 	while(1){
 		linea = readline(">");
@@ -480,7 +480,7 @@ int main(void) {
 					mGossip();
 		 		}
 
- 		if(!strncmp(linea,"exit",5)){
+ 		if(!strncmp(linea,"EXIT",5)){
  			free(linea);
  			fin = 0;
  			break;
@@ -1372,11 +1372,11 @@ void mGossip(){
 
     	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
-		log_info("Se confirmo la memoria con id: %i",id);
+		log_info(logger, "Se confirmo la memoria con id: %i",id);
     		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
     		estaEnActivaElim(ipSeeds[i]);
-		log_info("La memoria con ip : %s no esta activa",ipSeeds[i]);
+		log_info(logger, "La memoria con ip : %s no esta activa",ipSeeds[i]);
     	}
     	i++;
     }
