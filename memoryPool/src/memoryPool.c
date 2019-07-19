@@ -149,9 +149,9 @@ void* gestionarConexiones (void* arg){
 
 	int servidorCreado = createServer(ipServer, puertoServer, &server);
 
-	while(servidorCreado!=0){
-		log_error(logger, "No se pudo crear el servidor, se volverá a intentar");
-		servidorCreado = createServer(ipServer, puertoServer, &server);
+	if(servidorCreado!=0){
+		log_error(logger, "No se pudo crear el servidor");
+		return NULL;
 	}
 
 	log_info(logger, "Servidor creado exitosamente");
@@ -732,7 +732,7 @@ int main(void) {
 	 int total=0;
 	 int tam =list_size(tablaSegmentos);
 	 if(tam==0)return 0;
-	 segmento* aux = malloc(sizeof(segmento));
+	 segmento* aux;
 
 	 if(!memoriaLlena()){
 		 for(i;i<tam;i++){
@@ -743,7 +743,6 @@ int main(void) {
 	 }else{
 		 return 0;
 	 }
-	 free(aux);
 	 return total == tam;
  }
 
