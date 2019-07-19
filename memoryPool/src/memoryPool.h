@@ -96,6 +96,7 @@ void mGossip();
 void finalizar();
 void eliminarMarcos();
 void marcoDestroy(marco *unMarco);
+void liberarSubstrings(char **liberar);
 
 //AUXILIARES DE ARRANQUE
 int inicializar();
