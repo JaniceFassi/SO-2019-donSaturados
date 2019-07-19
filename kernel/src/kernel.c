@@ -26,6 +26,8 @@ int main(void) {
 	m1->id=0;
 	m1->ip=config_get_string_value(config,"IP_MEMORIA");
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
+	m1->cantI=0;
+	m1->cantS=0;
 	list_add(memorias,m1);
 	list_add(criterioSC,m1);
 	list_add(criterioEC,m1);
@@ -33,6 +35,7 @@ int main(void) {
 	//pruebas();
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	//config_destroy(config);
 	pthread_t hilos[limiteProcesamiento];
@@ -341,6 +344,7 @@ int mySelect(char * table, char *key){
 	char * resultado=malloc(2);
 	recvData(sock,resultado,1);
 	resultado[1]='\0';
+	log_info(logger,"%i",atoi(resultado));
 	if(atoi(resultado)==0){
 		char *tamanioRta=malloc(4);
 		recvData(sock,tamanioRta,3);
@@ -950,10 +954,10 @@ void limpiarMetadata(){
 		free(mt->table);
 		free(mt);
 	}
-	sem_wait(&semMetadata);
+//	sem_wait(&semMetadata);
 	list_destroy_and_destroy_elements(listaMetadata,(void*)destruirMet);
 	listaMetadata=list_create();
-	sem_post(&semMetadata);
+//	sem_post(&semMetadata);
 }
 
 void actualizarMetadataTabla(struct metadataTabla *m){
@@ -1049,7 +1053,7 @@ void *describeGlobal(){
 
 void *gossiping(){
 	while(1){
-		sleep(30);// NO TENGO DE DONDE SACAR ESTE DATO
+		sleep(30000);// NO TENGO DE DONDE SACAR ESTE DATO
 		int sock=-1;
 		struct memoria *m ;
 		while(sock==-1){
