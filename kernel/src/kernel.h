@@ -107,10 +107,10 @@ struct metadataTabla * buscarMetadataTabla(char* table);
 void destruir();
 void moverAcola(t_queue * a,t_queue *b);
 int metrics(int modo);
-void describeGlobal();
+void *describeGlobal();
 void limpiarMetadata();
 void actualizarMetadataTabla(struct metadataTabla *m);
-void metricasAutomaticas();
+void *metricasAutomaticas();
 void * gossiping();
 void * inotifyKernel();
 
