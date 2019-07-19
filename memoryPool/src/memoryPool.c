@@ -14,7 +14,7 @@
 
 void* recibirOperacion(void * arg){
 	int cli = *(int*) arg;
-	log_info(logger,"sock: %i",cli);
+	log_info(logger,"sock: %d",cli);
 
 	char *buffer = malloc(sizeof(char)*2);
 	int b = recvData(cli, buffer, sizeof(char));
@@ -291,9 +291,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	maxValue = 20;
+	//maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -1076,7 +1076,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 	char* valor;
 	char* noExiste = malloc(sizeof(char));
 	strcpy(noExiste, "3");
-
+	log_info(logger, "Se pidio un select de la tabla %s key %d", nombreTabla, key);
 	if(nuevo!= NULL){
 
 		pNueva = buscarPaginaConKey(nuevo,key);
