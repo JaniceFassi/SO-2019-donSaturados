@@ -459,14 +459,20 @@ int insert(char* table ,char* key ,char* value){
 		if(atoi(resultado)==2){
 			log_info(logger,"journal");
 			sendData(sock,"5",2);//journal
-			recvData(sock,resultado,1);
-			if(atoi(resultado)!=0){
+			char *res= malloc(2);
+			recvData(sock,res,1);
+			res[1]='\0';
+			log_info(logger,"resultado del journal: %i",atoi(res));
+			if(atoi(res)!=0){
 				close(sock);
 				return -1;
 			}
+			char *resI= malloc(2);
 			sendData(sock,linea,strlen(linea)+1);
-			recvData(sock,resultado,1);
-			if(atoi(resultado)!=0){
+			recvData(sock,resI,1);
+			resI[1]='\0';
+			log_info(logger,"resultado del insert despues del journal: %i",atoi(resI));
+			if(atoi(resI)!=0){
 				close(sock);
 				return -1;
 			}
@@ -659,6 +665,7 @@ int describe(char *table){
 //	recvData(sock,tamanioRespuesta,4);
 	char *cantTablas= malloc(3);
 	recvData(sock,cantTablas,2);
+	cantTablas[2]='\0';
 	int tr= atoi(cantTablas);
 	int i=0;
 
@@ -667,6 +674,7 @@ int describe(char *table){
 	sem_wait(&semMetadata);
 	if(tr>1){
 		limpiarMetadata();
+
 		while(i<tr){
 			char *t=malloc(4);
 			recvData(sock,t,3);
@@ -962,6 +970,7 @@ void limpiarMetadata(){
 
 void actualizarMetadataTabla(struct metadataTabla *m){
 	// agregar semaforo
+
 	log_info(loggerConsola,"actualizarMtadata");
 	void destruirMet(struct metadataTabla *mt){
 		free(mt->consistency);
@@ -969,10 +978,21 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 		free(mt);
 	}
 	bool buscar(struct metadataTabla *mt){
-		return strcmp(mt->table,m->table)!=0;
+		return strcmp(mt->table,m->table)==0;
 	}
+	bool buscarANY(struct metadataTabla *mt){
+			return strcmp(mt->table,m->table)==0;
+		}
 	//sem_wait(&semMetadata);
-	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
+	if(list_any_satisfy(listaMetadata,(void*)buscarANY)){
+		list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
+	/*	struct metadataTabla aux = list_find(listaMetadata,(void*)buscar);
+
+		strcpy(aux->compTime, m->compTime);
+		aux->compTime= m->compTime;
+		aux->numPart=m->numPart;
+		aux->table=*/
+	}
 	log_info(loggerConsola,"actualizarMtadataFIN");
 	list_add(listaMetadata,m);
 	//sem_post(&semMetadata);
