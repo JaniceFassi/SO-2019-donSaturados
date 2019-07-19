@@ -62,3 +62,159 @@
 [INFO] 19:18:58:450 memoryPool/(11279:11295): sock: -1760034807
 [INFO] 19:18:58:451 memoryPool/(11279:11295): Bytes recibidos: 1
 [INFO] 19:18:58:451 memoryPool/(11279:11295): Operacion 6
+[INFO] 16:21:19:898 memoryPool/(4322:4322): Se inicializo la memoria con tamanio 2048
+[INFO] 16:25:47:812 memoryPool/(4692:4692): Se inicializo la memoria con tamanio 2048
+[INFO] 16:27:15:904 memoryPool/(4863:4863): Se inicializo la memoria con tamanio 2048
+[ERROR] 16:27:15:929 memoryPool/(4863:4863): No se pudo establecer una conexión con LFS, abortando
+[ERROR] 16:27:15:930 memoryPool/(4863:4863): No se pudo recibir el handshake con LFS, abortando ejecución
+
+[ERROR] 16:27:15:936 memoryPool/(4863:4863): Abortando ejecución
+[INFO] 16:28:08:287 memoryPool/(5266:5266): Se inicializo la memoria con tamanio 2048
+[INFO] 16:28:08:308 memoryPool/(5266:5266): Tamanio máximo recibido de FS: 60
+[INFO] 16:28:08:312 memoryPool/(5266:5274): Servidor creado exitosamente
+[INFO] 16:28:08:312 memoryPool/(5266:5274): Servidor escuchando
+
+[INFO] 16:39:41:139 memoryPool/(5494:5494): Se inicializo la memoria con tamanio 2048
+[INFO] 16:39:41:248 memoryPool/(5494:5494): Tamanio máximo recibido de FS: 60
+[INFO] 16:39:41:252 memoryPool/(5494:5502): Servidor creado exitosamente
+[INFO] 16:39:41:252 memoryPool/(5494:5502): Servidor escuchando
+
+[INFO] 16:41:07:736 memoryPool/(5608:5608): Se inicializo la memoria con tamanio 2048
+[INFO] 16:41:07:765 memoryPool/(5608:5608): Tamanio máximo recibido de FS: 60
+[INFO] 16:41:07:768 memoryPool/(5608:5616): Servidor creado exitosamente
+[INFO] 16:41:07:768 memoryPool/(5608:5616): Servidor escuchando
+
+[INFO] 16:41:52:710 memoryPool/(5660:5660): Se inicializo la memoria con tamanio 2048
+[INFO] 16:41:52:750 memoryPool/(5660:5660): Tamanio máximo recibido de FS: 60
+[INFO] 16:41:52:752 memoryPool/(5660:5668): Servidor creado exitosamente
+[INFO] 16:41:52:752 memoryPool/(5660:5668): Servidor escuchando
+
+[INFO] 16:42:25:733 memoryPool/(5718:5718): Se inicializo la memoria con tamanio 2048
+[INFO] 16:42:25:901 memoryPool/(5718:5718): Tamanio máximo recibido de FS: 60
+[INFO] 16:42:25:902 memoryPool/(5718:5728): Servidor creado exitosamente
+[INFO] 16:42:25:902 memoryPool/(5718:5728): Servidor escuchando
+
+[INFO] 16:42:56:31 memoryPool/(5766:5766): Se inicializo la memoria con tamanio 2048
+[INFO] 16:42:56:116 memoryPool/(5766:5766): Tamanio máximo recibido de FS: 60
+[ERROR] 16:42:56:118 memoryPool/(5766:5774): No se pudo crear el servidor
+[INFO] 16:43:11:710 memoryPool/(5790:5790): Se inicializo la memoria con tamanio 2048
+[INFO] 16:43:11:746 memoryPool/(5790:5790): Tamanio máximo recibido de FS: 60
+[INFO] 16:43:11:746 memoryPool/(5790:5798): Servidor creado exitosamente
+[INFO] 16:43:11:746 memoryPool/(5790:5798): Servidor escuchando
+
+[INFO] 16:43:21:782 memoryPool/(5805:5805): Se inicializo la memoria con tamanio 2048
+[INFO] 16:43:21:811 memoryPool/(5805:5805): Tamanio máximo recibido de FS: 60
+[INFO] 16:43:21:812 memoryPool/(5805:5813): Servidor creado exitosamente
+[INFO] 16:43:21:812 memoryPool/(5805:5813): Servidor escuchando
+
+[INFO] 16:43:38:309 memoryPool/(5861:5861): Se inicializo la memoria con tamanio 2048
+[INFO] 16:43:38:411 memoryPool/(5861:5861): Tamanio máximo recibido de FS: 60
+[INFO] 16:43:38:412 memoryPool/(5861:5868): Servidor creado exitosamente
+[INFO] 16:43:38:412 memoryPool/(5861:5868): Servidor escuchando
+
+[INFO] 16:44:26:305 memoryPool/(5933:5933): Se inicializo la memoria con tamanio 2048
+[INFO] 16:44:26:343 memoryPool/(5933:5933): Tamanio máximo recibido de FS: 60
+[INFO] 16:44:26:352 memoryPool/(5933:5941): Servidor creado exitosamente
+[INFO] 16:44:26:352 memoryPool/(5933:5941): Servidor escuchando
+
+[INFO] 16:44:28:986 memoryPool/(5933:5933): Se apagará la memoria de forma correcta
+[INFO] 16:44:28:986 memoryPool/(5933:5933): Memoria limpia, adiós mundo cruel
+[INFO] 16:46:46:733 memoryPool/(6034:6034): Se inicializo la memoria con tamanio 2048
+[INFO] 16:46:46:842 memoryPool/(6034:6034): Tamanio máximo recibido de FS: 60
+[INFO] 16:46:46:845 memoryPool/(6034:6042): Servidor creado exitosamente
+[INFO] 16:46:46:848 memoryPool/(6034:6042): Servidor escuchando
+
+[INFO] 16:46:49:662 memoryPool/(6034:6034): Se apagará la memoria de forma correcta
+[INFO] 16:46:49:662 memoryPool/(6034:6034): Memoria limpia, adiós mundo cruel
+[INFO] 16:46:56:768 memoryPool/(6053:6053): Se inicializo la memoria con tamanio 2048
+[INFO] 16:46:56:863 memoryPool/(6053:6053): Tamanio máximo recibido de FS: 60
+[INFO] 16:46:56:863 memoryPool/(6053:6061): Servidor creado exitosamente
+[INFO] 16:46:56:864 memoryPool/(6053:6061): Servidor escuchando
+
+[INFO] 16:47:03:925 memoryPool/(6053:6061): Recibí una conexión
+[INFO] 16:47:03:925 memoryPool/(6053:6062): sock: -1759444986
+[INFO] 16:47:03:927 memoryPool/(6053:6062): Bytes recibidos: 1
+[INFO] 16:47:03:927 memoryPool/(6053:6062): Operacion 6
+[INFO] 16:47:41:262 memoryPool/(6098:6098): Se inicializo la memoria con tamanio 2048
+[INFO] 16:47:41:302 memoryPool/(6098:6098): Tamanio máximo recibido de FS: 60
+[ERROR] 16:47:41:304 memoryPool/(6098:6107): No se pudo crear el servidor
+[INFO] 16:48:09:915 memoryPool/(6129:6129): Se inicializo la memoria con tamanio 2048
+[INFO] 16:48:09:958 memoryPool/(6129:6129): Tamanio máximo recibido de FS: 60
+[INFO] 16:48:09:967 memoryPool/(6129:6137): Servidor creado exitosamente
+[INFO] 16:48:09:967 memoryPool/(6129:6137): Servidor escuchando
+
+[INFO] 16:48:25:890 memoryPool/(6129:6137): Recibí una conexión
+[INFO] 16:48:25:890 memoryPool/(6129:6139): sock: -1759576058
+[INFO] 16:48:25:891 memoryPool/(6129:6139): Bytes recibidos: 1
+[INFO] 16:48:25:891 memoryPool/(6129:6139): Operacion 6
+[INFO] 16:48:51:927 memoryPool/(6129:6137): Recibí una conexión
+[INFO] 16:48:51:927 memoryPool/(6129:6146): sock: -1759576056
+[INFO] 16:48:51:928 memoryPool/(6129:6146): Bytes recibidos: 1
+[INFO] 16:48:51:929 memoryPool/(6129:6146): Operacion 6
+[INFO] 16:50:51:60 memoryPool/(6192:6192): Se inicializo la memoria con tamanio 2048
+[INFO] 16:50:51:267 memoryPool/(6192:6192): Tamanio máximo recibido de FS: 60
+[INFO] 16:50:51:268 memoryPool/(6192:6201): Servidor creado exitosamente
+[INFO] 16:50:51:268 memoryPool/(6192:6201): Servidor escuchando
+
+[INFO] 16:51:36:519 memoryPool/(6192:6201): Recibí una conexión
+[INFO] 16:51:36:520 memoryPool/(6192:6205): sock: -1759576058
+[INFO] 16:51:42:899 memoryPool/(6192:6205): Bytes recibidos: 1
+[INFO] 16:51:42:899 memoryPool/(6192:6205): Operacion 6
+[INFO] 16:54:34:349 memoryPool/(6262:6262): Se inicializo la memoria con tamanio 2048
+[ERROR] 16:54:34:382 memoryPool/(6262:6262): No se pudo establecer una conexión con LFS, abortando
+[ERROR] 16:54:34:382 memoryPool/(6262:6262): No se pudo recibir el handshake con LFS, abortando ejecución
+
+[ERROR] 16:54:34:382 memoryPool/(6262:6262): Abortando ejecución
+[INFO] 16:54:55:839 memoryPool/(6318:6318): Se inicializo la memoria con tamanio 2048
+[INFO] 16:54:55:839 memoryPool/(6318:6318): Tamanio máximo recibido de FS: 20
+[INFO] 16:54:55:840 memoryPool/(6318:6325): Servidor creado exitosamente
+[INFO] 16:54:55:840 memoryPool/(6318:6325): Servidor escuchando
+
+[INFO] 16:55:15:798 memoryPool/(6318:6325): Recibí una conexión
+[INFO] 16:55:15:799 memoryPool/(6318:6329): sock: -1759576059
+[INFO] 16:55:15:799 memoryPool/(6318:6329): Bytes recibidos: 1
+[INFO] 16:55:15:799 memoryPool/(6318:6329): Operacion 6
+[INFO] 16:59:38:799 memoryPool/(6504:6504): Se inicializo la memoria con tamanio 2048
+[INFO] 16:59:38:807 memoryPool/(6504:6504): Tamanio máximo recibido de FS: 20
+[INFO] 16:59:38:807 memoryPool/(6504:6511): Servidor creado exitosamente
+[INFO] 16:59:38:808 memoryPool/(6504:6511): Servidor escuchando
+
+[INFO] 16:59:44:173 memoryPool/(6504:6511): Recibí una conexión
+[INFO] 16:59:44:173 memoryPool/(6504:6513): sock: -1759576059
+[INFO] 16:59:44:173 memoryPool/(6504:6513): Bytes recibidos: 1
+[INFO] 16:59:44:173 memoryPool/(6504:6513): Operacion 6
+[INFO] 17:00:25:588 memoryPool/(6540:6540): Se inicializo la memoria con tamanio 2048
+[INFO] 17:00:25:588 memoryPool/(6540:6540): Tamanio máximo recibido de FS: 20
+[INFO] 17:00:28:326 memoryPool/(6540:6555): Servidor creado exitosamente
+[INFO] 17:00:28:326 memoryPool/(6540:6555): Servidor escuchando
+
+[INFO] 17:00:34:74 memoryPool/(6540:6555): Recibí una conexión
+[INFO] 17:00:34:80 memoryPool/(6540:6558): sock: -1759576058
+[INFO] 17:00:34:80 memoryPool/(6540:6558): Bytes recibidos: 1
+[INFO] 17:00:34:80 memoryPool/(6540:6558): Operacion 6
+[INFO] 17:01:18:297 memoryPool/(6540:6555): Recibí una conexión
+[INFO] 17:01:18:314 memoryPool/(6540:6590): sock: -1759576057
+[INFO] 17:01:18:314 memoryPool/(6540:6590): Bytes recibidos: 1
+[INFO] 17:01:18:314 memoryPool/(6540:6590): Operacion 6
+[INFO] 17:01:29:924 memoryPool/(6610:6610): Se inicializo la memoria con tamanio 2048
+[INFO] 17:01:29:925 memoryPool/(6610:6610): Tamanio máximo recibido de FS: 20
+[INFO] 17:01:30:813 memoryPool/(6610:6625): Servidor creado exitosamente
+[INFO] 17:01:30:813 memoryPool/(6610:6625): Servidor escuchando
+
+[INFO] 17:01:38:81 memoryPool/(6610:6625): Recibí una conexión
+[INFO] 17:01:38:87 memoryPool/(6610:6629): sock: -1759576058
+[INFO] 17:01:38:87 memoryPool/(6610:6629): Bytes recibidos: 1
+[INFO] 17:01:38:88 memoryPool/(6610:6629): Operacion 6
+[INFO] 17:02:14:554 memoryPool/(6659:6659): Se inicializo la memoria con tamanio 2048
+[INFO] 17:02:14:554 memoryPool/(6659:6659): Tamanio máximo recibido de FS: 20
+[INFO] 17:02:16:258 memoryPool/(6659:6674): Servidor creado exitosamente
+[INFO] 17:02:16:259 memoryPool/(6659:6674): Servidor escuchando
+
+[INFO] 17:02:31:724 memoryPool/(6659:6674): Recibí una conexión
+[INFO] 17:02:31:730 memoryPool/(6659:6677): sock: -1759576058
+[INFO] 17:02:31:730 memoryPool/(6659:6677): Bytes recibidos: 1
+[INFO] 17:02:31:730 memoryPool/(6659:6677): Operacion 6
+[INFO] 17:03:24:15 memoryPool/(6659:6674): Recibí una conexión
+[INFO] 17:03:28:494 memoryPool/(6659:6693): sock: -1759576057
+[INFO] 17:03:28:494 memoryPool/(6659:6693): Bytes recibidos: 1
+[INFO] 17:03:28:494 memoryPool/(6659:6693): Operacion 6

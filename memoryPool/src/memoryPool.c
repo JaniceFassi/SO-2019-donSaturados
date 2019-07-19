@@ -85,21 +85,12 @@ void* recibirOperacion(void * arg){
 					log_info(logger, "Rta insert %d\n", resp);
 					char*buffer=malloc(2);
 					if(resp == 2){
-						recvData(cli,buffer,1);
-						buffer[1]='\0';
-						if(atoi(buffer)==5){
-							int r = mJournal();
-							sendData(cli,string_itoa(r),2);
-							char *msjInsert=malloc(atoi(tamanioPaq) +1);
-							recvData(cli,msjInsert,atoi(tamanioPaq));
-							char ** split= string_n_split(msjInsert,3,";");
-							char *table=split[0];
-							char *keyNuevo=split[1];
-							char *valueNuevo=split[2];
-							resp = mInsert(table, atoi(keyNuevo), valueNuevo);
-							sendData(cli, string_itoa(resp), sizeof(char)*2);
+						mJournal();
+						resp = mInsert(nombreTabla, key, value);
+						sendData(cli, string_itoa(resp), sizeof(char)*2);
+						log_info(logger, "Rta insert después de un journal %d\n", resp);
+
 						}
-					}
 					break;
 
 				case 2: //CREATE
@@ -295,9 +286,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	//maxValue = 20;
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
