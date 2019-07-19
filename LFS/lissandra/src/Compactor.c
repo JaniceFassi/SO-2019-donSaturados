@@ -54,22 +54,20 @@ void *dump(){
 	pthread_exit(NULL);
 }
 //void compactar(char *nombreTabla, long tiempoCompactacion){
-void compactar(Sdirectorio* nuevo){
-	int seguir=1;
-	while(seguir){
+
+
+
+void *compactar(Sdirectorio* nuevo){
+	while(nuevo->terminar){
 		usleep(nuevo->time_compact*1000);
-		sem_getvalue(&nuevo->borrarTabla,&seguir);
-		if(seguir==0){
-			log_info(compaclog,"No se puede hacer la compactacion de la tabla %s porque hay pedido de borrar",nuevo->nombre);
-			pthread_exit(NULL);
-		}
+		sem_wait(&nuevo->semaforoCompactor);
 		nuevo->pedido_extension=3;
-		log_info(compaclog,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
+		//log_info(compaclog,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
 		char *path=nivelUnaTabla(nuevo->nombre,0);
 		if(folderExist(path)==1){
 			log_error(compaclog,"No se puede hacer la compactacion por que la tabla %s ya no existe",nuevo->nombre);
 			free(path);
-			pthread_exit(NULL);
+			return NULL;
 		}
 		free(path);
 		sem_wait(&nuevo->semaforoContarTMP);
@@ -78,7 +76,7 @@ void compactar(Sdirectorio* nuevo){
 		if(cantTemp==0){
 			log_info(compaclog,"No hay datos para la compactacion de %s.",nuevo->nombre);
 			sem_post(&nuevo->semaforoContarTMP);
-			compactar(nuevo);
+			//compactar(nuevo);
 		}else{
 			int contador=0;
 			// SEMAFORO WAIT PEDIDO RENOMBRAR
@@ -102,7 +100,8 @@ void compactar(Sdirectorio* nuevo){
 			metaTabla *metadata=leerMetadataTabla(nuevo->nombre);
 			if(metadata==NULL){
 				log_info(compaclog,"Error al abrir la metada, se terminara el hilo de %s.",nuevo->nombre);
-				pthread_exit(NULL);
+//				pthread_exit(NULL);
+				return NULL;
 			}
 			t_list *todosLosRegistros=list_create();
 			contador=0;
@@ -172,29 +171,32 @@ void compactar(Sdirectorio* nuevo){
 			list_destroy_and_destroy_elements(todosLosRegistros,(void *)destroyRegistry);
 			log_info(compaclog,"Fin de la compactacion de %s",nuevo->nombre);
 			nuevo->pedido_extension=-1;
-			sem_getvalue(&nuevo->borrarTabla,&seguir);
 		}
+		sem_post(&nuevo->semaforoCompactor);
 	}
-	pthread_exit(NULL);
+	return NULL;
 }
 void liberarTabDirectorio(Sdirectorio *nuevo){
 	free(nuevo->nombre);
 	liberarSemaforosTabla(nuevo);
 	free(nuevo);
 }
-void cerrarTabDirectorio(Sdirectorio *nuevo){
-	if(nuevo->pedido_extension<0){
-		pthread_kill(nuevo->hilo,0);
-	}else{
-		pthread_join(nuevo->hilo,0);
-	}
-	free(nuevo->nombre);
-	liberarSemaforosTabla(nuevo);
-	free(nuevo);
-
+void cerrarHiloCompactor(Sdirectorio *nuevo){
+	nuevo->terminar=0;
+	sem_wait(&nuevo->semaforoCompactor);
+	pthread_cancel(nuevo->hilo);
+	sem_post(&nuevo->semaforoCompactor);
 }
+
 void liberarDirectorioP(){
-	list_destroy_and_destroy_elements(directorioP,(void *)cerrarTabDirectorio);
+	int cant=list_size(directorioP);
+	for(int i=0;i<cant;i++){
+		Sdirectorio *tabla=list_get(directorioP,i);
+		if(tabla!=NULL){
+			cerrarHiloCompactor(tabla);
+		}
+	}
+	list_destroy_and_destroy_elements(directorioP,(void*)liberarTabDirectorio);
 }
 
 void semaforosTabla(Sdirectorio *nuevo){
@@ -202,8 +204,8 @@ void semaforosTabla(Sdirectorio *nuevo){
 	sem_init(&nuevo->semaforoContarTMP,0,1);
 	sem_init(&nuevo->semaforoTMP,0,1);
 	sem_init(&nuevo->semaforoTMPC,0,1);
-	sem_init(&nuevo->borrarTabla,0,1);
 	sem_init(&nuevo->semaforoMeta,0,1);
+	sem_init(&nuevo->semaforoCompactor,0,1);
 	nuevo->pedido_extension=-1;
 }
 void liberarSemaforosTabla(Sdirectorio *nuevo){
@@ -211,8 +213,8 @@ void liberarSemaforosTabla(Sdirectorio *nuevo){
 	sem_destroy(&nuevo->semaforoContarTMP);
 	sem_destroy(&nuevo->semaforoTMP);
 	sem_destroy(&nuevo->semaforoTMPC);
-	sem_destroy(&nuevo->borrarTabla);
 	sem_destroy(&nuevo->semaforoMeta);
+	sem_destroy(&nuevo->semaforoCompactor);
 }
 Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
 	int contador=0;

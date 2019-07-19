@@ -189,6 +189,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	uno->nombre=malloc(strlen(nombre)+1);
 	uno->time_compact=timeCompaction;
 	strcpy(uno->nombre,nombre);
+	uno->terminar=1;
 	semaforosTabla(uno);
 	sem_wait(criticaDirectorio);
 	list_add(directorioP,uno);
@@ -246,12 +247,7 @@ int drop(char* nameTable){
 	char *path;
 	if(folderExist(pathFolder)==0){
 		Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(nameTable);
-		sem_wait(&tabDirectorio->borrarTabla);
-		if(tabDirectorio->pedido_extension<0){
-			pthread_kill(tabDirectorio->hilo,0);
-		}else{
-			pthread_join(tabDirectorio->hilo,0);
-		}
+		cerrarHiloCompactor(tabDirectorio);
 		//eliminar archivos binarios con sus respectivos bloques
 		int cantBins=contarArchivos(nameTable, 0);
 		int i=0;
@@ -297,7 +293,6 @@ int drop(char* nameTable){
 		int index2=calcularIndexName(nameTable);
 		sem_wait(criticaDirectorio);
 		Sdirectorio *nuevo=list_remove(directorioP,index2-1);
-		sem_post(&tabDirectorio->borrarTabla);
 		liberarTabDirectorio(nuevo);
 		sem_post(criticaDirectorio);
 		//Eliminar carpeta
