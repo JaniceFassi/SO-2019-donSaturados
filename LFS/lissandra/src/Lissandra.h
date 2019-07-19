@@ -12,6 +12,7 @@
 #include "FileSystem.h"
 #include"apiLFS.h"
 #include <sys/inotify.h>
+#include <signal.h>
 
 typedef enum{
 	SELECT,

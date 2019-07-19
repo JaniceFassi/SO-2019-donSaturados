@@ -46,9 +46,9 @@ void theStart(){
 	abortar=1;
 	inicializarSemGlob();
 	directorioP=list_create();
+	dumplog=log_create("/home/utnso/tp-2019-1c-donSaturados/LFS/lissandra/dump.log","Lissandra",0,LOG_LEVEL_INFO);
+	compaclog=log_create("/home/utnso/tp-2019-1c-donSaturados/LFS/lissandra/compact.log","Lissandra",0,LOG_LEVEL_INFO);
 	levantarDirectorio();									//Crea todos los niveles del directorio ya teniendo el archivo config listo
-	dumplog=log_create("dump.log","Lissandra",0,LOG_LEVEL_INFO);
-	compaclog=log_create("compact.log","Lissandra",0,LOG_LEVEL_INFO);
 }
 
 t_log* init_logger() {
@@ -88,7 +88,6 @@ void *connectMemory(){
 		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
 		pthread_t unHilo;
 		pthread_create(&unHilo,NULL,interactuarConMemoria,&socket_client);
-		//pthread_join(unHilo,NULL);
 	}
 
 	return NULL;
@@ -98,6 +97,7 @@ void *interactuarConMemoria(u_int16_t *socket_cliente){
 	int header=0;
 	char *buffer=malloc(2);
 	recvData(*socket_cliente,buffer,1);
+	buffer[1]='\0';
 	header=atoi(buffer);
 	exec_api(header,*socket_cliente);
 	free(buffer);
@@ -455,10 +455,10 @@ void *console(){
 }
 
 void theEnd(){
-	//pthread_join(hiloMemoria,0);
-	pthread_kill(hiloInotify,0);
+	pthread_cancel(hiloMemoria);
+	pthread_cancel(hiloInotify);
 	sem_wait(sem_dump);
-	pthread_kill(hiloDump,0);
+	pthread_cancel(hiloDump);
 	sem_post(sem_dump);
 	log_destroy(dumplog);
 	if(!list_is_empty(memtable)){

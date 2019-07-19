@@ -18,9 +18,10 @@ typedef struct{
 	sem_t semaforoTMPC;
 	sem_t semaforoBIN;
 	sem_t semaforoContarTMP;
-	sem_t borrarTabla;
 	sem_t semaforoMeta;
+	sem_t semaforoCompactor;
 	int pedido_extension;//se inicializa en -1// si esta en 0 es BIN, si es TMP es 1 y 2 TMPC// 3 se empezo la compactacion
+	int terminar;
 }Sdirectorio;
 
 t_list *directorioP;
@@ -30,11 +31,11 @@ void semaforosTabla(Sdirectorio *nuevo);
 void liberarSemaforosTabla(Sdirectorio *nuevo);
 
 
-void compactar(Sdirectorio *nuevo);
+void *compactar(Sdirectorio *nuevo);
 void *dump();
 void levantarDirectorio();
 void liberarTabDirectorio(Sdirectorio *nuevo);
-void cerrarTabDirectorio(Sdirectorio *nuevo);
+void cerrarHiloCompactor(Sdirectorio *nuevo);
 void liberarDirectorioP();
 Sdirectorio *obtenerUnaTabDirectorio(char *tabla);
 //void compactar(char *nombreTabla,long tiempo_compactacion);

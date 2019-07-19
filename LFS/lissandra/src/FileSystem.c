@@ -94,10 +94,11 @@ int crearNivelTablas(){
 					uno->nombre=malloc(strlen(file->d_name)+1);
 					uno->time_compact=metadata->compaction_time;
 					strcpy(uno->nombre,file->d_name);
+					uno->terminar=1;
 					semaforosTabla(uno);
 					//sem_wait(criticaDirectorio);
 					list_add(directorioP,uno);
-					pthread_create(&uno->hilo, NULL, &compactar,uno);
+					pthread_create(&uno->hilo, NULL, compactar,uno);
 					//sem_post(criticaDirectorio);
 					borrarMetadataTabla(metadata);
 				}

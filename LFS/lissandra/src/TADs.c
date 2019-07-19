@@ -1182,9 +1182,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 	char *path=nivelParticion(tabla,nombreArch,extension);
 	if(archivoValido(path)!=0){
 		Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
-		int borrar;
-		sem_getvalue(&tablaDirec->borrarTabla,&borrar);
-		if(borrar==0){
+		if(tablaDirec->terminar==0){
 			log_info(logger,"No se puede abrir archivos de esta tabla, porque hay pedido de borrar Tabla");
 			free(path);
 			return arch;
@@ -1284,23 +1282,21 @@ void cerrarMetaTabGlobal(char *tabla,t_config *arch){
 t_config *abrirMetaTabGlobal(char *tabla){
 	t_config *arch=NULL;
 	Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
-	int borrar;
 	if(tablaDirec!=NULL){
-	sem_getvalue(&tablaDirec->borrarTabla,&borrar);
-	if(borrar==0){
-		log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla");
-		return arch;
-	}
-	int estado;
-	sem_getvalue(&tablaDirec->semaforoMeta,&estado);//caso de metadata
-	if(estado==1){
+		if(tablaDirec->terminar==0){
+			log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla");
+				return arch;
+		}
+		int estado;
+		sem_getvalue(&tablaDirec->semaforoMeta,&estado);//caso de metadata
+		if(estado==1){
 		//WAIT
-		sem_wait(&tablaDirec->semaforoMeta);
-	}
-	nuevoArch(tabla,3);//3 es METADATA
-	char *path=nivelUnaTabla(tabla,1);
-	arch=config_create(path);
-	free(path);
+			sem_wait(&tablaDirec->semaforoMeta);
+		}
+		nuevoArch(tabla,3);//3 es METADATA
+		char *path=nivelUnaTabla(tabla,1);
+		arch=config_create(path);
+		free(path);
 	}
 	return arch;
 }
