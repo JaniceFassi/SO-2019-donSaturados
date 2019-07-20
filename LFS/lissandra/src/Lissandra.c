@@ -87,7 +87,11 @@ void *connectMemory(){
 		}
 		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
 		pthread_t unHilo;
+		log_info(logger,"creando hilo");
 		pthread_create(&unHilo,NULL,interactuarConMemoria,&socket_client);
+
+		log_info(logger,"se creo hilo");
+		pthread_detach(unHilo);
 	}
 
 	return NULL;
@@ -96,8 +100,10 @@ void *connectMemory(){
 void *interactuarConMemoria(u_int16_t *socket_cliente){
 	int header=0;
 	char *buffer=malloc(2);
+	log_info(logger,"esperando mensaje");
 	recvData(*socket_cliente,buffer,1);
 	buffer[1]='\0';
+	log_info(logger,buffer);
 	header=atoi(buffer);
 	exec_api(header,*socket_cliente);
 	free(buffer);
