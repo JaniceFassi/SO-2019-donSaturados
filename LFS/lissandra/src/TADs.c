@@ -248,6 +248,15 @@ t_list *deChar_Registros(char *buffer){
 	bool seguir=1;
 	while(seguir){
 		char **substring=string_n_split(buffer,4,";");
+		if(substring[0]==NULL){
+			break;
+		}
+		if(substring[1]==NULL){
+			break;
+		}
+		if(substring[2]==NULL){
+			break;
+		}
 		int key=atoi(substring[1]);
 		long time=atol(substring[0]);
 		Registry *nuevo=createRegistry(key,substring[2], time);
@@ -671,7 +680,6 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 	char *buffer=NULL;
 	int largo;
 	int bloquesNecesarios;
-
 	if(list_is_empty(lista)){
 		if(modo==0){
 			log_info(logger,"No hay nada para escrbir.");
@@ -683,8 +691,8 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 		buffer=cadenaDeRegistros(lista);
 		largo=strlen(buffer);
 		//Calcular cant bloques
-		bloquesNecesarios=largo/metaLFS->tamBloques;
-		if(largo%metaLFS->tamBloques!=0){
+		bloquesNecesarios=largo/(metaLFS->tamBloques-1);
+		if(largo%(metaLFS->tamBloques-1)!=0){
 			bloquesNecesarios++;
 		}
 	}
@@ -757,6 +765,7 @@ void escribirBloque(char *buffer,char **bloques){
 		nroArray++;
 	}
 	if(strlen(buffer)>0){
+		log_info(logger,"estoy intentando convertir un %s en int",bloques[nroArray]);
 		int nroBloq=atoi(bloques[nroArray]);
 		char *pathB=rutaBloqueNro(nroBloq);
 		//escribir el archivo

@@ -206,21 +206,19 @@ void exec_api(op_code mode,u_int16_t sock){
 
 		if(valor==NULL){
 			respuesta=string_from_format("1");
-		}else
-		{
-			if(strlen(valor)<10){
+		}else{
+			if((strlen(valor)+1)<10){
 				respuesta=string_from_format("000%i%s",strlen(valor)+1,valor);
 			}else{
-				if(configLissandra->tamValue<100){
+				if((strlen(valor)+1)<100){
 					respuesta=string_from_format("00%i%s",strlen(valor)+1,valor);
 				}else{
 					respuesta=string_from_format("0%i%s",strlen(valor)+1,valor);
 				}
 			}
 		}
+		sendData(sock,respuesta,strlen(respuesta)+1);
 		log_info(logger,respuesta);
-		int i = sendData(sock,respuesta,strlen(respuesta)+1);
-		log_info(logger,"%i",i);
 		free(respuesta);
 		free(valor);
 		close(sock);
@@ -237,8 +235,8 @@ void exec_api(op_code mode,u_int16_t sock){
 		}else{
 			respuesta=string_from_format("0");
 		}
-		log_info(logger,respuesta);
 		sendData(sock,respuesta,strlen(respuesta)+1);
+		log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -251,12 +249,11 @@ void exec_api(op_code mode,u_int16_t sock){
 		int timeCompact=atol(subCadena[3]);
 		if(create(subCadena[0],subCadena[1],part,timeCompact)==1){
 			respuesta=string_from_format("1");
-		}else
-		{
+		}else{
 			respuesta=string_from_format("0");
 		}
-		log_info(logger,respuesta);
 		sendData(sock,respuesta,strlen(respuesta)+1);
+		log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -298,8 +295,8 @@ void exec_api(op_code mode,u_int16_t sock){
 			free(paquete);
 			free(canTablas);
 		}
-		log_info(logger,respuesta);
 		sendData(sock,respuesta,strlen(respuesta)+1);
+		log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -309,12 +306,11 @@ void exec_api(op_code mode,u_int16_t sock){
 		buffer=recibirDeMemoria(sock);
 		if(drop(buffer)==1){
 			respuesta=string_from_format("1");
-		}else
-		{
+		}else{
 			respuesta=string_from_format("0");
 		}
-		log_info(logger,respuesta);
 		sendData(sock,respuesta,strlen(respuesta)+1);
+		log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -335,10 +331,9 @@ void exec_api(op_code mode,u_int16_t sock){
 				maxValue=string_from_format("0%i",configLissandra->tamValue);
 			}
 			else{
-			maxValue=string_from_format("%i",configLissandra->tamValue);
+				maxValue=string_from_format("%i",configLissandra->tamValue);
 			}
 		}
-
 		sendData(sock,maxValue,3);
 		free(maxValue);
 		close(sock);
@@ -358,8 +353,7 @@ void *console(){
 	while(1){
 		linea = readline(">");
 
-		if(!strncmp(linea,"SELECT ",7))
-		{
+		if(!strncmp(linea,"SELECT ",7)){
 			char **subStrings= string_n_split(linea,3," ");
 			u_int16_t k=atoi(subStrings[2]);
 			char *valor=lSelect(subStrings[1],k);
@@ -456,16 +450,20 @@ void *console(){
 
 void theEnd(){
 	pthread_cancel(hiloMemoria);
+	log_info(logger,"se termino el hilo de memoria");
 	pthread_cancel(hiloInotify);
+	log_info(logger,"se termino el hilo de Inotify");
 	sem_wait(sem_dump);
 	pthread_cancel(hiloDump);
 	sem_post(sem_dump);
+	log_info(logger,"se termino el hilo de Dump");
 	log_destroy(dumplog);
 	if(!list_is_empty(memtable)){
 		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
 	}else{
 		list_destroy(memtable);
 	}
+	log_info(logger,"se elimino la memtable");
 	liberarDirectorioP();
 	log_destroy(compaclog);
 	liberarSemaforos();

@@ -12,6 +12,7 @@
 int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 	//RETARDO
 	usleep(configLissandra->retardo*1000);
+	sleep(3);
 	//Verificar que la tabla exista en el file system.
 	char *path=nivelUnaTabla(param_nameTable, 0);
 	if(folderExist(path)==1){

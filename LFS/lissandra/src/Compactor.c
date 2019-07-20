@@ -186,6 +186,7 @@ void cerrarHiloCompactor(Sdirectorio *nuevo){
 	sem_wait(&nuevo->semaforoCompactor);
 	pthread_cancel(nuevo->hilo);
 	sem_post(&nuevo->semaforoCompactor);
+	log_info(logger,"se termino el hilo de %s",nuevo->nombre);
 }
 
 void liberarDirectorioP(){
@@ -220,11 +221,12 @@ Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
 	int contador=0;
 	while(contador<list_size(directorioP)){
 		Sdirectorio *es=list_get(directorioP,contador);
-		if(string_equals_ignore_case(es->nombre,tabla)){
-			return es;
+		if(es!=NULL){
+			if(string_equals_ignore_case(es->nombre,tabla)){
+				return es;
+			}
 		}
 		contador++;
-		es=NULL;
 	}
 	return NULL;
 }
