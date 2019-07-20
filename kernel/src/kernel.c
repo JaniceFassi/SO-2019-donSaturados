@@ -363,7 +363,7 @@ int mySelect(char * table, char *key){
 	log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
 
 	if(atoi(resultado)!=0){
-		if(atoi(resultado)==2){
+		/*if(atoi(resultado)==2){
 			sendData(sock,"6",2);//journal
 			recvData(sock,&resultado,1);
 			if(atoi(resultado)!=0){
@@ -377,9 +377,9 @@ int mySelect(char * table, char *key){
 				return -1;
 			}
 		}
-		else{
+		else{*/
 			return -1;
-		}
+		//}
 	}
 //	free(memAsignada);
 	free(linea);
@@ -452,7 +452,7 @@ int insert(char* table ,char* key ,char* value){
 	sendData(sock,msj,strlen(msj)+1);
 
 	char * resultado=malloc(2);
-	recvData(sock,resultado,1);
+	recvData(sock,resultado,2);
 	resultado[1]='\0';
 	log_info(logger,"resultado INSERT: %i", atoi(resultado));
 	if(atoi(resultado)!=0){
@@ -460,14 +460,14 @@ int insert(char* table ,char* key ,char* value){
 			log_info(logger,"journal");
 			sendData(sock,"5",2);//journal
 			char *res= malloc(2);
-			recvData(sock,res,1);
+			recvData(sock,res,2);
 			res[1]='\0';
 			log_info(logger,"resultado del journal: %i",atoi(res));
 			if(atoi(res)!=0){
 				close(sock);
 				return -1;
 			}
-			char *resI= malloc(2);
+			/*char *resI= malloc(2);
 			sendData(sock,linea,strlen(linea)+1);
 			recvData(sock,resI,1);
 			resI[1]='\0';
@@ -475,7 +475,7 @@ int insert(char* table ,char* key ,char* value){
 			if(atoi(resI)!=0){
 				close(sock);
 				return -1;
-			}
+			}*/
 		}
 		else{
 			close(sock);
@@ -557,7 +557,8 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	sendData(sock,msj,strlen(msj)+1);
 
 	char * resultado=malloc(2);
-	recvData(sock,resultado,1);
+	recvData(sock,resultado,2);
+	resultado[1]='\0';
 	log_info(logger,"resultado CREATE: %i", atoi(resultado));
 	log_info(loggerConsola,"resultado CREATE: %i", atoi(resultado));
 
@@ -588,7 +589,7 @@ int journal(){
 		char *resultado= malloc(2);
 		int sock=conexionMemoria(m->puerto,m->ip);
 		sendData(sock,"5",2);
-		recvData(sock,resultado,1);
+		recvData(sock,resultado,2);
 		resultado[1]='\0';
 		if(atoi(resultado)!=0){
 			ret=1;
@@ -618,12 +619,12 @@ int describe(char *table){
 	else{
 		// ver temas de comunicacion con memoria
 		if(tamanio<10){
-			msj=string_from_format("%i00%i%s",op,tamanio,table);
+			msj=string_from_format("%i00%i%s",op,tamanio+1,table);
 		}else{
 			if(tamanio<100){
-				msj=string_from_format("%i0%i%s",op,tamanio,table);
+				msj=string_from_format("%i0%i%s",op,tamanio+1,table);
 			}
-			else msj=string_from_format("%i%i%s",op,tamanio,table);
+			else msj=string_from_format("%i%i%s",op,tamanio+1,table);
 		}
 	}
 
@@ -667,6 +668,8 @@ int describe(char *table){
 	recvData(sock,cantTablas,2);
 	cantTablas[2]='\0';
 	int tr= atoi(cantTablas);
+	log_info(logger,cantTablas);
+	log_info(logger,"%i" , tr);
 	int i=0;
 
 //	me falta un recv de la cantidad de tablas, ademas deberia borrar las tablas que tengo
@@ -785,7 +788,8 @@ int drop(char*table){
 	sendData(sock,msj,strlen(msj)+1);
 
 	char * resultado=malloc(2);
-	recvData(sock,&resultado,1);
+	recvData(sock,resultado,2);
+	resultado[1]='\0';
 
 	// deberia borrar la metadata de la tabla? (iria un semaforo)
 
@@ -856,7 +860,8 @@ int add(char* memory , char* consistency){
 				char *resultado= malloc(2);
 				int sock=conexionMemoria(m->puerto,m->ip);
 				sendData(sock,"5",2);
-				recvData(sock,resultado,1);
+				recvData(sock,resultado,2);
+				resultado[1]='\0';
 				if(atoi(resultado)!=0){
 					ret=1;
 					log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
