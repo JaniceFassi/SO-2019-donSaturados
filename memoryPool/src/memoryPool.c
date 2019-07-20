@@ -764,7 +764,7 @@ int main(void) {
 
 
  int memoriaLlena(){ //Devuelve 0 si esta llena (no se fija los flags modificados)
-
+		log_info(logger,"entra a memoria llena ");
  	bool algunoLibre(marco* unMarco){
  		return unMarco->estaLibre == 0;
  	}
@@ -819,7 +819,7 @@ int main(void) {
  	marco *unMarco;
  	pthread_mutex_lock(&lockTablaMarcos);
  	if(memoriaLlena()){ //Si la memoria NO esta llena puede asignar un marco
-
+ 		log_info(logger,"entra a marcos libres");
  		while(i < cantMarcos){
  			unMarco = list_get(tablaMarcos,i);
  			if((unMarco->estaLibre) == 0){
@@ -835,6 +835,7 @@ int main(void) {
  		}
  	}
  	else{
+ 		log_info(logger,"entra a lru ");
  		posMarco = LRU(); //te devuelve la posicion del marco a ocupar, liberando lo que habia antes
 		unMarco = list_get(tablaMarcos,posMarco);
 		pthread_mutex_lock(&unMarco->lockMarco);
@@ -883,7 +884,27 @@ int main(void) {
 			 i++;
 		 }
 	 }
+
+	 log_info(logger, "marco nro :%i",nroMarcoAborrar);
+	 bool buscaMarco(pagina * pag){
+		 return pag->nroMarco==nroMarcoAborrar;
+	 }
+
+
+	 void buscaSegYPag(segmento *s){
+		 log_info(logger, "seg :%s", s->nombreTabla);
+
+		 //list_remove_and_destroy_by_condition(s->tablaPaginas,(void*)buscaMarco,(void*)paginaDestroy);
+		 list_remove_by_condition(s->tablaPaginas,(void*)buscaMarco);
+		 //list_iterate(s->tablaPaginas,(void*)buscaMarco)
+	 }
+	 list_iterate(tablaSegmentos,(void*)buscaSegYPag);
 	 eliminarDeListaUsos(nroMarcoAborrar);
+
+	 log_info(logger, "marco nro :%i",nroMarcoAborrar);
+
+
+
 		//Si llegamos aca la memoria SI o SI esta FULL 
 		//Avisarle al Kernel FULL
 	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio (DEBERIA)
@@ -1075,15 +1096,19 @@ void finalizar(){
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	log_info(logger,"\n\n LA KEY ES : %i " , key);
 	if(strlen(valor)+1 <=maxValue){
+		log_info(logger,"entra a insert ");
 	if(!FULL()){
+		log_info(logger,"no esta full");
 		segmento *seg = buscarSegmento(nombreTabla);
 		pagina *pag;
 		long timestampActual;
 
 		if(seg != NULL){ //existe el segmento
+			log_info(logger,"existe segmento ");
 			pthread_mutex_lock(&seg->lockSegmento);
 			pag = buscarPaginaConKey(seg, key);
 				if (pag == NULL){ //no existe la pagina
+					log_info(logger,"no existe pagina ");
 					pag = crearPagina();
 					agregarPagina(seg,pag);
 					timestampActual = time(NULL);
@@ -1093,6 +1118,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 					log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 
 				}else{ //existe la pagina
+					log_info(logger,"existe pagina ");
 					agregarDato(time(NULL),key,valor,pag);
 					log_info(logger, "VOLVI DE AGREGAR DATO");
 					//pag->modificado = 1;
@@ -1108,6 +1134,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				}
 				pthread_mutex_unlock(&seg->lockSegmento);
 		}else{ //no existe el segmento
+			log_info(logger,"no existe segmento ");
 			pthread_mutex_lock(&lockTablaSeg);
 			seg = crearSegmento(nombreTabla);
 			pthread_mutex_lock(&seg->lockSegmento);
