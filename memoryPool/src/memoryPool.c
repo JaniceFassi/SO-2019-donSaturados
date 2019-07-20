@@ -963,20 +963,24 @@ void mostrarMemoria(){
 }
 
 void* conseguirValor(pagina* pNueva){
-	void* value = malloc(sizeof(maxValue));
-	memcpy(value, ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco));
+	void* value = malloc(maxValue);
+	char* a = malloc(maxValue);
+	memcpy(value, ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco),maxValue);
+	memcpy(a, ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco),maxValue);
+	log_info(logger,"valorcito en conseguir valor: %s",a);
+
 	return value;
 }
 
 void *conseguirTimestamp(pagina *pag){
 	void* timestamp = malloc(sizeof(long));
-	memcpy(timestamp,((memoria) + offsetMarco*pag->nroMarco));
+	memcpy(timestamp,((memoria) + offsetMarco*pag->nroMarco),sizeof(long));
 	return timestamp;
 }
 
 void *conseguirKey(pagina *pag){
 	void* key = malloc(sizeof(u_int16_t));
-	memcpy(key,((memoria) + sizeof(long) + offsetMarco*pag->nroMarco));
+	memcpy(key,((memoria) + sizeof(long) + offsetMarco*pag->nroMarco),sizeof(u_int16_t));
 	return key;
 }
 
@@ -1086,12 +1090,17 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				agregarDato(timestampActual, key, valor, pag);
 				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
-				eliminarDeListaUsos(pag->nroMarco);
+				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 			}else{
 				agregarDato(time(NULL),key,valor,pag);
 				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
+				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 				eliminarDeListaUsos(pag->nroMarco);
+				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 			}
 			pthread_mutex_unlock(&seg->lockSegmento);
 	}else{
@@ -1106,7 +1115,8 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarDato(timestampActual, key, valor, pag);
 		log_info(logger, "VOLVI DE AGREGAR DATO");
 		pag->modificado = 1;
-		eliminarDeListaUsos(pag->nroMarco);
+		log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
@@ -1145,11 +1155,19 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			valor = (char*)conseguirValor(pNueva);
 			log_info(logger, "Se seleccionó el valor %s", valor);
 			log_info(logger, "Encontro segmento y pagina");
+
 			if(pNueva->modificado == 0){
+				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 				actualizarListaDeUsos(pNueva->nroMarco);
+				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 			}
 			log_info(logger, "salio lru");
 			log_info(logger, "Se seleccionó el valor despues de lru %s", valor);
+
+			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 			return valor;
 		}
 		else{
@@ -1162,7 +1180,10 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				agregarPagina(nuevo,pNueva);
 				pthread_mutex_unlock(&nuevo->lockSegmento);
 				agregarDato(time(NULL),key,valorPagNueva,pNueva);
+				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 				agregarAListaUsos(pNueva->nroMarco);
+				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 				return valorPagNueva;
 			}
@@ -1191,7 +1212,11 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			pthread_mutex_unlock(&nuevo->lockSegmento);
 
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
+			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 			agregarAListaUsos(pNueva->nroMarco);
+			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 			return valorPagNueva;
