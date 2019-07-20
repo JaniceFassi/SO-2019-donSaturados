@@ -55,7 +55,7 @@ void* recibirOperacion(void * arg){
 	int resp;
 	char* rta;
 	char* tabla;
-
+	char* rtaFull;
 
 	switch (operacion) {
 				case 0: //SELECT
@@ -81,10 +81,11 @@ void* recibirOperacion(void * arg){
 					value = desempaquetado[2];
 
 					resp = mInsert(nombreTabla, key, value);
+					log_info(logger, "Antes de responder el insert");
 					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					log_info(logger, "Rta insert %d\n", resp);
-					char*buffer=malloc(2);
-					if(resp == 2){
+					rtaFull= malloc(2);
+					if(rtaFull == 2){
 						mJournal();
 						resp = mInsert(nombreTabla, key, value);
 						sendData(cli, string_itoa(resp), sizeof(char)*2);
@@ -212,18 +213,19 @@ int main(void) {
 		return 1;
 
 	}
-/*
+
 	mInsert("POSTRES", 1, "FLAN");
 	mInsert("POSTRES", 2, "HELADO");
 	mInsert("POSTRES", 3, "HELADO");
-	mInsert("PROFESIONES", 1, "DOCTOR");
+	mSelect("PROFESIONES", 1);
+	sleep(5);
 	mInsert("PROFESIONES", 2, "MAESTRO");
-	mInsert("PROFESIONES", 5, "CHEF");
+	/*mInsert("PROFESIONES", 5, "CHEF");
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
-*/
-	pthread_t inotify;
+
+		pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 
 
@@ -238,13 +240,14 @@ int main(void) {
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
-	//pthread_t journalTemporal;
+	pthread_t journalTemporal;
 	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
 	pthread_join(hiloConsola, (void*)&fin);
 	if(fin == 0){
 		pthread_cancel(gestorConexiones);
+		pthread_cancel(inotify);
 		//pthread_cancel(journalTemporal);
 		//pthread_cancel(gossipTemporal);
 		log_info(logger, "Se apagará la memoria de forma correcta");
@@ -256,7 +259,8 @@ int main(void) {
 	//pthread_join(gossipTemporal, NULL);
 
 	}
-
+*/
+	mostrarMemoria();
 	finalizar();
 	return EXIT_SUCCESS;
 }
@@ -291,9 +295,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	//maxValue = 20;
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -597,11 +601,13 @@ int main(void) {
 	 u_int16_t lfsSock = crearConexionLFS();
 
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+	 log_info(logger, "Paquete select %s", paqueteListo);
 
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 	 if(atoi(buffer)==0){
 		 char* tam = malloc(sizeof(char)*4);
+
 		 recvData(lfsSock, tam, sizeof(char)*3);
 		 int t = atoi(tam);
 		 value = malloc(t+sizeof(char));
@@ -623,9 +629,10 @@ int main(void) {
 
 		 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 		 char* paqueteListo = empaquetar(1, datos);
-		u_int16_t lfsSock = crearConexionLFS();
-		 log_info(logger, "Paquete insert %s", datos);
+		 u_int16_t lfsSock = crearConexionLFS();
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		 log_info(logger, "Paquete insert %s", paqueteListo);
+
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
@@ -644,10 +651,14 @@ int main(void) {
 	 if(nombreTabla!= NULL){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		 log_info(logger, "Paquete describe %s", paqueteListo);
+
 	 }
 	 else{
 
 		 sendData(lfsSock, describeGlobal, strlen(describeGlobal)+1);
+		 log_info(logger, "Paquete select %s", describeGlobal);
+
 	 }
 
 
@@ -674,7 +685,7 @@ int main(void) {
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-	 log_info(logger, "Se pidió un create de %s", paqueteListo);
+	 log_info(logger, "Paquete create %s", paqueteListo);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 
@@ -690,6 +701,8 @@ int main(void) {
 	 if(lfsSock == -1){
 	 	 log_error(logger, "No se pudo conectar con LFS");
 	  }
+	 log_info(logger, "Paquete drop %s", paqueteListo);
+
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
@@ -724,14 +737,14 @@ int main(void) {
 
  int FULL(){ //La memoria esta FULL si se cumple memoriaLlena() y todas las tablaPaginas estan con flag modificados
 
-	 int i=0;
+
 	 int total=0;
 	 int tam =list_size(tablaSegmentos);
 	 if(tam==0)return 0;
 	 segmento* aux;
 
 	 if(!memoriaLlena()){
-		 for(i;i<tam;i++){
+		 for(int i = 0;i<tam;i++){
 			 aux = list_get(tablaSegmentos,i);
 			 total += todosModificados(aux);
 		 }
@@ -854,17 +867,23 @@ int main(void) {
 
 
  void eliminarDeListaUsos(int nroMarcoAEliminar){
-
  	int index=0;
 
- 	int tieneMismoNro(posMarcoUsado* p){
- 		if((p->nroMarco) != nroMarcoAEliminar) index++;
- 		return (p->nroMarco) == nroMarcoAEliminar;
+ 	while(index<listaDeUsos->elements_count){
+ 		posMarcoUsado *pos = list_get(listaDeUsos, index);
+ 		if(pos->nroMarco == nroMarcoAEliminar){
+ 			break;
+ 		}
+ 		index++;
  	}
+ 	if(index<= listaDeUsos->elements_count){
+ 		log_info(logger, "Encontre el marco");
+ 		posMarcoUsado *p = list_remove(listaDeUsos,index);
 
- 	posMarcoUsado* nuevo = list_find(listaDeUsos,(void*)tieneMismoNro);
-
- 	list_remove(listaDeUsos,index);
+ 	}
+ 	else{
+ 		log_error(logger, "No encontré el marco");
+ 	}
 
  }
 
@@ -1030,9 +1049,11 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				agregarPagina(seg,pag);
 				timestampActual = time(NULL);
 				agregarDato(timestampActual, key, valor, pag);
+				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
 			}else{
 				agregarDato(time(NULL),key,valor,pag);
+				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
 				eliminarDeListaUsos(pag->nroMarco);
 			}
@@ -1047,6 +1068,8 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarPagina(seg,pag);
 		timestampActual = time(NULL);
 		agregarDato(timestampActual, key, valor, pag);
+		log_info(logger, "VOLVI DE AGREGAR DATO");
+
 		pag->modificado = 1;
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
