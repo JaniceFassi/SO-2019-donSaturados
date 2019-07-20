@@ -154,7 +154,12 @@ int main(void) {
 	 tablaMemActivasSecundaria = list_create();
 	 ipSeeds = string_split(ipsConfig,";");
 	 puertoSeeds = string_split(seedsConfig,";");
-	 agregarMemActiva(idMemoria,ipSeeds[0],puertoSeeds[0]);
+	 infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
+	 nueva->nroMem = idMemoria;
+	 nueva->ip = ipSeeds[0];
+	 nueva->puerto = puertoSeeds[0];
+	 list_add(tablaMemActivas,nueva);
+	 //agregarMemActiva(idMemoria,ipSeeds[0],puertoSeeds[0]); lo dejo porque quizas te dan la config vacia
  }
 
  segmento *crearSegmento(char* nombre){
@@ -1347,10 +1352,12 @@ void desempaquetarTablaSecundaria(char* paquete){
 } // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
 
+
 int pedirConfirmacion(char*ip,char* puerto){
 	u_int16_t cliente;
 	char* codOpe = "6";
-	int conexion = linkClient(&cliente,ip,atoi(puerto),0);
+	u_int16_t puertoAux=atoi(puerto);
+	int conexion = linkClient(&cliente,ip,puertoAux,0);
 
 	if(conexion ==1){
 		return 0; // no esta activa la memoria
@@ -1363,8 +1370,8 @@ int pedirConfirmacion(char*ip,char* puerto){
 	recvData(cliente,tamTabla,sizeof(char)*3);
 	char* buffer=malloc(atoi(tamTabla)+1);
 	recvData(cliente,buffer,atoi(tamTabla));
-	desempaquetarTablaSecundaria(buffer);
-	
+	desempaquetarTablaSecundaria(buffer);  //aca actualizo mi tabla con lo que me envian
+
 	char*paquete = empaquetarTablaActivas();
 	sendData(cliente,paquete,strlen(paquete)+1);
 
@@ -1384,39 +1391,48 @@ int estaRepetido(char*ip){
 	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
 }
 
+void actualizarArchConfig(char*ip,char*puerto){
+	char* ipsAux = config_get_string_value(configuracion,"IP_SEEDS");
+	char* seedsAux = config_get_string_value(configuracion,"PUERTO_SEEDS");
+
+	char* newIps = string_new();
+	char* newPuertos = string_new();
+
+	string_append(&newIps,ipsAux);
+	string_append(&newPuertos,seedsAux);
+
+	string_append_with_format(&newIps,"%s;",ip);
+	string_append_with_format(&newPuertos,"%s;",puerto);
+
+	config_set_value(configuracion,"IP_SEEDS",newIps);
+	config_set_value(configuracion,"PUERTO_SEEDS",newPuertos);
+	config_save(configuracion);
+}
+
+void cargarInfoDeSecundaria(){
+	int i=1; //la 0 ya la agregamos antes
+	infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
+	while(aux){
+		if(!estaRepetido(aux->ip)){
+			list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
+			actualizarArchConfig(aux->ip,aux->puerto);
+			}
+		i++;
+		aux=list_get(tablaMemActivasSecundaria,i);
+	}
+}
+
+
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
 	if(!estaRepetido(ip)){
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
 	nueva->ip=ip;
 	nueva->puerto=puerto;
 	nueva->nroMem=id;
-	list_add(tablaMemActivas,nueva); //CREO que aca no hace falta guardar en el archivo de config
+	list_add(tablaMemActivas,nueva);
+	actualizarArchConfig(ip,puerto); //preguntar que onda aca
 	}
-
-	if(tablaMemActivasSecundaria){ //es decir, si se recibio una tablaSecundaria
-		int i=1; //la 0 ya la agregamos arriba
-		int tam=list_size(tablaMemActivasSecundaria);
-		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
-		while(aux){
-			if(!estaRepetido(aux->ip)){
-				list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
-				char* ipsAux = config_get_string_value(configuracion,"IP_SEEDS");
-				char* seedsAux = config_get_string_value(configuracion,"PUERTO_SEEDS");
-				char* nuevaIP = aux->ip;
-				char* nuevoPuerto = aux->puerto;
-				string_append(&nuevaIP,";");
-				string_append(&nuevoPuerto,";");
-				string_append(&ipsAux,nuevaIP);
-				string_append(&seedsAux,nuevoPuerto);
-				config_set_value(configuracion,"IP_SEEDS",ipsAux);
-				config_set_value(configuracion,"PUERTO_SEEDS",seedsAux);
-				config_save(configuracion);
-				//agrega a la config (se podria delegar)
-			}
-			i++;
-			aux=list_get(tablaMemActivasSecundaria,i);
-		}
-	}
+	cargarInfoDeSecundaria();
 }
 
 int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
@@ -1448,15 +1464,13 @@ void mGossip(){
 
     	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
-		log_info(logger, "Se confirmo la memoria con id: %i",id);
+		log_info(logger,"Se confirmo la memoria con id: %i",id);
     		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
     		estaEnActivaElim(ipSeeds[i]);
-		log_info(logger, "La memoria con ip : %s no esta activa",ipSeeds[i]);
+		log_info(logger,"La memoria con ip : %s no esta activa",ipSeeds[i]);
     	}
     	i++;
     }
 }
-
-
 
