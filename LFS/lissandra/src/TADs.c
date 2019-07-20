@@ -1166,6 +1166,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 			free(path);
 			return arch;
 		}
+		sem_wait(criticaTablaGlobal);
 		switch(extension){
 		int estado;
 			case 0: sem_getvalue(&tablaDirec->semaforoBIN,&estado);
@@ -1178,6 +1179,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 					}else{
 						if(tablaDirec->pedido_extension==0){
 							//log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							sem_post(criticaTablaGlobal);
 							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
@@ -1196,6 +1198,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 					}else{
 						if(tablaDirec->pedido_extension==1){
 							//log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							sem_post(criticaTablaGlobal);
 							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
@@ -1213,6 +1216,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 						break;
 					}else{
 						if(tablaDirec->pedido_extension==2){
+							sem_post(criticaTablaGlobal);
 							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
@@ -1222,6 +1226,8 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 						}
 					}
 		}
+		sem_post(criticaTablaGlobal);
+
 	}
 	free(path);
 	return arch;
@@ -1265,11 +1271,13 @@ void cerrarMetaTabGlobal(char *tabla,t_config *arch){
 t_config *abrirMetaTabGlobal(char *tabla){
 	t_config *arch=NULL;
 	Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
+	sem_wait(criticaTablaGlobal);
 	if(tablaDirec!=NULL){
 		if(tablaDirec->terminar==0){
 			log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla");
 				return arch;
 		}
+
 		int estado;
 		sem_getvalue(&tablaDirec->semaforoMeta,&estado);//caso de metadata
 		if(estado==1){
@@ -1281,6 +1289,8 @@ t_config *abrirMetaTabGlobal(char *tabla){
 		arch=config_create(path);
 		free(path);
 	}
+	sem_post(criticaTablaGlobal);
+
 	return arch;
 }
 

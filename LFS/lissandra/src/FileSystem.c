@@ -171,7 +171,6 @@ archAbierto *obtenerArch(char *tabla, int extension){
 	return NULL;
 }
 void nuevoArch(char *tabla, int extension){
-	sem_wait(criticaTablaGlobal);
 	if(archivoYaAbierto(tabla,extension)){
 		archAbierto *obtenido=obtenerArch(tabla,extension);
 		obtenido->contador+=1;
@@ -182,7 +181,6 @@ void nuevoArch(char *tabla, int extension){
 		nuevo->nombreTabla=string_from_format("%s",tabla);
 		list_add(tablaArchGlobal,nuevo);
 	}
-	sem_post(criticaTablaGlobal);
 }
 
 void liberarArch(archAbierto *nuevo){
@@ -199,12 +197,6 @@ void sacarArch(char *tabla,int extension){
 			}
 			return false;
 		}
-	void mostrar(archAbierto *es){
-		log_info(logger,"nombre tabla %s",es->nombreTabla);
-		log_info(logger,"%i",es->extension);
-	}
-	list_iterate(tablaArchGlobal,(void *)mostrar);
-
 	archAbierto *victima=list_remove_by_condition(tablaArchGlobal,(void *)abierto);
 	liberarArch(victima);
 }

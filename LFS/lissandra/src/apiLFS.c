@@ -79,31 +79,41 @@ char *lSelect(char *nameTable, u_int16_t key){
 		aux=list_create();
 	}
 	sem_post(criticaMemtable);
-
+	log_info(logger,"se leyeron los datos de la memtable");
 	//Escanear todos los archivos temporales (modo 1)
 	int cantDumps=contarArchivos(nameTable, 1); //PREGUNTAR DILEMA
 	int i=0;
 	while(i<cantDumps){
+		log_info(logger,"quiere leer los temporales");
 		escanearArchivo(nameTable,i, 1, obtenidos);
+
+		log_info(logger,"se logro leer los temporales");
 		i++;
 	}
 	//Escanear los .tmpc si es necesario (modo 2)
 	int cantTmpc=contarArchivos(nameTable ,2);
 	i=0;
 	while(i<cantTmpc){
+		log_info(logger,"quiere leer los tempC");
 		escanearArchivo(nameTable,i, 2, obtenidos);
+
+		log_info(logger,"se pudo leer los tempC");
 		i++;
 	}
 
 	//Obtener la metadata asociada a dicha tabla.
+
+	log_info(logger,"quiere leer la META");
 	metaTabla *metadata= leerMetadataTabla(nameTable);
 
+	log_info(logger,"se pudo leer la META");
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
 	//log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 	//Escanear la partición objetivo (modo 0)
+	log_info(logger,"quiere leer el bin");
 	escanearArchivo(nameTable, part, 0,obtenidos);
-
+	log_info(logger,"pudo leer el bin");
 	if(list_size(obtenidos)!=0){
 		list_add_all(aux,obtenidos);
 	}

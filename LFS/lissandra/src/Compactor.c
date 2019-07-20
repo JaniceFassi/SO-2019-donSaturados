@@ -92,12 +92,13 @@ void *compactar(Sdirectorio* nuevo){
 				contador++;
 			}
 			log_info(compaclog,"Se pudieron renombrar los tmps de la tabla %s.",nuevo->nombre);
+			sem_post(&nuevo->semaforoTMP);
 			sem_post(&nuevo->semaforoContarTMP);
 			//SIGNAL WAIT PEDIDO RENOMBRAR
-			sem_post(&nuevo->semaforoTMP);
 			nuevo->pedido_extension=-1;
 			//sacar la metadata
 			metaTabla *metadata=leerMetadataTabla(nuevo->nombre);
+			log_info(compaclog,"Se abrio la metadata %s.",nuevo->nombre);
 			if(metadata==NULL){
 				log_info(compaclog,"Error al abrir la metada, se terminara el hilo de %s.",nuevo->nombre);
 //				pthread_exit(NULL);
@@ -119,6 +120,7 @@ void *compactar(Sdirectorio* nuevo){
 				}
 				escanearArchivo(nuevo->nombre,contador,extension,todosLosRegistros);
 				if(contador+1==cantMax && binario==0){
+					log_info(compaclog,"Se terminaron de leer los bins de la tabla %s.",nuevo->nombre);
 					contador=-1;
 					cantMax=cantTemp;
 					binario++;

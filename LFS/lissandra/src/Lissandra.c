@@ -109,7 +109,7 @@ char* recibirDeMemoria(u_int16_t sock){
 	char *tam=malloc(4);
 	char * buffer;
 	recvData(sock,tam,3);
-	tam[3]="\0";
+	tam[3]='\0';
 	int tamanio=atoi(tam);
 
 	if(tamanio==0){
