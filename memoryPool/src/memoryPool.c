@@ -963,22 +963,21 @@ void mostrarMemoria(){
 }
 
 void* conseguirValor(pagina* pNueva){
-
-	return ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco);
+	void* value = malloc(sizeof(maxValue));
+	memcpy(value, ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco));
+	return value;
 }
 
 void *conseguirTimestamp(pagina *pag){
-	return ((memoria) + offsetMarco*pag->nroMarco);
-
-	//Si no entendi mal seria asi lo que quiere hernan:
-	//void* timestamp = malloc(sizeof(long));
-	//memcpy(timestamp,((memoria) + offsetMarco*pag->nroMarco),sizeof(long));
-	//return timestamp;
-
+	void* timestamp = malloc(sizeof(long));
+	memcpy(timestamp,((memoria) + offsetMarco*pag->nroMarco));
+	return timestamp;
 }
 
 void *conseguirKey(pagina *pag){
-	return ((memoria) + sizeof(long) + offsetMarco*pag->nroMarco);
+	void* key = malloc(sizeof(u_int16_t));
+	memcpy(key,((memoria) + sizeof(long) + offsetMarco*pag->nroMarco));
+	return key;
 }
 
 int conseguirIndexSeg(segmento* nuevo){
