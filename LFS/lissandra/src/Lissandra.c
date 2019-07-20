@@ -109,6 +109,7 @@ char* recibirDeMemoria(u_int16_t sock){
 	char *tam=malloc(4);
 	char * buffer;
 	recvData(sock,tam,3);
+	tam[3]="\0";
 	int tamanio=atoi(tam);
 
 	if(tamanio==0){
@@ -197,11 +198,11 @@ void exec_api(op_code mode,u_int16_t sock){
 	char *respuesta;
 	case 0:								//orden: tabla, key
 
-		log_info(logger,"\nSELECT");
 		buffer=recibirDeMemoria(sock);
 		subCadena=string_split(buffer, ";");
-
 		int keyBuscada=atoi(subCadena[1]);
+		log_info(logger,"\nSELECT %s %i",subCadena[0],keyBuscada);
+
 		char *valor=lSelect(subCadena[0],keyBuscada);
 
 		if(valor==NULL){
@@ -225,11 +226,11 @@ void exec_api(op_code mode,u_int16_t sock){
 		break;
 
 	case 1:
-		log_info(logger,"\nINSERT");	//Este es el insert que viene con el timestamp
 		buffer=recibirDeMemoria(sock);	//orden: tabla, key, value, timestamp
 		subCadena=string_split(buffer, ";");
 		int key=atoi(subCadena[1]);
 		long time=atol(subCadena[3]);
+		log_info(logger,"\nINSERT %s %i %s %ld",subCadena[0], key,subCadena[2],time);	//Este es el insert que viene con el timestamp
 		if(insert(subCadena[0], key,subCadena[2],time)==1){
 			respuesta=string_from_format("1");
 		}else{
@@ -242,11 +243,11 @@ void exec_api(op_code mode,u_int16_t sock){
 		break;
 
 	case 2:
-		log_info(logger,"\nCREATE");	//orden: tabla, consistencia, particiones, tiempoCompactacion
 		buffer=recibirDeMemoria(sock);
 		subCadena=string_split(buffer, ";");
 		int part=atoi(subCadena[2]);
 		int timeCompact=atol(subCadena[3]);
+		log_info(logger,"\nCREATE %s %s %i %ld",subCadena[0],subCadena[1],part,timeCompact);	//orden: tabla, consistencia, particiones, tiempoCompactacion
 		if(create(subCadena[0],subCadena[1],part,timeCompact)==1){
 			respuesta=string_from_format("1");
 		}else{
@@ -259,12 +260,13 @@ void exec_api(op_code mode,u_int16_t sock){
 		break;
 
 	case 3:
-		log_info(logger,"\nDESCRIBE");	//orden: tabla
 		buffer=recibirDeMemoria(sock);
 		t_list *tabla;
 		if(buffer==NULL){
+			log_info(logger,"\nDESCRIBE");	//orden: tabla
 			tabla=describe(NULL);
 		}else{
+			log_info(logger,"\nDESCRIBE %s",buffer);	//orden: tabla
 			tabla=describe(buffer);
 		}
 		if(list_is_empty(tabla)){
@@ -302,8 +304,8 @@ void exec_api(op_code mode,u_int16_t sock){
 		break;
 
 	case 4:
-		log_info(logger,"\nDROP");		//orden: tabla
 		buffer=recibirDeMemoria(sock);
+		log_info(logger,"\nDROP %s",buffer);		//orden: tabla
 		if(drop(buffer)==1){
 			respuesta=string_from_format("1");
 		}else{
