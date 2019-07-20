@@ -114,12 +114,12 @@ segmento* buscarSegmento(char* nombre);
 //FUNCIONES PARA HILOS
 void* consola(void* arg);
 void* gestionarConexiones(void* arg);
-void* recibirOperacion(void * arg);
-void* gestionarConexiones(void *arg);
+void* recibirOperacion(int arg);
 void* journalProgramado(void* arg);
 void* gossipProgramado(void* arg);
 void* correrInotify(void*arg);
-
+void modificarConfig();
+void* correrInotify(void*arg);
 
 
 

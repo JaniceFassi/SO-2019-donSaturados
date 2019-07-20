@@ -12,195 +12,7 @@
 #define EVENT_SIZE  ( sizeof (struct inotify_event) + 100 )
 #define BUF_LEN     ( 1024 * EVENT_SIZE )
 
-void* recibirOperacion(void * arg){
-	int cli = *(int*) arg;
-	log_info(logger,"sock: %d",cli);
 
-	char *buffer = malloc(sizeof(char)*2);
-	int b = recvData(cli, buffer, sizeof(char));
-	buffer[1] = '\0';
-	log_info(logger, "Bytes recibidos: %d", b);
-	log_info(logger, "Operacion %d", atoi(buffer));
-
-	int operacion = atoi(buffer);
-	char** desempaquetado;
-	char* paquete;
-	char* tamanioPaq = malloc(sizeof(char)*4);
-
-	if(operacion !=5 && operacion !=6){
-
-
-		recvData(cli,tamanioPaq, sizeof(char)*3);
-		int tamanio = atoi(tamanioPaq);
-
-		if(tamanio!=0){
-			paquete = malloc(tamanio + sizeof(char));
-			recvData(cli, paquete, tamanio);
-
-			desempaquetado = string_n_split(paquete, 5, ";");
-
-		}
-		else{
-			desempaquetado[0]=NULL;
-		}
-
-	}
-
-	char* nombreTabla;
-	u_int16_t key;
-	char* value;
-	char* consistencia;
-	int particiones;
-	long tiempoCompactacion;
-	int resp;
-	char* rta;
-	char* tabla;
-
-
-	switch (operacion) {
-				case 0: //SELECT
-					nombreTabla = desempaquetado[0];
-					key = atoi(desempaquetado[1]);
-					rta = mSelect(nombreTabla, key);
-
-					if(strcmp(rta, "3")==1){
-						char* msj = malloc(strlen(rta)+4);
-						msj = empaquetar(0, rta);
-						sendData(cli, msj, strlen(msj)*2);
-					}
-
-					else{
-						sendData(cli, rta, sizeof(char)*2);
-					}
-
-					break;
-
-				case 1: //INSERT
-					nombreTabla = desempaquetado[0];
-					key = atoi(desempaquetado[1]);
-					value = desempaquetado[2];
-
-					resp = mInsert(nombreTabla, key, value);
-					sendData(cli, string_itoa(resp), sizeof(char)*2);
-					log_info(logger, "Rta insert %d\n", resp);
-					char*buffer=malloc(2);
-					if(resp == 2){
-						mJournal();
-						resp = mInsert(nombreTabla, key, value);
-						sendData(cli, string_itoa(resp), sizeof(char)*2);
-						log_info(logger, "Rta insert después de un journal %d\n", resp);
-
-						}
-					break;
-
-				case 2: //CREATE
-					nombreTabla = desempaquetado[0];
-					consistencia = desempaquetado[1];
-					particiones = atoi(desempaquetado[2]);
-					tiempoCompactacion = atol(desempaquetado[3]);
-					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
-					sendData(cli, string_itoa(resp), sizeof(char)*2);
-					break;
-
-				case 3: //DESCRIBE
-					nombreTabla = desempaquetado[0];
-					rta =mDescribe(nombreTabla);
-					sendData(cli, rta, strlen(rta)+1);
-					break;
-
-				case 4: //DROP
-					nombreTabla = desempaquetado[0];
-					resp = mDrop(nombreTabla);
-					sendData(cli, string_itoa(resp), sizeof(char)*2);
-
-					break;
-
-				case 5: //JOURNAL
-					resp = mJournal();
-					sendData(cli, string_itoa(resp), sizeof(char)*2);
-					break;
-
-				case 6: //DEVOLVER TABLA DE ACTIVOS
-					tabla =confirmarActivo();
-					sendData(cli, tabla, strlen(tabla)+1);
-					char*tamanio = malloc(sizeof(4));
-					recvData(cli,tamanio,3);
-					char*bufferTabla=malloc(atoi(tamanio)+1);
-					recvData(cli,bufferTabla,atoi(tamanio));
-					desempaquetarTablaSecundaria(bufferTabla);
-					break;
-
-
-				}
-	//responder 0 si todo bien, 1 si salio mal
-	close(cli);
-	return NULL;
-}
-
-void* gestionarConexiones (void* arg){
-	u_int16_t puertoServer = config_get_int_value(configuracion, "PUERTO");
-	char* ipServer = config_get_string_value(configuracion, "IP");
-	u_int16_t server;
-
-
-	int servidorCreado = createServer(ipServer, puertoServer, &server);
-
-	if(servidorCreado!=0){
-		log_error(logger, "No se pudo crear el servidor");
-		return NULL;
-	}
-
-	log_info(logger, "Servidor creado exitosamente");
-	listen(server,100000000);
-	log_info(logger, "Servidor escuchando\n");
-
-	while(1){
-
-		u_int16_t cliente;
-		int salioBien = acceptConexion(server, &cliente, 0);
-		if(salioBien == 0){
-			log_info(logger, "Recibí una conexión");
-			pthread_t atiendeCliente;
-			pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
-			pthread_detach(atiendeCliente);
-
-		}
-
-
-	}
-	return NULL;
-}
-void* correrInotify(void*arg){
-
-	while(abortar){
-			char buffer[BUF_LEN];
-			int file_descriptor = inotify_init();
-			if (file_descriptor < 0) {
-				perror("inotify_init");
-			}
-			int watch_descriptor = inotify_add_watch(file_descriptor, pathConfig, IN_MODIFY );
-			int length = read(file_descriptor, buffer, BUF_LEN);
-			if (length < 0) {
-				perror("read");
-			}
-			modificarConfig();
-		}
-
-	return NULL;
-}
-
-void modificarConfig(){
-	t_config *configInotify;
-	configInotify = read_config();
-	retardoJournal = config_get_int_value(configInotify,"RETARDO_JOURNAL")*1000;
-	retardoGossip = config_get_int_value(configInotify, "RETARDO_GOSSIPING")*10000;
-	log_info(logger, "Se modificó la config");
-	config_destroy(configInotify);
-
-
-
-
-}
 
 int main(void) {
 
@@ -212,18 +24,20 @@ int main(void) {
 		return 1;
 
 	}
-/*
-	mInsert("POSTRES", 1, "FLAN");
+
+/*	mInsert("POSTRES", 1, "FLAN");
 	mInsert("POSTRES", 2, "HELADO");
-	mInsert("POSTRES", 3, "HELADO");
-	mInsert("PROFESIONES", 1, "DOCTOR");
+	mInsert("POSTRES", 3, "CHOCOLATE");
+	mSelect("PROFESIONES", 1);
+	mostrarMemoria();
+	sleep(5);
 	mInsert("PROFESIONES", 2, "MAESTRO");
 	mInsert("PROFESIONES", 5, "CHEF");
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
 */
-	pthread_t inotify;
+		pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 
 
@@ -245,6 +59,7 @@ int main(void) {
 	pthread_join(hiloConsola, (void*)&fin);
 	if(fin == 0){
 		pthread_cancel(gestorConexiones);
+		pthread_cancel(inotify);
 		//pthread_cancel(journalTemporal);
 		//pthread_cancel(gossipTemporal);
 		log_info(logger, "Se apagará la memoria de forma correcta");
@@ -257,6 +72,7 @@ int main(void) {
 
 	}
 
+	mostrarMemoria();
 	finalizar();
 	return EXIT_SUCCESS;
 }
@@ -402,6 +218,201 @@ int main(void) {
  //-----------------------------------------------------------//
  //---------------------AUXILIARES DE HILOS------------------//
  //---------------------------------------------------------//
+ void* recibirOperacion(int cli){
+
+ 	log_info(logger,"sock: %d",cli);
+
+ 	char *buffer = malloc(sizeof(char)*2);
+ 	int b = recvData(cli, buffer, sizeof(char));
+ 	buffer[1] = '\0';
+ 	log_info(logger, "Bytes recibidos: %d", b);
+ 	log_info(logger, "Operacion %d", atoi(buffer));
+
+ 	int operacion = atoi(buffer);
+ 	char** desempaquetado;
+ 	char* paquete;
+ 	char* tamanioPaq = malloc(sizeof(char)*4);
+
+ 	if(operacion !=5 && operacion !=6){
+
+
+ 		recvData(cli,tamanioPaq, sizeof(char)*3);
+ 		int tamanio = atoi(tamanioPaq);
+
+ 		if(tamanio!=0){
+ 			paquete = malloc(tamanio + sizeof(char));
+ 			recvData(cli, paquete, tamanio);
+
+ 			desempaquetado = string_n_split(paquete, 5, ";");
+
+ 		}
+ 		else{
+
+ 			strcpy(desempaquetado[0], "global");
+
+ 		}
+
+ 	}
+
+ 	char* nombreTabla;
+ 	u_int16_t key;
+ 	char* value;
+ 	char* consistencia;
+ 	int particiones;
+ 	long tiempoCompactacion;
+ 	int resp;
+ 	char* rta;
+ 	char* tabla;
+ 	char* rtaFull;
+
+ 	switch (operacion) {
+ 				case 0: //SELECT
+ 					nombreTabla = desempaquetado[0];
+ 					key = atoi(desempaquetado[1]);
+ 					rta = mSelect(nombreTabla, key);
+
+ 					if(strcmp(rta, "3")==1){
+ 						char* msj = malloc(strlen(rta)+4);
+ 						msj = empaquetar(0, rta);
+ 						sendData(cli, msj, strlen(msj)*2);
+ 					}
+
+ 					else{
+ 						sendData(cli, rta, sizeof(char)*2);
+ 					}
+
+ 					break;
+
+ 				case 1: //INSERT
+ 					nombreTabla = desempaquetado[0];
+ 					key = atoi(desempaquetado[1]);
+ 					value = desempaquetado[2];
+
+ 					resp = mInsert(nombreTabla, key, value);
+ 					log_info(logger, "Antes de responder el insert");
+ 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 					log_info(logger, "Rta insert %d\n", resp);
+ 					rtaFull= malloc(2);
+
+ 					if(resp == 2){
+ 						recvData(cli, rtaFull, sizeof(char));
+ 						buffer[1]='\0';
+ 						if(atoi(rtaFull)==5){
+ 							mJournal();
+ 							resp = mInsert(nombreTabla, key, value);
+ 							sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 							log_info(logger, "Rta insert después de un journal %d\n", resp);
+ 							}
+ 						}
+
+ 					break;
+
+ 				case 2: //CREATE
+ 					nombreTabla = desempaquetado[0];
+ 					consistencia = desempaquetado[1];
+ 					particiones = atoi(desempaquetado[2]);
+ 					tiempoCompactacion = atol(desempaquetado[3]);
+ 					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
+ 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 					break;
+
+ 				case 3: //DESCRIBE
+ 					nombreTabla = desempaquetado[0];
+ 					rta =mDescribe(nombreTabla);
+ 					sendData(cli, rta, strlen(rta)+1);
+ 					break;
+
+ 				case 4: //DROP
+ 					nombreTabla = desempaquetado[0];
+ 					resp = mDrop(nombreTabla);
+ 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+
+ 					break;
+
+ 				case 5: //JOURNAL
+ 					resp = mJournal();
+ 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 					break;
+
+ 				case 6: //DEVOLVER TABLA DE ACTIVOS
+ 					tabla =confirmarActivo();
+ 					sendData(cli, tabla, strlen(tabla)+1);
+ 					char*tamanio = malloc(sizeof(4));
+ 					recvData(cli,tamanio,3);
+ 					char*bufferTabla=malloc(atoi(tamanio)+1);
+ 					recvData(cli,bufferTabla,atoi(tamanio));
+ 					desempaquetarTablaSecundaria(bufferTabla);
+ 					break;
+
+
+ 				}
+ 	//responder 0 si salio bien, 1 si salio mal
+ 	close(cli);
+ 	return NULL;
+ }
+
+ void* gestionarConexiones (void* arg){
+ 	u_int16_t puertoServer = config_get_int_value(configuracion, "PUERTO");
+ 	char* ipServer = config_get_string_value(configuracion, "IP");
+ 	u_int16_t server;
+
+
+ 	int servidorCreado = createServer(ipServer, puertoServer, &server);
+
+ 	if(servidorCreado!=0){
+ 		log_error(logger, "No se pudo crear el servidor");
+ 		return NULL;
+ 	}
+
+ 	log_info(logger, "Servidor creado exitosamente");
+ 	listen(server,100000000);
+ 	log_info(logger, "Servidor escuchando\n");
+
+ 	while(1){
+
+ 		u_int16_t cliente;
+ 		int salioBien = acceptConexion(server, &cliente, 0);
+ 		if(salioBien == 0){
+ 			log_info(logger, "Recibí una conexión");
+ 			pthread_t atiendeCliente;
+ 			pthread_create(&atiendeCliente, NULL, recibirOperacion, (void*)cliente);
+ 			pthread_detach(atiendeCliente);
+
+ 		}
+
+
+ 	}
+ 	return NULL;
+ }
+ void* correrInotify(void*arg){
+
+ 	while(abortar){
+ 			char buffer[BUF_LEN];
+ 			int file_descriptor = inotify_init();
+ 			if (file_descriptor < 0) {
+ 				perror("inotify_init");
+ 			}
+ 			int watch_descriptor = inotify_add_watch(file_descriptor, pathConfig, IN_MODIFY );
+ 			int length = read(file_descriptor, buffer, BUF_LEN);
+ 			if (length < 0) {
+ 				perror("read");
+ 			}
+ 			modificarConfig();
+ 		}
+
+ 	return NULL;
+ }
+
+ void modificarConfig(){
+ 	t_config *configInotify;
+ 	configInotify = read_config();
+ 	retardoJournal = config_get_int_value(configInotify,"RETARDO_JOURNAL")*1000;
+ 	retardoGossip = config_get_int_value(configInotify, "RETARDO_GOSSIPING")*10000;
+ 	log_info(logger, "Se modificó la config");
+ 	config_destroy(configInotify);
+
+ }
+
 
  void* consola(void* arg){
 
@@ -597,13 +608,18 @@ int main(void) {
 	 u_int16_t lfsSock = crearConexionLFS();
 
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+	 log_info(logger, "Paquete select %s", paqueteListo);
 
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 	 if(atoi(buffer)==0){
 		 char* tam = malloc(sizeof(char)*4);
+
 		 recvData(lfsSock, tam, sizeof(char)*3);
+		 tam[4]= '\0';
 		 int t = atoi(tam);
+
+		 log_info(logger, "Tamanio value %d", t);
 		 value = malloc(t+sizeof(char));
 		 recvData(lfsSock, value, t);
 		 log_info(logger, "Se recibio el valor %s", value);
@@ -623,9 +639,10 @@ int main(void) {
 
 		 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 		 char* paqueteListo = empaquetar(1, datos);
-		u_int16_t lfsSock = crearConexionLFS();
-		 log_info(logger, "Paquete insert %s", datos);
+		 u_int16_t lfsSock = crearConexionLFS();
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		 log_info(logger, "Paquete insert %s", paqueteListo);
+
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
@@ -641,13 +658,17 @@ int main(void) {
 	 char* describeGlobal = malloc(sizeof(char)*5);
 	 strcpy(describeGlobal, "3000");
 
-	 if(nombreTabla!= NULL){
+	 if(strcmp(nombreTabla, "global")==1){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		 log_info(logger, "Paquete describe %s", paqueteListo);
+
 	 }
 	 else{
 
 		 sendData(lfsSock, describeGlobal, strlen(describeGlobal)+1);
+		 log_info(logger, "Paquete describe %s", describeGlobal);
+
 	 }
 
 
@@ -674,7 +695,7 @@ int main(void) {
 		 log_error(logger, "No se pudo conectar con LFS");
 	 }
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-	 log_info(logger, "Se pidió un create de %s", paqueteListo);
+	 log_info(logger, "Paquete create %s", paqueteListo);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 
@@ -690,6 +711,8 @@ int main(void) {
 	 if(lfsSock == -1){
 	 	 log_error(logger, "No se pudo conectar con LFS");
 	  }
+	 log_info(logger, "Paquete drop %s", paqueteListo);
+
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
@@ -724,14 +747,14 @@ int main(void) {
 
  int FULL(){ //La memoria esta FULL si se cumple memoriaLlena() y todas las tablaPaginas estan con flag modificados
 
-	 int i=0;
+
 	 int total=0;
 	 int tam =list_size(tablaSegmentos);
 	 if(tam==0)return 0;
 	 segmento* aux;
 
 	 if(!memoriaLlena()){
-		 for(i;i<tam;i++){
+		 for(int i = 0;i<tam;i++){
 			 aux = list_get(tablaSegmentos,i);
 			 total += todosModificados(aux);
 		 }
@@ -854,28 +877,44 @@ int main(void) {
 
 
  void eliminarDeListaUsos(int nroMarcoAEliminar){
-
  	int index=0;
+ 	log_info(logger, "Entré a la funcion maldita");
 
- 	int tieneMismoNro(posMarcoUsado* p){
- 		if((p->nroMarco) != nroMarcoAEliminar) index++;
- 		return (p->nroMarco) == nroMarcoAEliminar;
+ 	while(index<listaDeUsos->elements_count){
+ 		posMarcoUsado *pos = list_get(listaDeUsos, index);
+ 		if(pos->nroMarco == nroMarcoAEliminar){
+ 			break;
+ 		}
+ 		index++;
  	}
 
- 	posMarcoUsado* nuevo = list_find(listaDeUsos,(void*)tieneMismoNro);
+ 	if(index<= listaDeUsos->elements_count){
+ 		log_info(logger, "Encontre el marco");
+ 		posMarcoUsado *p = list_remove(listaDeUsos,index);
+ 		free(p);
+ 		log_info(logger, "Sali del list remove");
 
- 	list_remove(listaDeUsos,index);
+ 	}
+ 	else{
+ 		log_error(logger, "No encontré el marco");
+ 	}
 
  }
 
 
  void actualizarListaDeUsos(int nroMarco){
 
- 	int tieneMismoMarco(posMarcoUsado * aux){
- 		return aux->nroMarco == nroMarco;
+ 	bool tieneMismoMarco(posMarcoUsado * aux){
+ 		if(aux->nroMarco == nroMarco){
+ 			return true;
+ 		}
+ 		else{
+ 			return false;
+ 		}
+
  	}
 
- 	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,tieneMismoMarco);
+ 	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,(void*) tieneMismoMarco);
 
  	marcoParaActualizar->posicionDeUso = posicionUltimoUso;
  	posicionUltimoUso++;
@@ -1030,9 +1069,12 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				agregarPagina(seg,pag);
 				timestampActual = time(NULL);
 				agregarDato(timestampActual, key, valor, pag);
+				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
+				eliminarDeListaUsos(pag->nroMarco);
 			}else{
 				agregarDato(time(NULL),key,valor,pag);
+				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
 				eliminarDeListaUsos(pag->nroMarco);
 			}
@@ -1047,7 +1089,9 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarPagina(seg,pag);
 		timestampActual = time(NULL);
 		agregarDato(timestampActual, key, valor, pag);
+		log_info(logger, "VOLVI DE AGREGAR DATO");
 		pag->modificado = 1;
+		eliminarDeListaUsos(pag->nroMarco);
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
@@ -1088,6 +1132,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			if(pNueva->modificado == 0)actualizarListaDeUsos(pNueva->nroMarco);
 		}
 		else{
+			if(!FULL()){
 			pNueva = crearPagina();
 			valorPagNueva = selectLissandra(nombreTabla,key);
 			if(valorPagNueva != NULL){
@@ -1103,10 +1148,15 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			else{
 				return noExiste;
 			}
+			}
+			else{
+				return 2;
+			}
 
 		}
 	}
 	else{
+		if(!FULL()){
 		pthread_mutex_lock(&lockTablaSeg);
 		nuevo = crearSegmento(nombreTabla);
 		list_add(tablaSegmentos, nuevo);
@@ -1129,7 +1179,10 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		else{
 			return noExiste;
 		}
-
+		}
+		else{
+			return 2;
+		}
 	}
 
 
