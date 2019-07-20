@@ -365,6 +365,7 @@ int mySelect(char * table, char *key){
 
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
+			log_info(logger,"\n\n\n\n\n\n JOURNAL \n\n\n\n\n\n");
 			sendData(sock,"5",2);//journal
 			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
@@ -461,7 +462,7 @@ int insert(char* table ,char* key ,char* value){
 	log_info(logger,"resultado INSERT: %i", atoi(resultado));
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
-			log_info(logger,"journal");
+			log_info(logger,"\n\n\n\n\n\n JOURNAL \n\n\n\n\n\n");
 			sendData(sock,"5",2);//journal
 			char *res= malloc(2);
 			recvData(sock,res,2);

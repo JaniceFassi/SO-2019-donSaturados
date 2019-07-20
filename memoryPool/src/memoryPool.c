@@ -765,7 +765,7 @@ int main(void) {
 
  int memoriaLlena(){ //Devuelve 0 si esta llena (no se fija los flags modificados)
 
- 	int algunoLibre(marco* unMarco){
+ 	bool algunoLibre(marco* unMarco){
  		return unMarco->estaLibre == 0;
  	}
  	return list_any_satisfy(tablaMarcos,(void*)algunoLibre);
@@ -868,32 +868,25 @@ int main(void) {
 
  int LRU(){
 
-	 int i=0,menor,tamLista,nroMarcoAborrar;
-	 posMarcoUsado* aux= list_get(listaDeUsos,0);
+	 int i=1,menor,tamLista,nroMarcoAborrar;
 	 tamLista = list_size(listaDeUsos);
+	 posMarcoUsado* aux= list_get(listaDeUsos,0);
+	 menor = aux->posicionDeUso;
+	 nroMarcoAborrar= aux->nroMarco;
 
-
-	 if(tamLista != 0){ //es decir, si la lista de usos NO esta vacia
-		 menor = aux->posicionDeUso;
-		 nroMarcoAborrar= aux->nroMarco;
-
-		 while(i<tamLista){
-			 aux = list_get(listaDeUsos,i);
-			 if(menor > aux->posicionDeUso){
-				 menor = aux->posicionDeUso;
-				 nroMarcoAborrar = aux->nroMarco;
-			 }else{
-				 i++;
-			 }
+	 while(i<tamLista){
+		 aux = list_get(listaDeUsos,i);
+		 if(menor > aux->posicionDeUso){
+			 menor = aux->posicionDeUso;
+			 nroMarcoAborrar = aux->nroMarco;
+		 }else{
+			 i++;
 		 }
 	 }
-	 else{
+	 eliminarDeListaUsos(nroMarcoAborrar);
 		//Si llegamos aca la memoria SI o SI esta FULL 
 		//Avisarle al Kernel FULL
-		nroMarcoAborrar=0;
 	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio (DEBERIA)
-	 }
-
 	 liberarMarco(nroMarcoAborrar);
 
 	 return nroMarcoAborrar;
@@ -926,7 +919,8 @@ int main(void) {
 	  	list_iterate(listaDeUsos,(void*) itera);
 
 	 log_info(logger,"nro: %i" ,nroMarco);
- 	bool tieneMismoMarco(posMarcoUsado * aux){
+ 	int tieneMismoMarco(posMarcoUsado * aux){
+ 		log_info(logger,"true o false %i",aux->nroMarco != nroMarco);
  		return aux->nroMarco != nroMarco;
  	}
  	log_info(logger,"antes del listfind en lru");
@@ -1009,6 +1003,11 @@ int conseguirIndexSeg(segmento* nuevo){
 
 void eliminarSegmento(segmento* nuevo){
 
+	/*void itera(pagina *p){
+		if(p->modificado==)
+	}*/
+	//list_iterate(nuevo->tablaPaginas,(void*) itera);
+
 	int index = conseguirIndexSeg(nuevo); //se usa para el free
 
 	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
@@ -1074,54 +1073,59 @@ void finalizar(){
 
 
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
+	log_info(logger,"\n\n LA KEY ES : %i " , key);
 	if(strlen(valor)+1 <=maxValue){
 	if(!FULL()){
-	segmento *seg = buscarSegmento(nombreTabla);
-	pagina *pag;
-	long timestampActual;
+		segmento *seg = buscarSegmento(nombreTabla);
+		pagina *pag;
+		long timestampActual;
 
-	if(seg != NULL){
-		pthread_mutex_lock(&seg->lockSegmento);
-		pag = buscarPaginaConKey(seg, key);
-			if (pag == NULL){
-				pag = crearPagina();
-				agregarPagina(seg,pag);
-				timestampActual = time(NULL);
-				agregarDato(timestampActual, key, valor, pag);
-				log_info(logger, "VOLVI DE AGREGAR DATO");
-				pag->modificado = 1;
-				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+		if(seg != NULL){ //existe el segmento
+			pthread_mutex_lock(&seg->lockSegmento);
+			pag = buscarPaginaConKey(seg, key);
+				if (pag == NULL){ //no existe la pagina
+					pag = crearPagina();
+					agregarPagina(seg,pag);
+					timestampActual = time(NULL);
+					agregarDato(timestampActual, key, valor, pag);
+					log_info(logger, "VOLVI DE AGREGAR DATO");
+					pag->modificado = 1;
+					log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 
-			}else{
-				agregarDato(time(NULL),key,valor,pag);
-				log_info(logger, "VOLVI DE AGREGAR DATO");
-				pag->modificado = 1;
-				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+				}else{ //existe la pagina
+					agregarDato(time(NULL),key,valor,pag);
+					log_info(logger, "VOLVI DE AGREGAR DATO");
+					//pag->modificado = 1;
+					log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 
-				eliminarDeListaUsos(pag->nroMarco);
-				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 
-			}
+					if(pag->modificado!=1){
+						eliminarDeListaUsos(pag->nroMarco);
+					}
+					pag->modificado = 1;
+					log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
+				}
+				pthread_mutex_unlock(&seg->lockSegmento);
+		}else{ //no existe el segmento
+			pthread_mutex_lock(&lockTablaSeg);
+			seg = crearSegmento(nombreTabla);
+			pthread_mutex_lock(&seg->lockSegmento);
+			list_add(tablaSegmentos, seg);
+			pthread_mutex_unlock(&lockTablaSeg);
+			pagina *pag = crearPagina();
+			agregarPagina(seg,pag);
+			timestampActual = time(NULL);
+			agregarDato(timestampActual, key, valor, pag);
+			log_info(logger, "VOLVI DE AGREGAR DATO");
+			pag->modificado = 1;
+			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+
 			pthread_mutex_unlock(&seg->lockSegmento);
-	}else{
-		pthread_mutex_lock(&lockTablaSeg);
-		seg = crearSegmento(nombreTabla);
-		pthread_mutex_lock(&seg->lockSegmento);
-		list_add(tablaSegmentos, seg);
-		pthread_mutex_unlock(&lockTablaSeg);
-		pagina *pag = crearPagina();
-		agregarPagina(seg,pag);
-		timestampActual = time(NULL);
-		agregarDato(timestampActual, key, valor, pag);
-		log_info(logger, "VOLVI DE AGREGAR DATO");
-		pag->modificado = 1;
-		log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+		}
+		log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
+		return 0;
 
-		pthread_mutex_unlock(&seg->lockSegmento);
-	}
-	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
-	return 0;
-		
 	}
 	else{
 		log_info(logger,"La memoria esta FULL, no se puede hacer el INSERT");
@@ -1187,9 +1191,9 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 				return valorPagNueva;
 			}
-			else{
-				return noExiste;
-			}
+				else{
+					return noExiste;
+				}
 			}
 			else{
 				return estoyFull;
