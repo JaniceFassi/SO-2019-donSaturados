@@ -131,6 +131,10 @@ int main(void) {
 			unMarco->estaLibre = 0;
 			pthread_mutex_init(&unMarco->lockMarco, NULL);
 			list_add(tablaMarcos, unMarco);
+			posMarcoUsado *pos = malloc(sizeof(posMarcoUsado));
+			pos->nroMarco = i;
+			pos->posicionDeUso = 0;
+			list_add(listaDeUsos, pos);
 		}
 
 	pthread_mutex_init(&lockTablaSeg, NULL);
@@ -270,13 +274,29 @@ int main(void) {
  					nombreTabla = desempaquetado[0];
  					key = atoi(desempaquetado[1]);
  					rta = mSelect(nombreTabla, key);
-
+ 					//si no existe
  					if(strcmp(rta, "3")==1){
  						char* msj = malloc(strlen(rta)+4);
  						msj = empaquetar(0, rta);
  						sendData(cli, msj, strlen(msj)*2);
  					}
-
+ 					//si estoy full
+ 					else if(strcmp(rta, "2")==0){
+ 						rtaFull= malloc(2);
+ 						 if(resp == 2){
+ 							recvData(cli, rtaFull, sizeof(char));
+ 						 	buffer[1]='\0';
+ 						 	if(atoi(rtaFull)==5){
+ 						 		mJournal();
+ 						 		rta = mSelect(nombreTabla, key);
+ 						 		char* msj = malloc(strlen(rta)+4);
+ 						 		msj = empaquetar(0, rta);
+ 						 		sendData(cli, msj, strlen(msj)*2);
+ 						 		log_info(logger, "Rta select después de un journal %s\n", msj);
+ 						 		}
+ 						 }
+ 					}
+ 					//si no existe en fs
  					else{
  						sendData(cli, rta, sizeof(char)*2);
  					}
@@ -1120,6 +1140,8 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 	char* valor;
 	char* noExiste = malloc(sizeof(char));
 	strcpy(noExiste, "3");
+	char* estoyFull = malloc(sizeof(char));
+	strcpy(estoyFull, "2");
 	log_info(logger, "Se pidio un select de la tabla %s key %d", nombreTabla, key);
 	if(nuevo!= NULL){
 
@@ -1128,8 +1150,10 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		if(pNueva != NULL){
 			valor = (char*)conseguirValor(pNueva);
 			log_info(logger, "Se seleccionó el valor %s", valor);
+			if(pNueva->modificado == 0){
+				actualizarListaDeUsos(pNueva->nroMarco);
+			}
 			return valor;
-			if(pNueva->modificado == 0)actualizarListaDeUsos(pNueva->nroMarco);
 		}
 		else{
 			if(!FULL()){
@@ -1150,7 +1174,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			}
 			}
 			else{
-				return 2;
+				return estoyFull;
 			}
 
 		}
@@ -1181,7 +1205,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		}
 		}
 		else{
-			return 2;
+			return estoyFull;
 		}
 	}
 
