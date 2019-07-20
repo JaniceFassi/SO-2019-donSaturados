@@ -1344,8 +1344,9 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto){
 char* empaquetarTablaActivas(){
 	int i=0;
 	char* paquetote=string_new();
-	infoMemActiva* aux = list_get(tablaMemActivas,i); //Necesita el tamanio el kernel?????
-	while(aux){
+	infoMemActiva* aux = list_get(tablaMemActivas,i);
+
+	while(i<(tablaMemActivas->elements_count)){
 		string_append(&paquetote,formatearTablaGossip(aux->nroMem,aux->ip,aux->puerto));
 		i++;
 		aux = list_get(tablaMemActivas,i);
@@ -1368,8 +1369,6 @@ void desempaquetarTablaSecundaria(char* paquete){
 	}
 } // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
-
-
 int pedirConfirmacion(char*ip,char* puerto){
 	u_int16_t cliente;
 	char* codOpe = "6";
@@ -1389,7 +1388,7 @@ int pedirConfirmacion(char*ip,char* puerto){
 	recvData(cliente,buffer,atoi(tamTabla));
 	desempaquetarTablaSecundaria(buffer);  //aca actualizo mi tabla con lo que me envian
 
-	char*paquete = empaquetarTablaActivas();
+	char*paquete = confirmarActivo();
 	sendData(cliente,paquete,strlen(paquete)+1);
 
 	return 1;
@@ -1461,7 +1460,7 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
     int i=1;
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
-        if(aux->ip == ip){
+        if(strcmp(aux->ip,ip)==0){
             list_remove(tablaMemActivas,i);
         }
         i++;
