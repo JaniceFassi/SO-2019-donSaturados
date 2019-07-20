@@ -348,6 +348,7 @@ int mySelect(char * table, char *key){
 	if(atoi(resultado)==0){
 		char *tamanioRta=malloc(4);
 		recvData(sock,tamanioRta,3);
+		tamanioRta[3]='\0';
 		char *rta=malloc(atoi(tamanioRta));
 		recvData(sock,rta,atoi(tamanioRta));
 		log_info(logger,"Resultado SELECT : %s", rta);
@@ -622,12 +623,12 @@ int describe(char *table){
 	else{
 		// ver temas de comunicacion con memoria
 		if(tamanio<10){
-			msj=string_from_format("%i00%i%s",op,tamanio+1,table);
+			msj=string_from_format("%i00%i%s",op,tamanio,table);
 		}else{
 			if(tamanio<100){
-				msj=string_from_format("%i0%i%s",op,tamanio+1,table);
+				msj=string_from_format("%i0%i%s",op,tamanio,table);
 			}
-			else msj=string_from_format("%i%i%s",op,tamanio+1,table);
+			else msj=string_from_format("%i%i%s",op,tamanio,table);
 		}
 	}
 
@@ -1072,7 +1073,7 @@ struct metadataTabla * buscarMetadataTabla(char* table){
 
 void *describeGlobal(){
 	while(terminaHilo==0){
-		usleep(retardoMetadata*1000);
+		usleep(retardoMetadata*100000);
 		describe(NULL);
 		log_info(logger,"Describe global automático");
 	}

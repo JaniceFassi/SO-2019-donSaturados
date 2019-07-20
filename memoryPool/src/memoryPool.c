@@ -246,7 +246,9 @@ int main(void) {
 
 
  		recvData(cli,tamanioPaq, sizeof(char)*3);
+ 		tamanioPaq[3]='\0';
  		int tamanio = atoi(tamanioPaq);
+ 		log_info(logger, tamanioPaq );
 
  		if(tamanio!=0){
  			paquete = malloc(tamanio + sizeof(char));
@@ -256,9 +258,9 @@ int main(void) {
 
  		}
  		else{
-
+ 			log_info(logger, "Antes strcpy");
  			strcpy(desempaquetado[0], "global");
-
+ 			log_info(logger, "Despues strcpy");
  		}
 
  	}
@@ -279,33 +281,39 @@ int main(void) {
  					nombreTabla = desempaquetado[0];
  					key = atoi(desempaquetado[1]);
  					rta = mSelect(nombreTabla, key);
+ 					log_info(logger,rta);
  					//si no existe
- 					if(strcmp(rta, "3")==1){
- 						char* msj = malloc(strlen(rta)+4);
- 						msj = empaquetar(0, rta);
- 						sendData(cli, msj, strlen(msj)*2);
+ 					if(strcmp(rta, "2")!=0){
+ 						//char* msj = malloc(strlen(rta)+4);
+ 						if(strcmp(rta, "3")==0){
+ 							log_info(logger,"mando que no existe");
+ 							sendData(cli, rta, strlen(rta)+1);
+ 						}else{
+
+ 							char* msj = malloc(strlen(rta)+4);
+ 							msj = empaquetar(0, rta);
+ 							log_info(logger,"mando que existe rta:%s",msj);
+ 							sendData(cli, msj, strlen(msj)+1);
+ 						}
  					}
  					//si estoy full
- 					else if(strcmp(rta, "2")==0){
+ 					else{
  						rtaFull= malloc(2);
- 						 if(resp == 2){
+
+ 							sendData(cli, rta, strlen(rta)+1);
  							recvData(cli, rtaFull, sizeof(char));
- 						 	buffer[1]='\0';
+ 						 	rtaFull[1]='\0';
  						 	if(atoi(rtaFull)==5){
  						 		mJournal();
  						 		rta = mSelect(nombreTabla, key);
  						 		char* msj = malloc(strlen(rta)+4);
  						 		msj = empaquetar(0, rta);
- 						 		sendData(cli, msj, strlen(msj)*2);
+ 						 		sendData(cli, msj, strlen(msj)+1);
  						 		log_info(logger, "Rta select después de un journal %s\n", msj);
  						 		}
- 						 }
+
  					}
  					//si no existe en fs
- 					else{
- 						sendData(cli, rta, sizeof(char)*2);
- 					}
-
  					break;
 
  				case 1: //INSERT
@@ -343,6 +351,7 @@ int main(void) {
 
  				case 3: //DESCRIBE
  					nombreTabla = desempaquetado[0];
+ 					log_info(logger,desempaquetado[0]);
  					rta =mDescribe(nombreTabla);
  					sendData(cli, rta, strlen(rta)+1);
  					break;
@@ -683,10 +692,10 @@ int main(void) {
 	 char* describeGlobal = malloc(sizeof(char)*5);
 	 strcpy(describeGlobal, "3000");
 
-	 if(strcmp(nombreTabla, "global")==1){
+	 if(strcmp(nombreTabla, "global")!=0){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-		 log_info(logger, "Paquete describe %s", paqueteListo);
+		 log_info(logger, "Paquete describe con tabla %s", paqueteListo);
 
 	 }
 	 else{
@@ -902,45 +911,27 @@ int main(void) {
 
 
  void eliminarDeListaUsos(int nroMarcoAEliminar){
- 	int index=0;
- 	log_info(logger, "Entré a la funcion maldita");
-
- 	while(index<listaDeUsos->elements_count){
- 		posMarcoUsado *pos = list_get(listaDeUsos, index);
- 		if(pos->nroMarco == nroMarcoAEliminar){
- 			break;
- 		}
- 		index++;
- 	}
-
- 	if(index<= listaDeUsos->elements_count){
- 		log_info(logger, "Encontre el marco");
- 		posMarcoUsado *p = list_remove(listaDeUsos,index);
- 		free(p);
- 		log_info(logger, "Sali del list remove");
-
- 	}
- 	else{
- 		log_error(logger, "No encontré el marco");
- 	}
-
+	 bool itera(posMarcoUsado *aux){
+		 return aux->nroMarco == nroMarcoAEliminar;
+	 }
+	 list_remove_by_condition(listaDeUsos,(void*)itera);
  }
 
 
  void actualizarListaDeUsos(int nroMarco){
+	 log_info(logger,"holaa %i" , list_size(listaDeUsos));
+	  	void itera(posMarcoUsado *aux){
+	  		log_info(logger,"marco %i", aux->nroMarco);
+	  	}
+	  	list_iterate(listaDeUsos,(void*) itera);
 
+	 log_info(logger,"nro: %i" ,nroMarco);
  	bool tieneMismoMarco(posMarcoUsado * aux){
- 		if(aux->nroMarco == nroMarco){
- 			return true;
- 		}
- 		else{
- 			return false;
- 		}
-
+ 		return aux->nroMarco != nroMarco;
  	}
-
+ 	log_info(logger,"antes del listfind en lru");
  	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,(void*) tieneMismoMarco);
-
+ 	log_info(logger,"despues del listfind en lru");
  	marcoParaActualizar->posicionDeUso = posicionUltimoUso;
  	posicionUltimoUso++;
  }
@@ -1143,10 +1134,9 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 	pagina* pNueva;
 	char* valorPagNueva;
 	char* valor;
-	char* noExiste = malloc(sizeof(char));
-	strcpy(noExiste, "3");
-	char* estoyFull = malloc(sizeof(char));
-	strcpy(estoyFull, "2");
+	char* noExiste =string_duplicate("3");
+	char* estoyFull = string_duplicate("2");
+
 	log_info(logger, "Se pidio un select de la tabla %s key %d", nombreTabla, key);
 	if(nuevo!= NULL){
 
@@ -1155,9 +1145,12 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		if(pNueva != NULL){
 			valor = (char*)conseguirValor(pNueva);
 			log_info(logger, "Se seleccionó el valor %s", valor);
+			log_info(logger, "Encontro segmento y pagina");
 			if(pNueva->modificado == 0){
 				actualizarListaDeUsos(pNueva->nroMarco);
 			}
+			log_info(logger, "salio lru");
+			log_info(logger, "Se seleccionó el valor despues de lru %s", valor);
 			return valor;
 		}
 		else{
@@ -1254,7 +1247,7 @@ int mDrop(char* nombreTabla){
 
 
 int mJournal(){
-	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos");
+	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");
 	pthread_mutex_lock(&lockTablaSeg);
 	pthread_mutex_lock(&lockTablaMarcos);
 
