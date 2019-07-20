@@ -60,7 +60,7 @@ int crearNivelMetadata(){
 	}
 	free(path);
 	path=nivelMetadata(1);
-	if(archivoValido(path)==0){						//SI NO EXISTE EL METADATA.BIN CREA TODO
+	if(archivoValido(path)==0){						//SI NO EXISTE EL METADATA.BIN CREA
 		//crearMetaLFS();							//PIDE LOS VALORES POR CONSOLA. SE PUEDE SACAR?
 		oldCrearMetaLFS(64,4096,"Lissandra");
 	}else{
@@ -171,6 +171,7 @@ archAbierto *obtenerArch(char *tabla, int extension){
 	return NULL;
 }
 void nuevoArch(char *tabla, int extension){
+	sem_wait(criticaTablaGlobal);
 	if(archivoYaAbierto(tabla,extension)){
 		archAbierto *obtenido=obtenerArch(tabla,extension);
 		obtenido->contador+=1;
@@ -181,6 +182,7 @@ void nuevoArch(char *tabla, int extension){
 		nuevo->nombreTabla=string_from_format("%s",tabla);
 		list_add(tablaArchGlobal,nuevo);
 	}
+	sem_post(criticaTablaGlobal);
 }
 
 void liberarArch(archAbierto *nuevo){
@@ -188,21 +190,21 @@ void liberarArch(archAbierto *nuevo){
 	free(nuevo);
 }
 
-int calcularIndexArch(char *tabla,int extension){
-	int index=0;
+void sacarArch(char *tabla,int extension){
 	bool abierto(archAbierto *es){
-			if(tabla==es->nombreTabla && extension==es->extension){
-				return true;
+			if(string_equals_ignore_case(es->nombreTabla,tabla)) {
+				if(extension==es->extension){
+					return true;
+				}
 			}
-			index++;
 			return false;
 		}
-	list_iterate(tablaArchGlobal, (void*) abierto);
-	return index;
-}
+	void mostrar(archAbierto *es){
+		log_info(logger,"nombre tabla %s",es->nombreTabla);
+		log_info(logger,"%i",es->extension);
+	}
+	list_iterate(tablaArchGlobal,(void *)mostrar);
 
-void sacarArch(char *tabla,int extension){
-	int index=calcularIndexArch(tabla,extension);
-	archAbierto *victima=list_remove(tablaArchGlobal,index-1);
+	archAbierto *victima=list_remove_by_condition(tablaArchGlobal,(void *)abierto);
 	liberarArch(victima);
 }

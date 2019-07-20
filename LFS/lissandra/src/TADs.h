@@ -111,8 +111,6 @@ t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart);//NUEVA FU
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time);
 Tabla *find_tabla_by_name_in(char *name, t_list *l);
 t_list *regDep(t_list *aDepu);
-int calcularIndexTab(Tabla *t,t_list *l);
-int calcularIndexTabPorNombre(char *nombre, t_list *lista);
 
 //FUNCIONES DE CONCATENAR
 char *extension(char *path,int modo);
@@ -128,7 +126,6 @@ char *concatRegistro(Registry *reg);
 char *ponerSeparador(char *linea);
 char *array_A_String(char **array,int cantBloques);
 char *cadenaDeRegistros(t_list *lista);
-int calcularIndexName(char *name);
 //FUNCIONES QUE DESCONCATENAN
 t_list *deChar_Registros(char *buffer);
 Registry *desconcatParaArch(char *linea);

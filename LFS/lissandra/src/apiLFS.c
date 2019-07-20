@@ -12,7 +12,6 @@
 int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 	//RETARDO
 	usleep(configLissandra->retardo*1000);
-	sleep(3);
 	//Verificar que la tabla exista en el file system.
 	char *path=nivelUnaTabla(param_nameTable, 0);
 	if(folderExist(path)==1){
@@ -291,7 +290,6 @@ int drop(char* nameTable){
 
 		free(path);
 		//sacar la tabla del directorio
-		//int index2=calcularIndexName(nameTable)-1;
 		sem_wait(criticaDirectorio);
 		bool encontrar(Sdirectorio* compara){
 			return string_equals_ignore_case(compara->nombre,nameTable);

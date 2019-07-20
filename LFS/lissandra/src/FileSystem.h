@@ -43,6 +43,5 @@ bool archivoYaAbierto(char *tabla,int extension);
 archAbierto *obtenerArch(char *tabla, int extension);
 void nuevoArch(char *tabla, int extension);
 void liberarArch(archAbierto *nuevo);
-int calcularIndexArch(char *tabla,int extension);
 void sacarArch(char *tabla,int extension);
 #endif /* FILESYSTEM_H_ */

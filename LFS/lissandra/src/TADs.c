@@ -765,7 +765,7 @@ void escribirBloque(char *buffer,char **bloques){
 		nroArray++;
 	}
 	if(strlen(buffer)>0){
-		log_info(logger,"estoy intentando convertir un %s en int",bloques[nroArray]);
+		//log_info(logger,"estoy intentando convertir un %s en int",bloques[nroArray]);
 		int nroBloq=atoi(bloques[nroArray]);
 		char *pathB=rutaBloqueNro(nroBloq);
 		//escribir el archivo
@@ -1060,35 +1060,6 @@ t_list* filtrearPorKey(t_list *registros,int key){
 	return list_filter(registros, (void*) misma_key);
 }
 
-int calcularIndexTab(Tabla *tabla,t_list *lista){
-	int index=0;
-	bool encontrar(Tabla *es){
-		return string_equals_ignore_case(es->nombre,tabla->nombre);
-		index++;
-	}
-	list_iterate(lista, (void*) encontrar);
-	return index;
-}
-
-int calcularIndexTabPorNombre(char *name,t_list *lista){
-	int index=0;
-	bool encontrar(char *comparar){
-
-		return string_equals_ignore_case(comparar,name);
-		index++;
-	}
-	list_iterate(lista, (void*) encontrar);
-	return index;
-}
-int calcularIndexName(char *name){
-	int index=0;
-	bool encontrar(Sdirectorio* compara){
-		index++;
-		return string_equals_ignore_case(compara->nombre,name);
-	}
-	list_iterate(directorioP,(void *)encontrar);
-	return index;
-}
 /***********************************************************************************************/
 //FUNCIONES QUE LIBERAN MEMORIA
 
@@ -1256,6 +1227,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 	return arch;
 }
 void cerrarArchivo(char *tabla,int extension, metaArch *arch){
+	sem_wait(criticaTablaGlobal);
 	archAbierto *obtenido=obtenerArch(tabla,extension);
 	obtenido->contador-=1;
 	if(obtenido->contador==0){
@@ -1274,9 +1246,11 @@ void cerrarArchivo(char *tabla,int extension, metaArch *arch){
 		}
 	}
 	borrarMetaArch(arch);
+	sem_post(criticaTablaGlobal);
 }
 
 void cerrarMetaTabGlobal(char *tabla,t_config *arch){
+	sem_wait(criticaTablaGlobal);
 	archAbierto *obtenido=obtenerArch(tabla,3);
 	obtenido->contador-=1;
 	if(obtenido->contador==0){
@@ -1284,6 +1258,7 @@ void cerrarMetaTabGlobal(char *tabla,t_config *arch){
 		sacarArch(tabla,3);
 		sem_post(&tabDirectorio->semaforoMeta);
 	}
+	sem_post(criticaTablaGlobal);
 	config_destroy(arch);
 }
 
