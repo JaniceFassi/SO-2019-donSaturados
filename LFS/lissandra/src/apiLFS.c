@@ -291,9 +291,14 @@ int drop(char* nameTable){
 
 		free(path);
 		//sacar la tabla del directorio
-		int index2=calcularIndexName(nameTable);
+		//int index2=calcularIndexName(nameTable)-1;
 		sem_wait(criticaDirectorio);
-		Sdirectorio *nuevo=list_remove(directorioP,index2-1);
+		bool encontrar(Sdirectorio* compara){
+			return string_equals_ignore_case(compara->nombre,nameTable);
+		}
+
+		Sdirectorio *nuevo=list_remove_by_condition(directorioP,(void *)encontrar);
+		log_info(logger,"se removio %s",nuevo->nombre);
 		liberarTabDirectorio(nuevo);
 		sem_post(criticaDirectorio);
 		//Eliminar carpeta

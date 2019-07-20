@@ -1080,7 +1080,6 @@ int calcularIndexTabPorNombre(char *name,t_list *lista){
 	list_iterate(lista, (void*) encontrar);
 	return index;
 }
-
 int calcularIndexName(char *name){
 	int index=0;
 	bool encontrar(Sdirectorio* compara){
