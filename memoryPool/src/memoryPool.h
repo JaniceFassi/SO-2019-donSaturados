@@ -163,7 +163,8 @@ int estaRepetido(char*ip);
 void agregarMemActiva(int id,char* ip,char*puerto);
 int conseguirIdSecundaria();
 void estaEnActivaElim(char*ip);
-
+void actualizarArchConfig(char*ip,char*puerto);
+void cargarInfoDeSecundaria();
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
