@@ -363,23 +363,26 @@ int mySelect(char * table, char *key){
 	log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
 
 	if(atoi(resultado)!=0){
-		/*if(atoi(resultado)==2){
-			sendData(sock,"6",2);//journal
-			recvData(sock,&resultado,1);
+		if(atoi(resultado)==2){
+			sendData(sock,"5",2);//journal
+			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
 				close(sock);
 				return -1;
 			}
-			sendData(sock,msj,strlen(msj)+1);
-			recvData(sock,&resultado,1);
-			if(atoi(resultado)!=0){
-				close(sock);
-				return -1;
+
+			char *tamanioRta=malloc(4);
+			recvData(sock,tamanioRta,3);
+			char *rta=malloc(atoi(tamanioRta));
+			recvData(sock,rta,atoi(tamanioRta));
+			log_info(logger,"Resultado SELECT : %s", rta);
+				/*if(consola==1){
+					log_info(loggerConsola,"Resultado SELECT : %s",rta);
+				}*/
 			}
-		}
-		else{*/
+		else{
 			return -1;
-		//}
+		}
 	}
 //	free(memAsignada);
 	free(linea);
