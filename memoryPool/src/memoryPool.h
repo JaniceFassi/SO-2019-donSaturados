@@ -114,7 +114,7 @@ segmento* buscarSegmento(char* nombre);
 //FUNCIONES PARA HILOS
 void* consola(void* arg);
 void* gestionarConexiones(void* arg);
-void* recibirOperacion(void * arg);
+void* recibirOperacion(int arg);
 void* gestionarConexiones(void *arg);
 void* journalProgramado(void* arg);
 void* gossipProgramado(void* arg);

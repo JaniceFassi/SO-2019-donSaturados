@@ -12,8 +12,8 @@
 #define EVENT_SIZE  ( sizeof (struct inotify_event) + 100 )
 #define BUF_LEN     ( 1024 * EVENT_SIZE )
 
-void* recibirOperacion(void * arg){
-	int cli = *(int*) arg;
+void* recibirOperacion(int cli){
+
 	log_info(logger,"sock: %d",cli);
 
 	char *buffer = malloc(sizeof(char)*2);
@@ -41,7 +41,9 @@ void* recibirOperacion(void * arg){
 
 		}
 		else{
-			desempaquetado[0]=NULL;
+			desempaquetado = malloc(sizeof(char)*2);
+			strcpy(desempaquetado[0], "");
+
 		}
 
 	}
@@ -85,13 +87,18 @@ void* recibirOperacion(void * arg){
 					sendData(cli, string_itoa(resp), sizeof(char)*2);
 					log_info(logger, "Rta insert %d\n", resp);
 					rtaFull= malloc(2);
-					if(rtaFull == 2){
-						mJournal();
-						resp = mInsert(nombreTabla, key, value);
-						sendData(cli, string_itoa(resp), sizeof(char)*2);
-						log_info(logger, "Rta insert después de un journal %d\n", resp);
 
+					if(resp == 2){
+						recvData(cli, rtaFull, sizeof(char));
+						buffer[1]='\0';
+						if(atoi(rtaFull)==5){
+							mJournal();
+							resp = mInsert(nombreTabla, key, value);
+							sendData(cli, string_itoa(resp), sizeof(char)*2);
+							log_info(logger, "Rta insert después de un journal %d\n", resp);
+							}
 						}
+
 					break;
 
 				case 2: //CREATE
@@ -133,7 +140,7 @@ void* recibirOperacion(void * arg){
 
 
 				}
-	//responder 0 si todo bien, 1 si salio mal
+	//responder 0 si salio bien, 1 si salio mal
 	close(cli);
 	return NULL;
 }
@@ -162,7 +169,7 @@ void* gestionarConexiones (void* arg){
 		if(salioBien == 0){
 			log_info(logger, "Recibí una conexión");
 			pthread_t atiendeCliente;
-			pthread_create(&atiendeCliente, NULL, recibirOperacion, &cliente);
+			pthread_create(&atiendeCliente, NULL, recibirOperacion, (void*)cliente);
 			pthread_detach(atiendeCliente);
 
 		}
@@ -214,17 +221,18 @@ int main(void) {
 
 	}
 
-	mInsert("POSTRES", 1, "FLAN");
+/*	mInsert("POSTRES", 1, "FLAN");
 	mInsert("POSTRES", 2, "HELADO");
-	mInsert("POSTRES", 3, "HELADO");
+	mInsert("POSTRES", 3, "CHOCOLATE");
 	mSelect("PROFESIONES", 1);
+	mostrarMemoria();
 	sleep(5);
 	mInsert("PROFESIONES", 2, "MAESTRO");
-	/*mInsert("PROFESIONES", 5, "CHEF");
+	mInsert("PROFESIONES", 5, "CHEF");
 	mInsert("ANIMALES", 1, "GATO");
 	mInsert("ANIMALES", 2, "PERRO");
 	mInsert("ANIMALES", 3, "JIRAFA");
-
+*/
 		pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 
@@ -240,7 +248,7 @@ int main(void) {
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
-	pthread_t journalTemporal;
+	//pthread_t journalTemporal;
 	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
@@ -259,7 +267,7 @@ int main(void) {
 	//pthread_join(gossipTemporal, NULL);
 
 	}
-*/
+
 	mostrarMemoria();
 	finalizar();
 	return EXIT_SUCCESS;
@@ -295,9 +303,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
 
-	maxValue = 20;
+	//maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -609,7 +617,10 @@ int main(void) {
 		 char* tam = malloc(sizeof(char)*4);
 
 		 recvData(lfsSock, tam, sizeof(char)*3);
+		 tam[4]= '\0';
 		 int t = atoi(tam);
+
+		 log_info(logger, "Tamanio value %d", t);
 		 value = malloc(t+sizeof(char));
 		 recvData(lfsSock, value, t);
 		 log_info(logger, "Se recibio el valor %s", value);
@@ -648,7 +659,7 @@ int main(void) {
 	 char* describeGlobal = malloc(sizeof(char)*5);
 	 strcpy(describeGlobal, "3000");
 
-	 if(nombreTabla!= NULL){
+	 if(strcmp(nombreTabla, "")==1){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 log_info(logger, "Paquete describe %s", paqueteListo);
@@ -868,6 +879,7 @@ int main(void) {
 
  void eliminarDeListaUsos(int nroMarcoAEliminar){
  	int index=0;
+ 	log_info(logger, "Entré a la funcion maldita");
 
  	while(index<listaDeUsos->elements_count){
  		posMarcoUsado *pos = list_get(listaDeUsos, index);
@@ -876,9 +888,12 @@ int main(void) {
  		}
  		index++;
  	}
+
  	if(index<= listaDeUsos->elements_count){
  		log_info(logger, "Encontre el marco");
  		posMarcoUsado *p = list_remove(listaDeUsos,index);
+ 		free(p);
+ 		log_info(logger, "Sali del list remove");
 
  	}
  	else{
@@ -890,11 +905,17 @@ int main(void) {
 
  void actualizarListaDeUsos(int nroMarco){
 
- 	int tieneMismoMarco(posMarcoUsado * aux){
- 		return aux->nroMarco == nroMarco;
+ 	bool tieneMismoMarco(posMarcoUsado * aux){
+ 		if(aux->nroMarco == nroMarco){
+ 			return true;
+ 		}
+ 		else{
+ 			return false;
+ 		}
+
  	}
 
- 	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,tieneMismoMarco);
+ 	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,(void*) tieneMismoMarco);
 
  	marcoParaActualizar->posicionDeUso = posicionUltimoUso;
  	posicionUltimoUso++;
@@ -1051,11 +1072,12 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				agregarDato(timestampActual, key, valor, pag);
 				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
+				agregarAListaUsos(pag->nroMarco);
 			}else{
 				agregarDato(time(NULL),key,valor,pag);
 				log_info(logger, "VOLVI DE AGREGAR DATO");
 				pag->modificado = 1;
-				eliminarDeListaUsos(pag->nroMarco);
+				agregarAListaUsos(pag->nroMarco);
 			}
 			pthread_mutex_unlock(&seg->lockSegmento);
 	}else{
@@ -1069,8 +1091,8 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		timestampActual = time(NULL);
 		agregarDato(timestampActual, key, valor, pag);
 		log_info(logger, "VOLVI DE AGREGAR DATO");
-
 		pag->modificado = 1;
+		agregarAListaUsos(pag->nroMarco);
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
