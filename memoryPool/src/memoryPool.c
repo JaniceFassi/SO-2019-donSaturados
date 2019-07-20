@@ -131,11 +131,11 @@ int main(void) {
 			unMarco->estaLibre = 0;
 			pthread_mutex_init(&unMarco->lockMarco, NULL);
 			list_add(tablaMarcos, unMarco);
-			posMarcoUsado *pos = malloc(sizeof(posMarcoUsado));
+			/*posMarcoUsado *pos = malloc(sizeof(posMarcoUsado));
 			pos->nroMarco = i;
 			pos->posicionDeUso = 0;
 			list_add(listaDeUsos, pos);
-		}
+		*/}
 
 	pthread_mutex_init(&lockTablaSeg, NULL);
 	pthread_mutex_init(&lockTablaMarcos, NULL);
