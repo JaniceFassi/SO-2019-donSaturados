@@ -41,8 +41,8 @@ void* recibirOperacion(int cli){
 
 		}
 		else{
-			desempaquetado = malloc(sizeof(char)*2);
-			strcpy(desempaquetado[0], "");
+
+			strcpy(desempaquetado[0], "global");
 
 		}
 
@@ -659,7 +659,7 @@ int main(void) {
 	 char* describeGlobal = malloc(sizeof(char)*5);
 	 strcpy(describeGlobal, "3000");
 
-	 if(strcmp(nombreTabla, "")==1){
+	 if(strcmp(nombreTabla, "global")==1){
 		 char* paqueteListo = empaquetar(3, nombreTabla);
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 log_info(logger, "Paquete describe %s", paqueteListo);
@@ -668,7 +668,7 @@ int main(void) {
 	 else{
 
 		 sendData(lfsSock, describeGlobal, strlen(describeGlobal)+1);
-		 log_info(logger, "Paquete select %s", describeGlobal);
+		 log_info(logger, "Paquete describe %s", describeGlobal);
 
 	 }
 
