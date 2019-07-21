@@ -73,6 +73,7 @@ typedef struct {
 //ESTRUCTURA LRU
 typedef struct{
 	int nroMarco;
+	char *segmento;
 	int posicionDeUso;
 }posMarcoUsado;
 

@@ -623,11 +623,11 @@ int main(void) {
 
  	u_int16_t lfsServer;
  	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
-
- 	while(rta!=0){
+ 	int i=0;
+ 	while(rta!=0 && i<5){
  		log_error(logger, "No se pudo crear una conexión con LFS, volverá a intentarse");
  	 	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
-
+ 	 	i++;
  	}
 
  	log_info(logger, "Se creó una conexión con LFS");
@@ -884,22 +884,32 @@ int main(void) {
 			 i++;
 		 }
 	 }
-
+	 eliminarDeListaUsos(nroMarcoAborrar);
+	 liberarMarco(nroMarcoAborrar);
 	 log_info(logger, "marco nro :%i",nroMarcoAborrar);
 	 bool buscaMarco(pagina * pag){
 		 return pag->nroMarco==nroMarcoAborrar;
 	 }
-
-
 	 void buscaSegYPag(segmento *s){
 		 log_info(logger, "seg :%s", s->nombreTabla);
 
 		 //list_remove_and_destroy_by_condition(s->tablaPaginas,(void*)buscaMarco,(void*)paginaDestroy);
+		// pthread_mutex_lock(&s->lockSegmento);
 		 list_remove_by_condition(s->tablaPaginas,(void*)buscaMarco);
-		 //list_iterate(s->tablaPaginas,(void*)buscaMarco)
+		// pthread_mutex_unlock(&s->lockSegmento);//list_iterate(s->tablaPaginas,(void*)buscaMarco)
 	 }
 	 list_iterate(tablaSegmentos,(void*)buscaSegYPag);
-	 eliminarDeListaUsos(nroMarcoAborrar);
+
+
+
+	 void itera(marco *m){
+		 log_info(logger,"marco %i libre: %i" , m->nroMarco , m->estaLibre);
+	 }
+
+	 list_iterate(tablaMarcos,(void*)itera);
+
+
+
 
 	 log_info(logger, "marco nro :%i",nroMarcoAborrar);
 
@@ -1302,9 +1312,19 @@ int mDrop(char* nombreTabla){
 
 
 int mJournal(){
-	log_info(logger, "Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");
+	log_info(logger, "\n\n Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");
 	pthread_mutex_lock(&lockTablaSeg);
 	pthread_mutex_lock(&lockTablaMarcos);
+
+	void iteraPag(pagina * p){
+		log_info(logger,"pagina con marco %i modificada %i" , p->nroMarco , p->modificado);
+	}
+
+
+	void itera(segmento *s){
+		list_iterate(s->tablaPaginas,(void*)iteraPag);
+	}
+	list_iterate(tablaSegmentos,(void*)itera);
 
 
 	for(int i = 0; i<tablaSegmentos->elements_count; i++){
@@ -1348,12 +1368,25 @@ int mJournal(){
 	}
 
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
-	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
+	list_destroy_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	int listaVacia = list_is_empty(tablaSegmentos);
 	if (listaVacia == 1){
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 		pthread_mutex_unlock(&lockTablaSeg);
 		pthread_mutex_unlock(&lockTablaMarcos);
+		 void itera(marco *m){
+			 log_info(logger,"marco %i libre: %i" , m->nroMarco , m->estaLibre);
+			 m->estaLibre=0;
+			 log_info(logger,"marco %i libre: %i" , m->nroMarco , m->estaLibre);
+
+		 }
+
+		 list_iterate(tablaMarcos,(void*)itera);
+		 tablaSegmentos= list_create();
+
+		 log_info(logger,"size usos" ,  list_size(listaDeUsos));
+
+
 
 		return 0;
 	}
