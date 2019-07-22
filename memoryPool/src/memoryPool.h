@@ -51,6 +51,7 @@ int cantMarcos;
 int posicionUltimoUso; // Lo usa el LRU
 pthread_mutex_t lockTablaSeg;
 pthread_mutex_t lockTablaMarcos;
+pthread_mutex_t lockTablaUsos;
 
 //ESTRUCTURA MEMORIA
 typedef struct {

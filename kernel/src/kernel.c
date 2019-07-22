@@ -220,6 +220,7 @@ void ejecutarScripts(){
 					queue_push(myExit,execNuevo);
 					sem_post(&semColasMutex);
 					log_info(logger,"Script con el path %s entro a cola exit",execNuevo->input);
+
 				}
 				fclose(f);
 			}

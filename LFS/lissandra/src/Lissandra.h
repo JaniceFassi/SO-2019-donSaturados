@@ -31,7 +31,7 @@ t_config* init_config(void);
 void theStart();
 void funcionSenial(int sig);
 void *connectMemory();
-void *interactuarConMemoria(u_int16_t *arg);
+void *interactuarConMemoria(u_int16_t arg);
 char* recibirDeMemoria(u_int16_t sock);
 void *inicializarInotify();
 void mostrarDescribe(t_list *lista);

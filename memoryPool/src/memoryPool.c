@@ -139,6 +139,7 @@ int main(void) {
 
 	pthread_mutex_init(&lockTablaSeg, NULL);
 	pthread_mutex_init(&lockTablaMarcos, NULL);
+	pthread_mutex_init(&lockTablaUsos, NULL);
 
 
 	return 0;
@@ -818,32 +819,38 @@ int main(void) {
  	int i=0;
  	marco *unMarco;
  	pthread_mutex_lock(&lockTablaMarcos);
- 	if(memoriaLlena()){ //Si la memoria NO esta llena puede asignar un marco
- 		log_info(logger,"entra a marcos libres");
- 		while(i < cantMarcos){
- 			unMarco = list_get(tablaMarcos,i);
- 			if((unMarco->estaLibre) == 0){
- 				pthread_mutex_lock(&unMarco->lockMarco);
- 				unMarco->estaLibre = 1;
- 				pthread_mutex_unlock(&unMarco->lockMarco);
- 				posMarco = unMarco->nroMarco;
- 				break;
- 			}
- 			else{
- 				i++;
- 			}
- 		}
+ 	if(!FULL()){
+ 		if(memoriaLlena()){ //Si la memoria NO esta llena puede asignar un marco
+ 			log_info(logger,"entra a marcos libres");
+ 			while(i < cantMarcos){
+ 				unMarco = list_get(tablaMarcos,i);
+				if((unMarco->estaLibre) == 0){
+					pthread_mutex_lock(&unMarco->lockMarco);
+					unMarco->estaLibre = 1;
+					pthread_mutex_unlock(&unMarco->lockMarco);
+					posMarco = unMarco->nroMarco;
+					break;
+				}
+				else{
+					i++;
+				}
+			}
+		}
+		else{
+			log_info(logger,"entra a lru ");
+			posMarco = LRU(); //te devuelve la posicion del marco a ocupar, liberando lo que habia antes
+			unMarco = list_get(tablaMarcos,posMarco);
+			pthread_mutex_lock(&unMarco->lockMarco);
+			unMarco->estaLibre = 1;
+			pthread_mutex_unlock(&unMarco->lockMarco);
+		}
+		pthread_mutex_unlock(&lockTablaMarcos);
+		return posMarco;
  	}
- 	else{
- 		log_info(logger,"entra a lru ");
- 		posMarco = LRU(); //te devuelve la posicion del marco a ocupar, liberando lo que habia antes
-		unMarco = list_get(tablaMarcos,posMarco);
-		pthread_mutex_lock(&unMarco->lockMarco);
-	 	unMarco->estaLibre = 1;
-	 	pthread_mutex_unlock(&unMarco->lockMarco);
+ 	else {
+ 		pthread_mutex_unlock(&lockTablaMarcos);
+ 		return -1;
  	}
- 	pthread_mutex_unlock(&lockTablaMarcos);
- 	return posMarco;
  }
 
 
@@ -868,7 +875,7 @@ int main(void) {
  }
 
  int LRU(){
-
+	 pthread_mutex_lock(&lockTablaUsos);
 	 int i=1,menor,tamLista,nroMarcoAborrar;
 	 tamLista = list_size(listaDeUsos);
 	 posMarcoUsado* aux= list_get(listaDeUsos,0);
@@ -884,6 +891,7 @@ int main(void) {
 			 i++;
 		 }
 	 }
+	 pthread_mutex_unlock(&lockTablaUsos);
 	 eliminarDeListaUsos(nroMarcoAborrar);
 	 liberarMarco(nroMarcoAborrar);
 	 log_info(logger, "marco nro :%i",nroMarcoAborrar);
@@ -928,26 +936,33 @@ int main(void) {
  }
 
  void agregarAListaUsos(int nroMarco){
+	 pthread_mutex_lock(&lockTablaUsos);
  	posMarcoUsado* nuevo = crearPosMarcoUsado(nroMarco,posicionUltimoUso);
+
  	posicionUltimoUso++;
+
  	list_add(listaDeUsos,nuevo);
+ 	pthread_mutex_unlock(&lockTablaUsos);
  }
 
 
  void eliminarDeListaUsos(int nroMarcoAEliminar){
+	 pthread_mutex_lock(&lockTablaUsos);
 	 bool itera(posMarcoUsado *aux){
 		 return aux->nroMarco == nroMarcoAEliminar;
 	 }
 	 list_remove_by_condition(listaDeUsos,(void*)itera);
+	 pthread_mutex_unlock(&lockTablaUsos);
  }
 
 
  void actualizarListaDeUsos(int nroMarco){
+	 pthread_mutex_lock(&lockTablaUsos);
 	 log_info(logger,"holaa %i" , list_size(listaDeUsos));
-	  	void itera(posMarcoUsado *aux){
+	 /* 	void itera(posMarcoUsado *aux){
 	  		log_info(logger,"marco %i", aux->nroMarco);
 	  	}
-	  	list_iterate(listaDeUsos,(void*) itera);
+	  	list_iterate(listaDeUsos,(void*) itera);*/
 
 	 log_info(logger,"nro: %i" ,nroMarco);
  	int tieneMismoMarco(posMarcoUsado * aux){
@@ -959,6 +974,7 @@ int main(void) {
  	log_info(logger,"despues del listfind en lru");
  	marcoParaActualizar->posicionDeUso = posicionUltimoUso;
  	posicionUltimoUso++;
+ 	pthread_mutex_unlock(&lockTablaUsos);
  }
 
  bool estaModificada(pagina *pag){
@@ -1107,8 +1123,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	log_info(logger,"\n\n LA KEY ES : %i " , key);
 	if(strlen(valor)+1 <=maxValue){
 		log_info(logger,"entra a insert ");
-	if(!FULL()){
-		log_info(logger,"no esta full");
+
 		segmento *seg = buscarSegmento(nombreTabla);
 		pagina *pag;
 		long timestampActual;
@@ -1120,12 +1135,18 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				if (pag == NULL){ //no existe la pagina
 					log_info(logger,"no existe pagina ");
 					pag = crearPagina();
+					if(pag->nroMarco==-1){
+						pthread_mutex_unlock(&seg->lockSegmento);
+						free(pag);
+						return 2;
+					}
 					agregarPagina(seg,pag);
 					timestampActual = time(NULL);
 					agregarDato(timestampActual, key, valor, pag);
 					log_info(logger, "VOLVI DE AGREGAR DATO");
 					pag->modificado = 1;
-					log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
+					log_info(logger,"hola" );
+				//	log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 
 				}else{ //existe la pagina
 					log_info(logger,"existe pagina ");
@@ -1145,12 +1166,16 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				pthread_mutex_unlock(&seg->lockSegmento);
 		}else{ //no existe el segmento
 			log_info(logger,"no existe segmento ");
+			pagina *pag = crearPagina();
+			if(pag->nroMarco==-1){
+				free(pag);
+				return 2;
+			}
 			pthread_mutex_lock(&lockTablaSeg);
 			seg = crearSegmento(nombreTabla);
 			pthread_mutex_lock(&seg->lockSegmento);
 			list_add(tablaSegmentos, seg);
 			pthread_mutex_unlock(&lockTablaSeg);
-			pagina *pag = crearPagina();
 			agregarPagina(seg,pag);
 			timestampActual = time(NULL);
 			agregarDato(timestampActual, key, valor, pag);
@@ -1164,11 +1189,11 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		return 0;
 
 	}
-	else{
+	/*else{
 		log_info(logger,"La memoria esta FULL, no se puede hacer el INSERT");
 		return 2;
 	}
-	}
+	}*/
 	else{
 		log_info(logger, "Se intentó insertar un value mayor al tamaño permitido");
 		return 1;
@@ -1212,8 +1237,12 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			return valor;
 		}
 		else{
-			if(!FULL()){
+			//if(!FULL()){
 			pNueva = crearPagina();
+			if(pNueva->nroMarco==-1){
+				free(pNueva);
+				return estoyFull;
+			}
 			valorPagNueva = selectLissandra(nombreTabla,key);
 			if(valorPagNueva != NULL){
 				pNueva->modificado = 0;
@@ -1231,20 +1260,24 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				else{
 					return noExiste;
 				}
-			}
-			else{
+	//	}
+	/*		else{
 				return estoyFull;
-			}
+			}*/
 
 		}
 	}
 	else{
-		if(!FULL()){
+		//if(!FULL()){
+		pNueva = crearPagina();
+		if(pNueva->nroMarco==-1){
+			free(pNueva);
+			return estoyFull;
+		}
 		pthread_mutex_lock(&lockTablaSeg);
 		nuevo = crearSegmento(nombreTabla);
 		list_add(tablaSegmentos, nuevo);
 		pthread_mutex_unlock(&lockTablaSeg);
-		pNueva = crearPagina();
 		valorPagNueva = selectLissandra(nombreTabla,key);
 		if(valorPagNueva !=NULL){
 			pNueva->modificado = 0;
@@ -1266,10 +1299,10 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		else{
 			return noExiste;
 		}
-		}
-		else{
+		//}
+	/*	else{
 			return estoyFull;
-		}
+		}*/
 	}
 
 
@@ -1372,8 +1405,6 @@ int mJournal(){
 	int listaVacia = list_is_empty(tablaSegmentos);
 	if (listaVacia == 1){
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
-		pthread_mutex_unlock(&lockTablaSeg);
-		pthread_mutex_unlock(&lockTablaMarcos);
 		 void itera(marco *m){
 			 log_info(logger,"marco %i libre: %i" , m->nroMarco , m->estaLibre);
 			 m->estaLibre=0;
@@ -1385,6 +1416,9 @@ int mJournal(){
 		 tablaSegmentos= list_create();
 
 		 log_info(logger,"size usos" ,  list_size(listaDeUsos));
+		pthread_mutex_unlock(&lockTablaSeg);
+		pthread_mutex_unlock(&lockTablaMarcos);
+
 
 
 
