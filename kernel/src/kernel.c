@@ -1009,7 +1009,7 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 	//sem_post(&semMetadata);
 	log_info(loggerConsola,"consistency %s",m->consistency);
 	log_info(loggerConsola,"table %s",m->table);
-	log_info(loggerConsola," compTime %l",m->compTime);
+//	log_info(loggerConsola," compTime %l",m->compTime);
 	log_info(loggerConsola,"numPart %i",m->numPart);
 }
 

@@ -876,6 +876,7 @@ int main(void) {
 
  int LRU(){
 	 pthread_mutex_lock(&lockTablaUsos);
+	 log_info(logger, "list size :%i", list_size(listaDeUsos));
 	 int i=1,menor,tamLista,nroMarcoAborrar;
 	 tamLista = list_size(listaDeUsos);
 	 posMarcoUsado* aux= list_get(listaDeUsos,0);
@@ -966,8 +967,10 @@ int main(void) {
 
 	 log_info(logger,"nro: %i" ,nroMarco);
  	int tieneMismoMarco(posMarcoUsado * aux){
- 		log_info(logger,"true o false %i",aux->nroMarco != nroMarco);
- 		return aux->nroMarco != nroMarco;
+ 		log_info(logger,"true o false %i",aux->nroMarco == nroMarco);
+ 		log_info(logger,"Marco a actualizar %i",nroMarco);
+ 		log_info(logger,"Marco de la lista %i",aux->nroMarco);
+ 		return aux->nroMarco == nroMarco;
  	}
  	log_info(logger,"antes del listfind en lru");
  	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,(void*) tieneMismoMarco);
