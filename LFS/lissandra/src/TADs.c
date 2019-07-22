@@ -358,12 +358,16 @@ int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques){
 }
 
 metaArch *leerMetaArch(char *path){
-	metaArch *nuevo=malloc(sizeof(metaArch));
-	t_config *metaArchs=config_create(path);
-	nuevo->size=config_get_int_value(metaArchs,"SIZE");
-	nuevo->bloques=config_get_array_value(metaArchs,"BLOCKS");
-	config_destroy(metaArchs);
-	return nuevo;
+	if(archivoValido(path)){
+		metaArch *nuevo=malloc(sizeof(metaArch));
+		t_config *metaArchs=config_create(path);
+		nuevo->size=config_get_int_value(metaArchs,"SIZE");
+		nuevo->bloques=config_get_array_value(metaArchs,"BLOCKS");
+		config_destroy(metaArchs);
+		return nuevo;
+	}
+	return NULL;
+
 }
 
 metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
@@ -1173,18 +1177,29 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 					if(estado==1){
 						//WAIT
 						sem_wait(&tablaDirec->semaforoBIN);
-						nuevoArch(tabla,extension);
 						arch=leerMetaArch(path);
+						if(arch!=NULL){
+							nuevoArch(tabla,extension);
+						}
 						break;
 					}else{
 						if(tablaDirec->pedido_extension==0){
 							//log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							int valor;
+							sem_getvalue(&tablaDirec->archivoBloqueado,&valor);
+							if(valor>0){
+								sem_wait(&tablaDirec->archivoBloqueado);
+							}
+							sem_wait(&tablaDirec->archivoBloqueado);
+							sem_post(&tablaDirec->archivoBloqueado);
 							sem_post(criticaTablaGlobal);
 							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
-							nuevoArch(tabla,extension);
 							arch=leerMetaArch(path);
+							if(arch!=NULL){
+								nuevoArch(tabla,extension);
+							}
 							break;
 						}
 					}
@@ -1192,18 +1207,28 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 					if(estado==1){
 						//WAIT
 						sem_wait(&tablaDirec->semaforoTMP);
-						nuevoArch(tabla,extension);
 						arch=leerMetaArch(path);
+						if(arch!=NULL){
+							nuevoArch(tabla,extension);
+						}
 						break;
 					}else{
 						if(tablaDirec->pedido_extension==1){
 							//log_info(logger,"No se puede abrir el archivo, porque esta bloqueado");
+							int valor;
+							sem_getvalue(&tablaDirec->archivoBloqueado,&valor);
+							if(valor>0){
+								sem_wait(&tablaDirec->archivoBloqueado);
+							}
+							sem_wait(&tablaDirec->archivoBloqueado);
+							sem_post(&tablaDirec->archivoBloqueado);
 							sem_post(criticaTablaGlobal);
-							arch=abrirArchivo(tabla,nombreArch,extension);
-							break;
+							arch=abrirArchivo(tabla,nombreArch,extension);break;
 						}else{
-							nuevoArch(tabla,extension);
 							arch=leerMetaArch(path);
+							if(arch!=NULL){
+								nuevoArch(tabla,extension);
+							}
 							break;
 						}
 					}
@@ -1211,17 +1236,28 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 					if(estado==1){
 						//WAIT
 						sem_wait(&tablaDirec->semaforoTMPC);
-						nuevoArch(tabla,extension);
 						arch=leerMetaArch(path);
+						if(arch!=NULL){
+							nuevoArch(tabla,extension);
+						}
 						break;
 					}else{
 						if(tablaDirec->pedido_extension==2){
+							int valor;
+							sem_getvalue(&tablaDirec->archivoBloqueado,&valor);
+							if(valor>0){
+								sem_wait(&tablaDirec->archivoBloqueado);
+							}
+							sem_wait(&tablaDirec->archivoBloqueado);
+							sem_post(&tablaDirec->archivoBloqueado);
 							sem_post(criticaTablaGlobal);
 							arch=abrirArchivo(tabla,nombreArch,extension);
 							break;
 						}else{
-							nuevoArch(tabla,extension);
 							arch=leerMetaArch(path);
+							if(arch!=NULL){
+								nuevoArch(tabla,extension);
+							}
 							break;
 						}
 					}
@@ -1284,9 +1320,11 @@ t_config *abrirMetaTabGlobal(char *tabla){
 		//WAIT
 			sem_wait(&tablaDirec->semaforoMeta);
 		}
-		nuevoArch(tabla,3);//3 es METADATA
 		char *path=nivelUnaTabla(tabla,1);
 		arch=config_create(path);
+		if(arch!=NULL){
+			nuevoArch(tabla,3);//3 es METADATA
+		}
 		free(path);
 	}
 	sem_post(criticaTablaGlobal);

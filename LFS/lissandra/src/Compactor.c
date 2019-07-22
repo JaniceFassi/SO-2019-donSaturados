@@ -93,6 +93,11 @@ void *compactar(Sdirectorio* nuevo){
 			}
 			log_info(compaclog,"Se pudieron renombrar los tmps de la tabla %s.",nuevo->nombre);
 			sem_post(&nuevo->semaforoTMP);
+			int valor;
+			sem_getvalue(&nuevo->archivoBloqueado,&valor);
+			if(valor==0){
+				sem_post(&nuevo->archivoBloqueado);
+			}
 			sem_post(&nuevo->semaforoContarTMP);
 			//SIGNAL WAIT PEDIDO RENOMBRAR
 			nuevo->pedido_extension=-1;
@@ -154,6 +159,10 @@ void *compactar(Sdirectorio* nuevo){
 			log_info(compaclog,"se termino de escribir la compactacion de %s",nuevo->nombre);
 			//SIGNAL MUTEX BINARIOS DE LA TABLA
 			sem_post(&nuevo->semaforoBIN);
+			sem_getvalue(&nuevo->archivoBloqueado,&valor);
+			if(valor==0){
+				sem_post(&nuevo->archivoBloqueado);
+			}
 			//liberar TMPC
 			contador=0;
 			nuevo->pedido_extension=2;
@@ -168,11 +177,15 @@ void *compactar(Sdirectorio* nuevo){
 			log_info(compaclog,"se eliminaron los archivos tmpC de la tabla %s",nuevo->nombre);
 			//SIGNAL MUTEX TMPC DE LA TABLA
 			sem_post(&nuevo->semaforoTMPC);
+			sem_getvalue(&nuevo->archivoBloqueado,&valor);
+			if(valor==0){
+				sem_post(&nuevo->archivoBloqueado);
+			}
+			nuevo->pedido_extension=-1;
 			list_destroy(depurado);
 			borrarMetadataTabla(metadata);
 			list_destroy_and_destroy_elements(todosLosRegistros,(void *)destroyRegistry);
 			log_info(compaclog,"Fin de la compactacion de %s",nuevo->nombre);
-			nuevo->pedido_extension=-1;
 		}
 		sem_post(&nuevo->semaforoCompactor);
 	}
@@ -209,6 +222,7 @@ void semaforosTabla(Sdirectorio *nuevo){
 	sem_init(&nuevo->semaforoTMPC,0,1);
 	sem_init(&nuevo->semaforoMeta,0,1);
 	sem_init(&nuevo->semaforoCompactor,0,1);
+	sem_init(&nuevo->archivoBloqueado,0,1);
 	nuevo->pedido_extension=-1;
 }
 void liberarSemaforosTabla(Sdirectorio *nuevo){
@@ -218,6 +232,7 @@ void liberarSemaforosTabla(Sdirectorio *nuevo){
 	sem_destroy(&nuevo->semaforoTMPC);
 	sem_destroy(&nuevo->semaforoMeta);
 	sem_destroy(&nuevo->semaforoCompactor);
+	sem_destroy(&nuevo->archivoBloqueado);
 }
 Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
 	int contador=0;

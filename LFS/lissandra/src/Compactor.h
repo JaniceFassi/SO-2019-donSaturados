@@ -20,6 +20,7 @@ typedef struct{
 	sem_t semaforoContarTMP;
 	sem_t semaforoMeta;
 	sem_t semaforoCompactor;
+	sem_t archivoBloqueado;
 	int pedido_extension;//se inicializa en -1// si esta en 0 es BIN, si es TMP es 1 y 2 TMPC// 3 se empezo la compactacion
 	int terminar;
 }Sdirectorio;
