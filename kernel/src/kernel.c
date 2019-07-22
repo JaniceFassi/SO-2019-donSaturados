@@ -33,9 +33,13 @@ int main(void) {
 	list_add(criterioEC,m1);
 	list_add(criterioSHC,m1);
 	//pruebas();
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
+	/*run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/games_computer.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/internet_browser.lql");*/
+
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	//config_destroy(config);
 	pthread_t hilos[limiteProcesamiento];
@@ -104,7 +108,7 @@ void apiKernel(){
 				nuevo->lineasLeidas=0;
 				nuevo->estado=0;
 				nuevo->modoOp=1;// Script de una sola linea
-				nuevo->input= linea;
+				nuevo->input= string_from_format("%s0",linea);
 				sem_wait(&semColasMutex);
 				queue_push(ready,nuevo);
 				sem_post(&semColasMutex);
@@ -739,6 +743,18 @@ int describe(char *table){
 		log_info(loggerConsola,"termino free ");
 		free(buffer);
 	}
+	void itera (struct metadataTabla *m){
+		log_info(loggerConsola,"consistency %s",m->consistency);
+		log_info(loggerConsola,"table %s",m->table);
+		log_info(loggerConsola," compTime %d",m->compTime);
+		log_info(loggerConsola,"numPart %i",m->numPart);
+	}
+
+	list_iterate(listaMetadata,(void*)itera);
+
+
+
+
 	sem_post(&semMetadata);
 
 	free(resultado);
@@ -938,7 +954,7 @@ int metrics(int modo){
 
 void *metricasAutomaticas(){
 	while(terminaHilo==0){
-		sleep(30);
+		sleep(30000);
 		metrics(0);
 		//semaforos
 		sem_wait(&semMetricas);
@@ -1009,7 +1025,7 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 	//sem_post(&semMetadata);
 	log_info(loggerConsola,"consistency %s",m->consistency);
 	log_info(loggerConsola,"table %s",m->table);
-//	log_info(loggerConsola," compTime %l",m->compTime);
+	log_info(loggerConsola," compTime %d",m->compTime);
 	log_info(loggerConsola,"numPart %i",m->numPart);
 }
 
@@ -1075,7 +1091,7 @@ struct metadataTabla * buscarMetadataTabla(char* table){
 
 void *describeGlobal(){
 	while(terminaHilo==0){
-		usleep(retardoMetadata*100000);
+		usleep(retardoMetadata*1000000);
 		describe(NULL);
 		log_info(logger,"Describe global automático");
 	}

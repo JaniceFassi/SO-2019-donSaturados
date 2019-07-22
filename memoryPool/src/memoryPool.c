@@ -260,7 +260,8 @@ int main(void) {
  		}
  		else{
  			log_info(logger, "Antes strcpy");
- 			strcpy(desempaquetado[0], "global");
+ 			//strcpy(desempaquetado[0], "global");
+ 			desempaquetado=string_n_split("global; ",2,";");
  			log_info(logger, "Despues strcpy");
  		}
 
@@ -351,6 +352,9 @@ int main(void) {
  					break;
 
  				case 3: //DESCRIBE
+ 					log_info(logger,"DESCribe");
+ 					log_info(logger,"holaa %s",desempaquetado[0]==NULL);
+ 					log_info(logger,"DESCribe");
  					nombreTabla = desempaquetado[0];
  					log_info(logger,desempaquetado[0]);
  					rta =mDescribe(nombreTabla);
