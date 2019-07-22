@@ -380,8 +380,14 @@ int main(void) {
  					recvData(cli,tamanio,3);
  					char*bufferTabla=malloc(atoi(tamanio)+1);
  					recvData(cli,bufferTabla,atoi(tamanio));
- 					desempaquetarTablaSecundaria(bufferTabla);
- 					break;
+ 					desempaquetarTablaSecundaria(bufferTabla); //en pedirConf hago 3 recv para recibir la tabla pero aca hago 2 
+ 					break;					//no recibe bien la tabla
+				case 7:
+ 					tabla=confirmarActivo();
+ 					sendData(cli,tabla,strlen(tabla)+1);
+ 					//Para cuando el kernel me pide mi tabla de mems activas
+					//tuve que hacer este caso aparte porque el 6 espera que le envien una tabla tambien
+
 
 
  				}
