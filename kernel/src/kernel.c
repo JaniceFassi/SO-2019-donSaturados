@@ -1170,7 +1170,7 @@ void *gossiping(){
 	return 0;
 }
 
-void*inotifyKernel(){
+void *inotifyKernel(){
 	while(terminaHilo==0){
 			char buffer[BUF_LEN];
 			int file_descriptor = inotify_init();
@@ -1185,7 +1185,7 @@ void*inotifyKernel(){
 			t_config *config = config_create("/home/utnso/tp-2019-1c-donSaturados/kernel/kernel.config");
 			quantum=config_get_int_value(config, "QUANTUM");
 			retardo=config_get_int_value(config, "SLEEP_EJECUCION");
-			retardoMetadata=config_get_int_value(config, "REFRESH_METADATA");
+			retardoMetadata=config_get_int_value(config, "METADATA_REFRESH");
 			config_destroy(config);
 		}
 		return NULL;
