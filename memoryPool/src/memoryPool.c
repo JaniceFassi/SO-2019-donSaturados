@@ -140,6 +140,10 @@ int main(void) {
 	pthread_mutex_init(&lockTablaSeg, NULL);
 	pthread_mutex_init(&lockTablaMarcos, NULL);
 	pthread_mutex_init(&lockTablaUsos, NULL);
+	pthread_mutex_init(&lockInsert, NULL);
+	pthread_mutex_init(&lockSelect, NULL);
+	pthread_mutex_init(&lockDrop, NULL);
+
 
 
 	return 0;
@@ -229,7 +233,6 @@ int main(void) {
  //---------------------AUXILIARES DE HILOS------------------//
  //---------------------------------------------------------//
  void* recibirOperacion(int cli){
-
  	log_info(logger,"sock: %d",cli);
 
  	char *buffer = malloc(sizeof(char)*2);
@@ -286,7 +289,6 @@ int main(void) {
  					log_info(logger,rta);
  					//si no existe
  					if(strcmp(rta, "2")!=0){
- 						//char* msj = malloc(strlen(rta)+4);
  						if(strcmp(rta, "3")==0){
  							log_info(logger,"mando que no existe");
  							sendData(cli, rta, strlen(rta)+1);
@@ -301,21 +303,24 @@ int main(void) {
  					//si estoy full
  					else{
  						rtaFull= malloc(2);
-
- 							sendData(cli, rta, strlen(rta)+1);
- 							recvData(cli, rtaFull, sizeof(char));
- 						 	rtaFull[1]='\0';
- 						 	if(atoi(rtaFull)==5){
- 						 		mJournal();
- 						 		rta = mSelect(nombreTabla, key);
- 						 		char* msj = malloc(strlen(rta)+4);
- 						 		msj = empaquetar(0, rta);
- 						 		sendData(cli, msj, strlen(msj)+1);
- 						 		log_info(logger, "Rta select después de un journal %s\n", msj);
- 						 		}
+ 						sendData(cli, rta, strlen(rta)+1);
+ 						recvData(cli, rtaFull, sizeof(char));
+ 						rtaFull[1]='\0';
+ 					 	if(atoi(rtaFull)==5){
+ 					 		mJournal();
+ 					 		rta = mSelect(nombreTabla, key);
+ 					 		if(strcmp(rta, "3")==0){
+ 					 		log_info(logger,"mando que no existe");
+ 					 		sendData(cli, rta, strlen(rta)+1);
+ 					 		}else{
+ 					 			char* msj = malloc(strlen(rta)+4);
+ 					 			msj = empaquetar(0, rta);
+ 					 			sendData(cli, msj, strlen(msj)+1);
+ 					 			log_info(logger, "Rta select después de un journal %s\n", msj);
+ 					 			}
+ 					 	}
 
  					}
- 					//si no existe en fs
  					break;
 
  				case 1: //INSERT
@@ -376,12 +381,25 @@ int main(void) {
  				case 6: //DEVOLVER TABLA DE ACTIVOS
  					tabla =confirmarActivo();
  					sendData(cli, tabla, strlen(tabla)+1);
- 					char*tamanio = malloc(sizeof(4));
- 					recvData(cli,tamanio,3);
- 					char*bufferTabla=malloc(atoi(tamanio)+1);
- 					recvData(cli,bufferTabla,atoi(tamanio));
- 					desempaquetarTablaSecundaria(bufferTabla); //en pedirConf hago 3 recv para recibir la tabla pero aca hago 2 
- 					break;					//no recibe bien la tabla
+ 					char *salioBien = malloc(sizeof(char)*2);
+ 					recvData(cli, salioBien, sizeof(char)*2);
+ 					salioBien[1] = '\0';
+ 					if(atoi(salioBien)==0){
+ 						char*tamanio = malloc(sizeof(char)*4);
+ 						recvData(cli,tamanio,sizeof(char)*3);
+ 						tamanio[3] = '\0';
+ 						log_info(logger, "Tamanio tabla en sting %s", tamanio);
+ 						int tamtabla = atoi(tamanio);
+ 						log_info(logger, "Tamanio tabla %d", tamtabla);
+ 						char* bufferTabla = malloc(tamtabla+sizeof(char));
+ 						recvData(cli,bufferTabla,tamtabla);
+ 						desempaquetarTablaSecundaria(bufferTabla);
+ 					}
+ 					else{
+ 						log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
+ 					}
+
+ 					break;
 				case 7:
  					tabla=confirmarActivo();
  					sendData(cli,tabla,strlen(tabla)+1);
@@ -631,6 +649,8 @@ int main(void) {
  	//crea un socket para comunicarse con lfs, devuelve el file descriptor conectado
  	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
  	char* ipFS = config_get_string_value(configuracion,"IP_FS");
+ 	int retardoFS = config_get_int_value(configuracion, "RETARDO_FS")*1000;
+ 	usleep(retardoFS);
 
  	u_int16_t lfsServer;
  	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
@@ -657,6 +677,7 @@ int main(void) {
 
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
+	 buffer[1] = '\0';
 	 if(atoi(buffer)==0){
 		 char* tam = malloc(sizeof(char)*4);
 
@@ -1133,6 +1154,11 @@ void finalizar(){
 
 
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
+	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	usleep(retardoOp);
+	log_info(logger, "Empieza el insert");
+	pthread_mutex_lock(&lockInsert);
+	log_info(logger, "Pasó el lock");
 	log_info(logger,"\n\n LA KEY ES : %i " , key);
 	if(strlen(valor)+1 <=maxValue){
 		log_info(logger,"entra a insert ");
@@ -1151,6 +1177,9 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 					if(pag->nroMarco==-1){
 						pthread_mutex_unlock(&seg->lockSegmento);
 						free(pag);
+						pthread_mutex_unlock(&lockInsert);
+						log_info(logger, "Pasó el lock de salida");
+
 						return 2;
 					}
 					agregarPagina(seg,pag);
@@ -1182,6 +1211,9 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			pagina *pag = crearPagina();
 			if(pag->nroMarco==-1){
 				free(pag);
+				pthread_mutex_unlock(&lockInsert);
+				log_info(logger, "Pasó el lock de salida");
+
 				return 2;
 			}
 			pthread_mutex_lock(&lockTablaSeg);
@@ -1199,6 +1231,9 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			pthread_mutex_unlock(&seg->lockSegmento);
 		}
 		log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
+		pthread_mutex_unlock(&lockInsert);
+		log_info(logger, "Pasó el lock de salida");
+
 		return 0;
 
 	}
@@ -1209,6 +1244,8 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	}*/
 	else{
 		log_info(logger, "Se intentó insertar un value mayor al tamaño permitido");
+		pthread_mutex_unlock(&lockInsert);
+		log_info(logger, "Pasó el lock de salida");
 		return 1;
 	}
 
@@ -1217,6 +1254,12 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 
 char* mSelect(char* nombreTabla,u_int16_t key){
+	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	usleep(retardoOp);
+
+	log_info(logger, "Empieza el select");
+	pthread_mutex_lock(&lockSelect);
+	log_info(logger, "Pasó el lock");
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
 	pagina* pNueva;
@@ -1246,7 +1289,8 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			log_info(logger, "Se seleccionó el valor despues de lru %s", valor);
 
 			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
+			pthread_mutex_unlock(&lockSelect);
+			log_info(logger, "Pasó el lock de salida");
 			return valor;
 		}
 		else{
@@ -1254,6 +1298,9 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			pNueva = crearPagina();
 			if(pNueva->nroMarco==-1){
 				free(pNueva);
+				pthread_mutex_unlock(&lockSelect);
+				log_info(logger, "Pasó el lock de salida");
+
 				return estoyFull;
 			}
 			valorPagNueva = selectLissandra(nombreTabla,key);
@@ -1268,9 +1315,15 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
+				pthread_mutex_unlock(&lockSelect);
+				log_info(logger, "Pasó el lock de salida");
+
 				return valorPagNueva;
 			}
 				else{
+					pthread_mutex_unlock(&lockSelect);
+					log_info(logger, "Pasó el lock de salida");
+
 					return noExiste;
 				}
 	//	}
@@ -1285,6 +1338,8 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		pNueva = crearPagina();
 		if(pNueva->nroMarco==-1){
 			free(pNueva);
+			pthread_mutex_unlock(&lockSelect);
+			log_info(logger, "Pasó el lock de salida");
 			return estoyFull;
 		}
 		pthread_mutex_lock(&lockTablaSeg);
@@ -1306,10 +1361,14 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
+			pthread_mutex_unlock(&lockSelect);
+			log_info(logger, "Pasó el lock de salida");
 			return valorPagNueva;
 
 		}
 		else{
+			pthread_mutex_unlock(&lockSelect);
+			log_info(logger, "Pasó el lock de salida");
 			return noExiste;
 		}
 		//}
@@ -1322,7 +1381,8 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 }
 
 int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
-
+	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	usleep(retardoOp);
 	int rta = createLissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
 	log_info(logger, "La respuesta del create fue %d", rta);
 
@@ -1331,7 +1391,8 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 
 
 char* mDescribe(char* nombreTabla){
-
+	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	usleep(retardoOp);
 	char* rta = describeLissandra(nombreTabla);
 	char* respuesta = string_from_format("%s%s", "0", rta);
 
@@ -1340,7 +1401,9 @@ char* mDescribe(char* nombreTabla){
 }
 
 int mDrop(char* nombreTabla){
-
+	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	usleep(retardoOp);
+	pthread_mutex_lock(&lockDrop);
 
 	segmento* nuevo = buscarSegmento(nombreTabla);
 
@@ -1351,6 +1414,7 @@ int mDrop(char* nombreTabla){
 		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
 	}
+	pthread_mutex_unlock(&lockDrop);
 	int rta = dropLissandra(nombreTabla);
 
 	return rta;
@@ -1358,6 +1422,13 @@ int mDrop(char* nombreTabla){
 
 
 int mJournal(){
+	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	usleep(retardoOp);
+	pthread_mutex_lock(&lockInsert);
+	pthread_mutex_lock(&lockSelect);
+	pthread_mutex_lock(&lockDrop);
+
+
 	log_info(logger, "\n\n Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");
 	pthread_mutex_lock(&lockTablaSeg);
 	pthread_mutex_lock(&lockTablaMarcos);
@@ -1414,7 +1485,7 @@ int mJournal(){
 	}
 
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
-	list_destroy_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
+	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	int listaVacia = list_is_empty(tablaSegmentos);
 	if (listaVacia == 1){
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
@@ -1426,14 +1497,14 @@ int mJournal(){
 		 }
 
 		 list_iterate(tablaMarcos,(void*)itera);
-		 tablaSegmentos= list_create();
 
-		 log_info(logger,"size usos" ,  list_size(listaDeUsos));
+
+		log_info(logger,"size usos" ,  list_size(listaDeUsos));
 		pthread_mutex_unlock(&lockTablaSeg);
 		pthread_mutex_unlock(&lockTablaMarcos);
-
-
-
+		pthread_mutex_unlock(&lockInsert);
+		pthread_mutex_unlock(&lockSelect);
+		pthread_mutex_unlock(&lockDrop);
 
 		return 0;
 	}
@@ -1477,6 +1548,7 @@ void desempaquetarTablaSecundaria(char* paquete){
 		aux->puerto = split[i];
 		i++;
 		list_add(tablaMemActivasSecundaria,aux);
+		actualizarArchConfig(aux->ip,aux->puerto);
 	}
 } // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
@@ -1519,6 +1591,7 @@ int estaRepetido(char*ip){
 }
 
 void actualizarArchConfig(char*ip,char*puerto){
+	if(!estaRepetido(ip)){
 	char* ipsAux = config_get_string_value(configuracion,"IP_SEEDS");
 	char* seedsAux = config_get_string_value(configuracion,"PUERTO_SEEDS");
 
@@ -1534,6 +1607,7 @@ void actualizarArchConfig(char*ip,char*puerto){
 	config_set_value(configuracion,"IP_SEEDS",newIps);
 	config_set_value(configuracion,"PUERTO_SEEDS",newPuertos);
 	config_save(configuracion);
+	}
 }
 
 void cargarInfoDeSecundaria(){
@@ -1580,6 +1654,8 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
 }
 
 void mGossip(){
+	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	usleep(retardoOp);
 	
     int i=1;
     char* ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
