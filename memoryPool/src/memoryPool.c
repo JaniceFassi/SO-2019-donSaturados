@@ -25,6 +25,7 @@ int main(void) {
 
 	}
 
+
 	pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 
@@ -236,11 +237,11 @@ int main(void) {
 
  	int operacion = atoi(buffer);
  	free(buffer);
- 	char** desempaquetado;
+ 	char** desempaquetado=NULL;
  	char* paquete;
  	char* tamanioPaq = malloc(sizeof(char)*4);
 
- 	if(operacion !=5 && operacion !=6){
+ 	if(operacion !=5 && operacion !=6 && operacion !=7){
 
 
  		recvData(cli,tamanioPaq, sizeof(char)*3);
@@ -420,19 +421,10 @@ int main(void) {
 				 	   }
 				 	   break;
 
-				case 8: //ENVIAR TABLA AL KERNEL
-					tabla=confirmarActivo();
-					sendData(cli,tabla,strlen(tabla)+1);
-					free(tabla);
-					break;
-					//Para cuando el kernel me pide mi tabla de mems activas
-					//tuve que hacer este caso aparte porque el 6 espera que le envien una tabla tambien
-
-
  				}
  	//responder 0 si salio bien, 1 si salio mal
  	close(cli);
- 	liberarSubstrings(desempaquetado);
+ 	if(desempaquetado!=NULL)liberarSubstrings(desempaquetado);
  	return NULL;
  }
 
@@ -1631,13 +1623,24 @@ int pedirConfirmacion(char*ip,char* puerto){
 	char* buffer=malloc(atoi(tamTabla)+1);
 	recvData(cliente,buffer,atoi(tamTabla));
 	desempaquetarTablaSecundaria(buffer);  //aca actualizo mi tabla con lo que me envian
+	close(cliente);
 
 	//Le envio mi tabla
 
+	conexion = linkClient(&cliente,ip,puertoAux,0);
+	if(conexion ==1){
+			return 0; // no esta activa la memoria
+	}
 	codOpe = "7";
 	char*paquete = confirmarActivo();
-	sendData(cliente,codOpe,sizeof(char)*2);
-	sendData(cliente,paquete,strlen(paquete)+1);
+	char*paqueteEntero = malloc(strlen(paquete)+2);
+	strcpy(paqueteEntero,codOpe);
+	string_append(&paqueteEntero,paquete);
+	sendData(cliente,paqueteEntero,strlen(paqueteEntero)+1);
+
+	free(paquete);
+	free(codOpe);
+	free(paqueteEntero);
 
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
