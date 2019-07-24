@@ -18,6 +18,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/inotify.h>
+#include <semaphore.h>
 
 
 #include<commons/log.h>
@@ -48,10 +49,8 @@ int posicionUltimoUso; // Lo usa el LRU
 pthread_mutex_t lockTablaSeg;
 pthread_mutex_t lockTablaMarcos;
 pthread_mutex_t lockTablaUsos;
-pthread_mutex_t lockInsert;
-pthread_mutex_t lockSelect;
-pthread_mutex_t lockDrop;
 pthread_mutex_t lockConfig;
+sem_t semJournal;
 
 
 //ESTRUCTURA MEMORIA
@@ -81,6 +80,7 @@ typedef struct {
 	int retardoJournal;
 	int retardoMem;
 	int retardoFS;
+	int multiprocesamiento;
 }estructuraConfig;
 
 
@@ -117,6 +117,7 @@ void destruirConfig();
 
 //AUXILIARES DE ARRANQUE
 int inicializar();
+void init_configuracion(t_config* configuracion);
 void prepararGossiping(t_config *configuracion);
 t_log* init_logger();
 t_config* read_config();

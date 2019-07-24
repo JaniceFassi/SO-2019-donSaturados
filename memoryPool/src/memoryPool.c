@@ -74,16 +74,7 @@ int main(void) {
 	t_config* configuracion = read_config();
 	config = malloc(sizeof(estructuraConfig));
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
-	config->retardoJournal = config_get_int_value(configuracion,"RETARDO_JOURNAL")*1000;
-	config->retardoGossiping= config_get_int_value(configuracion, "RETARDO_GOSSIPING")*10000;
-	config->retardoMem = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	config->retardoFS = config_get_int_value(configuracion, "RETARDO_FS")*1000;
- 	config->puerto = config_get_int_value(configuracion, "PUERTO");
- 	config->ip = malloc(strlen("192.168.0.32")+1);
-	strcpy(config->ip, config_get_string_value(configuracion, "IP"));
- 	config->puertoFS= config_get_int_value(configuracion,"PUERTO_FS");
- 	config->ipFS = malloc(strlen("192.168.0.32")+1);
- 	strcpy(config->ipFS, config_get_string_value(configuracion,"IP_FS"));
+	init_configuracion(configuracion);
 
 	pathConfig = malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config")+1);
 	strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
@@ -91,19 +82,20 @@ int main(void) {
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
 	prepararGossiping(configuracion);
 
-	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
+
 	memoria = calloc(1,tamanioMemoria);
 
 	if(memoria == NULL){
 		log_error(logger, "Falló el inicio de la memoria principal, abortando ejecución");
 		return 1;
 	}
+	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 
 
 	u_int16_t lfsServidor;
-//	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
 
-	maxValue = 20;
+	//maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -134,15 +126,27 @@ int main(void) {
 	pthread_mutex_init(&lockTablaSeg, NULL);
 	pthread_mutex_init(&lockTablaMarcos, NULL);
 	pthread_mutex_init(&lockTablaUsos, NULL);
-	pthread_mutex_init(&lockInsert, NULL);
-	pthread_mutex_init(&lockSelect, NULL);
-	pthread_mutex_init(&lockDrop, NULL);
 	pthread_mutex_init(&lockConfig, NULL);
+	sem_init(&semJournal, 0, config->multiprocesamiento);
 	config_destroy(configuracion);
 
 
 	return 0;
 }
+ void init_configuracion(t_config* configuracion){
+	 config->retardoJournal = config_get_int_value(configuracion,"RETARDO_JOURNAL")*1000;
+	 config->retardoGossiping= config_get_int_value(configuracion, "RETARDO_GOSSIPING")*1000;
+	 config->retardoMem = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	 config->retardoFS = config_get_int_value(configuracion, "RETARDO_FS")*1000;
+	 config->puerto = config_get_int_value(configuracion, "PUERTO");
+	 config->ip = malloc(strlen("192.168.0.32")+1);
+	 strcpy(config->ip, config_get_string_value(configuracion, "IP"));
+	 config->puertoFS= config_get_int_value(configuracion,"PUERTO_FS");
+	 config->ipFS = malloc(strlen("192.168.0.32")+1);
+	 strcpy(config->ipFS, config_get_string_value(configuracion,"IP_FS"));
+	 config->multiprocesamiento = config_get_int_value(configuracion, "MULTIPROCESAMIENTO");
+
+ }
 
  void prepararGossiping(t_config *configuracion){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
 	 
@@ -229,6 +233,7 @@ int main(void) {
  //---------------------------------------------------------//
  void* recibirOperacion(int cli){
  	log_info(logger,"sock: %d",cli);
+
  	char *buffer = malloc(sizeof(char)*2);
  	int b = recvData(cli, buffer, sizeof(char));
  	buffer[1] = '\0';
@@ -277,6 +282,8 @@ int main(void) {
 
  	switch (operacion) {
  				case 0: //SELECT
+ 					usleep(config->retardoMem);
+
  					nombreTabla = desempaquetado[0];
  					key = atoi(desempaquetado[1]);
  					rta = mSelect(nombreTabla, key);
@@ -324,6 +331,8 @@ int main(void) {
  					break;
 
  				case 1: //INSERT
+ 					usleep(config->retardoMem);
+
  					nombreTabla = desempaquetado[0];
  					key = atoi(desempaquetado[1]);
  					value = desempaquetado[2];
@@ -353,6 +362,8 @@ int main(void) {
  					break;
 
  				case 2: //CREATE
+ 					usleep(config->retardoMem);
+
  					nombreTabla = desempaquetado[0];
  					consistencia = desempaquetado[1];
  					particiones = atoi(desempaquetado[2]);
@@ -364,6 +375,8 @@ int main(void) {
  					break;
 
  				case 3: //DESCRIBE
+ 					usleep(config->retardoMem);
+
  					log_info(logger,"DESCribe");
  					log_info(logger,"holaa %s",desempaquetado[0]==NULL);
  					log_info(logger,"DESCribe");
@@ -375,6 +388,8 @@ int main(void) {
  					break;
 
  				case 4: //DROP
+ 					usleep(config->retardoMem);
+
  					nombreTabla = desempaquetado[0];
  					resp = mDrop(nombreTabla);
  					rta = string_itoa(resp);
@@ -391,40 +406,43 @@ int main(void) {
  					break;
 
  				case 6: //DEVOLVER TABLA DE ACTIVOS
-					   tabla = confirmarActivo();
- 					   sendData(cli, tabla, strlen(tabla)+1);
- 					   free(tabla);
- 				       break;
+ 					usleep(config->retardoMem);
+ 					tabla = confirmarActivo();
+ 					sendData(cli, tabla, strlen(tabla)+1);
+ 					free(tabla);
+ 				    break;
 
 				case 7: //RECIBIR TABLA DE ACTIVOS DE LA MEMORIA QUE PIDIO CONFIRMACION
 
-					   rta=malloc(2);
-					   recvData(cli, rta, sizeof(char)*1);
-					   rta[1] = '\0';
-				 	   if(atoi(rta)==0){
-				 		    char*tamanio = malloc(sizeof(char)*4);
-					 	    recvData(cli,tamanio,sizeof(char)*3);
-							tamanio[3] = '\0';
-							log_info(logger, "Tamanio tabla en sting %s", tamanio);
-							int tamtabla = atoi(tamanio);
-							log_info(logger, "Tamanio tabla %d", tamtabla);
-							char* bufferTabla = malloc(tamtabla+sizeof(char));
-							recvData(cli,bufferTabla,tamtabla);
-							desempaquetarTablaSecundaria(bufferTabla);
-							free(rta);
-							free(tamanio);
-							free(bufferTabla);
-				 	   }
-				 	   else{
-				 		   log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
-				 		   free(rta);
+					rta=malloc(2);
+					recvData(cli, rta, sizeof(char)*1);
+					rta[1] = '\0';
+				 	if(atoi(rta)==0){
+				 		char*tamanio = malloc(sizeof(char)*4);
+					 	recvData(cli,tamanio,sizeof(char)*3);
+						tamanio[3] = '\0';
+						log_info(logger, "Tamanio tabla en sting %s", tamanio);
+						int tamtabla = atoi(tamanio);
+						log_info(logger, "Tamanio tabla %d", tamtabla);
+						char* bufferTabla = malloc(tamtabla+sizeof(char));
+						recvData(cli,bufferTabla,tamtabla);
+						desempaquetarTablaSecundaria(bufferTabla);
+						free(rta);
+						free(tamanio);
+						free(bufferTabla);
+				 	  }
+				 	  else{
+				 	    log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
+				 	    free(rta);
 				 	   }
 				 	   break;
 
  				}
  	//responder 0 si salio bien, 1 si salio mal
  	close(cli);
- 	if(desempaquetado!=NULL)liberarSubstrings(desempaquetado);
+ 	if(desempaquetado!=NULL){
+ 		liberarSubstrings(desempaquetado);
+ 	}
  	return NULL;
  }
 
@@ -1183,6 +1201,7 @@ void finalizar(){
 
 	free(memoria);
 	destruirConfig();
+	free(pathConfig);
 	log_info(logger, "Memoria limpia, adiós mundo cruel");
 	log_destroy(logger);
 
@@ -1199,9 +1218,8 @@ void finalizar(){
 
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
-	usleep(config->retardoMem);
 	log_info(logger, "Empieza el insert");
-	pthread_mutex_lock(&lockInsert);
+	sem_wait(&semJournal);
 	log_info(logger, "Pasó el lock");
 	log_info(logger,"\n\n LA KEY ES : %i " , key);
 	if(strlen(valor)+1 <=maxValue){
@@ -1221,7 +1239,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 					if(pag->nroMarco==-1){
 						pthread_mutex_unlock(&seg->lockSegmento);
 						free(pag);
-						pthread_mutex_unlock(&lockInsert);
+						sem_post(&semJournal);
 						log_info(logger, "Pasó el lock de salida");
 
 						return 2;
@@ -1255,7 +1273,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			pagina *pag = crearPagina();
 			if(pag->nroMarco==-1){
 				free(pag);
-				pthread_mutex_unlock(&lockInsert);
+				sem_post(&semJournal);
 				log_info(logger, "Pasó el lock de salida");
 
 				return 2;
@@ -1275,7 +1293,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			pthread_mutex_unlock(&seg->lockSegmento);
 		}
 		log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
-		pthread_mutex_unlock(&lockInsert);
+		sem_post(&semJournal);
 		log_info(logger, "Pasó el lock de salida");
 
 		return 0;
@@ -1288,7 +1306,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	}*/
 	else{
 		log_info(logger, "Se intentó insertar un value mayor al tamaño permitido");
-		pthread_mutex_unlock(&lockInsert);
+		sem_post(&semJournal);
 		log_info(logger, "Pasó el lock de salida");
 		return 1;
 	}
@@ -1298,10 +1316,9 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 
 char* mSelect(char* nombreTabla,u_int16_t key){
-	usleep(config->retardoMem);
 
 	log_info(logger, "Empieza el select");
-	pthread_mutex_lock(&lockSelect);
+	sem_wait(&semJournal);
 	log_info(logger, "Pasó el lock");
 
 	segmento *nuevo = buscarSegmento(nombreTabla);
@@ -1332,7 +1349,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			log_info(logger, "Se seleccionó el valor despues de lru %s", valor);
 
 			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-			pthread_mutex_unlock(&lockSelect);
+			sem_post(&semJournal);
 			log_info(logger, "Pasó el lock de salida");
 			free(estoyFull);
 			free(noExiste);
@@ -1343,7 +1360,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			pNueva = crearPagina();
 			if(pNueva->nroMarco==-1){
 				free(pNueva);
-				pthread_mutex_unlock(&lockSelect);
+				sem_post(&semJournal);
 				log_info(logger, "Pasó el lock de salida");
 
 				free(noExiste);
@@ -1361,14 +1378,14 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
-				pthread_mutex_unlock(&lockSelect);
+				sem_post(&semJournal);
 				log_info(logger, "Pasó el lock de salida");
 				free(estoyFull);
 				free(noExiste);
 				return valorPagNueva;
 			}
 				else{
-					pthread_mutex_unlock(&lockSelect);
+					sem_post(&semJournal);
 					log_info(logger, "Pasó el lock de salida");
 					free(estoyFull);
 					return noExiste;
@@ -1381,7 +1398,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		pNueva = crearPagina();
 		if(pNueva->nroMarco==-1){
 			free(pNueva);
-			pthread_mutex_unlock(&lockSelect);
+			sem_post(&semJournal);
 			log_info(logger, "Pasó el lock de salida");
 			free(noExiste);
 			return estoyFull;
@@ -1405,7 +1422,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
-			pthread_mutex_unlock(&lockSelect);
+			sem_post(&semJournal);
 			log_info(logger, "Pasó el lock de salida");
 			free(estoyFull);
 			free(noExiste);
@@ -1413,7 +1430,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 		}
 		else{
-			pthread_mutex_unlock(&lockSelect);
+			sem_post(&semJournal);
 			log_info(logger, "Pasó el lock de salida");
 			free(estoyFull);
 			return noExiste;
@@ -1428,7 +1445,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 }
 
 int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
-	usleep(config->retardoMem);
 
 	int rta = createLissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
 	log_info(logger, "La respuesta del create fue %d", rta);
@@ -1438,7 +1454,6 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 
 
 char* mDescribe(char* nombreTabla){
-	usleep(config->retardoMem);
 
 	char* rta = describeLissandra(nombreTabla);
 	char* respuesta = string_from_format("%s%s", "0", rta);
@@ -1449,9 +1464,8 @@ char* mDescribe(char* nombreTabla){
 }
 
 int mDrop(char* nombreTabla){
-	usleep(config->retardoMem);
 
-	pthread_mutex_lock(&lockDrop);
+	sem_wait(&semJournal);
 
 	segmento* nuevo = buscarSegmento(nombreTabla);
 
@@ -1462,7 +1476,7 @@ int mDrop(char* nombreTabla){
 		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
 	}
-	pthread_mutex_unlock(&lockDrop);
+	sem_post(&semJournal);
 	int rta = dropLissandra(nombreTabla);
 
 	return rta;
@@ -1470,33 +1484,23 @@ int mDrop(char* nombreTabla){
 
 
 int mJournal(){
-	usleep(config->retardoMem);
 
-	pthread_mutex_lock(&lockInsert);
-	pthread_mutex_lock(&lockSelect);
-	pthread_mutex_lock(&lockDrop);
+	for(int i = 0; i<config->multiprocesamiento; i++){
+		sem_wait(&semJournal);
 
+
+	}
 
 	log_info(logger, "\n\n Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");
-	pthread_mutex_lock(&lockTablaSeg);
+	/*pthread_mutex_lock(&lockTablaSeg);
 	pthread_mutex_lock(&lockTablaMarcos);
-
-	void iteraPag(pagina * p){
-		log_info(logger,"pagina con marco %i modificada %i" , p->nroMarco , p->modificado);
-	}
-
-
-	void itera(segmento *s){
-		list_iterate(s->tablaPaginas,(void*)iteraPag);
-	}
-	list_iterate(tablaSegmentos,(void*)itera);
 
 
 	for(int i = 0; i<tablaSegmentos->elements_count; i++){
 		segmento *seg = list_get(tablaSegmentos, i);
 		pthread_mutex_lock(&seg->lockSegmento);
 	}
-
+*/
 
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
 		char* nombreSegmento = malloc(sizeof(char)*100);
@@ -1518,15 +1522,16 @@ int mJournal(){
 				char* value = (char*)conseguirValor(pag);
 				int insertExitoso = insertLissandra(nombreSegmento, timestamp, key, value);
 				log_info(logger, "Rta insert LFS %d", insertExitoso);
-				free(t);
-				free(k);
-				free(value);
+
 				if(insertExitoso == 0){
 						log_info(logger, "Se insertó correctamente el valor %s en la tabla %s", value, nombreSegmento);
 					}
 				else{
 						log_info(logger, "No se pudo insertar el valor %s en la tabla %s", value, nombreSegmento);
 					}
+				free(t);
+				free(k);
+				free(value);
 		}
 
 		log_info(logger, "Se borra la lista de modificados para el segmento %s", nombreSegmento);
@@ -1542,22 +1547,16 @@ int mJournal(){
 	int listaVacia = list_is_empty(tablaSegmentos);
 	if (listaVacia == 1){
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
-		 void itera(marco *m){
-			 log_info(logger,"marco %i libre: %i" , m->nroMarco , m->estaLibre);
-			 m->estaLibre=0;
-			 log_info(logger,"marco %i libre: %i" , m->nroMarco , m->estaLibre);
-
-		 }
-
-		 list_iterate(tablaMarcos,(void*)itera);
-
 
 		log_info(logger,"size usos" ,  list_size(listaDeUsos));
-		pthread_mutex_unlock(&lockTablaSeg);
-		pthread_mutex_unlock(&lockTablaMarcos);
-		pthread_mutex_unlock(&lockInsert);
-		pthread_mutex_unlock(&lockSelect);
-		pthread_mutex_unlock(&lockDrop);
+		//pthread_mutex_unlock(&lockTablaSeg);
+		//pthread_mutex_unlock(&lockTablaMarcos);
+
+
+		for(int i = 0; i<config->multiprocesamiento; i++){
+			sem_post(&semJournal);
+
+		}
 
 		return 0;
 	}
@@ -1724,7 +1723,6 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
 }
 
 void mGossip(){
-	usleep(config->retardoMem);
 
     int i=1;
 	t_config *configGossiping = read_config();
