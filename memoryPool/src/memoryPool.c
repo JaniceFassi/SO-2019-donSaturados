@@ -100,9 +100,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
+//	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
 
-	//maxValue = 20;
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -390,38 +390,43 @@ int main(void) {
  					break;
 
  				case 6: //DEVOLVER TABLA DE ACTIVOS
- 					tabla =confirmarActivo();
- 					sendData(cli, tabla, strlen(tabla)+1);
- 					char *salioBien = malloc(sizeof(char)*2);
- 					recvData(cli, salioBien, sizeof(char)*2);
- 					salioBien[1] = '\0';
- 					if(atoi(salioBien)==0){
- 						char*tamanio = malloc(sizeof(char)*4);
- 						recvData(cli,tamanio,sizeof(char)*3);
- 						tamanio[3] = '\0';
- 						log_info(logger, "Tamanio tabla en sting %s", tamanio);
- 						int tamtabla = atoi(tamanio);
- 						log_info(logger, "Tamanio tabla %d", tamtabla);
- 						char* bufferTabla = malloc(tamtabla+sizeof(char));
- 						recvData(cli,bufferTabla,tamtabla);
- 						desempaquetarTablaSecundaria(bufferTabla);
- 						free(salioBien);
- 						free(tamanio);
- 						free(bufferTabla);
- 					}
- 					else{
- 						log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
- 						free(salioBien);
+					   tabla = confirmarActivo();
+ 					   sendData(cli, tabla, strlen(tabla)+1);
+ 					   free(tabla);
+ 				       break;
 
- 					}
+				case 7: //RECIBIR TABLA DE ACTIVOS DE LA MEMORIA QUE PIDIO CONFIRMACION
 
- 					break;
-				case 7:
- 					tabla=confirmarActivo();
- 					sendData(cli,tabla,strlen(tabla)+1);
- 					//Para cuando el kernel me pide mi tabla de mems activas
+					   rta=malloc(2);
+					   recvData(cli, rta, sizeof(char)*1);
+					   rta[1] = '\0';
+				 	   if(atoi(rta)==0){
+				 		    char*tamanio = malloc(sizeof(char)*4);
+					 	    recvData(cli,tamanio,sizeof(char)*3);
+							tamanio[3] = '\0';
+							log_info(logger, "Tamanio tabla en sting %s", tamanio);
+							int tamtabla = atoi(tamanio);
+							log_info(logger, "Tamanio tabla %d", tamtabla);
+							char* bufferTabla = malloc(tamtabla+sizeof(char));
+							recvData(cli,bufferTabla,tamtabla);
+							desempaquetarTablaSecundaria(bufferTabla);
+							free(rta);
+							free(tamanio);
+							free(bufferTabla);
+				 	   }
+				 	   else{
+				 		   log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
+				 		   free(rta);
+				 	   }
+				 	   break;
+
+				case 8: //ENVIAR TABLA AL KERNEL
+					tabla=confirmarActivo();
+					sendData(cli,tabla,strlen(tabla)+1);
+					free(tabla);
+					break;
+					//Para cuando el kernel me pide mi tabla de mems activas
 					//tuve que hacer este caso aparte porque el 6 espera que le envien una tabla tambien
-
 
 
  				}
@@ -1619,7 +1624,7 @@ int pedirConfirmacion(char*ip,char* puerto){
 	}
 
 	char* rta=malloc(sizeof(char)*2);
-	sendData(cliente,codOpe,sizeof(char)*2);
+	sendData(cliente,codOpe,sizeof(char)*2); //Le mando el codigo para que me mande su tabla
 	recvData(cliente,rta,sizeof(char));
 	char* tamTabla=malloc(sizeof(char)*4);
 	recvData(cliente,tamTabla,sizeof(char)*3);
@@ -1627,7 +1632,11 @@ int pedirConfirmacion(char*ip,char* puerto){
 	recvData(cliente,buffer,atoi(tamTabla));
 	desempaquetarTablaSecundaria(buffer);  //aca actualizo mi tabla con lo que me envian
 
+	//Le envio mi tabla
+
+	codOpe = "7";
 	char*paquete = confirmarActivo();
+	sendData(cliente,codOpe,sizeof(char)*2);
 	sendData(cliente,paquete,strlen(paquete)+1);
 
 	return 1;
