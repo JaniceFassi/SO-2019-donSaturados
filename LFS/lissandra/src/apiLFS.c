@@ -1,9 +1,3 @@
-/*
- * api.c
- *
- *  Created on: 9 abr. 2019
- *      Author: utnso
- */
 
 #include "apiLFS.h"
 
@@ -79,41 +73,39 @@ char *lSelect(char *nameTable, u_int16_t key){
 		aux=list_create();
 	}
 	sem_post(criticaMemtable);
-	log_info(logger,"se leyeron los datos de la memtable");
+	//log_info(logger,"se leyeron los datos de la memtable");
 	//Escanear todos los archivos temporales (modo 1)
-	int cantDumps=contarArchivos(nameTable, 1); //PREGUNTAR DILEMA
+	int cantDumps=contarArchivos(nameTable, 1);
 	int i=0;
 	while(i<cantDumps){
-		log_info(logger,"quiere leer los temporales");
+		//log_info(logger,"quiere leer los temporales");
 		escanearArchivo(nameTable,i, 1, obtenidos);
-
-		log_info(logger,"se logro leer los temporales");
+		//log_info(logger,"se logro leer los temporales");
 		i++;
 	}
 	//Escanear los .tmpc si es necesario (modo 2)
 	int cantTmpc=contarArchivos(nameTable ,2);
 	i=0;
 	while(i<cantTmpc){
-		log_info(logger,"quiere leer los tempC");
+		//log_info(logger,"quiere leer los tempC");
 		escanearArchivo(nameTable,i, 2, obtenidos);
-
-		log_info(logger,"se pudo leer los tempC");
+		//log_info(logger,"se pudo leer los tempC");
 		i++;
 	}
 
 	//Obtener la metadata asociada a dicha tabla.
 
-	log_info(logger,"quiere leer la META");
+	//log_info(logger,"quiere leer la META");
 	metaTabla *metadata= leerMetadataTabla(nameTable);
 
-	log_info(logger,"se pudo leer la META");
+	//log_info(logger,"se pudo leer la META");
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
 	//log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 	//Escanear la partición objetivo (modo 0)
-	log_info(logger,"quiere leer el bin");
+	//log_info(logger,"quiere leer el bin");
 	escanearArchivo(nameTable, part, 0,obtenidos);
-	log_info(logger,"pudo leer el bin");
+	//log_info(logger,"pudo leer el bin");
 	if(list_size(obtenidos)!=0){
 		list_add_all(aux,obtenidos);
 	}
@@ -133,8 +125,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 		}else{
 			log_info(logger,"No se ha encontrado el valor con key %i de la tabla %s.",key,nameTable);
 		}
-	}else
-	{
+	}else{
 		log_info(logger,"No se ha encontrado el valor con key %i de la tabla %s.",key,nameTable);
 	}
 	//FALTA LIBERAR EL METATABLA
@@ -205,7 +196,6 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	list_add(directorioP,uno);
 	pthread_create(&uno->hilo, NULL, &compactar,uno);
 	sem_post(criticaDirectorio);
-	//compactar(nombre,timeCompaction);
 	free(nombre);
 	return 0;
 }
@@ -215,7 +205,7 @@ t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE 
 	t_list *tablas=list_create();
 	if(nameTable==NULL){
 		if(list_is_empty(directorioP)){
-			log_error(logger,"No hay ninguna tabla cargada en el sistema.");
+			log_info(logger,"No hay ninguna tabla cargada en el sistema.");
 		}else{
 			//Recorrer el directorio de árboles de tablas
 			//y descubrir cuales son las tablas que dispone el sistema.
@@ -306,7 +296,7 @@ int drop(char* nameTable){
 		}
 
 		Sdirectorio *nuevo=list_remove_by_condition(directorioP,(void *)encontrar);
-		log_info(logger,"se removio %s",nuevo->nombre);
+		//log_info(logger,"se removio %s",nuevo->nombre);
 		liberarTabDirectorio(nuevo);
 		sem_post(criticaDirectorio);
 		//Eliminar carpeta

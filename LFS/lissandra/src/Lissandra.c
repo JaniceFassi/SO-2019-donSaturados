@@ -43,7 +43,6 @@ void theStart(){
 		crearConfig();										//EN CASO DE QUE NO NOS DEN EL CONFIG. DEBERIA SEGUIR ESTANDO ESTO??
 	}
 	tablaArchGlobal=list_create();
-	abortar=1;
 	inicializarSemGlob();
 	directorioP=list_create();
 	dumplog=log_create("/home/utnso/tp-2019-1c-donSaturados/LFS/lissandra/dump.log","Lissandra",0,LOG_LEVEL_INFO);
@@ -87,10 +86,10 @@ void *connectMemory(){
 		}
 		log_info(logger, "\nSe acepto la conexion de %i con %i.",configLissandra->id,configLissandra->idEsperado);
 		pthread_t unHilo;
-		log_info(logger,"creando hilo");
+		//log_info(logger,"creando hilo");
 		pthread_create(&unHilo,NULL,interactuarConMemoria,(void*)socket_client);
 
-		log_info(logger,"se creo hilo");
+		//log_info(logger,"se creo hilo");
 		pthread_detach(unHilo);
 	}
 
@@ -100,11 +99,11 @@ void *connectMemory(){
 void *interactuarConMemoria(u_int16_t socket_cliente){
 	int header=0;
 	char *buffer=malloc(2);
-	log_info(logger,"esperando mensaje");
-	log_info(logger,"socket = %i", socket_cliente);
+	//log_info(logger,"esperando mensaje");
+	//log_info(logger,"socket = %i", socket_cliente);
 	recvData(socket_cliente,buffer,1);
 	buffer[1]='\0';
-	log_info(logger,buffer);
+	//log_info(logger,buffer);
 	header=atoi(buffer);
 	exec_api(header,socket_cliente);
 	free(buffer);
@@ -131,7 +130,7 @@ char* recibirDeMemoria(u_int16_t sock){
 }
 
 void *inicializarInotify(){
-	while(abortar){
+	while(1){
 		char buffer[BUF_LEN];
 		int file_descriptor = inotify_init();
 		if (file_descriptor < 0) {
@@ -204,7 +203,6 @@ void exec_api(op_code mode,u_int16_t sock){
 	switch(mode){
 	char *respuesta;
 	case 0:								//orden: tabla, key
-
 		buffer=recibirDeMemoria(sock);
 		subCadena=string_split(buffer, ";");
 		int keyBuscada=atoi(subCadena[1]);
@@ -226,7 +224,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			}
 		}
 		sendData(sock,respuesta,strlen(respuesta)+1);
-		log_info(logger,respuesta);
+		//log_info(logger,respuesta);
 		free(respuesta);
 		free(valor);
 		close(sock);
@@ -244,7 +242,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			respuesta=string_from_format("0");
 		}
 		sendData(sock,respuesta,strlen(respuesta)+1);
-		log_info(logger,respuesta);
+		//log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -261,7 +259,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			respuesta=string_from_format("0");
 		}
 		sendData(sock,respuesta,strlen(respuesta)+1);
-		log_info(logger,respuesta);
+		//log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -305,7 +303,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			free(canTablas);
 		}
 		sendData(sock,respuesta,strlen(respuesta)+1);
-		log_info(logger,respuesta);
+		//log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -319,7 +317,7 @@ void exec_api(op_code mode,u_int16_t sock){
 			respuesta=string_from_format("0");
 		}
 		sendData(sock,respuesta,strlen(respuesta)+1);
-		log_info(logger,respuesta);
+		//log_info(logger,respuesta);
 		free(respuesta);
 		close(sock);
 		break;
@@ -413,9 +411,7 @@ void *console(){
 			char **subStrings= string_n_split(linea,5," ");
 			u_int16_t particiones=atoi(subStrings[3]);
 			long timeCompaction=atol(subStrings[4]);
-			if(create(subStrings[1],subStrings[2],particiones,timeCompaction)!=0){
-				log_info(logger,"No se pudo crear la tabla %s.",subStrings[1]);
-			}
+			create(subStrings[1],subStrings[2],particiones,timeCompaction);
 			liberarSubstrings(subStrings);
 		}
 
@@ -424,7 +420,6 @@ void *console(){
 			t_list *tablas;
 			tablas=describe(subStrings[1]);
 			if(list_is_empty(tablas)){
-				printf("No se encontraron descripciones de la/s tablas\n");
 				list_destroy(tablas);
 			}else{
 				mostrarDescribe(tablas);
@@ -438,9 +433,7 @@ void *console(){
 			if(subStrings[1]==NULL){
 				log_info(logger,"No se ingreso el nombre de la tabla.");
 			}else{
-				if(drop(subStrings[1])!=0){
-					log_info(logger,"No se pudo eliminar correctamente la tabla.");
-				}
+				drop(subStrings[1]);
 			}
 			free(subStrings[0]);
 			free(subStrings[1]);
@@ -459,20 +452,20 @@ void *console(){
 
 void theEnd(){
 	pthread_cancel(hiloMemoria);
-	log_info(logger,"se termino el hilo de memoria");
+	//log_info(logger,"se termino el hilo de memoria");
 	pthread_cancel(hiloInotify);
-	log_info(logger,"se termino el hilo de Inotify");
+	//log_info(logger,"se termino el hilo de Inotify");
 	sem_wait(sem_dump);
 	pthread_cancel(hiloDump);
 	sem_post(sem_dump);
-	log_info(logger,"se termino el hilo de Dump");
+	//log_info(logger,"se termino el hilo de Dump");
 	log_destroy(dumplog);
 	if(!list_is_empty(memtable)){
 		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
 	}else{
 		list_destroy(memtable);
 	}
-	log_info(logger,"se elimino la memtable");
+	//log_info(logger,"se elimino la memtable");
 	liberarDirectorioP();
 	log_destroy(compaclog);
 	liberarSemaforos();

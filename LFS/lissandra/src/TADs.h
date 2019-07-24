@@ -77,7 +77,6 @@ metaFileSystem *metaLFS;
 int cantBloqGlobal;
 char *pathInicial;
 char *raizDirectorio;
-int abortar;
 //semaforos
 sem_t *criticaMemtable;
 sem_t *criticaDirectorio;

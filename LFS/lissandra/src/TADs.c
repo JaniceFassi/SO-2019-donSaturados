@@ -1,17 +1,7 @@
 
-/*
- * FileSystem.c
- *
- *  Created on: 12 abr. 2019
- *      Author: utnso
- */
 #include "TADs.h"
 
-
-
-
 //INICIALIZAR SEMAFOROS
-
 void inicializarSemGlob(){
 	criticaDirectorio=malloc(sizeof(sem_t));
 	sem_init(criticaDirectorio,0,1);
@@ -26,6 +16,7 @@ void inicializarSemGlob(){
 	sem_dump=malloc(sizeof(sem_t));
 	sem_init(sem_dump,0,1);
 }
+
 void liberarSemaforos(){
 	free(criticaDirectorio);
 	sem_destroy(criticaDirectorio);
@@ -40,6 +31,7 @@ void liberarSemaforos(){
 	free(sem_dump);
 	sem_destroy(sem_dump);
 }
+
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
 char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
@@ -518,7 +510,7 @@ void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){
 	t_list *aux;
 	metaArch *archivoAbierto=abrirArchivo(nameTable, part, extension);
 	if(archivoAbierto==NULL){
-		log_info(logger,"No se pudo abrir el archivo.");
+		//log_info(logger,"No se pudo abrir el archivo.");
 		return;
 	}
 	if(archivoAbierto->size>0){
@@ -686,7 +678,7 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 	int bloquesNecesarios;
 	if(list_is_empty(lista)){
 		if(modo==0){
-			log_info(logger,"No hay nada para escrbir.");
+			//log_info(logger,"No hay nada para escrbir.");
 			return 0;
 		}
 		largo=0;

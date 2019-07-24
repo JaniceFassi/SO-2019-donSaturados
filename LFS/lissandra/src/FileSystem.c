@@ -11,7 +11,6 @@ void levantarDirectorio(){
 	if(crearMontaje()==0){									//CREA LAS CARPETAS DEL MONTAJE SI NO EXISTEN
 		log_info(logger,"Se levanto el montaje.");
 	}
-
 	if(crearNivelMetadata()==0){							//CREA LA CARPETA METADATA CON EL METADATA.BIN y el BITMAP.BIN SI NO EXISTE
 		log_info(logger,"Se levanto el nivel Metadata.");
 	}

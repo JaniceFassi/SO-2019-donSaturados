@@ -1,35 +1,26 @@
-/*
- * Compactor.c
- *
- *  Created on: 12 abr. 2019
- *      Author: utnso
- */
 
 #include "Compactor.h"
+
 void *dump(){
 	//ACA IRIA EL WAIT MUTEX DE LA MEMTABLE
 	while(1){
 		usleep(configLissandra->tiempoDump*1000);
 		sem_wait(sem_dump);
-		//if(abortar==0){
-			//pthread_exit(NULL);
-		//}
 		sem_wait(criticaMemtable);
 		if(list_is_empty(memtable)){
 			log_info(dumplog,"la memtable esta vacia por lo cual no se hace el dump");
 			sem_post(criticaMemtable);
+			sem_post(sem_dump);
 		}else{
 			t_list *dump=list_duplicate(memtable);
 			list_clean(memtable);
-			//ACA IRIA EL SIGNAL MUTEX DE LA MEMTABLE
-			sem_post(criticaMemtable);
 			int cant=list_size(dump);
 			while(cant>0){
-				log_info(dumplog,"se empezo a hacer el dump");
+				log_info(logger,"se empezo a hacer el dump");
 				Tabla *dumpTabla=list_get(dump,cant-1);
 				char *path=nivelUnaTabla(dumpTabla->nombre,0);
 				if(folderExist(path)==0){
-					log_info(dumplog,"se empezo a hacer el dump de %s",dumpTabla->nombre);
+					//log_info(dumplog,"se empezo a hacer el dump de %s",dumpTabla->nombre);
 					Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(dumpTabla->nombre);
 					sem_wait(&tabDirectorio->semaforoContarTMP);
 					int cantTmp=contarArchivos(dumpTabla->nombre, 1);
@@ -44,25 +35,24 @@ void *dump(){
 				liberarTabla(dumpTabla);
 				free(path);
 				cant--;
-				log_info(dumplog,"se termino de hacer el dump");
+				log_info(logger,"se termino de hacer el dump");
 			}
 			list_destroy(dump);
 		}
+		//ACA IRIA EL SIGNAL MUTEX DE LA MEMTABLE
+		sem_post(criticaMemtable);
 		sem_post(sem_dump);
 	}
 	//return 0;
 	pthread_exit(NULL);
 }
-//void compactar(char *nombreTabla, long tiempoCompactacion){
-
-
 
 void *compactar(Sdirectorio* nuevo){
 	while(nuevo->terminar){
 		usleep(nuevo->time_compact*1000);
 		sem_wait(&nuevo->semaforoCompactor);
 		nuevo->pedido_extension=3;
-		//log_info(compaclog,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
+		log_info(compaclog,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
 		char *path=nivelUnaTabla(nuevo->nombre,0);
 		if(folderExist(path)==1){
 			log_error(compaclog,"No se puede hacer la compactacion por que la tabla %s ya no existe",nuevo->nombre);
@@ -76,7 +66,6 @@ void *compactar(Sdirectorio* nuevo){
 		if(cantTemp==0){
 			log_info(compaclog,"No hay datos para la compactacion de %s.",nuevo->nombre);
 			sem_post(&nuevo->semaforoContarTMP);
-			//compactar(nuevo);
 		}else{
 			int contador=0;
 			// SEMAFORO WAIT PEDIDO RENOMBRAR
@@ -84,14 +73,13 @@ void *compactar(Sdirectorio* nuevo){
 			sem_wait(&nuevo->semaforoTMP);
 			while(cantTemp>contador){
 				char *arch=nivelParticion(nuevo->nombre,contador,1);
-				//semaforos
 				if(renombrarTemp_TempC(arch)==1){
 					log_error(compaclog,"No se puedo renombrar el tmp de la tabla %s.",nuevo->nombre);
 				}
 				free(arch);
 				contador++;
 			}
-			log_info(compaclog,"Se pudieron renombrar los tmps de la tabla %s.",nuevo->nombre);
+			//log_info(compaclog,"Se pudieron renombrar los tmps de la tabla %s.",nuevo->nombre);
 			sem_post(&nuevo->semaforoTMP);
 			int valor;
 			sem_getvalue(&nuevo->archivoBloqueado,&valor);
@@ -103,10 +91,10 @@ void *compactar(Sdirectorio* nuevo){
 			nuevo->pedido_extension=-1;
 			//sacar la metadata
 			metaTabla *metadata=leerMetadataTabla(nuevo->nombre);
-			log_info(compaclog,"Se abrio la metadata %s.",nuevo->nombre);
+			//log_info(compaclog,"Se abrio la metadata %s.",nuevo->nombre);
 			if(metadata==NULL){
 				log_info(compaclog,"Error al abrir la metada, se terminara el hilo de %s.",nuevo->nombre);
-//				pthread_exit(NULL);
+				pthread_exit(NULL);
 				return NULL;
 			}
 			t_list *todosLosRegistros=list_create();
@@ -125,14 +113,14 @@ void *compactar(Sdirectorio* nuevo){
 				}
 				escanearArchivo(nuevo->nombre,contador,extension,todosLosRegistros);
 				if(contador+1==cantMax && binario==0){
-					log_info(compaclog,"Se terminaron de leer los bins de la tabla %s.",nuevo->nombre);
+					//log_info(compaclog,"Se terminaron de leer los bins de la tabla %s.",nuevo->nombre);
 					contador=-1;
 					cantMax=cantTemp;
 					binario++;
 				}
 				contador++;
 			}
-			log_info(compaclog,"Se terminaron de leer los tmps y bins de la tabla %s.",nuevo->nombre);
+			//log_info(compaclog,"Se terminaron de leer los tmps y bins de la tabla %s.",nuevo->nombre);
 			contador=0;
 			t_list *depurado=regDep(todosLosRegistros);
 			//escribir
@@ -150,13 +138,14 @@ void *compactar(Sdirectorio* nuevo){
 					borrarMetadataTabla(metadata);
 					list_destroy(depurado);
 					list_destroy_and_destroy_elements(todosLosRegistros,(void *)destroyRegistry);
-					compactar(nuevo);
+					pthread_exit(NULL);
+					//compactar(nuevo);
 				}
 				free(archP);
 				list_destroy(particion);
 				contador++;
 			}
-			log_info(compaclog,"se termino de escribir la compactacion de %s",nuevo->nombre);
+			//log_info(compaclog,"se termino de escribir la compactacion de %s",nuevo->nombre);
 			//SIGNAL MUTEX BINARIOS DE LA TABLA
 			sem_post(&nuevo->semaforoBIN);
 			sem_getvalue(&nuevo->archivoBloqueado,&valor);
@@ -174,7 +163,7 @@ void *compactar(Sdirectorio* nuevo){
 				free(arch);
 				contador++;
 			}
-			log_info(compaclog,"se eliminaron los archivos tmpC de la tabla %s",nuevo->nombre);
+			//log_info(compaclog,"se eliminaron los archivos tmpC de la tabla %s",nuevo->nombre);
 			//SIGNAL MUTEX TMPC DE LA TABLA
 			sem_post(&nuevo->semaforoTMPC);
 			sem_getvalue(&nuevo->archivoBloqueado,&valor);
@@ -191,17 +180,19 @@ void *compactar(Sdirectorio* nuevo){
 	}
 	return NULL;
 }
+
 void liberarTabDirectorio(Sdirectorio *nuevo){
 	free(nuevo->nombre);
 	liberarSemaforosTabla(nuevo);
 	free(nuevo);
 }
+
 void cerrarHiloCompactor(Sdirectorio *nuevo){
 	nuevo->terminar=0;
 	sem_wait(&nuevo->semaforoCompactor);
 	pthread_cancel(nuevo->hilo);
 	sem_post(&nuevo->semaforoCompactor);
-	log_info(logger,"se termino el hilo de %s",nuevo->nombre);
+	//log_info(logger,"se termino el hilo de %s",nuevo->nombre);
 }
 
 void liberarDirectorioP(){
@@ -225,6 +216,7 @@ void semaforosTabla(Sdirectorio *nuevo){
 	sem_init(&nuevo->archivoBloqueado,0,1);
 	nuevo->pedido_extension=-1;
 }
+
 void liberarSemaforosTabla(Sdirectorio *nuevo){
 	sem_destroy(&nuevo->semaforoBIN);
 	sem_destroy(&nuevo->semaforoContarTMP);
@@ -234,6 +226,7 @@ void liberarSemaforosTabla(Sdirectorio *nuevo){
 	sem_destroy(&nuevo->semaforoCompactor);
 	sem_destroy(&nuevo->archivoBloqueado);
 }
+
 Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
 	int contador=0;
 	while(contador<list_size(directorioP)){
@@ -247,9 +240,3 @@ Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
 	}
 	return NULL;
 }
-/*Sdirectorio *obtenerUnaTabDirectorio(char *tabla){
-	bool tabla_directorio(Sdirectorio *es){
-		return es->nombre == tabla;
-	}
-	return list_find(directorioP,(void *)tabla_directorio);
-}*/
