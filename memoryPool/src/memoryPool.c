@@ -25,19 +25,7 @@ int main(void) {
 
 	}
 
-/*	mInsert("POSTRES", 1, "FLAN");
-	mInsert("POSTRES", 2, "HELADO");
-	mInsert("POSTRES", 3, "CHOCOLATE");
-	mSelect("PROFESIONES", 1);
-	mostrarMemoria();
-	sleep(5);
-	mInsert("PROFESIONES", 2, "MAESTRO");
-	mInsert("PROFESIONES", 5, "CHEF");
-	mInsert("ANIMALES", 1, "GATO");
-	mInsert("ANIMALES", 2, "PERRO");
-	mInsert("ANIMALES", 3, "JIRAFA");
-*/
-		pthread_t inotify;
+	pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 
 
@@ -72,7 +60,6 @@ int main(void) {
 
 	}
 
-	mostrarMemoria();
 	finalizar();
 	return EXIT_SUCCESS;
 }
@@ -83,19 +70,25 @@ int main(void) {
 
  int inicializar(){
 	logger = init_logger();
-	configuracion = read_config();
+	t_config* configuracion = read_config();
+	config = malloc(sizeof(estructuraConfig));
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
-	u_int16_t puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
-	retardoJournal = config_get_int_value(configuracion,"RETARDO_JOURNAL")*1000;
-	retardoGossip = config_get_int_value(configuracion, "RETARDO_GOSSIPING")*10000;
+	config->retardoJournal = config_get_int_value(configuracion,"RETARDO_JOURNAL")*1000;
+	config->retardoGossiping= config_get_int_value(configuracion, "RETARDO_GOSSIPING")*10000;
+	config->retardoMem = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
+	config->retardoFS = config_get_int_value(configuracion, "RETARDO_FS")*1000;
+ 	config->puerto = config_get_int_value(configuracion, "PUERTO");
+ 	config->ip = malloc(strlen("192.168.0.32")+1);
+	strcpy(config->ip, config_get_string_value(configuracion, "IP"));
+ 	config->puertoFS= config_get_int_value(configuracion,"PUERTO_FS");
+ 	config->ipFS = malloc(strlen("192.168.0.32")+1);
+ 	strcpy(config->ipFS, config_get_string_value(configuracion,"IP_FS"));
+
 	pathConfig = malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config")+1);
 	strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
-	abortar = 1;
 
-	char* ipFS = malloc(15);
-	strcpy(ipFS, config_get_string_value(configuracion,"IP_FS"));
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
-	prepararGossiping();
+	prepararGossiping(configuracion);
 
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 	memoria = calloc(1,tamanioMemoria);
@@ -107,7 +100,7 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, ipFS, puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
 
 	//maxValue = 20;
 
@@ -143,13 +136,14 @@ int main(void) {
 	pthread_mutex_init(&lockInsert, NULL);
 	pthread_mutex_init(&lockSelect, NULL);
 	pthread_mutex_init(&lockDrop, NULL);
-
+	pthread_mutex_init(&lockConfig, NULL);
+	config_destroy(configuracion);
 
 
 	return 0;
 }
 
- void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
+ void prepararGossiping(t_config *configuracion){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
 	 
 	 char* ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
 	 char* seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
@@ -234,7 +228,6 @@ int main(void) {
  //---------------------------------------------------------//
  void* recibirOperacion(int cli){
  	log_info(logger,"sock: %d",cli);
-
  	char *buffer = malloc(sizeof(char)*2);
  	int b = recvData(cli, buffer, sizeof(char));
  	buffer[1] = '\0';
@@ -242,6 +235,7 @@ int main(void) {
  	log_info(logger, "Operacion %d", atoi(buffer));
 
  	int operacion = atoi(buffer);
+ 	free(buffer);
  	char** desempaquetado;
  	char* paquete;
  	char* tamanioPaq = malloc(sizeof(char)*4);
@@ -252,22 +246,21 @@ int main(void) {
  		recvData(cli,tamanioPaq, sizeof(char)*3);
  		tamanioPaq[3]='\0';
  		int tamanio = atoi(tamanioPaq);
- 		log_info(logger, tamanioPaq );
+ 		log_info(logger, tamanioPaq);
+ 		free(tamanioPaq);
 
  		if(tamanio!=0){
  			paquete = malloc(tamanio + sizeof(char));
  			recvData(cli, paquete, tamanio);
 
  			desempaquetado = string_n_split(paquete, 5, ";");
+ 	 		free(paquete);
+
 
  		}
  		else{
- 			log_info(logger, "Antes strcpy");
- 			//strcpy(desempaquetado[0], "global");
  			desempaquetado=string_n_split("global; ",2,";");
- 			log_info(logger, "Despues strcpy");
  		}
-
  	}
 
  	char* nombreTabla;
@@ -292,18 +285,21 @@ int main(void) {
  						if(strcmp(rta, "3")==0){
  							log_info(logger,"mando que no existe");
  							sendData(cli, rta, strlen(rta)+1);
+ 							free(rta);
  						}else{
-
- 							char* msj = malloc(strlen(rta)+4);
+ 							char* msj;
  							msj = empaquetar(0, rta);
  							log_info(logger,"mando que existe rta:%s",msj);
  							sendData(cli, msj, strlen(msj)+1);
+ 							free(msj);
+ 							free(rta);
  						}
  					}
  					//si estoy full
  					else{
- 						rtaFull= malloc(2);
  						sendData(cli, rta, strlen(rta)+1);
+ 						free(rta);
+ 						rtaFull= malloc(2);
  						recvData(cli, rtaFull, sizeof(char));
  						rtaFull[1]='\0';
  					 	if(atoi(rtaFull)==5){
@@ -312,14 +308,17 @@ int main(void) {
  					 		if(strcmp(rta, "3")==0){
  					 		log_info(logger,"mando que no existe");
  					 		sendData(cli, rta, strlen(rta)+1);
+ 					 		free(rta);
  					 		}else{
  					 			char* msj = malloc(strlen(rta)+4);
  					 			msj = empaquetar(0, rta);
  					 			sendData(cli, msj, strlen(msj)+1);
  					 			log_info(logger, "Rta select después de un journal %s\n", msj);
+ 					 			free(msj);
+ 					 			free(rta);
  					 			}
  					 	}
-
+ 					 	free(rtaFull);
  					}
  					break;
 
@@ -330,20 +329,25 @@ int main(void) {
 
  					resp = mInsert(nombreTabla, key, value);
  					log_info(logger, "Antes de responder el insert");
- 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 					rta = string_itoa(resp);
+ 					sendData(cli, rta, sizeof(char)*2);
  					log_info(logger, "Rta insert %d\n", resp);
+ 					free(rta);
  					rtaFull= malloc(2);
 
  					if(resp == 2){
  						recvData(cli, rtaFull, sizeof(char));
- 						buffer[1]='\0';
+ 						rtaFull[1]='\0';
  						if(atoi(rtaFull)==5){
  							mJournal();
  							resp = mInsert(nombreTabla, key, value);
- 							sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 							rta = string_itoa(resp);
+ 							sendData(cli, rta, sizeof(char)*2);
  							log_info(logger, "Rta insert después de un journal %d\n", resp);
  							}
+
  						}
+ 					free(rtaFull);
 
  					break;
 
@@ -353,7 +357,9 @@ int main(void) {
  					particiones = atoi(desempaquetado[2]);
  					tiempoCompactacion = atol(desempaquetado[3]);
  					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
- 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 					rta = string_itoa(resp);
+ 					sendData(cli, rta, sizeof(char)*2);
+ 					free(rta);
  					break;
 
  				case 3: //DESCRIBE
@@ -364,18 +370,23 @@ int main(void) {
  					log_info(logger,desempaquetado[0]);
  					rta =mDescribe(nombreTabla);
  					sendData(cli, rta, strlen(rta)+1);
+ 					free(rta);
  					break;
 
  				case 4: //DROP
  					nombreTabla = desempaquetado[0];
  					resp = mDrop(nombreTabla);
- 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 					rta = string_itoa(resp);
+ 					sendData(cli, rta, sizeof(char)*2);
+ 					free(rta);
 
  					break;
 
  				case 5: //JOURNAL
  					resp = mJournal();
- 					sendData(cli, string_itoa(resp), sizeof(char)*2);
+ 					rta = string_itoa(resp);
+ 					sendData(cli, rta, sizeof(char)*2);
+ 					free(rta);
  					break;
 
  				case 6: //DEVOLVER TABLA DE ACTIVOS
@@ -394,9 +405,14 @@ int main(void) {
  						char* bufferTabla = malloc(tamtabla+sizeof(char));
  						recvData(cli,bufferTabla,tamtabla);
  						desempaquetarTablaSecundaria(bufferTabla);
+ 						free(salioBien);
+ 						free(tamanio);
+ 						free(bufferTabla);
  					}
  					else{
  						log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
+ 						free(salioBien);
+
  					}
 
  					break;
@@ -411,16 +427,16 @@ int main(void) {
  				}
  	//responder 0 si salio bien, 1 si salio mal
  	close(cli);
+ 	liberarSubstrings(desempaquetado);
  	return NULL;
  }
 
  void* gestionarConexiones (void* arg){
- 	u_int16_t puertoServer = config_get_int_value(configuracion, "PUERTO");
- 	char* ipServer = config_get_string_value(configuracion, "IP");
+
  	u_int16_t server;
 
 
- 	int servidorCreado = createServer(ipServer, puertoServer, &server);
+ 	int servidorCreado = createServer(config->ip, config->puerto, &server);
 
  	if(servidorCreado!=0){
  		log_error(logger, "No se pudo crear el servidor");
@@ -449,7 +465,7 @@ int main(void) {
  }
  void* correrInotify(void*arg){
 
- 	while(abortar){
+ 	while(1){
  			char buffer[BUF_LEN];
  			int file_descriptor = inotify_init();
  			if (file_descriptor < 0) {
@@ -468,11 +484,13 @@ int main(void) {
 
  void modificarConfig(){
  	t_config *configInotify;
+ 	pthread_mutex_lock(&lockConfig);
  	configInotify = read_config();
- 	retardoJournal = config_get_int_value(configInotify,"RETARDO_JOURNAL")*1000;
- 	retardoGossip = config_get_int_value(configInotify, "RETARDO_GOSSIPING")*10000;
+ 	config->retardoJournal = config_get_int_value(configInotify,"RETARDO_JOURNAL")*1000;
+ 	config->retardoGossiping = config_get_int_value(configInotify, "RETARDO_GOSSIPING")*10000;
  	log_info(logger, "Se modificó la config");
  	config_destroy(configInotify);
+ 	pthread_mutex_unlock(&lockConfig);
 
  }
 
@@ -565,7 +583,7 @@ int main(void) {
 
 
  	while(1){
- 		usleep(retardoJournal);
+ 		usleep(config->retardoJournal);
  		log_info(logger,"Se realiza un journal programado");
  		mJournal();
 
@@ -579,7 +597,7 @@ int main(void) {
  	while(1){
  		log_info(logger, "Se realiza un gossip programado");
  		mGossip();
- 		usleep(retardoGossip);
+ 		usleep(config->retardoGossiping);
  	}
 
  	return NULL;
@@ -607,6 +625,7 @@ int main(void) {
 	 }
 
 	 msj = string_from_format("%s%s", tamanioFormateado, paquete);
+	 free(tamanioFormateado);
  	 return msj;
 
  }
@@ -621,7 +640,12 @@ int main(void) {
 }
 
  char* formatearCreate(char* nombreTabla, char* consistencia, int particiones, long tiempoCompactacion){
-	char* paquete= string_from_format("%s;%s;%s;%s", nombreTabla, consistencia, string_itoa(particiones), string_itoa(tiempoCompactacion));
+	char* part = string_itoa(particiones);
+	char* tcomp = string_itoa(tiempoCompactacion);
+
+	char* paquete= string_from_format("%s;%s;%s;%s", nombreTabla, consistencia, part, tcomp);
+	free(part);
+	free(tcomp);
 	return paquete;
 }
 
@@ -640,24 +664,24 @@ int main(void) {
  	sendData(lfsCliente, "6", sizeof(char) );
  	char* buffer = malloc(sizeof(char)*4);
  	recvData(lfsCliente, buffer, sizeof(char)*3);
+ 	buffer[3] = '\0';
  	u_int16_t maxV = atoi(buffer);
+ 	free(buffer);
  	return maxV;
  }
 
 
  int crearConexionLFS(){
  	//crea un socket para comunicarse con lfs, devuelve el file descriptor conectado
- 	int puertoFS = config_get_int_value(configuracion,"PUERTO_FS");
- 	char* ipFS = config_get_string_value(configuracion,"IP_FS");
- 	int retardoFS = config_get_int_value(configuracion, "RETARDO_FS")*1000;
- 	usleep(retardoFS);
+
+ 	usleep(config->retardoFS);
 
  	u_int16_t lfsServer;
- 	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
+ 	int rta = linkClient(&lfsServer, config->ipFS, config->puertoFS, 1);
  	int i=0;
  	while(rta!=0 && i<5){
  		log_error(logger, "No se pudo crear una conexión con LFS, volverá a intentarse");
- 	 	int rta = linkClient(&lfsServer, ipFS, puertoFS, 1);
+ 	 	rta = linkClient(&lfsServer, config->ipFS, config->puertoFS, 1);
  	 	i++;
  	}
 
@@ -674,7 +698,8 @@ int main(void) {
 
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 log_info(logger, "Paquete select %s", paqueteListo);
-
+	 free(datos);
+	 free(paqueteListo);
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 	 buffer[1] = '\0';
@@ -682,18 +707,20 @@ int main(void) {
 		 char* tam = malloc(sizeof(char)*4);
 
 		 recvData(lfsSock, tam, sizeof(char)*3);
-		 tam[4]= '\0';
+		 tam[3]= '\0';
 		 int t = atoi(tam);
 
 		 log_info(logger, "Tamanio value %d", t);
 		 value = malloc(t+sizeof(char));
 		 recvData(lfsSock, value, t);
 		 log_info(logger, "Se recibio el valor %s", value);
-
+		 free(buffer);
+		 free(tam);
 	 }
 	 else{
 		 value = NULL;
 		 log_info(logger, "No existe un valor con esa key en LFS");
+		 free(buffer);
 	 }
 
 	 close(lfsSock);
@@ -708,11 +735,15 @@ int main(void) {
 		 u_int16_t lfsSock = crearConexionLFS();
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 log_info(logger, "Paquete insert %s", paqueteListo);
+		 free(datos);
+		 free(paqueteListo);
 
 		 char *buffer = malloc(sizeof(char)*2);
 		 recvData(lfsSock, buffer, sizeof(char));
 		 close(lfsSock);
+		 buffer[1] = '\0';
 		 int rta = atoi(buffer);
+		 free(buffer);
 		 return rta;
 
 
@@ -728,6 +759,7 @@ int main(void) {
 		 char* paqueteListo = empaquetar(3, nombreTabla);
 		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 		 log_info(logger, "Paquete describe con tabla %s", paqueteListo);
+		 free(paqueteListo);
 
 	 }
 	 else{
@@ -736,6 +768,7 @@ int main(void) {
 		 log_info(logger, "Paquete describe %s", describeGlobal);
 
 	 }
+	 free(describeGlobal);
 
 
 	 //recibir
@@ -743,12 +776,15 @@ int main(void) {
 	 recvData(lfsSock, buffer, sizeof(char));
 	 char* tam = malloc(sizeof(char)*5);
 	 recvData(lfsSock, tam, sizeof(char)*4);
+	 tam[4] = '\0';
 	 int tamanio = atoi(tam);
 	 char* listaMetadatas = malloc(tamanio+1);
 	 recvData(lfsSock, listaMetadatas, tamanio);
 
 	 close(lfsSock);
 	 log_info(logger, "Respuesta del describe %s", listaMetadatas);
+	 free(buffer);
+	 free(tam);
 
 	 return listaMetadatas;
  }
@@ -759,15 +795,20 @@ int main(void) {
 	 u_int16_t lfsSock = crearConexionLFS();
 	 if(lfsSock == -1){
 		 log_error(logger, "No se pudo conectar con LFS");
+		 return 1;
 	 }
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	 log_info(logger, "Paquete create %s", paqueteListo);
+	 free(datos);
+	 free(paqueteListo);
+
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
-
+	 buffer[1] = '\0';
 	 close(lfsSock);
 	 int rta = atoi(buffer);
 	 log_info(logger, "Respuesta del create %d", rta);
+	 free(buffer);
 	 return rta;
  }
 
@@ -776,15 +817,18 @@ int main(void) {
 	 u_int16_t lfsSock = crearConexionLFS();
 	 if(lfsSock == -1){
 	 	 log_error(logger, "No se pudo conectar con LFS");
+	 	 return 1;
 	  }
-	 log_info(logger, "Paquete drop %s", paqueteListo);
-
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+	 log_info(logger, "Paquete drop %s", paqueteListo);
+	 free(paqueteListo);
+
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
-
+	 buffer[1] = '\0';
 	 close(lfsSock);
 	 int rta = atoi(buffer);
+	 free(buffer);
 	 return rta;
 
  }
@@ -1039,10 +1083,7 @@ void mostrarMemoria(){
 
 void* conseguirValor(pagina* pNueva){
 	void* value = malloc(maxValue);
-	char* a = malloc(maxValue);
 	memcpy(value, ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco),maxValue);
-	memcpy(a, ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco),maxValue);
-	log_info(logger,"valorcito en conseguir valor: %s",a);
 
 	return value;
 }
@@ -1129,16 +1170,22 @@ void liberarSubstrings(char **liberar){
 	}
 	free(liberar);
 }
+void destruirConfig(){
+	free(config->ip);
+	free(config->ipFS);
+	free(config);
+
+}
 
 void finalizar(){
 	list_destroy_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	pthread_mutex_destroy(&lockTablaSeg);
 	eliminarMarcos();
 	pthread_mutex_destroy(&lockTablaMarcos);
-
+	pthread_mutex_destroy(&lockConfig);
 
 	free(memoria);
-	config_destroy(configuracion);
+	destruirConfig();
 	log_info(logger, "Memoria limpia, adiós mundo cruel");
 	log_destroy(logger);
 
@@ -1154,8 +1201,8 @@ void finalizar(){
 
 
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
-	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	usleep(retardoOp);
+
+	usleep(config->retardoMem);
 	log_info(logger, "Empieza el insert");
 	pthread_mutex_lock(&lockInsert);
 	log_info(logger, "Pasó el lock");
@@ -1254,8 +1301,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 
 char* mSelect(char* nombreTabla,u_int16_t key){
-	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	usleep(retardoOp);
+	usleep(config->retardoMem);
 
 	log_info(logger, "Empieza el select");
 	pthread_mutex_lock(&lockSelect);
@@ -1291,6 +1337,8 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
 			pthread_mutex_unlock(&lockSelect);
 			log_info(logger, "Pasó el lock de salida");
+			free(estoyFull);
+			free(noExiste);
 			return valor;
 		}
 		else{
@@ -1301,6 +1349,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				pthread_mutex_unlock(&lockSelect);
 				log_info(logger, "Pasó el lock de salida");
 
+				free(noExiste);
 				return estoyFull;
 			}
 			valorPagNueva = selectLissandra(nombreTabla,key);
@@ -1317,19 +1366,16 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 				pthread_mutex_unlock(&lockSelect);
 				log_info(logger, "Pasó el lock de salida");
-
+				free(estoyFull);
+				free(noExiste);
 				return valorPagNueva;
 			}
 				else{
 					pthread_mutex_unlock(&lockSelect);
 					log_info(logger, "Pasó el lock de salida");
-
+					free(estoyFull);
 					return noExiste;
 				}
-	//	}
-	/*		else{
-				return estoyFull;
-			}*/
 
 		}
 	}
@@ -1340,6 +1386,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			free(pNueva);
 			pthread_mutex_unlock(&lockSelect);
 			log_info(logger, "Pasó el lock de salida");
+			free(noExiste);
 			return estoyFull;
 		}
 		pthread_mutex_lock(&lockTablaSeg);
@@ -1363,12 +1410,15 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 			pthread_mutex_unlock(&lockSelect);
 			log_info(logger, "Pasó el lock de salida");
+			free(estoyFull);
+			free(noExiste);
 			return valorPagNueva;
 
 		}
 		else{
 			pthread_mutex_unlock(&lockSelect);
 			log_info(logger, "Pasó el lock de salida");
+			free(estoyFull);
 			return noExiste;
 		}
 		//}
@@ -1381,8 +1431,8 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 }
 
 int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
-	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	usleep(retardoOp);
+	usleep(config->retardoMem);
+
 	int rta = createLissandra(nombreTabla,criterio,nroParticiones,tiempoCompactacion);
 	log_info(logger, "La respuesta del create fue %d", rta);
 
@@ -1391,18 +1441,19 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 
 
 char* mDescribe(char* nombreTabla){
-	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	usleep(retardoOp);
+	usleep(config->retardoMem);
+
 	char* rta = describeLissandra(nombreTabla);
 	char* respuesta = string_from_format("%s%s", "0", rta);
+	free(rta);
 
 	return respuesta;
 
 }
 
 int mDrop(char* nombreTabla){
-	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	usleep(retardoOp);
+	usleep(config->retardoMem);
+
 	pthread_mutex_lock(&lockDrop);
 
 	segmento* nuevo = buscarSegmento(nombreTabla);
@@ -1422,8 +1473,8 @@ int mDrop(char* nombreTabla){
 
 
 int mJournal(){
-	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	usleep(retardoOp);
+	usleep(config->retardoMem);
+
 	pthread_mutex_lock(&lockInsert);
 	pthread_mutex_lock(&lockSelect);
 	pthread_mutex_lock(&lockDrop);
@@ -1463,11 +1514,16 @@ int mJournal(){
 
 			for(int j=0; j<(paginasMod->elements_count); j++){
 				pagina *pag = list_get(paginasMod, j);
-				long timestamp = *(long*)conseguirTimestamp(pag);
-				u_int16_t key = *(u_int16_t*)conseguirKey(pag);
+				void* t = conseguirTimestamp(pag);
+				long timestamp = *(long*)t;
+				void* k = conseguirKey(pag);
+				u_int16_t key = *(u_int16_t*) k;
 				char* value = (char*)conseguirValor(pag);
 				int insertExitoso = insertLissandra(nombreSegmento, timestamp, key, value);
 				log_info(logger, "Rta insert LFS %d", insertExitoso);
+				free(t);
+				free(k);
+				free(value);
 				if(insertExitoso == 0){
 						log_info(logger, "Se insertó correctamente el valor %s en la tabla %s", value, nombreSegmento);
 					}
@@ -1591,9 +1647,10 @@ int estaRepetido(char*ip){
 }
 
 void actualizarArchConfig(char*ip,char*puerto){
+	t_config *config = read_config();
 	if(!estaRepetido(ip)){
-	char* ipsAux = config_get_string_value(configuracion,"IP_SEEDS");
-	char* seedsAux = config_get_string_value(configuracion,"PUERTO_SEEDS");
+	char* ipsAux = config_get_string_value(config,"IP_SEEDS");
+	char* seedsAux = config_get_string_value(config,"PUERTO_SEEDS");
 
 	char* newIps = string_new();
 	char* newPuertos = string_new();
@@ -1604,10 +1661,11 @@ void actualizarArchConfig(char*ip,char*puerto){
 	string_append_with_format(&newIps,"%s;",ip);
 	string_append_with_format(&newPuertos,"%s;",puerto);
 
-	config_set_value(configuracion,"IP_SEEDS",newIps);
-	config_set_value(configuracion,"PUERTO_SEEDS",newPuertos);
-	config_save(configuracion);
+	config_set_value(config,"IP_SEEDS",newIps);
+	config_set_value(config,"PUERTO_SEEDS",newPuertos);
+	config_save(config);
 	}
+	config_destroy(config);
 }
 
 void cargarInfoDeSecundaria(){
@@ -1654,12 +1712,13 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
 }
 
 void mGossip(){
-	int retardoOp = config_get_int_value(configuracion, "RETARDO_MEM")*1000;
-	usleep(retardoOp);
-	
+	usleep(config->retardoMem);
+
     int i=1;
-    char* ipsConfig = config_get_string_value(configuracion,"IP_SEEDS");
-    char* seedsConfig = config_get_string_value(configuracion,"PUERTO_SEEDS");
+	t_config *configGossiping = read_config();
+	pthread_mutex_lock(&lockConfig);
+    char* ipsConfig = config_get_string_value(configGossiping,"IP_SEEDS");
+    char* seedsConfig = config_get_string_value(configGossiping,"PUERTO_SEEDS");
     ipSeeds = string_split(ipsConfig,";");
     puertoSeeds = string_split(seedsConfig,";");
 
@@ -1675,5 +1734,7 @@ void mGossip(){
     	}
     	i++;
     }
+ 	config_destroy(configGossiping);
+    pthread_mutex_unlock(&lockConfig);
 }
 

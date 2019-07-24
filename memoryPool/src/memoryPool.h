@@ -31,11 +31,7 @@
 
 //VARIABLES GLOBALES
 t_log *logger;
-t_config *configuracion;
 char* pathConfig;
-int retardoJournal;
-int retardoGossip;
-int abortar;
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
 t_list* listaDeUsos;
@@ -55,6 +51,8 @@ pthread_mutex_t lockTablaUsos;
 pthread_mutex_t lockInsert;
 pthread_mutex_t lockSelect;
 pthread_mutex_t lockDrop;
+pthread_mutex_t lockConfig;
+
 
 //ESTRUCTURA MEMORIA
 typedef struct {
@@ -73,6 +71,20 @@ typedef struct {
 	int nroMarco; //como dirección lógica y después me desplazo en la memoria
 	int modificado;
 }pagina;
+
+typedef struct {
+	char* ip;
+	u_int16_t puerto;
+	char* ipFS;
+	int puertoFS;
+	int retardoGossiping;
+	int retardoJournal;
+	int retardoMem;
+	int retardoFS;
+}estructuraConfig;
+
+
+estructuraConfig *config;
 
 //ESTRUCTURA LRU
 typedef struct{
@@ -101,10 +113,11 @@ void finalizar();
 void eliminarMarcos();
 void marcoDestroy(marco *unMarco);
 void liberarSubstrings(char **liberar);
+void destruirConfig();
 
 //AUXILIARES DE ARRANQUE
 int inicializar();
-void prepararGossiping();
+void prepararGossiping(t_config *configuracion);
 t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
