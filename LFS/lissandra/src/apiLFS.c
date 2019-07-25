@@ -23,6 +23,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	/*Verificar si existe en memoria una lista de datos a dumpear.
 	   De no existir, alocar dicha memoria.*/
 	//WAIT DE MEMTABLE
+	sem_wait(sem_dump);
 	sem_wait(criticaMemtable);
 	if(list_is_empty(memtable)){
 		Tabla *nueva=crearTabla(param_nameTable,param_key,param_value,param_timestamp);
@@ -40,6 +41,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	}
 	//SIGNAL DE MEMTABLE
 	sem_post(criticaMemtable);
+	sem_post(sem_dump);
 	log_info(logger,"Se ha insertado el registro con key %i y valor %s en la memtable.",param_key,param_value);
 	return 0;
 }
@@ -136,7 +138,6 @@ char *lSelect(char *nameTable, u_int16_t key){
 	list_destroy_and_destroy_elements(obtenidos,(void *)destroyRegistry);
 	return valor;
 }
-
 //*****************************************************************************************************
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
 	usleep(configLissandra->retardo*1000);

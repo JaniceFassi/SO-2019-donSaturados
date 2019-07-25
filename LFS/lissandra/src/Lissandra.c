@@ -15,7 +15,6 @@ int main(void) {
 
 	theStart();
     /***************PARA USAR TIEMPO DEL DUMP***************/
-
 	pthread_create(&hiloDump,NULL,dump,NULL);
 	/**********************CONEXIONES***********************/
 

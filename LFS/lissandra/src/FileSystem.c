@@ -7,6 +7,7 @@
 
 #include "FileSystem.h"
 
+
 void levantarDirectorio(){
 	if(crearMontaje()==0){									//CREA LAS CARPETAS DEL MONTAJE SI NO EXISTEN
 		log_info(logger,"Se levanto el montaje.");
@@ -61,7 +62,7 @@ int crearNivelMetadata(){
 	path=nivelMetadata(1);
 	if(archivoValido(path)==0){						//SI NO EXISTE EL METADATA.BIN CREA
 		//crearMetaLFS();							//PIDE LOS VALORES POR CONSOLA. SE PUEDE SACAR?
-		oldCrearMetaLFS(64,4096,"Lissandra");
+		oldCrearMetaLFS(128,4096,"Lissandra");
 	}else{
 		leerMetaLFS();
 	}

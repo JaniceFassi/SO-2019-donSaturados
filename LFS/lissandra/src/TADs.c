@@ -1010,7 +1010,6 @@ t_list *filtrarPorParticion(t_list *lista,int particion,int cantPart){
 
 Tabla *find_tabla_by_name_in(char *name,t_list *l) {
 	int _is_the_one(Tabla *p) {
-
 		return string_equals_ignore_case(p->nombre, name);
 
 	}
