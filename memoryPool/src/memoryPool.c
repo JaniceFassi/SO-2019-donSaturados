@@ -640,11 +640,17 @@ int main(void) {
  }
 
  char* formatearSelect(char* nombreTabla, u_int16_t key){
-	char* paquete = string_from_format("%s;%s", nombreTabla, string_itoa(key));
+	char* k = string_itoa(key);
+	char* paquete = string_from_format("%s;%s", nombreTabla, k);
+	free(k);
 	return paquete;
 }
  char* formatearInsert(char* nombreTabla, long timestamp, u_int16_t key, char* value){
-	char* paquete = string_from_format("%s;%s;%s;%s", nombreTabla, string_itoa(key), value, string_itoa(timestamp));
+	char* k = string_itoa(key);
+	char* tim = string_itoa(timestamp);
+	char* paquete = string_from_format("%s;%s;%s;%s", nombreTabla, k, value, tim);
+	free(k);
+	free(tim);
 	return paquete;
 }
 
@@ -1484,7 +1490,7 @@ int mJournal(){
 	}
 
 	log_info(logger, "\n\n Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");
-	/*pthread_mutex_lock(&lockTablaSeg);
+	pthread_mutex_lock(&lockTablaSeg);
 	pthread_mutex_lock(&lockTablaMarcos);
 
 
@@ -1492,7 +1498,7 @@ int mJournal(){
 		segmento *seg = list_get(tablaSegmentos, i);
 		pthread_mutex_lock(&seg->lockSegmento);
 	}
-*/
+
 
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
 		char* nombreSegmento = malloc(sizeof(char)*100);
@@ -1538,11 +1544,16 @@ int mJournal(){
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	int listaVacia = list_is_empty(tablaSegmentos);
 	if (listaVacia == 1){
+		marco *marc;
+		for(int i =0; i<tablaMarcos->elements_count; i++){
+			marc = list_get(tablaMarcos, i);
+			log_info(logger, "Marco %i, libre: %i", marc->nroMarco, marc->estaLibre);
+		}
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 
-		log_info(logger,"size usos" ,  list_size(listaDeUsos));
-		//pthread_mutex_unlock(&lockTablaSeg);
-		//pthread_mutex_unlock(&lockTablaMarcos);
+		log_info(logger,"size usos %d" ,  list_size(listaDeUsos));
+		pthread_mutex_unlock(&lockTablaSeg);
+		pthread_mutex_unlock(&lockTablaMarcos);
 
 
 		for(int i = 0; i<config->multiprocesamiento; i++){
