@@ -81,6 +81,15 @@ int main(void) {
 	strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
 
 	posicionUltimoUso = 0; //Para arrancar la lista de usos en 0, ira aumentando cuando se llene NO TOCAR PLS
+
+	pthread_mutex_init(&lockTablaSeg, NULL);
+	pthread_mutex_init(&lockTablaMarcos, NULL);
+	pthread_mutex_init(&lockTablaUsos, NULL);
+	pthread_mutex_init(&lockConfig, NULL);
+	sem_init(&lockTablaMemAct,0,1);
+	pthread_mutex_init(&lockTablaMemSec,NULL);
+	sem_init(&semJournal, 0, config->multiprocesamiento);
+
 	prepararGossiping(configuracion);
 
 
@@ -124,16 +133,9 @@ int main(void) {
 			list_add(listaDeUsos, pos);
 		*/}
 
-	pthread_mutex_init(&lockTablaSeg, NULL);
-	pthread_mutex_init(&lockTablaMarcos, NULL);
-	pthread_mutex_init(&lockTablaUsos, NULL);
-	pthread_mutex_init(&lockConfig, NULL);
-	pthread_mutex_init(&lockTablaMemAct,NULL);
-	pthread_mutex_init(&lockTablaMemSec,NULL);
-	sem_init(&semJournal, 0, config->multiprocesamiento);
+
+
 	config_destroy(configuracion);
-
-
 	return 0;
 }
  void init_configuracion(t_config* configuracion){
@@ -1579,7 +1581,6 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto){
 
 
 char* empaquetarTablaActivas(){
-	pthread_mutex_lock(&lockTablaMemAct);
 	int i=0;
 	char* paquetote=string_new();
 	infoMemActiva* aux = list_get(tablaMemActivas,i);
@@ -1591,7 +1592,6 @@ char* empaquetarTablaActivas(){
 		i++;
 		aux = list_get(tablaMemActivas,i);
 	}
-	pthread_mutex_unlock(&lockTablaMemAct);
 	return paquetote;
 }
 void desempaquetarTablaSecundaria(char* paquete){
@@ -1633,8 +1633,8 @@ int pedirConfirmacion(char*ip,char* puerto){
 	close(cliente);
 
 	//Le envio mi tabla
-
-	conexion = linkClient(&cliente,ip,puertoAux,0);
+	u_int16_t nuevoCli;
+	conexion = linkClient(&nuevoCli,ip,puertoAux,0);
 	if(conexion ==1){
 			return 0; // no esta activa la memoria
 	}
@@ -1643,20 +1643,17 @@ int pedirConfirmacion(char*ip,char* puerto){
 	char*paqueteEntero = malloc(strlen(paquete)+2);
 	strcpy(paqueteEntero,codOpe);
 	string_append(&paqueteEntero,paquete);
+	log_info(logger, "Paquete entero %s", paqueteEntero);
 	sendData(cliente,paqueteEntero,strlen(paqueteEntero)+1);
-
-	free(paquete);
-	free(codOpe);
-	free(paqueteEntero);
 
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
 char* confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
-   pthread_mutex_lock(&lockTablaMemAct);
+   sem_wait(&lockTablaMemAct);
    char* paquete=empaquetarTablaActivas();
    char* paqueteListo=empaquetar(0,paquete);
-   pthread_mutex_unlock(&lockTablaMemAct);	
+   sem_post(&lockTablaMemAct);
    return paqueteListo;
 } //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
@@ -1685,7 +1682,7 @@ void cargarInfoDeSecundaria(int i){ // el i decide si se cargo la primera antes 
 }
 
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
-	pthread_mutex_lock(&lockTablaMemAct);
+	sem_wait(&lockTablaMemAct);
 	if(!estaRepetido(ip)){
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
 	nueva->ip=malloc(strlen(ip)+1);
@@ -1697,7 +1694,7 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 	list_add(tablaMemActivas,nueva);
 	}
 	cargarInfoDeSecundaria(1);
-	pthread_mutex_unlock(&lockTablaMemAct);
+	sem_post(&lockTablaMemAct);
 }
 
 int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
@@ -1706,7 +1703,7 @@ int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que est
 }
 
 void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
-    pthread_mutex_lock(&lockTablaMemAct);
+	sem_wait(&lockTablaMemAct);
     int i=1;
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
@@ -1716,11 +1713,10 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
         i++;
         aux = list_get(tablaMemActivas,i);
     }
-    pthread_mutex_unlock(&lockTablaMemAct);
+    sem_post(&lockTablaMemAct);
 }
 
 void mostrarActivas(){
-	pthread_mutex_lock(&lockTablaMemAct);
 	int i = 0;
 	infoMemActiva* aux = list_get(tablaMemActivas,i);
 	printf("\nTabla Activas: \n");
@@ -1732,7 +1728,6 @@ void mostrarActivas(){
 		i++;
 		aux = list_get(tablaMemActivas,i);
 	}
-	pthread_mutex_unlock(&lockTablaMemAct);
 }
 
 void mGossip(){
