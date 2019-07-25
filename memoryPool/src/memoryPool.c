@@ -128,6 +128,8 @@ int main(void) {
 	pthread_mutex_init(&lockTablaMarcos, NULL);
 	pthread_mutex_init(&lockTablaUsos, NULL);
 	pthread_mutex_init(&lockConfig, NULL);
+	pthread_mutex_init(&lockTablaMemAct,NULL);
+	pthread_mutex_init(&lockTablaMemSec,NULL);
 	sem_init(&semJournal, 0, config->multiprocesamiento);
 	config_destroy(configuracion);
 
@@ -151,7 +153,6 @@ int main(void) {
 
  void prepararGossiping(t_config *configuracion){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
 	 
-	 int i = 0;
 	 tablaMemActivas = list_create();
 	 tablaMemActivasSecundaria = list_create();
 
@@ -1567,6 +1568,7 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto){
 
 
 char* empaquetarTablaActivas(){
+	pthread_mutex_lock(&lockTablaMemAct);
 	int i=0;
 	char* paquetote=string_new();
 	infoMemActiva* aux = list_get(tablaMemActivas,i);
@@ -1578,9 +1580,11 @@ char* empaquetarTablaActivas(){
 		i++;
 		aux = list_get(tablaMemActivas,i);
 	}
+	pthread_mutex_unlock(&lockTablaMemAct);
 	return paquetote;
 }
 void desempaquetarTablaSecundaria(char* paquete){
+	pthread_mutex_lock(&lockTablaMemSec);
 	int i=0;
 	char** split = string_split(paquete,";");
 
@@ -1594,6 +1598,7 @@ void desempaquetarTablaSecundaria(char* paquete){
 		i++;
 		list_add(tablaMemActivasSecundaria,aux);
 	}
+	pthread_mutex_unlock(&lockTablaMemSec);
 } // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
 int pedirConfirmacion(char*ip,char* puerto){
@@ -1637,8 +1642,10 @@ int pedirConfirmacion(char*ip,char* puerto){
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
 char* confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
+   pthread_mutex_lock(&lockTablaMemAct);
    char* paquete=empaquetarTablaActivas();
    char* paqueteListo=empaquetar(0,paquete);
+   pthread_mutex_unlock(&lockTablaMemAct);	
    return paqueteListo;
 } //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
@@ -1650,6 +1657,7 @@ int estaRepetido(char*ip){
 }
 
 void cargarInfoDeSecundaria(int i){ // el i decide si se cargo la primera antes o no
+	pthread_mutex_lock(&lockTablaMemSec);
 	int tam = list_size(tablaMemActivasSecundaria);
 	if(tam != 0){
 		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
@@ -1662,9 +1670,11 @@ void cargarInfoDeSecundaria(int i){ // el i decide si se cargo la primera antes 
 			aux=list_get(tablaMemActivasSecundaria,i);
 		}
 	}
+	pthread_mutex_unlock(&lockTablaMemSec);
 }
 
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
+	pthread_mutex_lock(&lockTablaMemAct);
 	if(!estaRepetido(ip)){
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
 	nueva->ip=malloc(strlen(ip)+1);
@@ -1676,6 +1686,7 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 	list_add(tablaMemActivas,nueva);
 	}
 	cargarInfoDeSecundaria(1);
+	pthread_mutex_unlock(&lockTablaMemAct);
 }
 
 int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
@@ -1684,6 +1695,7 @@ int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que est
 }
 
 void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
+    pthread_mutex_lock(&lockTablaMemAct);
     int i=1;
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
@@ -1693,9 +1705,11 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
         i++;
         aux = list_get(tablaMemActivas,i);
     }
+    pthread_mutex_unlock(&lockTablaMemAct);
 }
 
 void mostrarActivas(){
+	pthread_mutex_lock(&lockTablaMemAct);
 	int i = 0;
 	infoMemActiva* aux = list_get(tablaMemActivas,i);
 	printf("\nTabla Activas: \n");
@@ -1707,13 +1721,14 @@ void mostrarActivas(){
 		i++;
 		aux = list_get(tablaMemActivas,i);
 	}
+	pthread_mutex_unlock(&lockTablaMemAct);
 }
 
 void mGossip(){
 
     int i=0;
-	t_config *configGossiping = read_config();
-	pthread_mutex_lock(&lockConfig);
+    pthread_mutex_lock(&lockConfig);
+    t_config *configGossiping = read_config();
     char* ipsConfig = config_get_string_value(configGossiping,"IP_SEEDS");
     char* seedsConfig = config_get_string_value(configGossiping,"PUERTO_SEEDS");
     ipSeeds = string_split(ipsConfig,";");
