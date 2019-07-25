@@ -98,6 +98,7 @@ typedef struct {
     int nroMem; //cada proceso tendra un nroMem propio. Asignado a mano y unico.
     char* ip;
     char* puerto;
+    int activa; //1 si esta activa
 }infoMemActiva;
 
 //API
@@ -182,8 +183,7 @@ int estaRepetido(char*ip);
 void agregarMemActiva(int id,char* ip,char*puerto);
 int conseguirIdSecundaria();
 void estaEnActivaElim(char*ip);
-void actualizarArchConfig(char*ip,char*puerto);
-void cargarInfoDeSecundaria();
+void cargarInfoDeSecundaria(int i);
 
 //AUX SECUNDARIAS
 int conseguirIndexSeg(segmento* nuevo);
