@@ -284,53 +284,43 @@ int main(void) {
 
  	switch (operacion) {
  				case 0: //SELECT
- 					usleep(config->retardoMem);
-
- 					nombreTabla = desempaquetado[0];
- 					key = atoi(desempaquetado[1]);
- 					rta = mSelect(nombreTabla, key);
- 					log_info(logger,rta);
- 					//si no existe
- 					if(strcmp(rta, "2")!=0){
- 						if(strcmp(rta, "3")==0){
- 							log_info(logger,"mando que no existe");
- 							sendData(cli, rta, strlen(rta)+1);
- 							free(rta);
- 						}else{
- 							char* msj;
- 							msj = empaquetar(0, rta);
- 							log_info(logger,"mando que existe rta:%s",msj);
- 							sendData(cli, msj, strlen(msj)+1);
- 							free(msj);
- 							free(rta);
- 						}
- 					}
- 					//si estoy full
- 					else{
- 						sendData(cli, rta, strlen(rta)+1);
- 						free(rta);
- 						rtaFull= malloc(2);
- 						recvData(cli, rtaFull, sizeof(char));
- 						rtaFull[1]='\0';
- 					 	if(atoi(rtaFull)==5){
- 					 		mJournal();
- 					 		rta = mSelect(nombreTabla, key);
- 					 		if(strcmp(rta, "3")==0){
- 					 		log_info(logger,"mando que no existe");
- 					 		sendData(cli, rta, strlen(rta)+1);
- 					 		free(rta);
- 					 		}else{
- 					 			char* msj = malloc(strlen(rta)+4);
- 					 			msj = empaquetar(0, rta);
- 					 			sendData(cli, msj, strlen(msj)+1);
- 					 			log_info(logger, "Rta select después de un journal %s\n", msj);
- 					 			free(msj);
- 					 			free(rta);
- 					 			}
- 					 	}
- 					 	free(rtaFull);
- 					}
- 					break;
+ 	 					nombreTabla = desempaquetado[0];
+ 	 					key = atoi(desempaquetado[1]);
+ 	 					rta = mSelect(nombreTabla, key);
+ 	 					log_info(logger,rta);
+ 	 					//si no existe
+ 	 					if(strcmp(rta, "2")!=0){
+ 	 						if(strcmp(rta, "3")==0){
+ 	 							log_info(logger,"mando que no existe");
+ 	 							sendData(cli, rta, strlen(rta)+1);
+ 	 							free(rta);
+ 	 						}else{
+ 	 							char* msj;
+ 	 							msj = empaquetar(0, rta);
+ 	 							log_info(logger,"mando que existe rta:%s",msj);
+ 	 							sendData(cli, msj, strlen(msj)+1);
+ 	 							free(msj);
+ 	 							free(rta);
+ 	 						}
+ 	 					}
+ 	 					//si estoy full
+ 	 					else{
+ 	 						sendData(cli, rta, strlen(rta)+1);
+ 	 						free(rta);
+ 	 						rtaFull= malloc(2);
+ 	 						recvData(cli, rtaFull, sizeof(char));
+ 	 						rtaFull[1]='\0';
+ 	 					 	if(atoi(rtaFull)==5){
+ 	 					 		int r =mJournal();
+ 	 					 		if(r==0){
+ 	 					 			sendData(cli,"0",2);
+ 	 					 		}else{
+ 	 					 			sendData(cli,"1",2);
+ 	 					 		}
+ 	 					 	}
+ 	 					 	free(rtaFull);
+ 	 					}
+ 	 					break;
 
  				case 1: //INSERT
  					usleep(config->retardoMem);
@@ -1490,8 +1480,6 @@ int mJournal(){
 
 	for(int i = 0; i<config->multiprocesamiento; i++){
 		sem_wait(&semJournal);
-
-
 	}
 
 	log_info(logger, "\n\n Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");

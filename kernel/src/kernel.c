@@ -32,13 +32,8 @@ int main(void) {
 	list_add(criterioSC,m1);
 	list_add(criterioEC,m1);
 	list_add(criterioSHC,m1);
-	//pruebas();
-	/*run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/games_computer.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/internet_browser.lql");*/
+	pruebas();
+
 
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	//config_destroy(config);
@@ -242,7 +237,7 @@ FILE* avanzarLineas(int num,FILE * fp){
 }
 
 int parsear(char * aux){
-	char ** split;
+	char ** split=NULL;
 	int resultado=1;
 	char *linea= string_substring(aux,0,strlen(aux)-1);
 	if(string_starts_with(linea,"SELECT")){
@@ -278,20 +273,22 @@ int parsear(char * aux){
 		resultado=metrics(1);
 	}
 	int i=0;
-	while(split[i]!=NULL){
-		free(split[i]);
-		i++;
+	log_info(logger,"antes del split");
+	if(split!=NULL){
+		log_info(logger,"entro al if");
+		while(split[i]!=NULL){
+			free(split[i]);
+			i++;
+		}
+		free(split);
 	}
-	free(split);
+	log_info(logger,"despues del split");
 	usleep(retardo*1000);
 	return resultado;
 }
 
 int mySelect(char * table, char *key){
 	clock_t ini = clock();
-	sem_wait(&semMetricas);
-	metrica.cantS++;
-	sem_post(&semMetricas);
 
 	int op= 0;
 	char*linea=string_from_format("%s;%s",table,key);
@@ -377,21 +374,32 @@ int mySelect(char * table, char *key){
 				close(sock);
 				return -1;
 			}
-
-			char *tamanioRta=malloc(4);
-			recvData(sock,tamanioRta,3);
-			char *rta=malloc(atoi(tamanioRta));
-			recvData(sock,rta,atoi(tamanioRta));
-			log_info(logger,"Resultado SELECT : %s", rta);
-				/*if(consola==1){
-					log_info(loggerConsola,"Resultado SELECT : %s",rta);
-				}*/
+			close(sock);
+			log_info(logger,"voy a intentar conectarme de nuevo");
+			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+			log_info(logger,"me conecte de nuevo");
+			sendData(sock,msj,strlen(msj)+1);
+			recvData(sock,resultado,1);
+			resultado[1]='\0';
+			log_info(logger,"%i",atoi(resultado));
+			if(atoi(resultado)==0){
+				char *tamRta=malloc(4);
+				recvData(sock,tamRta,3);
+				tamRta[3]='\0';
+				char *rtaS=malloc(atoi(tamRta));
+				recvData(sock,rtaS,atoi(tamRta));
+				log_info(logger,"\n\nResultado SELECT despues de journal: %s \n\n\n", rtaS);
 			}
+			else{
+				log_info(loggerConsola,"El select no tiene valor en esa key");
+			}
+			log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
+		}
 		else{
 			return -1;
 		}
 	}
-//	free(memAsignada);
+
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -399,18 +407,19 @@ int mySelect(char * table, char *key){
 	clock_t fin = clock();
 	double tiempo = (double)(fin-ini)/ CLOCKS_PER_SEC;
 	//semaforo
+	sem_wait(&semMemorias);
+	memAsignada->cantS++;
+	sem_post(&semMemorias);
+
 	sem_wait(&semMetricas);
 	metrica.tiempoS += tiempo;
+	metrica.cantS++;
 	sem_post(&semMetricas);
 	return 0;
 }
 
 int insert(char* table ,char* key ,char* value){
 	clock_t ini = clock();
-
-	sem_wait(&semMetricas);
-	metrica.cantI++;
-	sem_post(&semMetricas);
 
 	int op= 1;
 	char **split= string_split(value,"\"");
@@ -503,8 +512,11 @@ int insert(char* table ,char* key ,char* value){
 
 	sem_wait(&semMetricas);
 	metrica.tiempoI+= tiempo;
+	metrica.cantI++;
 	sem_post(&semMetricas);
-
+	sem_wait(&semMemorias);
+	memAsignada->cantI++;
+	sem_post(&semMemorias);
 	return 0;
 }
 
@@ -605,6 +617,7 @@ int journal(){
 			ret=1;
 			log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
 		}
+		free(resultado);
 		close(sock);
 	}
 
@@ -937,6 +950,8 @@ int metrics(int modo){
 		printf("MEMORY LOAD:\n");
 	}
 	log_info(logger,"MEMORY LOAD:");
+	sem_post(&semMetricas);
+
 	void itera(struct memoria *m){
 		log_info(logger,"En la memoria %i se hicieron %i INSERT/SELECT de los %i totales",m->id,m->cantI+m->cantS,metrica.cantI+metrica.cantS);
 		if(modo==1){
@@ -947,8 +962,12 @@ int metrics(int modo){
 			m->cantS=0;
 		}
 	}
+	sem_wait(&semMemorias);
 	list_iterate(memorias,(void*)itera);
-	sem_post(&semMetricas);
+	sem_post(&semMemorias);
+
+	log_info(logger,"sale del itera");
+
 	return 0;
 }
 
@@ -1051,7 +1070,12 @@ struct memoria *asignarMemoriaSegunCriterio(char *consistency, char *key){
 		memAsignada=list_get(criterioSC,0);
 	}
 	if(strcmp(consistency,"SHC")==0){
-		memAsignada=verMemoriaLibreSHC(atoi(key));
+		if(key==NULL){
+			memAsignada=verMemoriaLibreSHC(0);
+		}
+		else{
+			memAsignada=verMemoriaLibreSHC(atoi(key));
+		}
 	}
 	if(strcmp(consistency,"EC")==0){
 		memAsignada=verMemoriaLibre(criterioEC);
@@ -1060,7 +1084,7 @@ struct memoria *asignarMemoriaSegunCriterio(char *consistency, char *key){
 }
 
 struct memoria *verMemoriaLibreSHC(int key){
-	if(key==NULL){
+	if(key==0){
 		key=1;
 	}
 	int size= list_size(criterioSHC);
@@ -1194,18 +1218,12 @@ void *inotifyKernel(){
 //---------------- PRUEBAS ----------------------------
 
 void pruebas(){
-	struct memoria *m2= malloc(sizeof(struct memoria));
-	m2->id=1;
-	m2->puerto=8002;
-	struct memoria *m3= malloc(sizeof(struct memoria));
-	m3->id=2;
-	m3->puerto=8003;
-	struct memoria *m4= malloc(sizeof(struct memoria));
-	m4->id=3;
-	m4->puerto=8004;
-	list_add(memorias,m2);
-	list_add(memorias,m3);
-	list_add(memorias,m4);
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/games_computer.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/internet_browser.lql");
 }
 
 void mostrarResultados(){
