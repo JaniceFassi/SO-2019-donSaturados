@@ -266,14 +266,18 @@ int parsear(char * aux){
 		split = string_split(linea," ");
 		if(esNumero(split[3])==0){
 			if(esNumero(split[4])==0){
-			resultado=create(split[1],split[2],split[3],split[4]);
+				if(strcmp(split[2],"SC")==0 || strcmp(split[2],"SHC")==0 ||strcmp(split[2],"EC")==0 ){
+					resultado=create(split[1],split[2],split[3],split[4]);
+				}else{
+					log_error(logger,"ERROR - No existe el criterio");
+				}
 			}
 			else{
 				log_error(logger,"ERROR - El tiempo de compactación debe ser numérico");
 			}
 		}
 		else{
-			log_error(logger,"ERROR - La cantidad de particiones debe ser numérico");
+			log_error(logger,"ERROR - La cantidad de particiones debe ser numérica");
 		}
 
 	}
@@ -355,11 +359,14 @@ int mySelect(char * table, char *key){
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
+		if(sock==-1){
+			sacarMemoriaCaida(memAsignada);
+		}
 		c++;
 	}
 	if(sock==-1){
-		log_info(logger, "no se pudo conectar con las memorias");
-		return -1;
+		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		return 0;
 	}
 
 	int enviados=sendData(sock,msj,strlen(msj)+1);
@@ -484,10 +491,14 @@ int insert(char* table ,char* key ,char* value){
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
+		if(sock==-1){
+			sacarMemoriaCaida(memAsignada);
+		}
 		c++;
 	}
 	if(sock==-1){
-		return -1;
+		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		return 0;
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
@@ -592,10 +603,14 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
+		if(sock==-1){
+			sacarMemoriaCaida(memAsignada);
+		}
 		c++;
 	}
 	if(sock==-1){
-		return -1;
+		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		return 0;
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
@@ -632,15 +647,21 @@ int journal(){
 	void envioJournal(struct memoria *m){
 		char *resultado= malloc(2);
 		int sock=conexionMemoria(m->puerto,m->ip);
-		sendData(sock,"5",2);
-		recvData(sock,resultado,2);
-		resultado[1]='\0';
-		if(atoi(resultado)!=0){
-			ret=1;
-			log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
+		if(sock==-1){
+			sacarMemoriaCaida(m);
+			log_info(logger,"La memoria %i no pudo hacer el journal, la misma no esta activa",m->id);
 		}
-		free(resultado);
-		close(sock);
+		else{
+			sendData(sock,"5",2);
+			recvData(sock,resultado,2);
+			resultado[1]='\0';
+			if(atoi(resultado)!=0){
+				ret=1;
+				log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
+			}
+			free(resultado);
+			close(sock);
+		}
 	}
 
 	list_iterate(criterioEC,(void*)envioJournal);
@@ -686,10 +707,14 @@ int describe(char *table){
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
+		if(sock==-1){
+			sacarMemoriaCaida(memAsignada);
+		}
 		c++;
 	}
 	if(sock==-1){
-		return -1;
+		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		return 0;
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
@@ -824,10 +849,14 @@ int drop(char*table){
 		if(memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		}
+		if(sock==-1){
+			sacarMemoriaCaida(memAsignada);
+		}
 		c++;
 	}
 	if(sock==-1){
-		return -1;
+		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		return 0;
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
@@ -876,67 +905,79 @@ int add(char* memory , char* consistency){
 		log_info(logger,"La memoria no existe, no se pudo agregar al criterio");
 		return 0;
 	}
-	if(strcmp(consistency,"SC")==0){
-		sem_wait(&semMemorias);
-		int size=list_size(criterioSC);
-		sem_post(&semMemorias);
-		if(size>0){
-			log_info(logger,"No se pudo agregar la memoria %i al criterio SC", idMemoria);
-			return -1;
-		}
-		else{
+	if(memoria->estado==0){
+		if(strcmp(consistency,"SC")==0){
 			sem_wait(&semMemorias);
-				list_add(criterioSC,memoria);
-			sem_post(&semMemorias);			// semN wait (pongo N xq no se si poner un semaforo para cada lista o con poner una sirve)
-			// semN signal
-			return 0;
-		}
-	}
-	if(strcmp(consistency,"SHC")==0){
-		sem_wait(&semMemorias);
-		bool repe=verificaMemoriaRepetida(idMemoria,criterioSHC);
-		sem_post(&semMemorias);
-		if(!repe){
-			int ret=0;
-			sem_wait(&semMemorias);
-				list_add(criterioSHC,memoria);
+			int size=list_size(criterioSC);
 			sem_post(&semMemorias);
-			void envioJournal(struct memoria *m){
-				char *resultado= malloc(2);
-				int sock=conexionMemoria(m->puerto,m->ip);
-				sendData(sock,"5",2);
-				recvData(sock,resultado,2);
-				resultado[1]='\0';
-				if(atoi(resultado)!=0){
-					ret=1;
-					log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
-
-				}
-				close(sock);
+			if(size>0){
+				log_info(logger,"No se pudo agregar la memoria %i al criterio SC", idMemoria);
+				return -1;
 			}
-			list_iterate(criterioSHC,(void*)envioJournal);
-			return 0;
+			else{
+				sem_wait(&semMemorias);
+					list_add(criterioSC,memoria);
+				sem_post(&semMemorias);			// semN wait (pongo N xq no se si poner un semaforo para cada lista o con poner una sirve)
+				// semN signal
+				return 0;
+			}
 		}
-		else{
-			log_info(logger,"No se pudo agregar la memoria %i al criterio SHC porque esta repetida", idMemoria);
-			return -1;
+		if(strcmp(consistency,"SHC")==0){
+			sem_wait(&semMemorias);
+			bool repe=verificaMemoriaRepetida(idMemoria,criterioSHC);
+			sem_post(&semMemorias);
+			if(!repe){
+				int ret=0;
+				sem_wait(&semMemorias);
+					list_add(criterioSHC,memoria);
+				sem_post(&semMemorias);
+				void envioJournal(struct memoria *m){
+					char *resultado= malloc(2);
+					int sock=conexionMemoria(m->puerto,m->ip);
+					if(sock==-1){
+						sacarMemoriaCaida(m);
+						log_info(logger,"La memoria %i no pudo hacer el journal, la misma esta caida",m->id);
+					}
+					else{
+						sendData(sock,"5",2);
+						recvData(sock,resultado,2);
+						resultado[1]='\0';
+						if(atoi(resultado)!=0){
+							ret=1;
+							log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
+
+						}
+						close(sock);
+					}
+				}
+				list_iterate(criterioSHC,(void*)envioJournal);
+				return 0;
+			}
+			else{
+				log_info(logger,"No se pudo agregar la memoria %i al criterio SHC porque esta repetida", idMemoria);
+				return -1;
+			}
+		}
+		if(strcmp(consistency,"EC")==0){
+			sem_wait(&semMemorias);
+			bool repe= verificaMemoriaRepetida(idMemoria,criterioEC);
+			sem_post(&semMemorias);
+			if(!repe){
+				sem_wait(&semMemorias);
+				list_add(criterioEC,memoria);
+				sem_post(&semMemorias);
+
+				return 0;
+			}
+			else{
+				log_info(logger,"No se pudo agregar la memoria %i al criterio EC porque esta repetida", idMemoria);
+				return -1;
+			}
 		}
 	}
-	if(strcmp(consistency,"EC")==0){
-		sem_wait(&semMemorias);
-		bool repe= verificaMemoriaRepetida(idMemoria,criterioEC);
-		sem_post(&semMemorias);
-		if(!repe){
-			sem_wait(&semMemorias);
-			list_add(criterioEC,memoria);
-			sem_post(&semMemorias);
-
-			return 0;
-		}
-		else{
-			log_info(logger,"No se pudo agregar la memoria %i al criterio EC porque esta repetida", idMemoria);
-			return -1;
-		}
+	else{
+		log_info(logger, "La memoria no esta activa, no pudo ser asignada al criterio");
+		return -1;
 	}
 	return -1;
 }
@@ -1114,6 +1155,17 @@ struct memoria *verMemoriaLibre(t_list *lista){
 	return list_get(lista,i);
 }
 
+void sacarMemoriaCaida(struct memoria *m){
+
+	bool sacar(struct memoria * mem){
+		return mem->id==m->id;
+	}
+	list_remove_by_condition(criterioSHC,(void*)sacar);
+	list_remove_by_condition(criterioSC,(void*)sacar);
+	list_remove_by_condition(criterioEC,(void*)sacar);
+	m->estado=1;//seteo que no esta activa (en el gossip puedo volverla a poner activa)
+}
+
 struct metadataTabla * buscarMetadataTabla(char* table){
 	bool findTabla(struct metadataTabla *m){
 		return strcmp(m->table,table)==0;
@@ -1156,6 +1208,9 @@ void *gossiping(){
 				m=verMemoriaLibre(memorias);
 			sem_post(&semMemorias);
 			sock= conexionMemoria(m->puerto,m->ip);
+			if(sock==-1){
+				sacarMemoriaCaida(m);
+			}
 		}
 		sendData(sock,"6",2);
 		char *tamanio= malloc(4);

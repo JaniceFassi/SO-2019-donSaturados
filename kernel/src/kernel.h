@@ -115,6 +115,7 @@ void *metricasAutomaticas();
 void * gossiping();
 void * inotifyKernel();
 int esNumero(char *key);
+void sacarMemoriaCaida(struct memoria *m);
 
 struct memoria *verMemoriaLibreSHC(int key);
 
