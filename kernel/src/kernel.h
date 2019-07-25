@@ -21,14 +21,16 @@
 #include <sys/inotify.h>
 #include <ctype.h>
 
-struct metricas{
+struct metrica{
+	char *criterio;
 	double tiempoS;
 	double tiempoI;
 	int cantS;
 	int cantI;
 };
 
-struct metricas metrica;
+
+t_list * metricas;
 
 t_log* logger;
 t_log* loggerConsola;
@@ -116,6 +118,8 @@ void * gossiping();
 void * inotifyKernel();
 int esNumero(char *key);
 void sacarMemoriaCaida(struct memoria *m);
+void inicializarMetricas();
+void agregarAMetricas(char *criterio , char* op , double tiempo);
 
 struct memoria *verMemoriaLibreSHC(int key);
 

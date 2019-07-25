@@ -14,10 +14,16 @@ int main(void) {
 	config = read_config();
 	inicializarColas();
 	inicializarListas();
-	metrica.cantI=0;
-	metrica.cantS=0;
-	metrica.tiempoI=0;
-	metrica.tiempoS=0;
+	struct metrica *metricaSHC=malloc(sizeof(struct metrica));
+	struct metrica *metricaSC=malloc(sizeof(struct metrica));
+	struct metrica *metricaEC=malloc(sizeof(struct metrica));
+	metricaEC->criterio=string_duplicate("EC");
+	metricaSC->criterio=string_duplicate("SC");
+	metricaSHC->criterio=string_duplicate("SHC");
+	list_add(metricas,metricaEC);
+	list_add(metricas,metricaSHC);
+	list_add(metricas,metricaSC);
+	inicializarMetricas();
 	quantum = config_get_int_value(config, "QUANTUM");
 	retardoMetadata = config_get_int_value(config, "METADATA_REFRESH");
 	retardo=config_get_int_value(config, "SLEEP_EJECUCION");
@@ -309,13 +315,13 @@ int parsear(char * aux){
 		}
 		free(split);
 	}
-	usleep(retardo*1000);
+
 	return resultado;
 }
 
 int mySelect(char * table, char *key){
 	clock_t ini = clock();
-
+	usleep(retardo*1000);
 	int op= 0;
 	char*linea=string_from_format("%s;%s",table,key);
 	int len = strlen(linea)+1;
@@ -434,22 +440,23 @@ int mySelect(char * table, char *key){
 	free(tamanioYop);
 	close(sock);
 	clock_t fin = clock();
-	double tiempo = (double)(fin-ini)/ CLOCKS_PER_SEC;
+	double tiempo = (double)(fin-ini)*1000/ CLOCKS_PER_SEC;
 	//semaforo
 	sem_wait(&semMemorias);
 	memAsignada->cantS++;
 	sem_post(&semMemorias);
 
 	sem_wait(&semMetricas);
-	metrica.tiempoS += tiempo;
-	metrica.cantS++;
+	agregarAMetricas(metadata->consistency,"S",tiempo);
+//	metrica.tiempoS += tiempo;
+//	metrica.cantS++;
 	sem_post(&semMetricas);
 	return 0;
 }
 
 int insert(char* table ,char* key ,char* value){
 	clock_t ini = clock();
-
+	usleep(retardo*1000);
 	int op= 1;
 	char **split= string_split(value,"\"");
 	char*linea=string_from_format("%s;%s;%s",table,key,split[0]);
@@ -541,11 +548,12 @@ int insert(char* table ,char* key ,char* value){
 	free(tamanioYop);
 	close(sock);
 	clock_t fin = clock();
-	double tiempo= (double) (fin-ini)/ CLOCKS_PER_SEC;
+	double tiempo= (double) (fin-ini)*1000/ CLOCKS_PER_SEC;
 
 	sem_wait(&semMetricas);
-	metrica.tiempoI+= tiempo;
-	metrica.cantI++;
+	agregarAMetricas(metadata->consistency,"I",tiempo);
+//	metrica.tiempoI+= tiempo;
+//	metrica.cantI++;
 	sem_post(&semMetricas);
 	sem_wait(&semMemorias);
 	memAsignada->cantI++;
@@ -554,6 +562,7 @@ int insert(char* table ,char* key ,char* value){
 }
 
 int create(char* table , char* consistency , char* numPart , char* timeComp){
+	usleep(retardo*1000);
 	int op= 2;
 	char*linea=string_from_format("%s;%s;%s;%s",table,consistency,numPart,timeComp);
 	char * pepe = string_duplicate(linea);
@@ -642,6 +651,7 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 }
 
 int journal(){
+	usleep(retardo*1000);
 	int ret=0;
 
 	void envioJournal(struct memoria *m){
@@ -672,6 +682,7 @@ int journal(){
 }
 
 int describe(char *table){
+	usleep(retardo*1000);
 	int tamanio=0;
 	if(table!=NULL){
 		tamanio= strlen(table)+1;
@@ -815,6 +826,7 @@ int describe(char *table){
 }
 
 int drop(char*table){
+	usleep(retardo*1000);
 	int op=4;
 	int len=strlen(table)+1;
 
@@ -895,6 +907,7 @@ int drop(char*table){
 }
 
 int add(char* memory , char* consistency){
+	usleep(retardo*1000);
 	u_int16_t idMemoria = atoi(memory);
 	struct memoria *memoria;//= malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
@@ -983,30 +996,39 @@ int add(char* memory , char* consistency){
 }
 
 int metrics(int modo){
+	usleep(retardo*1000);
 	sem_wait(&semMetricas);
-	float promedioS=(float)((metrica.tiempoS *1000)/metrica.cantS);
-	float promedioI=(float)((metrica.tiempoI*1000)/metrica.cantI);
-	log_info(logger,"\n------------METRICAS--------------\n");
-	log_info(logger,"Read Latency: %f",promedioS);
-	log_info(logger,"Write Latency: %f",promedioI);
-	log_info(logger,"Reads: %i",metrica.cantS);
-	log_info(logger,"Writes: %i",metrica.cantI);
+	int totalOp=0;
+	void iterador(struct metrica *metrica){
+		float promedioS=(float)((metrica->tiempoS)/metrica->cantS);
+		float promedioI=(float)((metrica->tiempoI)/metrica->cantI);
+		log_info(logger,"\n------------METRICAS--------------\n");
+		log_info(logger,"Criterio %s:",metrica->criterio);
+		log_info(logger,"Read Latency: %f",promedioS);
+		log_info(logger,"Write Latency: %f",promedioI);
+		log_info(logger,"Reads: %i",metrica->cantS);
+		log_info(logger,"Writes: %i",metrica->cantI);
 
-	if(modo==1){
-		printf("\n------------METRICAS--------------\n");
-		printf("Read Latency: %f\n",promedioS);
-		printf("Write Latency: %f\n",promedioI);
-		printf("Reads: %i\n",metrica.cantS);
-		printf("Writes: %i\n",metrica.cantI);
-		printf("MEMORY LOAD:\n");
+		if(modo==1){
+			printf("\n------------METRICAS--------------\n");
+			printf("Read Latency: %f\n",promedioS);
+			printf("Write Latency: %f\n",promedioI);
+			printf("Reads: %i\n",metrica->cantS);
+			printf("Writes: %i\n",metrica->cantI);
+			printf("MEMORY LOAD:\n");
+		}
+		totalOp+= metrica->cantI+metrica->cantS;
 	}
-	log_info(logger,"MEMORY LOAD:");
+
+	list_iterate(metricas,(void*)iterador);
 	sem_post(&semMetricas);
 
+
+	log_info(logger,"MEMORY LOAD:");
 	void itera(struct memoria *m){
-		log_info(logger,"En la memoria %i se hicieron %i INSERT/SELECT de los %i totales",m->id,m->cantI+m->cantS,metrica.cantI+metrica.cantS);
+		log_info(logger,"En la memoria %i se hicieron %i INSERT/SELECT de los %i totales",m->id,m->cantI+m->cantS,totalOp);
 		if(modo==1){
-			printf("En la memoria %i se hicieron %i INSERT/SELECT de los %i totales\n",m->id,m->cantI+m->cantS,metrica.cantI+metrica.cantS);
+			printf("En la memoria %i se hicieron %i INSERT/SELECT de los %i totales\n",m->id,m->cantI+m->cantS,totalOp);
 		}
 		else{
 			m->cantI=0;
@@ -1027,14 +1049,34 @@ void *metricasAutomaticas(){
 		sleep(30000);
 		metrics(0);
 		//semaforos
-		sem_wait(&semMetricas);
-		metrica.cantI=0;
-		metrica.cantS=0;
-		metrica.tiempoI=0;
-		metrica.tiempoS=0;
-		sem_post(&semMetricas);
+		inicializarMetricas();
 	}
 	return NULL;
+}
+void agregarAMetricas(char *cons , char *op , double tiempo){
+	void busca(struct metrica *m ){
+		if(strcmp(m->criterio,cons)==0){
+			if(strcmp(op,"S")==0){
+				m->cantS++;
+				m->tiempoS+=tiempo;
+			}else{
+				m->cantI++;
+				m->tiempoI+=tiempo;
+			}
+		}
+	}
+	list_iterate(metricas,(void*)busca);
+}
+void inicializarMetricas(){
+	sem_wait(&semMetricas);
+	void itera(struct metrica *m){
+		m->cantS=0;
+		m->tiempoS=0;
+		m->cantI=0;
+		m->tiempoI=0;
+	}
+	list_iterate(metricas,(void*)itera);
+	sem_post(&semMetricas);
 }
 
 bool verificaMemoriaRepetida(u_int16_t id, t_list*criterio){
@@ -1111,6 +1153,7 @@ void inicializarListas(){
 	criterioSHC=list_create();
 	criterioEC=list_create();
 	listaMetadata=list_create();
+	metricas=list_create();
 }
 
 struct memoria *asignarMemoriaSegunCriterio(char *consistency, char *key){
@@ -1298,12 +1341,12 @@ void *inotifyKernel(){
 
 void pruebas(){
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
-//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/games_computer.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/internet_browser.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales_falla.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales_falla.lql");
 }
 
 void mostrarResultados(){
