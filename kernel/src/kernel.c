@@ -242,11 +242,21 @@ int parsear(char * aux){
 	char *linea= string_substring(aux,0,strlen(aux)-1);
 	if(string_starts_with(linea,"SELECT")){
 		split = string_split(linea," ");
-		resultado=mySelect(split[1],split[2]);
+		if(esNumero(split[2])==0){
+			resultado=mySelect(split[1],split[2]);
+		}
+		else{
+			log_error(logger,"ERROR - La key debe ser numérica");
+		}
 	}
 	if(string_starts_with(linea,"INSERT")){
 		split = string_n_split(linea,4," ");
-		resultado=insert(split[1],split[2],split[3]);
+		if(esNumero(split[2])==0){
+			resultado=insert(split[1],split[2],split[3]);
+		}
+		else{
+			log_error(logger,"ERROR - La key debe ser numérica");
+		}
 	}
 	if(string_starts_with(linea,"DROP")){
 		split = string_split(linea," ");
@@ -254,35 +264,47 @@ int parsear(char * aux){
 	}
 	if(string_starts_with(linea,"CREATE")){
 		split = string_split(linea," ");
-		resultado=create(split[1],split[2],split[3],split[4]);
+		if(esNumero(split[3])==0){
+			if(esNumero(split[4])==0){
+			resultado=create(split[1],split[2],split[3],split[4]);
+			}
+			else{
+				log_error(logger,"ERROR - El tiempo de compactación debe ser numérico");
+			}
+		}
+		else{
+			log_error(logger,"ERROR - La cantidad de particiones debe ser numérico");
+		}
+
 	}
 	if(string_starts_with(linea,"DESCRIBE")){
 		split = string_split(linea," ");
-		log_info(loggerConsola,"linea %s",linea);
-		log_info(loggerConsola,"describe %s",split[1]);
 		resultado=describe(split[1]);
 	}
 	if(string_starts_with(linea,"JOURNAL")){
 		resultado=journal();
 	}
 	if(string_starts_with(linea,"ADD")){
-		split= string_n_split(linea,3," ");
-		resultado=add(split[1],split[2]);
+		split= string_n_split(linea,5," ");
+		if(esNumero(split[2])==0){
+			resultado=add(split[2],split[4]);
+		}
+		else{
+			log_error(logger,"ERROR - El id de la memoria debe ser un número");
+		}
+
 	}
 	if(string_starts_with(linea,"METRICS")){
 		resultado=metrics(1);
 	}
 	int i=0;
-	log_info(logger,"antes del split");
 	if(split!=NULL){
-		log_info(logger,"entro al if");
 		while(split[i]!=NULL){
 			free(split[i]);
 			i++;
 		}
 		free(split);
 	}
-	log_info(logger,"despues del split");
 	usleep(retardo*1000);
 	return resultado;
 }
@@ -319,13 +341,13 @@ int mySelect(char * table, char *key){
 
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
-		return 0;
+		return 1;
 	}
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 
 	int c=0;
 	int sock=-1;
-	while(sock==-1 && c<15){
+	while(sock==-1 && c<5){
 		sem_wait(&semMemorias);
 		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency, key);
 		sem_post(&semMemorias);
@@ -448,7 +470,7 @@ int insert(char* table ,char* key ,char* value){
 
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
-		return 0;
+		return 1;
 	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
@@ -756,18 +778,6 @@ int describe(char *table){
 		log_info(loggerConsola,"termino free ");
 		free(buffer);
 	}
-	void itera (struct metadataTabla *m){
-		log_info(loggerConsola,"consistency %s",m->consistency);
-		log_info(loggerConsola,"table %s",m->table);
-		log_info(loggerConsola," compTime %d",m->compTime);
-		log_info(loggerConsola,"numPart %i",m->numPart);
-	}
-
-	list_iterate(listaMetadata,(void*)itera);
-
-
-
-
 	sem_post(&semMetadata);
 
 	free(resultado);
@@ -800,7 +810,7 @@ int drop(char*table){
 
 	if(metadata==NULL){
 		log_info(logger,"ERROR - no existe la tabla especificada");
-		return 0;
+		return 1;
 	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
@@ -1017,7 +1027,6 @@ void limpiarMetadata(){
 void actualizarMetadataTabla(struct metadataTabla *m){
 	// agregar semaforo
 
-	log_info(loggerConsola,"actualizarMtadata");
 	void destruirMet(struct metadataTabla *mt){
 		free(mt->consistency);
 		free(mt->table);
@@ -1039,7 +1048,6 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 		aux->numPart=m->numPart;
 		aux->table=*/
 	}
-	log_info(loggerConsola,"actualizarMtadataFIN");
 	list_add(listaMetadata,m);
 	//sem_post(&semMetadata);
 	log_info(loggerConsola,"consistency %s",m->consistency);
@@ -1112,6 +1120,22 @@ struct metadataTabla * buscarMetadataTabla(char* table){
 	}
 	return list_find(listaMetadata,(void*) findTabla);
 }
+
+int esNumero(char *key){
+	int r=0,i=0;
+	if(key!=NULL){
+		while(i<strlen(key)){
+		if(isdigit(key[i])==0){
+				r=1;
+			}
+			i++;
+		}
+		return r;
+	}
+	else return 1;
+}
+
+
 
 void *describeGlobal(){
 	while(terminaHilo==0){
@@ -1221,9 +1245,10 @@ void pruebas(){
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/games_computer.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/internet_browser.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/animales_falla.lql");
 }
 
 void mostrarResultados(){

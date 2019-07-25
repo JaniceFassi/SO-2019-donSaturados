@@ -19,6 +19,7 @@
 #include<semaphore.h>
 #include<sys/time.h>
 #include <sys/inotify.h>
+#include <ctype.h>
 
 struct metricas{
 	double tiempoS;
@@ -113,6 +114,7 @@ void actualizarMetadataTabla(struct metadataTabla *m);
 void *metricasAutomaticas();
 void * gossiping();
 void * inotifyKernel();
+int esNumero(char *key);
 
 struct memoria *verMemoriaLibreSHC(int key);
 
