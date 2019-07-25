@@ -1667,8 +1667,10 @@ void cargarInfoDeSecundaria(int i){ // el i decide si se cargo la primera antes 
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
 	if(!estaRepetido(ip)){
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
-	nueva->ip=ip;
-	nueva->puerto=puerto;
+	nueva->ip=malloc(strlen(ip)+1);
+	nueva->puerto=malloc(strlen(puerto)+1);
+	memcpy(nueva->ip,ip,strlen(ip)+1);
+	memcpy(nueva->puerto,puerto,strlen(puerto)+1);
 	nueva->nroMem=id;
 	nueva->activa=1;
 	list_add(tablaMemActivas,nueva);
@@ -1693,6 +1695,20 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
     }
 }
 
+void mostrarActivas(){
+	int i = 0;
+	infoMemActiva* aux = list_get(tablaMemActivas,i);
+	printf("\nTabla Activas: \n");
+	while(aux){
+		printf("ID: %i \n",aux->nroMem);
+		printf("IP: %s \n",aux->ip);
+		printf("Activa : %i \n",aux->activa);
+		printf("---------- \n");
+		i++;
+		aux = list_get(tablaMemActivas,i);
+	}
+}
+
 void mGossip(){
 
     int i=0;
@@ -1714,7 +1730,7 @@ void mGossip(){
     	}
     	i++;
     }
-    i=1;
+ /*   i=1;
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
     	if(pedirConfirmacion(aux->ip,aux->puerto)){
@@ -1727,8 +1743,9 @@ void mGossip(){
     	}
     	i++;
     	aux=list_get(tablaMemActivas,i);
-    }
+    } */
     log_info(logger,"Termino el gossip");
+    mostrarActivas();
  	config_destroy(configGossiping);
     pthread_mutex_unlock(&lockConfig);
 }
