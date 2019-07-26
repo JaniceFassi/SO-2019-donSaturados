@@ -404,6 +404,7 @@ int main(void) {
  					usleep(config->retardoMem);
  					tabla = confirmarActivo();
  					sendData(cli, tabla, strlen(tabla)+1);
+ 					log_info(logger, "Tabla empaquetada %s", tabla);
  					free(tabla);
  				    break;
 

@@ -40,7 +40,6 @@ int main(void) {
 	list_add(criterioSHC,m1);
 	pruebas();
 
-
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	//config_destroy(config);
 	pthread_t hilos[limiteProcesamiento];
@@ -1243,7 +1242,8 @@ void *describeGlobal(){
 
 void *gossiping(){
 	while(1){
-		sleep(30000);// NO TENGO DE DONDE SACAR ESTE DATO
+		log_info(logger, "GOSSIP");
+		sleep(3);// NO TENGO DE DONDE SACAR ESTE DATO
 		int sock=-1;
 		struct memoria *m ;
 		while(sock==-1){
@@ -1256,31 +1256,30 @@ void *gossiping(){
 			}
 		}
 		sendData(sock,"6",2);
-		char *tamanio= malloc(4);
-
-		recvData(sock,tamanio,4);
-		tamanio[3]='\0';
-		char *buffer=malloc(atoi(tamanio)+1);
-		recvData(sock,buffer,atoi(tamanio));
-		close(sock);
-		//toda la bola del gossip
-		sem_wait(&semMemorias);
-
+		char* salioBien = malloc(2);
+		recvData(sock, salioBien, 1);
+		salioBien[1]='\0';
+		if(atoi(salioBien)==0){
+			char *tamanio= malloc(4);
+			recvData(sock,tamanio,3);
+			tamanio[3]='\0';
+			char *buffer=malloc(atoi(tamanio)+1);
+			recvData(sock,buffer,atoi(tamanio));
+			close(sock);
+			//toda la bola del gossip
+			sem_wait(&semMemorias);
 			void itera(struct memoria *m){
 				m->estado=1;
 			}
 			list_iterate(memorias,(void*) itera);
 			char ** split= string_n_split(buffer,4,";");
-
 			char * bufferAux=NULL;
-
 			int termino=0;
-
 			while(termino==0){
 				if(verificaMemoriaRepetida(atoi(split[0]),memorias)){
 					struct memoria *aux=buscarMemoria(atoi(split[0]));
 					aux->estado=0;
-				}
+					}
 				else{
 					struct memoria *aux= malloc(sizeof(struct memoria));
 					aux->cantI=0;
@@ -1289,12 +1288,11 @@ void *gossiping(){
 					aux->id=atoi(split[0]);
 					aux->ip=string_duplicate(split[1]);
 					aux->puerto=atoi(split[2]);
-
 					list_add(memorias,aux);
-				}
+					}
 				if(split[3]!=NULL){
 					bufferAux= string_duplicate(split[3]);
-				}
+					}
 
 				free(split[0]);
 				free(split[1]);
@@ -1307,13 +1305,15 @@ void *gossiping(){
 				}
 				else{
 					split=string_n_split(bufferAux,4,";");
-				}
+					}
 				free(bufferAux);
 				bufferAux=NULL;
 			}
-		sem_post(&semMemorias);
-	}
-	return 0;
+			sem_post(&semMemorias);
+			}
+		}
+	return NULL;
+
 }
 
 void *inotifyKernel(){
@@ -1341,7 +1341,7 @@ void *inotifyKernel(){
 
 void pruebas(){
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
-	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/games_computer.lql");
