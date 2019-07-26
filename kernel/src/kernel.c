@@ -163,6 +163,7 @@ void ejecutarScripts(){
 				resultado=parsear(execNuevo->input);
 				if(resultado!=0){
 					execNuevo->estado=1;//fallo
+					log_info(logger,"El script fallo");
 					sem_wait(&semColasMutex);
 					queue_pop(exec);
 					queue_push(myExit,execNuevo);
@@ -257,7 +258,9 @@ int parsear(char * aux){
 	if(string_starts_with(linea,"INSERT")){
 		split = string_n_split(linea,4," ");
 		if(esNumero(split[2])==0){
-			resultado=insert(split[1],split[2],split[3]);
+			if(split[3]!=NULL){
+				resultado=insert(split[1],split[2],split[3]);
+			}
 		}
 		else{
 			log_error(logger,"ERROR - La key debe ser numérica");
@@ -319,7 +322,9 @@ int parsear(char * aux){
 }
 
 int mySelect(char * table, char *key){
-	clock_t ini = clock();
+    struct timeval ti, tf;
+    double tiempo;
+    gettimeofday(&ti, NULL);   // Instante inicial
 	usleep(retardo*1000);
 	int op= 0;
 	char*linea=string_from_format("%s;%s",table,key);
@@ -438,8 +443,8 @@ int mySelect(char * table, char *key){
 	free(msj);
 	free(tamanioYop);
 	close(sock);
-	clock_t fin = clock();
-	double tiempo = (double)(fin-ini)*1000/ CLOCKS_PER_SEC;
+    gettimeofday(&tf, NULL);   // Instante final
+    tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
 	//semaforo
 	sem_wait(&semMemorias);
 	memAsignada->cantS++;
@@ -454,7 +459,9 @@ int mySelect(char * table, char *key){
 }
 
 int insert(char* table ,char* key ,char* value){
-	clock_t ini = clock();
+    struct timeval ti, tf;
+    double tiempo;
+    gettimeofday(&ti, NULL);   // Instante inicial
 	usleep(retardo*1000);
 	int op= 1;
 	char **split= string_split(value,"\"");
@@ -546,8 +553,8 @@ int insert(char* table ,char* key ,char* value){
 	free(msj);
 	free(tamanioYop);
 	close(sock);
-	clock_t fin = clock();
-	double tiempo= (double) (fin-ini)*1000/ CLOCKS_PER_SEC;
+    gettimeofday(&tf, NULL);   // Instante final
+    tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
 
 	sem_wait(&semMetricas);
 	agregarAMetricas(metadata->consistency,"I",tiempo);
@@ -1233,17 +1240,20 @@ int esNumero(char *key){
 
 void *describeGlobal(){
 	while(terminaHilo==0){
-		usleep(retardoMetadata*1000000);
+		usleep(retardoMetadata*1000);
 		describe(NULL);
 		log_info(logger,"Describe global automático");
 	}
 	return NULL;
 }
 
+
+
+
 void *gossiping(){
 	while(1){
 		log_info(logger, "GOSSIP");
-		sleep(3);// NO TENGO DE DONDE SACAR ESTE DATO
+		sleep(15000);// NO TENGO DE DONDE SACAR ESTE DATO
 		int sock=-1;
 		struct memoria *m ;
 		while(sock==-1){
