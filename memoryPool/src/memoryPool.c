@@ -103,9 +103,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
+	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
 
-	maxValue = 20;
+	//maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
