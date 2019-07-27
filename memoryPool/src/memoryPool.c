@@ -1572,7 +1572,10 @@ int mJournal(){
 //NROMEM;IP;PUERTO SUPER SEND CON TABLA ENTERA
 
 char* formatearTablaGossip(int nro,char*ip,char*puerto){
-	char* paquetin = string_from_format("%s;%s;%s;",string_itoa(nro),ip,puerto);
+	char* id = string_itoa(nro);
+	char* paquetin = string_from_format("%s;%s;%s;",id,ip,puerto);
+	log_info(logger, "ID EMPAQUETADO %s", id);
+	free(id);
 	return paquetin;
 }
 
@@ -1599,6 +1602,7 @@ void desempaquetarTablaSecundaria(char* paquete){
 	while(split[i]){
 		infoMemActiva* aux = malloc(sizeof(infoMemActiva));
 		aux->nroMem = atoi(split[i]);
+		log_info(logger, "ID memoria %s y en num %d", split[i], aux->nroMem);
 		i++;
 		aux->ip = split[i];
 		i++;
@@ -1622,10 +1626,13 @@ int pedirConfirmacion(char*ip,char* puerto){
 	char* rta=malloc(sizeof(char)*2);
 	sendData(cliente,codOpe,sizeof(char)*2); //Le mando el codigo para que me mande su tabla
 	recvData(cliente,rta,sizeof(char));
+	rta[1] = '\0';
 	char* tamTabla=malloc(sizeof(char)*4);
 	recvData(cliente,tamTabla,sizeof(char)*3);
+	tamTabla[3] = '\0';
 	char* buffer=malloc(atoi(tamTabla)+1);
 	recvData(cliente,buffer,atoi(tamTabla));
+	log_info(logger, "PAQUETE RECIBIDO %s", buffer);
 	desempaquetarTablaSecundaria(buffer);  //aca actualizo mi tabla con lo que me envian
 	close(cliente);
 
