@@ -1463,7 +1463,8 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 char* mDescribe(char* nombreTabla){
 
 	char* rta = describeLissandra(nombreTabla);
-	if(atoi(rta)!=0){
+	if(string_starts_with(rta, "1")){
+		log_info(logger, "DESCRIBE GLOBAL 1");
 		return rta;
 	}
 	else{
