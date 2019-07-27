@@ -1467,7 +1467,8 @@ char* mDescribe(char* nombreTabla){
 		return rta;
 	}
 	else{
-		char* respuesta = string_from_format("%s%s", "0", rta);
+		char* respuesta = string_from_format("0%s", rta);
+		log_info(logger, "RESPUESTA PARA KERNEL %s", respuesta);
 		free(rta);
 		return respuesta;
 
