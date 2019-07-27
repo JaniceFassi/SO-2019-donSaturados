@@ -1689,6 +1689,14 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 	nueva->nroMem=id;
 	nueva->activa=1;
 	list_add(tablaMemActivas,nueva);
+	}else{
+		int i = 1;
+		infoMemActiva* aux = list_get(tablaMemActivas,i);
+		while(aux->nroMem != id){
+			i++;
+			aux = list_get(tablaMemActivas,i);
+		}
+		aux->activa=1;
 	}
 	cargarInfoDeSecundaria(1);
 	sem_post(&lockTablaMemAct);
