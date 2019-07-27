@@ -31,8 +31,8 @@ int main(void) {
 
 
 
-	//pthread_t gossipTemporal;
-	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
+	pthread_t gossipTemporal;
+	pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 	int *fin;
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
@@ -41,8 +41,8 @@ int main(void) {
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
-	//pthread_t journalTemporal;
-	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
+	pthread_t journalTemporal;
+	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
 	pthread_join(hiloConsola, (void*)&fin);
@@ -499,7 +499,7 @@ int main(void) {
  	pthread_mutex_lock(&lockConfig);
  	configInotify = read_config();
  	config->retardoJournal = config_get_int_value(configInotify,"RETARDO_JOURNAL")*1000;
- 	config->retardoGossiping = config_get_int_value(configInotify, "RETARDO_GOSSIPING")*10000;
+ 	config->retardoGossiping = config_get_int_value(configInotify, "RETARDO_GOSSIPING")*1000;
  	log_info(logger, "Se modificó la config");
  	config_destroy(configInotify);
  	pthread_mutex_unlock(&lockConfig);
@@ -792,19 +792,28 @@ int main(void) {
 	 //recibir
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
-	 char* tam = malloc(sizeof(char)*5);
-	 recvData(lfsSock, tam, sizeof(char)*4);
-	 tam[4] = '\0';
-	 int tamanio = atoi(tam);
-	 char* listaMetadatas = malloc(tamanio+1);
-	 recvData(lfsSock, listaMetadatas, tamanio);
+	 buffer[1]='\0';
 
-	 close(lfsSock);
-	 log_info(logger, "Respuesta del describe %s", listaMetadatas);
-	 free(buffer);
-	 free(tam);
+	 if(atoi(buffer) == 0){
+		 char* tam = malloc(sizeof(char)*5);
+		 recvData(lfsSock, tam, sizeof(char)*4);
+		 tam[4] = '\0';
+		 int tamanio = atoi(tam);
+		 char* listaMetadatas = malloc(tamanio+1);
+		 recvData(lfsSock, listaMetadatas, tamanio);
 
-	 return listaMetadatas;
+		 close(lfsSock);
+		 log_info(logger, "Respuesta del describe %s", listaMetadatas);
+		 free(buffer);
+		 free(tam);
+
+		 return listaMetadatas;
+	 }
+	 else{
+		 free(buffer);
+		 return buffer;
+	 }
+
  }
 
  int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
@@ -1455,10 +1464,16 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 char* mDescribe(char* nombreTabla){
 
 	char* rta = describeLissandra(nombreTabla);
-	char* respuesta = string_from_format("%s%s", "0", rta);
-	free(rta);
+	if(atoi(rta)==0){
+		char* respuesta = string_from_format("%s%s", "0", rta);
+		free(rta);
 
-	return respuesta;
+		return respuesta;
+	}
+	else{
+		return rta;
+	}
+
 
 }
 
