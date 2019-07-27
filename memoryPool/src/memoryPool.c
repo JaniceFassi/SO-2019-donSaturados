@@ -810,7 +810,6 @@ int main(void) {
 		 return listaMetadatas;
 	 }
 	 else{
-		 free(buffer);
 		 return buffer;
 	 }
 
