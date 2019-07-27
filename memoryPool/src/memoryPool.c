@@ -88,7 +88,10 @@ int main(void) {
 	pthread_mutex_init(&lockConfig, NULL);
 	sem_init(&lockTablaMemAct,0,1);
 	pthread_mutex_init(&lockTablaMemSec,NULL);
+	pthread_mutex_init(&lockGossip,NULL);
+
 	sem_init(&semJournal, 0, config->multiprocesamiento);
+
 
 	prepararGossiping(configuracion);
 
@@ -402,14 +405,16 @@ int main(void) {
 
  				case 6: //DEVOLVER TABLA DE ACTIVOS
  					usleep(config->retardoMem);
+ 					pthread_mutex_lock(&lockGossip);
  					tabla = confirmarActivo();
  					sendData(cli, tabla, strlen(tabla)+1);
  					log_info(logger, "Tabla empaquetada %s", tabla);
+ 					pthread_mutex_unlock(&lockGossip);
  					free(tabla);
  				    break;
 
 				case 7: //RECIBIR TABLA DE ACTIVOS DE LA MEMORIA QUE PIDIO CONFIRMACION
-
+ 					pthread_mutex_lock(&lockGossip);
 					rta=malloc(2);
 					recvData(cli, rta, sizeof(char)*1);
 					rta[1] = '\0';
@@ -432,6 +437,8 @@ int main(void) {
 				 	    log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
 				 	    free(rta);
 				 	   }
+ 					pthread_mutex_unlock(&lockGossip);
+
 				 	   break;
 
  				}
@@ -607,8 +614,12 @@ int main(void) {
  void* gossipProgramado(void* arg){
 
  	while(1){
+ 		pthread_mutex_lock(&lockGossip);
+
  		log_info(logger, "Se realiza un gossip programado");
  		mGossip();
+		pthread_mutex_unlock(&lockGossip);
+
  		usleep(config->retardoGossiping);
  	}
 
@@ -1591,10 +1602,8 @@ int mJournal(){
 //NROMEM;IP;PUERTO SUPER SEND CON TABLA ENTERA
 
 char* formatearTablaGossip(int nro,char*ip,char*puerto){
-	char* id = string_itoa(nro);
-	char* paquetin = string_from_format("%s;%s;%s;",id,ip,puerto);
-	log_info(logger, "ID EMPAQUETADO %s", id);
-	free(id);
+	char* paquetin = string_from_format("%d;%s;%s;",nro,ip,puerto);
+	log_info(logger, "ID EMPAQUETADO %d", nro);
 	return paquetin;
 }
 

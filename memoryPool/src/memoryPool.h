@@ -53,6 +53,7 @@ pthread_mutex_t lockConfig;
 sem_t lockTablaMemAct;
 pthread_mutex_t lockTablaMemSec;
 sem_t semJournal;
+pthread_mutex_t lockGossip;
 
 
 //ESTRUCTURA MEMORIA
