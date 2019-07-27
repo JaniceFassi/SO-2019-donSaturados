@@ -1463,14 +1463,14 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 char* mDescribe(char* nombreTabla){
 
 	char* rta = describeLissandra(nombreTabla);
-	if(atoi(rta)==0){
-		char* respuesta = string_from_format("%s%s", "0", rta);
-		free(rta);
-
-		return respuesta;
+	if(atoi(rta)!=0){
+		return rta;
 	}
 	else{
-		return rta;
+		char* respuesta = string_from_format("%s%s", "0", rta);
+		free(rta);
+		return respuesta;
+
 	}
 
 
