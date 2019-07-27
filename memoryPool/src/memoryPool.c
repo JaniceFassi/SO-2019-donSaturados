@@ -1553,7 +1553,10 @@ int mJournal(){
 		log_info(logger,"size usos %d" ,  list_size(listaDeUsos));
 		pthread_mutex_unlock(&lockTablaSeg);
 		pthread_mutex_unlock(&lockTablaMarcos);
-
+		void itera(marco *marco){
+			marco->estaLibre=0;
+		}
+		list_iterate(tablaMarcos,(void*)itera);
 
 		for(int i = 0; i<config->multiprocesamiento; i++){
 			sem_post(&semJournal);

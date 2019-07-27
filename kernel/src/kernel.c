@@ -182,52 +182,59 @@ void ejecutarScripts(){
 
 				if(f==NULL){
 						log_info(logger,"Error al abrir el archivo");
-				}
-				if(execNuevo->lineasLeidas>0){
-					f=avanzarLineas(execNuevo->lineasLeidas,f);
-				}
-				size_t a=1024;
-				char *linea=NULL;
-				int lineasEjecutadas=0;
-				getline(&linea,&a,f);
-				do{
-					resultado=parsear(linea);
-					if(resultado!=0){
-						execNuevo->estado=1;
-					}
-					lineasEjecutadas++;
-					execNuevo->lineasLeidas++;
-					free(linea);
-					linea=NULL;
-				}while(getline(&linea,&a,f)!=EOF && lineasEjecutadas<quantum && resultado==0);
-				free(linea);
-				if(!feof(f)){
-					if(lineasEjecutadas>=quantum && resultado==0){
 						sem_wait(&semColasMutex);
 						queue_pop(exec);
-						queue_push(ready,execNuevo);
+						queue_push(myExit,execNuevo);
 						sem_post(&semColasMutex);
-						sem_post(&semColasContador);
-						log_info(logger,"Script nro %i salio por fin de quantum",execNuevo->id);
+						log_info(logger,"El script fallo");
+				}
+				else{
+					if(execNuevo->lineasLeidas>0){
+						f=avanzarLineas(execNuevo->lineasLeidas,f);
+					}
+					size_t a=1024;
+					char *linea=NULL;
+					int lineasEjecutadas=0;
+					getline(&linea,&a,f);
+					do{
+						resultado=parsear(linea);
+						if(resultado!=0){
+							execNuevo->estado=1;
+						}
+						lineasEjecutadas++;
+						execNuevo->lineasLeidas++;
+						free(linea);
+						linea=NULL;
+					}while(getline(&linea,&a,f)!=EOF && lineasEjecutadas<quantum && resultado==0);
+					free(linea);
+					if(!feof(f)){
+						if(lineasEjecutadas>=quantum && resultado==0){
+							sem_wait(&semColasMutex);
+							queue_pop(exec);
+							queue_push(ready,execNuevo);
+							sem_post(&semColasMutex);
+							sem_post(&semColasContador);
+							log_info(logger,"Script nro %i salio por fin de quantum",execNuevo->id);
+						}
+						else{
+							sem_wait(&semColasMutex);
+							queue_pop(exec);
+							queue_push(myExit,execNuevo);
+							sem_post(&semColasMutex);
+							log_info(logger,"El script fallo");
+							log_error(logger,"El script fallo");
+						}
 					}
 					else{
 						sem_wait(&semColasMutex);
 						queue_pop(exec);
 						queue_push(myExit,execNuevo);
 						sem_post(&semColasMutex);
-						log_info(logger,"El script fallo");
-						log_error(logger,"El script fallo");
-					}
-				}
-				else{
-					sem_wait(&semColasMutex);
-					queue_pop(exec);
-					queue_push(myExit,execNuevo);
-					sem_post(&semColasMutex);
-					log_info(logger,"Script con el path %s entro a cola exit",execNuevo->input);
+						log_info(logger,"Script con el path %s entro a cola exit",execNuevo->input);
 
+					}
+					fclose(f);
 				}
-				fclose(f);
 			}
 	}
 }
@@ -351,6 +358,7 @@ int mySelect(char * table, char *key){
 
 	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	char *cons = string_duplicate(metadata->consistency);
 	sem_post(&semMetadata);
 
 	if(metadata==NULL){
@@ -359,18 +367,18 @@ int mySelect(char * table, char *key){
 	}
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 
+	sem_wait(&semMemorias);
+	memAsignada= asignarMemoriaSegunCriterio(cons, key);
+	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
-	while(sock==-1 && c<5){
-		sem_wait(&semMemorias);
-		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency, key);
-		sem_post(&semMemorias);
-
-		if(memAsignada!=NULL){
+	while(sock==-1 && c<5 && memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
-		}
 		if(sock==-1){
 			sacarMemoriaCaida(memAsignada);
+			sem_wait(&semMemorias);
+			memAsignada= asignarMemoriaSegunCriterio(cons, key);
+			sem_post(&semMemorias);
 		}
 		c++;
 	}
@@ -443,18 +451,22 @@ int mySelect(char * table, char *key){
 	free(msj);
 	free(tamanioYop);
 	close(sock);
+	log_info(logger,"antes de tiempo");
     gettimeofday(&tf, NULL);   // Instante final
     tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
+    log_info(logger,"despues de tiempo");
 	//semaforo
 	sem_wait(&semMemorias);
 	memAsignada->cantS++;
 	sem_post(&semMemorias);
+	log_info(logger,"le agregue cantS a mem");
 
 	sem_wait(&semMetricas);
-	agregarAMetricas(metadata->consistency,"S",tiempo);
+	agregarAMetricas(cons,"S",tiempo);
 //	metrica.tiempoS += tiempo;
 //	metrica.cantS++;
 	sem_post(&semMetricas);
+	log_info(logger,"despues de metricas");
 	return 0;
 }
 
@@ -486,6 +498,7 @@ int insert(char* table ,char* key ,char* value){
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	char *cons = string_duplicate(metadata->consistency);
 	sem_post(&semMetadata);
 
 	if(metadata==NULL){
@@ -494,19 +507,21 @@ int insert(char* table ,char* key ,char* value){
 	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	sem_wait(&semMemorias);
+	memAsignada= asignarMemoriaSegunCriterio(cons , key);
+	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
-	while(sock==-1 && c<5){
-		sem_wait(&semMemorias);
-		memAsignada= asignarMemoriaSegunCriterio(metadata->consistency , key);
-		sem_post(&semMemorias);
+	while(sock==-1 && c<5&&memAsignada!=NULL){
+		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 
-		if(memAsignada!=NULL){
-			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
-		}
 		if(sock==-1){
 			sacarMemoriaCaida(memAsignada);
+			sem_wait(&semMemorias);
+			memAsignada= asignarMemoriaSegunCriterio(cons , key);
+			sem_post(&semMemorias);
 		}
+
 		c++;
 	}
 	if(sock==-1){
@@ -517,7 +532,7 @@ int insert(char* table ,char* key ,char* value){
 	sendData(sock,msj,strlen(msj)+1);
 
 	char * resultado=malloc(2);
-	recvData(sock,resultado,2);
+	recvData(sock,resultado,1);
 	resultado[1]='\0';
 	log_info(logger,"resultado INSERT: %i", atoi(resultado));
 	if(atoi(resultado)!=0){
@@ -525,7 +540,7 @@ int insert(char* table ,char* key ,char* value){
 			log_info(logger,"\n\n\n\n\n\n JOURNAL \n\n\n\n\n\n");
 			sendData(sock,"5",2);//journal
 			char *res= malloc(2);
-			recvData(sock,res,2);
+			recvData(sock,res,1);
 			res[1]='\0';
 			log_info(logger,"resultado del journal: %i",atoi(res));
 			if(atoi(res)!=0){
@@ -553,17 +568,20 @@ int insert(char* table ,char* key ,char* value){
 	free(msj);
 	free(tamanioYop);
 	close(sock);
+	log_info(logger,"antes de tiempo");
     gettimeofday(&tf, NULL);   // Instante final
     tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
-
+    log_info(logger,"despues de tiempo:%f", tiempo);
 	sem_wait(&semMetricas);
-	agregarAMetricas(metadata->consistency,"I",tiempo);
+	agregarAMetricas(cons,"I",tiempo);
 //	metrica.tiempoI+= tiempo;
 //	metrica.cantI++;
 	sem_post(&semMetricas);
+	log_info(logger,"despues de metricas");
 	sem_wait(&semMemorias);
 	memAsignada->cantI++;
 	sem_post(&semMemorias);
+	log_info(logger,"despues de agregar mem cantI");
 	return 0;
 }
 
@@ -608,18 +626,18 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 
 	//tengo que hacer la metadata de la tabla? o despues con el describe? quedaria inconsistente hasta que lo hagan
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	sem_wait(&semMemorias);
+	memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
+	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
-	while(sock==-1 && c<5){
-		sem_wait(&semMemorias);
-		memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
-		sem_post(&semMemorias);
-
-		if(memAsignada!=NULL){
-			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
-		}
+	while(sock==-1 && c<5&& memAsignada!=NULL){
+		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		if(sock==-1){
 			sacarMemoriaCaida(memAsignada);
+			sem_wait(&semMemorias);
+			memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
+			sem_post(&semMemorias);
 		}
 		c++;
 	}
@@ -716,16 +734,20 @@ int describe(char *table){
 	log_info(loggerConsola,"tamanio msj:%i",strlen(msj));
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	sem_wait(&semMemorias);
+	memAsignada= verMemoriaLibre(memorias);
+	sem_post(&semMemorias);
 	//ver si tengo que usar una memoria asignada al criterio de la tabla
 	int c=0;
 	int sock=-1;
-	while(sock==-1 && c<5){
-		memAsignada= verMemoriaLibre(memorias);
-		if(memAsignada!=NULL){
-			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
-		}
+	while(sock==-1 && c<5 && memAsignada!=NULL){
+		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+
 		if(sock==-1){
 			sacarMemoriaCaida(memAsignada);
+			sem_wait(&semMemorias);
+			memAsignada= verMemoriaLibre(memorias);
+			sem_post(&semMemorias);
 		}
 		c++;
 	}
@@ -820,6 +842,13 @@ int describe(char *table){
 		log_info(loggerConsola,"termino free ");
 		free(buffer);
 	}
+	void itera(struct metadataTabla*m){
+		log_info(loggerConsola,"consistency %s",m->consistency);
+		log_info(loggerConsola,"table %s",m->table);
+		log_info(loggerConsola," compTime %d",m->compTime);
+		log_info(loggerConsola,"numPart %i",m->numPart);
+	}
+	list_iterate(listaMetadata,(void*)itera);
 	sem_post(&semMetadata);
 
 	free(resultado);
@@ -849,6 +878,7 @@ int drop(char*table){
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	char *cons = string_duplicate(metadata->consistency);
 	sem_post(&semMetadata);
 
 	if(metadata==NULL){
@@ -856,19 +886,20 @@ int drop(char*table){
 		return 1;
 	}
 
+
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
+	sem_wait(&semMemorias);
+		memAsignada= asignarMemoriaSegunCriterio(cons,NULL);
+	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
-	while(sock==-1 && c<5){
-		sem_wait(&semMemorias);
-			memAsignada= asignarMemoriaSegunCriterio(metadata->consistency,NULL);
-		sem_post(&semMemorias);
-
-		if(memAsignada!=NULL){
+	while(sock==-1 && c<5 && memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
-		}
 		if(sock==-1){
 			sacarMemoriaCaida(memAsignada);
+			sem_wait(&semMemorias);
+				memAsignada= asignarMemoriaSegunCriterio(cons,NULL);
+			sem_post(&semMemorias);
 		}
 		c++;
 	}
@@ -1165,7 +1196,10 @@ void inicializarListas(){
 struct memoria *asignarMemoriaSegunCriterio(char *consistency, char *key){
 	struct memoria *memAsignada= malloc(sizeof(struct memoria));
 	if(strcmp(consistency,"SC")==0){
-		memAsignada=list_get(criterioSC,0);
+		if(!list_is_empty(criterioSC)){
+			memAsignada=list_get(criterioSC,0);
+		}
+		else memAsignada=NULL;
 	}
 	if(strcmp(consistency,"SHC")==0){
 		if(key==NULL){
@@ -1199,9 +1233,12 @@ struct memoria *verMemoriaLibreSHC(int key){
 }
 
 struct memoria *verMemoriaLibre(t_list *lista){
-	int size= list_size(lista);
-	int i= rand()%(size);			//Se le saco el +1
-	return list_get(lista,i);
+	if(!list_is_empty(lista)){
+		int size= list_size(lista);
+		int i= rand()%(size);			//Se le saco el +1
+		return list_get(lista,i);
+	}
+	else return NULL;
 }
 
 void sacarMemoriaCaida(struct memoria *m){
@@ -1350,9 +1387,9 @@ void *inotifyKernel(){
 //---------------- PRUEBAS ----------------------------
 
 void pruebas(){
-//	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
-//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
-//	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/compactacion_larga.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/comidas.lql");
+	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/cities_countries.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/animales.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/games_computer.lql");
 //	run("/home/utnso/Descargas/1C2019-Scripts-lql-entrega-master/scripts/internet_browser.lql");
