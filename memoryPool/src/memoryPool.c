@@ -1241,7 +1241,6 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 					pag = crearPagina();
 					if(pag->nroMarco==-1){
 						pthread_mutex_unlock(&seg->lockSegmento);
-						free(pag);
 						sem_post(&semJournal);
 						log_info(logger, "Pasó el lock de salida");
 
@@ -1275,7 +1274,6 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			log_info(logger,"no existe segmento ");
 			pagina *pag = crearPagina();
 			if(pag->nroMarco==-1){
-				free(pag);
 				sem_post(&semJournal);
 				log_info(logger, "Pasó el lock de salida");
 
@@ -1362,7 +1360,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			//if(!FULL()){
 			pNueva = crearPagina();
 			if(pNueva->nroMarco==-1){
-				free(pNueva);
 				sem_post(&semJournal);
 				log_info(logger, "Pasó el lock de salida");
 
@@ -1400,7 +1397,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		//if(!FULL()){
 		pNueva = crearPagina();
 		if(pNueva->nroMarco==-1){
-			free(pNueva);
 			sem_post(&semJournal);
 			log_info(logger, "Pasó el lock de salida");
 			free(noExiste);
