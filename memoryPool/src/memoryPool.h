@@ -82,6 +82,8 @@ typedef struct {
 	int retardoMem;
 	int retardoFS;
 	int multiprocesamiento;
+	char* ipSeeds;
+	char* puertoSeeds;
 }estructuraConfig;
 
 

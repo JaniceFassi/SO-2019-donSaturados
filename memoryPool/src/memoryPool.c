@@ -150,6 +150,10 @@ int main(void) {
 	 config->puertoFS= config_get_int_value(configuracion,"PUERTO_FS");
 	 config->ipFS = malloc(strlen("192.168.0.32")+1);
 	 strcpy(config->ipFS, config_get_string_value(configuracion,"IP_FS"));
+	 config->ipSeeds = malloc(strlen("192.168.0.32")+1);
+	 strcpy(config->ipSeeds, config_get_string_value(configuracion,"IP_SEEDS"));
+	 config->puertoSeeds = malloc(strlen("36789")+1);
+	 strcpy(config->puertoSeeds, config_get_string_value(configuracion,"PUERTO_SEEDS"));
 	 config->multiprocesamiento = config_get_int_value(configuracion, "MULTIPROCESAMIENTO");
 
  }
@@ -1857,10 +1861,9 @@ void mostrarActivas(){
 void mGossip(){
 
     int i=0;
-    pthread_mutex_lock(&lockConfig);
-    t_config *configGossiping = read_config();
-    char* ipsConfig = config_get_string_value(configGossiping,"IP_SEEDS");
-    char* seedsConfig = config_get_string_value(configGossiping,"PUERTO_SEEDS");
+
+    char* ipsConfig = config->ipSeeds;
+    char* seedsConfig = config->puertoSeeds;
     ipSeeds = string_split(ipsConfig,";");
     puertoSeeds = string_split(seedsConfig,";");
 
@@ -1893,7 +1896,5 @@ void mGossip(){
 	
     log_info(logger,"Termino el gossip");
     mostrarActivas();
-    config_destroy(configGossiping);
-    pthread_mutex_unlock(&lockConfig);
 }
 
