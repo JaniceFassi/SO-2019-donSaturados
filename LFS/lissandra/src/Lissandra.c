@@ -366,10 +366,10 @@ void *console(){
 					char *valor=lSelect(subStrings[1],k);
 					free(valor);
 				}else{
-					log_info(logger,"La key debe ser un numero");
+					log_info(logger,"La key debe ser un numero.");
 				}
 			}else{
-				log_info(logger,"Faltan parametros");
+				log_info(logger,"Faltan parametros.");
 			}
 			liberarSubstrings(subStrings);
 		}
@@ -410,10 +410,10 @@ void *console(){
 					liberarSubstrings(cadena);
 
 				}else{
-					log_info(logger,"La key debe ser un numero");
+					log_info(logger,"La key debe ser un numero.");
 				}
 			}else{
-				log_info(logger,"Faltan parametros");
+				log_info(logger,"Faltan parametros.");
 			}
 	 		liberarSubstrings(split);
 	 	}
@@ -425,19 +425,19 @@ void *console(){
 					u_int16_t particiones=atoi(subStrings[3]);
 					long timeCompaction=atol(subStrings[4]);
 					if(timeCompaction==0){
-						log_info(logger,"El tiempo de compactacion es un long");
+						log_info(logger,"El tiempo de compactacion es un long.");
 					}else{
 						if(!strncmp(subStrings[2],"SC",2)||!strncmp(subStrings[2],"EC",2)||!strncmp(subStrings[2],"SHC",3)){
 							create(subStrings[1],subStrings[2],particiones,timeCompaction);
 						}else{
-							log_info(logger,"Los criterios pueden ser SC, EC Y SHC");
+							log_info(logger,"Los criterios pueden ser SC, EC Y SHC.");
 						}
 					}
 				}else{
-					log_info(logger,"La particion debe ser un numero");
+					log_info(logger,"La particion debe ser un numero.");
 				}
 			}else{
-				log_info(logger,"Faltan parametros");
+				log_info(logger,"Faltan parametros.");
 			}
 			liberarSubstrings(subStrings);
 		}
@@ -472,7 +472,7 @@ void *console(){
 			theEnd();
 			break;
 		}
-		else log_info(logger,"Los comandos son SELECT, INSERT, CREATE, DROP y DESCRIBE, en mayuscula");
+		else log_info(logger,"Los comandos son SELECT, INSERT, CREATE, DROP y DESCRIBE, en mayuscula.");
 		free(linea);
 	}
 	return NULL;

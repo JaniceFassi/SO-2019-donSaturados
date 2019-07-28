@@ -4,6 +4,7 @@
 void *dump(){
 	while(1){
 		usleep(configLissandra->tiempoDump*1000);
+		log_info(logger,"Se empezo a hacer el dump.");
 		sem_wait(sem_dump);
 		if(list_is_empty(memtable)){
 			//log_info(dumplog,"la memtable esta vacia por lo cual no se hace el dump");
@@ -13,7 +14,6 @@ void *dump(){
 			t_list *dump=list_duplicate(memtable);
 			sem_post(criticaMemtable);
 			int cant=list_size(dump);
-			log_info(logger,"se empezo a hacer el dump");
 			while(cant>0){
 				Tabla *dumpTabla=list_get(dump,cant-1);
 				char *path=nivelUnaTabla(dumpTabla->nombre,0);
@@ -33,63 +33,17 @@ void *dump(){
 				free(path);
 				cant--;
 			}
-			log_info(logger,"se termino de hacer el dump");
 			sem_wait(criticaMemtable);
 			list_clean(memtable);
 			sem_post(criticaMemtable);
 			list_destroy_and_destroy_elements(dump,(void *)liberarTabla);
+			log_info(logger,"Se termino de hacer el dump.");
 		}
 		sem_post(sem_dump);
 	}
 	pthread_exit(NULL);
 }
-/*
-void *dump(){
-	//ACA IRIA EL WAIT MUTEX DE LA MEMTABLE
-	while(1){
-		usleep(configLissandra->tiempoDump*1000);
-		sem_wait(sem_dump);
-		sem_wait(criticaMemtable);
-		if(list_is_empty(memtable)){
-			log_info(dumplog,"la memtable esta vacia por lo cual no se hace el dump");
-			sem_post(criticaMemtable);
-			sem_post(sem_dump);
-		}else{
-			t_list *dump=list_duplicate(memtable);
-			list_clean(memtable);
-			int cant=list_size(dump);
-			while(cant>0){
-				log_info(logger,"se empezo a hacer el dump");
-				Tabla *dumpTabla=list_get(dump,cant-1);
-				char *path=nivelUnaTabla(dumpTabla->nombre,0);
-				if(folderExist(path)==0){
-					//log_info(dumplog,"se empezo a hacer el dump de %s",dumpTabla->nombre);
-					Sdirectorio *tabDirectorio=obtenerUnaTabDirectorio(dumpTabla->nombre);
-					sem_wait(&tabDirectorio->semaforoContarTMP);
-					int cantTmp=contarArchivos(dumpTabla->nombre, 1);
-					char *ruta =nivelParticion(dumpTabla->nombre,cantTmp, 1);
 
-					if(escribirParticion(ruta,dumpTabla->registros,0)==1){
-						log_error(logger,"error al escribir el dump");
-					}
-					sem_post(&tabDirectorio->semaforoContarTMP);
-					free(ruta);
-				}
-				liberarTabla(dumpTabla);
-				free(path);
-				cant--;
-				log_info(logger,"se termino de hacer el dump");
-			}
-			list_destroy(dump);
-		}
-		//ACA IRIA EL SIGNAL MUTEX DE LA MEMTABLE
-		sem_post(criticaMemtable);
-		sem_post(sem_dump);
-	}
-	//return 0;
-	pthread_exit(NULL);
-}
-*/
 void *compactar(Sdirectorio* nuevo){
 	while(nuevo->terminar){
 		usleep(nuevo->time_compact*1000);

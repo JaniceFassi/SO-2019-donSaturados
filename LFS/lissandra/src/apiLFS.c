@@ -17,7 +17,7 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 	free(path);
 
 	if(string_length(param_value)+1>configLissandra->tamValue){
-		log_error(logger,"No se puede hacer el insert porque el value excede el tamanio permitido.");
+		log_error(logger,"No se puede hacer el insert porque el valor excede el tamanio permitido.");
 		return 1;
 	}
 	/*Verificar si existe en memoria una lista de datos a dumpear.
@@ -63,6 +63,7 @@ char *lSelect(char *nameTable, u_int16_t key){
 
 	//Escanear la memtable
 	t_list *aux;
+	log_info(logger,"Se escanea la memtable.");
 	sem_wait(criticaMemtable);
 	if(!list_is_empty(memtable)){
 		Tabla *encontrada= find_tabla_by_name_in(nameTable, memtable);
@@ -78,18 +79,26 @@ char *lSelect(char *nameTable, u_int16_t key){
 	//log_info(logger,"se leyeron los datos de la memtable");
 	//Escanear todos los archivos temporales (modo 1)
 	int cantDumps=contarArchivos(nameTable, 1);
+	if(cantDumps>0){
+		log_info(logger,"Se escanea los temporales.");
+	}else{
+		log_info(logger,"No hay temporales para escanear.");
+	}
 	int i=0;
 	while(i<cantDumps){
-		//log_info(logger,"quiere leer los temporales");
 		escanearArchivo(nameTable,i, 1, obtenidos);
 		//log_info(logger,"se logro leer los temporales");
 		i++;
 	}
 	//Escanear los .tmpc si es necesario (modo 2)
 	int cantTmpc=contarArchivos(nameTable ,2);
+	if(cantTmpc>0){
+		log_info(logger,"Se escanea los temporales de compactacion.");
+	}else{
+		log_info(logger,"No hay temporales de compactacion para escanear.");
+	}
 	i=0;
 	while(i<cantTmpc){
-		//log_info(logger,"quiere leer los tempC");
 		escanearArchivo(nameTable,i, 2, obtenidos);
 		//log_info(logger,"se pudo leer los tempC");
 		i++;
@@ -103,9 +112,9 @@ char *lSelect(char *nameTable, u_int16_t key){
 	//log_info(logger,"se pudo leer la META");
 	//Calcular cual es la partición que contiene dicho KEY.
 	int part=key % metadata->partitions;
-	//log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
+	log_info(logger, "La key %i esta contenida en la particion %i.",key, part);
 	//Escanear la partición objetivo (modo 0)
-	//log_info(logger,"quiere leer el bin");
+	log_info(logger,"Se escanea la particion objetivo.");
 	escanearArchivo(nameTable, part, 0,obtenidos);
 	//log_info(logger,"pudo leer el bin");
 	if(list_size(obtenidos)!=0){

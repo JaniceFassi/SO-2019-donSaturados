@@ -267,7 +267,7 @@ t_list *deChar_Registros(char *buffer){
 
 int crearCarpeta(char* path){//CREA LA CARPETA
 	if(mkdir(path,0777)<0){
-		printf("No se pudo crear la Carpeta\n");
+		printf("No se pudo crear la Carpeta.\n");
 			return 1;
 	}
 	return 0;
@@ -283,7 +283,7 @@ int folderExist(char* path){ //Verifica si existe la carpeta, si no existe devue
 
 int borrarCarpeta(char *path){//BORRA LA CARPETA
 	if(rmdir(path)<0){
-		printf("No se pudo borrar la Carpeta\n");
+		printf("No se pudo borrar la Carpeta.\n");
 		return 1;
 	}
 	return 0;
@@ -519,9 +519,16 @@ void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){
 
 void modificarConfig(){
 	t_config *config = config_create(pathInicial);
+	configLissandra->Ip=config_get_string_value(config,"IP");
+	configLissandra->puerto=config_get_int_value(config,"PORT");
+	configLissandra->puntoMontaje=config_get_string_value(config,"PUNTO_MONTAJE");
+	configLissandra->tamValue=config_get_int_value(config,"TAMVALUE");
+	configLissandra->id=config_get_int_value(config,"ID");
+	configLissandra->idEsperado=config_get_int_value(config,"ID_ESPERADO");
 	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
 	configLissandra->retardo= config_get_int_value(config, "RETARDO");
 	config_destroy(config);
+	log_info(logger,"Se modifico el archivo de configuracion.");
 }
 
 void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
@@ -690,7 +697,7 @@ int escribirParticion(char *path,t_list *lista,int modo){// 0 DUMP, 1 COMPACTAR
 
 	//Pedir x cant bloques y guardarlas en un char
 	if(pedirBloques(bloquesNecesarios,arrayBlock)==1){
-		log_error(logger,"error al pedir los bloques necesarios");
+		log_error(logger,"Error al pedir los bloques necesarios.");
 		free(buffer);
 		free(arrayBlock);
 		return 1;
@@ -1071,7 +1078,7 @@ int eliminarArchivo(char *path){
 	if(remove(path)==0){
 		return 0;
 	}
-	printf("Error al intentar borrar archivo");
+	printf("Error al intentar borrar archivo.");
 	return 1;
 }
 
@@ -1151,7 +1158,7 @@ metaArch *abrirArchivo(char *tabla,int nombreArch,int extension){//0 BIN, 1 TMP,
 	if(archivoValido(path)!=0){
 		Sdirectorio *tablaDirec=obtenerUnaTabDirectorio(tabla);
 		if(tablaDirec->terminar==0){
-			log_info(logger,"No se puede abrir archivos de esta tabla, porque hay pedido de borrar Tabla");
+			log_info(logger,"No se puede abrir archivos de esta tabla, porque hay pedido de borrar Tabla.");
 			free(path);
 			return arch;
 		}
@@ -1295,7 +1302,7 @@ t_config *abrirMetaTabGlobal(char *tabla){
 	sem_wait(criticaTablaGlobal);
 	if(tablaDirec!=NULL){
 		if(tablaDirec->terminar==0){
-			log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla");
+			log_info(logger,"No se puede abrir la metadata de esta tabla, porque hay pedido de borrar Tabla.");
 				return arch;
 		}
 
