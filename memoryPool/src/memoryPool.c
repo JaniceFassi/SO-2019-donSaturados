@@ -1708,7 +1708,7 @@ void cargarInfoDeSecundaria(int i){// el i decide si se cargo la primera antes o
 	if(tam != 0){
 		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
 		while(aux){
-			if(!estaRepetido(aux->ip)){
+			if(!estaRepetido(aux->ip,aux->puerto)){
 				aux->activa=1;
 				list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
 				}
@@ -1802,7 +1802,7 @@ void mGossip(){
 		log_info(logger,"Se confirmo la memoria con id: %i",id);
     		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
     	}else{
-    		estaEnActivaElim(ipSeeds[i]);
+    		estaEnActivaElim(ipSeeds[i],puertoSeeds[i]);
 		log_info(logger,"La memoria con ip : %s no esta activa",ipSeeds[i]);
     	}
     	i++;
@@ -1812,7 +1812,7 @@ void mGossip(){
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
      	if(pedirConfirmacion(aux->ip,aux->puerto)){
-        	char* id = conseguirIdSecundaria();
+        	int id = conseguirIdSecundaria();
         	log_info(logger,"Se confirmo la memoria con id: %i",id);
          	agregarMemActiva(id,aux->ip,aux->puerto);
      	}else{
