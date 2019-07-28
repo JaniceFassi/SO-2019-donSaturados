@@ -1694,9 +1694,9 @@ char* confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confi
    return paqueteListo;
 } //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
-int estaRepetido(char*ip){
+int estaRepetido(char*ip,char* puerto){
 	int mismaIp(infoMemActiva* aux){
-		return (strcmp(aux->ip,ip)==0);
+		return (strcmp(aux->ip,ip)==0)&&(strcmp(aux->puerto,puerto)==0);
 	}
 	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
 }
@@ -1716,6 +1716,7 @@ void cargarInfoDeSecundaria(int i){// el i decide si se cargo la primera antes o
 			aux=list_get(tablaMemActivasSecundaria,i);
 		}
 	}
+    list_clean(tablaMemActivasSecundaria);
     sem_post(&lockTablaMem);
 
 }
@@ -1723,7 +1724,7 @@ void cargarInfoDeSecundaria(int i){// el i decide si se cargo la primera antes o
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
     sem_wait(&lockTablaMem);
 
-	if(!estaRepetido(ip)){
+	if(!estaRepetido(ip,puerto)){
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
 	nueva->ip=malloc(strlen(ip)+1);
 	nueva->puerto=malloc(strlen(puerto)+1);
@@ -1754,12 +1755,12 @@ int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que est
 	return aux->nroMem;
 }
 
-void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
+void estaEnActivaElim(char*ip,char*puerto){ //Si estaba en la tablaMemActivas la elimina
     int i=1;
     sem_wait(&lockTablaMem);
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
-        if(strcmp(aux->ip,ip)==0){
+        if((strcmp(aux->ip,ip)==0)&&(strcmp(aux->puerto,puerto)==0)){
             aux->activa=0;
         }
         i++;
@@ -1767,6 +1768,7 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
     }
     sem_post(&lockTablaMem);
 }
+
 
 void mostrarActivas(){
 	int i = 0;
@@ -1794,7 +1796,7 @@ void mGossip(){
     ipSeeds = string_split(ipsConfig,";");
     puertoSeeds = string_split(seedsConfig,";");
 
-    while(ipSeeds[i]){
+    while(ipSeeds[i]){ //lee de la config
     	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
     		int id = conseguirIdSecundaria();
 		log_info(logger,"Se confirmo la memoria con id: %i",id);
@@ -1806,9 +1808,24 @@ void mGossip(){
     	i++;
     }
 
+    i=1; //lee de la lista de activas
+    infoMemActiva* aux = list_get(tablaMemActivas,i);
+    while(aux){
+     	if(pedirConfirmacion(aux->ip,aux->puerto)){
+        	char* id = conseguirIdSecundaria();
+        	log_info(logger,"Se confirmo la memoria con id: %i",id);
+         	agregarMemActiva(id,aux->ip,aux->puerto);
+     	}else{
+       	    estaEnActivaElim(aux->ip,aux->puerto);
+       		log_info(logger,"La memoria con ip : %s no esta activa",aux->ip);
+        	}
+       	i++;
+       	aux=list_get(tablaMemActivas,i);
+    }
+	
     log_info(logger,"Termino el gossip");
     mostrarActivas();
- 	config_destroy(configGossiping);
+    config_destroy(configGossiping);
     pthread_mutex_unlock(&lockConfig);
 }
 
