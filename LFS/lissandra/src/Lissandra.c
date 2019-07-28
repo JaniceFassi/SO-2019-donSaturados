@@ -358,63 +358,91 @@ void *console(){
 	char* linea;
 	while(1){
 		linea = readline(">");
-
-		if(!strncmp(linea,"SELECT ",7)){
+		if(!strncmp(linea,"SELECT",6)){
 			char **subStrings= string_n_split(linea,3," ");
-			u_int16_t k=atoi(subStrings[2]);
-			char *valor=lSelect(subStrings[1],k);
+			if(verificarParametro(subStrings,3)==0){
+				if(esNumero(subStrings[2])==0){
+					u_int16_t k=atoi(subStrings[2]);
+					char *valor=lSelect(subStrings[1],k);
+					free(valor);
+				}else{
+					log_info(logger,"La key debe ser un numero");
+				}
+			}else{
+				log_info(logger,"Faltan parametros");
+			}
 			liberarSubstrings(subStrings);
-			free(valor);
 		}
-
-	 	if(!strncmp(linea,"INSERT ",7)){//INSERT "NOMBRE" 5/ "VALUE" 156876
+		else if(!strncmp(linea,"INSERT",6)){//INSERT "NOMBRE" 5/ "VALUE" 156876
 	 		char **split= string_n_split(linea,4," ");
-	 		int cantPalabras=0;
-	 		int key= atoi(split[2]);
-	 		char **cadena=string_split(split[3]," ");
+			if(verificarParametro(split,4)==0){
+				int cantPalabras=0;
+				if(esNumero(split[2])==0){
+					int key= atoi(split[2]);
+					char **cadena=string_split(split[3]," ");
+					while(cadena[cantPalabras]!=NULL){			//Cuento la cantidad de palabras sin tener en cuenta la primera parte
+						cantPalabras++;							// INSERT nombre key no se toma en cuenta
+					}
+					long timestamp=atol(cadena[cantPalabras-1]);
+					if(timestamp==0){									//NO TIENE TIMESTAMP
+						timestamp= time(NULL);
+						insert(split[1],key,split[3],timestamp);	//Calculo el timestamp y el value es la cadena completa
+					}else{
+						int base= string_length(cadena[0])+1;
+						char *value=malloc(base);
+						char *espacio=malloc(2);
+						strcpy(espacio," ");
+						strcpy(value,cadena[0]);
 
-	 		while(cadena[cantPalabras]!=NULL){			//Cuento la cantidad de palabras sin tener en cuenta la primera parte
-	 			cantPalabras++;							// INSERT nombre key no se toma en cuenta
-	 		}
+						for (int i=1;i<cantPalabras-1;i++){
+							base +=strlen(espacio)+1;
+							value=realloc(value,base);
+							strcat(value,espacio);
+							base += strlen(cadena[i])+1;
+							value=realloc(value,base);
+							strcat(value,cadena[i]);
+						}
 
-	 		long timestamp=atol(cadena[cantPalabras-1]);
+						insert(split[1],key,value,timestamp);
+						free(espacio);
+						free(value);
+					}
+					liberarSubstrings(cadena);
 
-	 		if(timestamp==0){									//NO TIENE TIMESTAMP
-	 			timestamp= time(NULL);
-	 			insert(split[1],key,split[3],timestamp);	//Calculo el timestamp y el value es la cadena completa
-	 		}else{
-	 			int base= string_length(cadena[0])+1;
-	 			char *value=malloc(base);
-	 			char *espacio=malloc(2);
-	 			strcpy(espacio," ");
-	 			strcpy(value,cadena[0]);
-
-	 			for (int i=1;i<cantPalabras-1;i++){
-	 				base +=strlen(espacio)+1;
-	 				value=realloc(value,base);
-	 				strcat(value,espacio);
-	 				base += strlen(cadena[i])+1;
-	 				value=realloc(value,base);
-	 				strcat(value,cadena[i]);
-	 			}
-
-	 			insert(split[1],key,value,timestamp);
-	 			free(espacio);
-	 			free(value);
-	 		}
-	 		liberarSubstrings(cadena);
+				}else{
+					log_info(logger,"La key debe ser un numero");
+				}
+			}else{
+				log_info(logger,"Faltan parametros");
+			}
 	 		liberarSubstrings(split);
 	 	}
 
-	 	if(!strncmp(linea,"CREATE ",7)){
+		else if(!strncmp(linea,"CREATE",6)){
 			char **subStrings= string_n_split(linea,5," ");
-			u_int16_t particiones=atoi(subStrings[3]);
-			long timeCompaction=atol(subStrings[4]);
-			create(subStrings[1],subStrings[2],particiones,timeCompaction);
+			if(verificarParametro(subStrings,5)==0){
+				if(esNumero(subStrings[3])==0){
+					u_int16_t particiones=atoi(subStrings[3]);
+					long timeCompaction=atol(subStrings[4]);
+					if(timeCompaction==0){
+						log_info(logger,"El tiempo de compactacion es un long");
+					}else{
+						if(!strncmp(subStrings[2],"SC",2)||!strncmp(subStrings[2],"EC",2)||!strncmp(subStrings[2],"SHC",3)){
+							create(subStrings[1],subStrings[2],particiones,timeCompaction);
+						}else{
+							log_info(logger,"Los criterios pueden ser SC, EC Y SHC");
+						}
+					}
+				}else{
+					log_info(logger,"La particion debe ser un numero");
+				}
+			}else{
+				log_info(logger,"Faltan parametros");
+			}
 			liberarSubstrings(subStrings);
 		}
 
-		if(!strncmp(linea,"DESCRIBE",8)){
+		else if(!strncmp(linea,"DESCRIBE",8)){
 			char **subStrings= string_n_split(linea,2," ");
 			t_list *tablas;
 			tablas=describe(subStrings[1]);
@@ -427,7 +455,7 @@ void *console(){
 			liberarSubstrings(subStrings);
 		}
 
-		if(!strncmp(linea,"DROP ",5)){
+		else if(!strncmp(linea,"DROP",4)){
 			char **subStrings= string_n_split(linea,2," ");
 			if(subStrings[1]==NULL){
 				log_info(logger,"No se ingreso el nombre de la tabla.");
@@ -439,11 +467,12 @@ void *console(){
 			free(subStrings);
 		}
 
-		if(!strncmp(linea,"EXIT",5)){
+		else if(!strncmp(linea,"EXIT",4)){
 			free(linea);
 			theEnd();
 			break;
 		}
+		else log_info(logger,"Los comandos son SELECT, INSERT, CREATE, DROP y DESCRIBE, en mayuscula");
 		free(linea);
 	}
 	return NULL;

@@ -95,7 +95,8 @@ void liberarTabGlobal();
 //FUNCIONES SEMAFOROS
 void inicializarSemGlob();
 void liberarSemaforos();
-
+int esNumero(char *key);
+int verificarParametro(char **split,int parametros);
 //FUNCIONES DE REGISTROS
 Registry *createRegistry(u_int16_t key, char *val, long time);
 void agregarRegistro(Tabla *name,u_int16_t key, char *val, long time);

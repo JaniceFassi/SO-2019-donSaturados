@@ -240,13 +240,7 @@ t_list *deChar_Registros(char *buffer){
 	bool seguir=1;
 	while(seguir){
 		char **substring=string_n_split(buffer,4,";");
-		if(substring[0]==NULL){
-			break;
-		}
-		if(substring[1]==NULL){
-			break;
-		}
-		if(substring[2]==NULL){
+		if(verificarParametro(substring,3)==1){
 			break;
 		}
 		int key=atoi(substring[1]);
@@ -1325,4 +1319,28 @@ t_config *abrirMetaTabGlobal(char *tabla){
 
 void liberarTabGlobal(){
 	list_destroy_and_destroy_elements(tablaArchGlobal,(void *)liberarArch);
+}
+
+int esNumero(char *key){
+	int r=0,i=0;
+	if(key!=NULL){
+		while(i<strlen(key)){
+		if(isdigit(key[i])==0){
+				r=1;
+			}
+			i++;
+		}
+		return r;
+	}
+	else return 1;
+}
+int verificarParametro(char **split,int parametros){
+	int contador=0;
+	while(contador<parametros){
+		if(split[contador]==NULL){
+			return 1;
+		}
+		else contador ++;
+	}
+	return 0;
 }
