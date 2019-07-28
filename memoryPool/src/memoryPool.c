@@ -41,8 +41,8 @@ int main(void) {
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
-	pthread_t journalTemporal;
-	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
+	//pthread_t journalTemporal;
+	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
 	pthread_join(hiloConsola, (void*)&fin);
@@ -104,9 +104,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
+	//maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
 
-	//maxValue = 20;
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -1624,20 +1624,22 @@ char* empaquetarTablaActivas(){
 }
 void desempaquetarTablaSecundaria(char* paquete){
 	int i=0;
+	log_info(logger, "Estoy por desempaquetar esto %s", paquete);
 	char** split = string_split(paquete,";");
     sem_wait(&lockTablaMem);
 
 	while(split[i]){
 		infoMemActiva* aux = malloc(sizeof(infoMemActiva));
+		log_info(logger, "split %i ID:%s I", i, split[i]);
 		aux->nroMem = atoi(split[i]);
-		log_info(logger, "ID memoria %s y en num %d", split[i], aux->nroMem);
 		i++;
 		aux->ip = split[i];
+		log_info(logger, "split %i IP:%s", i, split[i]);
 		i++;
 		aux->puerto = split[i];
+		log_info(logger, "split %i PUERTO:%s", i, split[i]);
 		i++;
 		list_add(tablaMemActivasSecundaria,aux);
-		i=0;
 	}
     sem_post(&lockTablaMem);
 
