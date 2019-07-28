@@ -50,10 +50,8 @@ pthread_mutex_t lockTablaSeg;
 pthread_mutex_t lockTablaMarcos;
 pthread_mutex_t lockTablaUsos;
 pthread_mutex_t lockConfig;
-sem_t lockTablaMemAct;
-pthread_mutex_t lockTablaMemSec;
+sem_t lockTablaMem;
 sem_t semJournal;
-pthread_mutex_t lockGossip;
 
 
 //ESTRUCTURA MEMORIA

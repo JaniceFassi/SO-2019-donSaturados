@@ -86,9 +86,7 @@ int main(void) {
 	pthread_mutex_init(&lockTablaMarcos, NULL);
 	pthread_mutex_init(&lockTablaUsos, NULL);
 	pthread_mutex_init(&lockConfig, NULL);
-	sem_init(&lockTablaMemAct,0,1);
-	pthread_mutex_init(&lockTablaMemSec,NULL);
-	pthread_mutex_init(&lockGossip,NULL);
+	sem_init(&lockTablaMem, 0, 1);
 
 	sem_init(&semJournal, 0, config->multiprocesamiento);
 
@@ -405,16 +403,13 @@ int main(void) {
 
  				case 6: //DEVOLVER TABLA DE ACTIVOS
  					usleep(config->retardoMem);
- 					pthread_mutex_lock(&lockGossip);
  					tabla = confirmarActivo();
  					sendData(cli, tabla, strlen(tabla)+1);
  					log_info(logger, "Tabla empaquetada %s", tabla);
- 					pthread_mutex_unlock(&lockGossip);
  					free(tabla);
  				    break;
 
 				case 7: //RECIBIR TABLA DE ACTIVOS DE LA MEMORIA QUE PIDIO CONFIRMACION
- 					pthread_mutex_lock(&lockGossip);
 					rta=malloc(2);
 					recvData(cli, rta, sizeof(char)*1);
 					rta[1] = '\0';
@@ -437,7 +432,6 @@ int main(void) {
 				 	    log_error(logger, "No pude recibir la tabla de activos de la otra memoria");
 				 	    free(rta);
 				 	   }
- 					pthread_mutex_unlock(&lockGossip);
 
 				 	   break;
 
@@ -614,11 +608,9 @@ int main(void) {
  void* gossipProgramado(void* arg){
 
  	while(1){
- 		pthread_mutex_lock(&lockGossip);
 
  		log_info(logger, "Se realiza un gossip programado");
  		mGossip();
-		pthread_mutex_unlock(&lockGossip);
 
  		usleep(config->retardoGossiping);
  	}
@@ -1611,21 +1603,29 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto){
 char* empaquetarTablaActivas(){
 	int i=0;
 	char* paquetote=string_new();
+    sem_wait(&lockTablaMem);
+
 	infoMemActiva* aux = list_get(tablaMemActivas,i);
 
 	while(i<(tablaMemActivas->elements_count)){
 		if(aux->activa){
-		string_append(&paquetote,formatearTablaGossip(aux->nroMem,aux->ip,aux->puerto));
+		log_info(logger, "ANTES DEL STRING APPEND %d", aux->nroMem);
+			string_append(&paquetote,formatearTablaGossip(aux->nroMem,aux->ip,aux->puerto));
+		log_info(logger, "DESPUES DEL STRING APPEND %d", aux->nroMem);
+		log_info(logger, "PAQUETOTE DESPUES DE FORMATEAR LA TABLA %s", paquetote);
+
+
 		}
 		i++;
 		aux = list_get(tablaMemActivas,i);
 	}
+    sem_post(&lockTablaMem);
 	return paquetote;
 }
 void desempaquetarTablaSecundaria(char* paquete){
-	pthread_mutex_lock(&lockTablaMemSec);
 	int i=0;
 	char** split = string_split(paquete,";");
+    sem_wait(&lockTablaMem);
 
 	while(split[i]){
 		infoMemActiva* aux = malloc(sizeof(infoMemActiva));
@@ -1638,7 +1638,8 @@ void desempaquetarTablaSecundaria(char* paquete){
 		i++;
 		list_add(tablaMemActivasSecundaria,aux);
 	}
-	pthread_mutex_unlock(&lockTablaMemSec);
+    sem_post(&lockTablaMem);
+
 } // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
 
 int pedirConfirmacion(char*ip,char* puerto){
@@ -1650,7 +1651,6 @@ int pedirConfirmacion(char*ip,char* puerto){
 	if(conexion ==1){
 		return 0; // no esta activa la memoria
 	}
-
 	char* rta=malloc(sizeof(char)*2);
 	sendData(cliente,codOpe,sizeof(char)*2); //Le mando el codigo para que me mande su tabla
 	recvData(cliente,rta,sizeof(char));
@@ -1664,8 +1664,10 @@ int pedirConfirmacion(char*ip,char* puerto){
 	desempaquetarTablaSecundaria(buffer);  //aca actualizo mi tabla con lo que me envian
 	close(cliente);
 
+
 	//Le envio mi tabla
 	u_int16_t nuevoCli;
+
 	conexion = linkClient(&nuevoCli,ip,puertoAux,0);
 	if(conexion ==1){
 			return 0; // no esta activa la memoria
@@ -1677,15 +1679,15 @@ int pedirConfirmacion(char*ip,char* puerto){
 	string_append(&paqueteEntero,paquete);
 	log_info(logger, "Paquete entero %s", paqueteEntero);
 	sendData(cliente,paqueteEntero,strlen(paqueteEntero)+1);
+	close(nuevoCli);
+
 
 	return 1;
 } // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
 
 char* confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
-   sem_wait(&lockTablaMemAct);
    char* paquete=empaquetarTablaActivas();
    char* paqueteListo=empaquetar(0,paquete);
-   sem_post(&lockTablaMemAct);
    return paqueteListo;
 } //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
 
@@ -1696,8 +1698,9 @@ int estaRepetido(char*ip){
 	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
 }
 
-void cargarInfoDeSecundaria(int i){ // el i decide si se cargo la primera antes o no
-	pthread_mutex_lock(&lockTablaMemSec);
+void cargarInfoDeSecundaria(int i){// el i decide si se cargo la primera antes o no
+    sem_wait(&lockTablaMem);
+
 	int tam = list_size(tablaMemActivasSecundaria);
 	if(tam != 0){
 		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
@@ -1710,11 +1713,13 @@ void cargarInfoDeSecundaria(int i){ // el i decide si se cargo la primera antes 
 			aux=list_get(tablaMemActivasSecundaria,i);
 		}
 	}
-	pthread_mutex_unlock(&lockTablaMemSec);
+    sem_post(&lockTablaMem);
+
 }
 
 void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
-	sem_wait(&lockTablaMemAct);
+    sem_wait(&lockTablaMem);
+
 	if(!estaRepetido(ip)){
 	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
 	nueva->ip=malloc(strlen(ip)+1);
@@ -1733,18 +1738,22 @@ void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //fal
 		}
 		aux->activa=1;
 	}
+    sem_post(&lockTablaMem);
+
 	cargarInfoDeSecundaria(1);
-	sem_post(&lockTablaMemAct);
 }
 
 int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
+    sem_wait(&lockTablaMem);
 	infoMemActiva* aux = list_get(tablaMemActivasSecundaria,0); //es la posicion cero porque como confirmo hay una nueva tabla secundaria
+    sem_post(&lockTablaMem);
+
 	return aux->nroMem;
 }
 
 void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
-	sem_wait(&lockTablaMemAct);
     int i=1;
+    sem_wait(&lockTablaMem);
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
         if(strcmp(aux->ip,ip)==0){
@@ -1753,11 +1762,12 @@ void estaEnActivaElim(char*ip){ //Si estaba en la tablaMemActivas la elimina
         i++;
         aux = list_get(tablaMemActivas,i);
     }
-    sem_post(&lockTablaMemAct);
+    sem_post(&lockTablaMem);
 }
 
 void mostrarActivas(){
 	int i = 0;
+	sem_wait(&lockTablaMem);
 	infoMemActiva* aux = list_get(tablaMemActivas,i);
 	printf("\nTabla Activas: \n");
 	while(aux){
@@ -1768,6 +1778,7 @@ void mostrarActivas(){
 		i++;
 		aux = list_get(tablaMemActivas,i);
 	}
+	sem_post(&lockTablaMem);
 }
 
 void mGossip(){
@@ -1791,20 +1802,7 @@ void mGossip(){
     	}
     	i++;
     }
- /*   i=1;
-    infoMemActiva* aux = list_get(tablaMemActivas,i);
-    while(aux){
-    	if(pedirConfirmacion(aux->ip,aux->puerto)){
-    		int id = conseguirIdSecundaria();
-    		log_info(logger,"Se confirmo la memoria con id: %i",id);
-       		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
- 	    }else{
-    	    estaEnActivaElim(ipSeeds[i]);
-    		log_info(logger,"La memoria con ip : %s no esta activa",ipSeeds[i]);
-    	}
-    	i++;
-    	aux=list_get(tablaMemActivas,i);
-    } */
+
     log_info(logger,"Termino el gossip");
     mostrarActivas();
  	config_destroy(configGossiping);
