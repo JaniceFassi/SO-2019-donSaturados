@@ -29,16 +29,16 @@ int main(void) {
 	retardo=config_get_int_value(config, "SLEEP_EJECUCION");
 	//inicializa memoria x archivo de configuracion
 	struct memoria *m1=malloc(sizeof(struct memoria));
-	m1->id=0;
+	m1->id=1;
 	m1->ip=config_get_string_value(config,"IP_MEMORIA");
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
 	m1->cantI=0;
 	m1->cantS=0;
 	list_add(memorias,m1);
-	list_add(criterioSC,m1);
-	list_add(criterioEC,m1);
-	list_add(criterioSHC,m1);
-	pruebas();
+	//list_add(criterioSC,m1);
+	//list_add(criterioEC,m1);
+	//list_add(criterioSHC,m1);
+	//pruebas();
 
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	//config_destroy(config);
