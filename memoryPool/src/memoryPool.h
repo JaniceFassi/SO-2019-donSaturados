@@ -180,10 +180,10 @@ char* formatearTablaGossip(int nro,char*ip,char*puerto);
 void desempaquetarTablaSecundaria(char* paquete);
 int pedirConfirmacion(char*ip,char* puerto);
 char* confirmarActivo();
-int estaRepetido(char*ip);
+int estaRepetido(char*ip,char*puerto);
 void agregarMemActiva(int id,char* ip,char*puerto);
 int conseguirIdSecundaria();
-void estaEnActivaElim(char*ip);
+void estaEnActivaElim(char*ip,char*puerto);
 void cargarInfoDeSecundaria(int i);
 
 //AUX SECUNDARIAS
