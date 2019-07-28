@@ -1637,6 +1637,7 @@ void desempaquetarTablaSecundaria(char* paquete){
 		aux->puerto = split[i];
 		i++;
 		list_add(tablaMemActivasSecundaria,aux);
+		i=0;
 	}
     sem_post(&lockTablaMem);
 
