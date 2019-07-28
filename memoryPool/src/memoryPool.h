@@ -141,6 +141,7 @@ void* gossipProgramado(void* arg);
 void* correrInotify(void*arg);
 void modificarConfig();
 void* correrInotify(void*arg);
+int esNumero(char *num);
 
 
 

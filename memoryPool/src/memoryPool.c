@@ -32,7 +32,7 @@ int main(void) {
 
 
 	pthread_t gossipTemporal;
-	pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
+	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 	int *fin;
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
@@ -506,6 +506,20 @@ int main(void) {
  	pthread_mutex_unlock(&lockConfig);
 
  }
+ int esNumero(char *num){ //devuelve 0 si es un num
+ 	int r=0,i=0;
+ 	if(num!=NULL){
+ 		while(i<strlen(num)){
+ 		if(isdigit(num[i])==0){
+ 				r=1;
+ 			}
+ 			i++;
+ 		}
+ 		return r;
+ 	}
+ 	else return 1;
+ }
+
 
 
  void* consola(void* arg){
@@ -513,79 +527,125 @@ int main(void) {
 	int fin = (int*) arg;
 	char* linea;
 	while(1){
+
 		linea = readline(">");
 
- 		if(!strncmp(linea,"SELECT ",7))
- 		{
+ 		if(!strncmp(linea,"SELECT",6)){
  			char **subStrings= string_n_split(linea,3," ");
- 			u_int16_t k=atoi(subStrings[2]);
- 			mSelect(subStrings[1],k);
+ 			if(subStrings[2]!=NULL){
+				if(esNumero(subStrings[2])==0){
+					u_int16_t k=atoi(subStrings[2]);
+					mSelect(subStrings[1],k);
+				}
+				else{
+					log_error(logger, "La key debe ser un número");
+				}
+ 			}
+ 			else{
+ 				log_error(logger, "Faltan parametros");
+ 			}
+
  			liberarSubstrings(subStrings);
  		}
 
- 	 	if(!strncmp(linea,"INSERT ",7)){//INSERT "NOMBRE" 5/ "VALUE"
+ 		else if(!strncmp(linea,"INSERT", 6)){
  	 		char **split= string_n_split(linea,4," ");
- 	 		int key= atoi(split[2]);
- 	 		char **cadena=string_split(split[3]," ");
+ 	 		if(split[2]!=NULL){
+				if(esNumero(split[2])==0){
+				int key= atoi(split[2]);
+				mInsert(split[1],key,split[3]);
+				}
+				else{
+					log_error(logger, "La key debe ser un número");
+				}
+ 	 		}
+ 	 		else{
+ 	 			log_error(logger, "Faltan parametros");
+ 	 		}
 
- 	 		mInsert(split[1],key,split[3]);
-
-
- 	 		liberarSubstrings(cadena);
  	 		liberarSubstrings(split);
  	 	}
 
- 	 	if(!strncmp(linea,"CREATE ",7)){
+ 	 	else if(!strncmp(linea,"CREATE",6)){
  			char **subStrings= string_n_split(linea,5," ");
- 			u_int16_t particiones=atoi(subStrings[3]);
- 			long timeCompaction=atol(subStrings[4]);
- 			mCreate(subStrings[1],subStrings[2],particiones,timeCompaction);
- 			log_info(logger,"Se hizo CREATE de la tabla: %s.",subStrings[1]);
+ 			if(strcmp(subStrings[3], NULL) !=0){
+				if(strcmp(subStrings[2], "SC")==0 ||strcmp(subStrings[2], "EC") == 0 || strcmp(subStrings[2], "SHC")==0) {
+					if(esNumero(subStrings[3]) == 0){
+						u_int16_t particiones=atoi(subStrings[3]);
+						if(esNumero(subStrings[4])==0){
+							long timeCompaction=atol(subStrings[4]);
+							 mCreate(subStrings[1],subStrings[2],particiones,timeCompaction);
+							 log_info(logger,"Se hizo CREATE de la tabla: %s.",subStrings[1]);
+						}
+						else{
+							log_error(logger, "El tiempo de compactacion debe ser un numero");
+						}
+
+					}
+					else{
+						log_error(logger, "El nro de particiones debe ser un numero");
+					}
+				}else{
+					log_error(logger, "El criterio no es valido");
+				}
+ 			}
+ 			else{
+ 				log_error(logger, "Faltan parametros");
+ 			}
  			liberarSubstrings(subStrings);
  		}
 
- 		if(!strncmp(linea,"DESCRIBE",8)){
+ 	 	else if(!strncmp(linea,"DESCRIBE",8)){
  			char **subStrings= string_n_split(linea,2," ");
  			mDescribe(subStrings[1]);
  			liberarSubstrings(subStrings);
  		}
 
- 		if(!strncmp(linea,"DROP ",5)){
+ 	 	else if(!strncmp(linea,"DROP",4)){
  			char **subStrings= string_n_split(linea,2," ");
+
  			if(subStrings[1]==NULL){
- 				log_info(logger,"No se ingreso el nombre de la tabla.");
+ 				log_error(logger,"No se ingreso el nombre de la tabla.");
+ 			}else{
+ 				mDrop(subStrings[1]);
+ 			 	log_info(logger,"Se envio el drop a LFS y se borro de memoria la tabla %s");
+
  			}
- 			mDrop(subStrings[1]);
- 			log_info(logger,"Se envio el drop a LFS y se borro de memoria la tabla %s");
 
  			free(subStrings[0]);
  			free(subStrings[1]);
  			free(subStrings);
  		}
 
- 		if(!strncmp(linea,"JOURNAL",6)){
+ 	 	else if(!strncmp(linea,"JOURNAL",7 )){
  			mJournal();
  		}
 
- 		if(!strncmp(linea,"MOSTRAR",7)){
+ 	 	else if(!strncmp(linea,"MOSTRAR",7)){
  			mostrarMemoria();
  		}
 		
-		if(!strncmp(linea,"FULL",4)){
+ 	 	else if(!strncmp(linea,"FULL",4)){
 			int resultado=0;
  			resultado=FULL();
 			if(resultado)log_info(logger,"La memoria esta FULL");
 			if(!resultado)log_info(logger,"La memoria NO esta FULL");
  		}
-		if(!strncmp(linea,"GOSSIP",6)){
+ 	 	else if(!strncmp(linea,"GOSSIP",6)){
 					mGossip();
 		 		}
 
- 		if(!strncmp(linea,"EXIT",5)){
+ 	 	else if(!strncmp(linea,"EXIT",5)){
  			free(linea);
  			fin = 0;
  			break;
  		}
+ 	 	else{
+ 	 		log_error(logger, "Sintaxis invalida, ingrese todo en mayusculas y separado por espacios");
+ 	 		log_error(logger, "Los comandos son SELECT, INSERT, CREATE, DROP, DESCRIBE, JOURNAL y GOSSIP");
+ 	 	}
+
+
  		free(linea);
  	}
 
