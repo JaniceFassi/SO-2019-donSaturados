@@ -519,8 +519,16 @@ int main(void) {
  	}
  	else return 1;
  }
-
-
+ int verificarParametros(char **split,int cantParametros){
+ 	int contador=0;
+ 	while(contador<cantParametros){
+ 		if(split[contador]==NULL){
+ 			return 1;
+ 		}
+ 		else contador ++;
+ 	}
+ 	return 0;
+ }
 
  void* consola(void* arg){
 
@@ -532,7 +540,7 @@ int main(void) {
 
  		if(!strncmp(linea,"SELECT",6)){
  			char **subStrings= string_n_split(linea,3," ");
- 			if(subStrings[2]!=NULL){
+ 			if(verificarParametros(subStrings, 3)==0){
 				if(esNumero(subStrings[2])==0){
 					u_int16_t k=atoi(subStrings[2]);
 					mSelect(subStrings[1],k);
@@ -550,7 +558,7 @@ int main(void) {
 
  		else if(!strncmp(linea,"INSERT", 6)){
  	 		char **split= string_n_split(linea,4," ");
- 	 		if(split[2]!=NULL){
+ 			if(verificarParametros(split, 2)==0){
 				if(esNumero(split[2])==0){
 				int key= atoi(split[2]);
 				mInsert(split[1],key,split[3]);
@@ -568,7 +576,7 @@ int main(void) {
 
  	 	else if(!strncmp(linea,"CREATE",6)){
  			char **subStrings= string_n_split(linea,5," ");
- 			if(strcmp(subStrings[3], NULL) !=0){
+ 			if(verificarParametros(subStrings, 4)==0){
 				if(strcmp(subStrings[2], "SC")==0 ||strcmp(subStrings[2], "EC") == 0 || strcmp(subStrings[2], "SHC")==0) {
 					if(esNumero(subStrings[3]) == 0){
 						u_int16_t particiones=atoi(subStrings[3]);

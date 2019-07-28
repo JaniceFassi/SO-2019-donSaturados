@@ -194,5 +194,6 @@ void* conseguirTimestamp(pagina *pag);
 void* conseguirKey(pagina *pag);
 void mostrarMemoria();
 void modificarConfig();
+int verificarParametros(char **split,int cantParametros);
 
 #endif /* MEMORYPOOL_H_ */
