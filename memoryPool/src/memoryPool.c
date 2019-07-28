@@ -32,7 +32,7 @@ int main(void) {
 
 
 	pthread_t gossipTemporal;
-	//pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
+	pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 	int *fin;
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
@@ -41,16 +41,16 @@ int main(void) {
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 
 
-	//pthread_t journalTemporal;
-	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
+	pthread_t journalTemporal;
+	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 
 	pthread_join(hiloConsola, (void*)&fin);
 	if(fin == 0){
 		pthread_cancel(gestorConexiones);
 		pthread_cancel(inotify);
-		//pthread_cancel(journalTemporal);
-		//pthread_cancel(gossipTemporal);
+		pthread_cancel(journalTemporal);
+		pthread_cancel(gossipTemporal);
 		log_info(logger, "Se apagará la memoria de forma correcta");
 
 	}
