@@ -351,7 +351,7 @@ metaTabla *obtenerMetadataTabla(char *nombre, t_config *arch){
 	nuevo->consistency=string_duplicate(aux);
 	nuevo->partitions= config_get_int_value(arch, "PARTITIONS");
 	nuevo->nombre=string_duplicate(nombre);
-	free(aux);
+	//free(aux);
 	return nuevo;
 }
 
@@ -397,12 +397,7 @@ void crearMetaLFS(){
 	aux=0;
 	scanf("%i",&aux);
 	metaLFS->tamBloques=aux;
-	printf("Ingrese el magic Number 'Lissandra' : ");
-	char *magic=malloc(15);
-	scanf("%s",magic);
-	metaLFS->magicNumber=malloc(strlen(magic)+1);
-	strcpy(metaLFS->magicNumber,magic);
-	free(magic);
+	metaLFS->magicNumber=string_duplicate("Lissandra");
 
 	t_config *config = config_create(path);
 

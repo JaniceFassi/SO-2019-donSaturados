@@ -58,8 +58,8 @@ int crearNivelMetadata(){
 	free(path);
 	path=nivelMetadata(1);
 	if(archivoValido(path)==0){						//SI NO EXISTE EL METADATA.BIN CREA
-		//crearMetaLFS();							//PIDE LOS VALORES POR CONSOLA. SE PUEDE SACAR?
-		oldCrearMetaLFS(128,4096,"Lissandra");
+		crearMetaLFS();							//PIDE LOS VALORES POR CONSOLA. SE PUEDE SACAR?
+		//oldCrearMetaLFS(128,4096,"Lissandra");
 	}else{
 		leerMetaLFS();
 	}
