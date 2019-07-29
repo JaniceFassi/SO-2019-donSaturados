@@ -85,6 +85,8 @@ int main(void) {
 	pthread_mutex_init(&lockTablaMarcos, NULL);
 	pthread_mutex_init(&lockLRU, NULL);
 	pthread_mutex_init(&lockConfig, NULL);
+	pthread_mutex_init(&lockJournal, NULL);
+
 	sem_init(&lockTablaMem, 0, 1);
 
 	sem_init(&semJournal, 0, config->multiprocesamiento);
@@ -101,8 +103,7 @@ int main(void) {
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 
 
-	u_int16_t lfsServidor;
-	//maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
+	//maxValue = handshakeConLissandra(config->ipFS, config->puertoFS);
 
 	maxValue = 60;
 
@@ -149,9 +150,8 @@ int main(void) {
 	 config->multiprocesamiento = config_get_int_value(configuracion, "MULTIPROCESAMIENTO");
  }
 
- void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
+ void prepararGossiping(){ //Hace las configuraciones iniciales del gossiping
  	memoriasConocidas = list_create();//memoriasConocidas
- 	//tablaMemActivasSecundaria = list_create();
  	semillas= list_create();
  	int i=0;
  	while(config->ipSeeds[i]!=NULL){//AGREGA SEMILLAS A LA LISTA DE SEMILLAS
@@ -179,7 +179,13 @@ int main(void) {
 
  pagina *crearPagina(){
 	pagina *pag = malloc(sizeof(pagina));
-	pag->nroMarco = getMarcoLibre();//aca va getMarcoLibre
+
+	pthread_mutex_lock(&lockTablaMarcos);
+	pthread_mutex_lock(&lockLRU);
+	pag->nroMarco = getMarcoLibre();
+	pthread_mutex_unlock(&lockLRU);
+	pthread_mutex_unlock(&lockTablaMarcos);
+
 	pag->modificado = 0;
 	return pag;
 }
@@ -221,7 +227,7 @@ int main(void) {
 }
 
  t_config* read_config() {
-	return config_create("/home/utnso/memoryPool.config");
+	return config_create("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
 }
 
  t_log* init_logger() {
@@ -278,7 +284,6 @@ int main(void) {
  	long tiempoCompactacion;
  	int resp;
  	char* rta;
- 	char* tabla;
  	char* rtaFull;
 
  	switch (operacion) {
@@ -398,7 +403,10 @@ int main(void) {
 
  				case 6: //DEVOLVER TABLA DE ACTIVOS
  				 	usleep(config->retardoMem);
+ 				 	sem_wait(&lockTablaMem);
+ 				 	log_info(logger, "Intentando empaquetar");
  				 	char *paquete =paqueteVerdadero();
+ 				 	sem_post(&lockTablaMem);
  				 	sendData(cli, paquete, strlen(paquete)+1);
  				 	log_info(logger, "Tabla empaquetada %s", paquete);
  				 	free(paquete);
@@ -649,13 +657,18 @@ int main(void) {
 
  void* gossipProgramado(void* arg){
 	prepararGossiping();
- 	while(1){
- 	//	sem_wait(&lockTablaMem);
- 		log_info(logger, "Se realiza un gossip programado");
- 		mGossip();
- 	//	sem_post(&lockTablaMem);
- 		usleep(config->retardoGossiping);
- 	}
+	while(1){
+		log_info(logger, "Se realiza un gossip programado");
+	 	if(list_is_empty(semillas)){
+	 		log_info(logger,"Esta memoria no tiene semillas");
+ 		}else{
+	 	 	mGossip();
+	 	}
+	 	sem_wait(&lockTablaMem);
+	 	mostrarActivas();
+	 	sem_post(&lockTablaMem);
+	 	usleep(config->retardoGossiping);
+	}
 
  	return NULL;
  }
@@ -683,6 +696,7 @@ int main(void) {
 
 	 msj = string_from_format("%s%s", tamanioFormateado, paquete);
 	 free(tamanioFormateado);
+	 free(paquete);
  	 return msj;
 
  }
@@ -714,7 +728,8 @@ int main(void) {
 
 
 
- u_int16_t handshakeConLissandra(u_int16_t lfsCliente,char* ipLissandra,u_int16_t puertoLissandra){
+ u_int16_t handshakeConLissandra(char* ipLissandra,u_int16_t puertoLissandra){
+	u_int16_t lfsCliente;
  	int conexionExitosa;
  	int id = 1;
  	conexionExitosa = linkClient(&lfsCliente, ipLissandra , puertoLissandra,id);
@@ -909,44 +924,6 @@ int main(void) {
  //------------------MANEJO DE MEMORIA---------------------//
  //-------------------------------------------------------//
 
-/*
- int memoriaLlena(){ //Devuelve 0 si esta llena (no se fija los flags modificados)
-		log_info(logger,"entra a memoria llena ");
- 	bool algunoLibre(marco* unMarco){
- 		return unMarco->estaLibre == 0;
- 	}
- 	return list_any_satisfy(tablaMarcos,(void*)algunoLibre);
- }
-
- int todosModificados(segmento* aux){
-
-	 int estaModificada(pagina* p){
-		 return p->modificado == 1;
-	 }
-	 return list_all_satisfy(aux->tablaPaginas,(void*)estaModificada);
- }
-
- int FULL(){ //La memoria esta FULL si se cumple memoriaLlena() y todas las tablaPaginas estan con flag modificados
-
-
-	 int total=0;
-	 int tam =list_size(tablaSegmentos);
-	 if(tam==0)return 0;
-	 segmento* aux;
-
-	 if(!memoriaLlena()){
-		 for(int i = 0;i<tam;i++){
-			 aux = list_get(tablaSegmentos,i);
-			 total += todosModificados(aux);
-		 }
-
-	 }else{
-		 return 0;
-	 }
-	 return total == tam;
- }
- */
-
  void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag){
 	marco *marc = list_get(tablaMarcos, pag->nroMarco);
 	pthread_mutex_lock(&marc->lockMarco);
@@ -959,48 +936,8 @@ int main(void) {
  	pthread_mutex_unlock(&marc->lockMarco);
  	log_info(logger, "Se agrego el dato %s al marco %d", value, pag->nroMarco);
  }
-/*
 
- int primerMarcoLibre(){
- 	int posMarco = -1;
- 	int i=0;
- 	marco *unMarco;
- 	pthread_mutex_lock(&lockTablaMarcos);
- 	if(!FULL()){
- 		if(memoriaLlena()){ //Si la memoria NO esta llena puede asignar un marco
- 			log_info(logger,"entra a marcos libres");
- 			while(i < cantMarcos){
- 				unMarco = list_get(tablaMarcos,i);
-				if((unMarco->estaLibre) == 0){
-					pthread_mutex_lock(&unMarco->lockMarco);
-					unMarco->estaLibre = 1;
-					pthread_mutex_unlock(&unMarco->lockMarco);
-					posMarco = unMarco->nroMarco;
-					break;
-				}
-				else{
-					i++;
-				}
-			}
-		}
-		else{
-			log_info(logger,"entra a lru ");
-			posMarco = LRU(); //te devuelve la posicion del marco a ocupar, liberando lo que habia antes
-			unMarco = list_get(tablaMarcos,posMarco);
-			pthread_mutex_lock(&unMarco->lockMarco);
-			unMarco->estaLibre = 1;
-			pthread_mutex_unlock(&unMarco->lockMarco);
-		}
-		pthread_mutex_unlock(&lockTablaMarcos);
-		return posMarco;
- 	}
- 	else {
- 		pthread_mutex_unlock(&lockTablaMarcos);
- 		return -1;
- 	}
- }
-*/
- int getMarcoLibre(){ //reemplazaría a primerMarcoLibre
+ int getMarcoLibre(){
 	 int nroMarco;
 	 if(!memoriaFull()){
 		 if(hayMarcosLibres()){
@@ -1029,103 +966,17 @@ int main(void) {
  	pthread_mutex_unlock(&nuevo->lockMarco);
 
  }
-/*
 
- posMarcoUsado* crearPosMarcoUsado(int nroMarco,int pos){
-	 posMarcoUsado* nuevo = malloc(sizeof(posMarcoUsado));
-	 nuevo->nroMarco = nroMarco;
-	 nuevo->posicionDeUso = pos;
-	 return nuevo;
- }
-
- void agregarPosMarcoUsado(posMarcoUsado* nuevo){
-	 list_add(listaDeUsos,nuevo);
- }
-
- int LRU(){
-	 pthread_mutex_lock(&lockTablaUsos);
-	 int i=1,menor,tamLista,nroMarcoAborrar;
-	 tamLista = list_size(listaDeUsos);
-	 posMarcoUsado* aux= list_get(listaDeUsos,0);
-	 menor = aux->posicionDeUso;
-	 nroMarcoAborrar= aux->nroMarco;
-
-	 while(i<tamLista){
-		 aux = list_get(listaDeUsos,i);
-		 if(menor > aux->posicionDeUso){
-			 menor = aux->posicionDeUso;
-			 nroMarcoAborrar = aux->nroMarco;
-		 }else{
-			 i++;
-		 }
-	 }
-	 pthread_mutex_unlock(&lockTablaUsos);
-	 eliminarDeListaUsos(nroMarcoAborrar);
-	 liberarMarco(nroMarcoAborrar);
-	 log_info(logger, "marco nro :%i",nroMarcoAborrar);
-	 bool buscaMarco(pagina * pag){
-		 return pag->nroMarco==nroMarcoAborrar;
-	 }
-	 void buscaSegYPag(segmento *s){
-		 log_info(logger, "seg :%s", s->nombreTabla);
-
-		 //list_remove_and_destroy_by_condition(s->tablaPaginas,(void*)buscaMarco,(void*)paginaDestroy);
-		// pthread_mutex_lock(&s->lockSegmento);
-		 list_remove_by_condition(s->tablaPaginas,(void*)buscaMarco);
-		// pthread_mutex_unlock(&s->lockSegmento);//list_iterate(s->tablaPaginas,(void*)buscaMarco)
-	 }
-	 list_iterate(tablaSegmentos,(void*)buscaSegYPag);
-
-
-
-	 void itera(marco *m){
-		 log_info(logger,"marco %i libre: %i" , m->nroMarco , m->estaLibre);
-	 }
-
-	 list_iterate(tablaMarcos,(void*)itera);
-
-
-
-
-	 log_info(logger, "marco nro :%i",nroMarcoAborrar);
-
-
-
-		//Si llegamos aca la memoria SI o SI esta FULL 
-		//Avisarle al Kernel FULL
-	    //Devuelve 0 porque como la memoria queda vacia el 0 pasa a ser el primer marco vacio (DEBERIA)
-	 liberarMarco(nroMarcoAborrar);
-
-	 return nroMarcoAborrar;
-
-	 //Esta funcion lee de una lista cual fue el marco que hace mas tiempo que no se usa
-	 //lo libera y devuelve su posicion para que sea asignado a otra pagina
-
- }
-
- void agregarAListaUsos(int nroMarco){
-	 pthread_mutex_lock(&lockTablaUsos);
- 	posMarcoUsado* nuevo = crearPosMarcoUsado(nroMarco,posicionUltimoUso);
-
- 	posicionUltimoUso++;
-
- 	list_add(listaDeUsos,nuevo);
- 	pthread_mutex_unlock(&lockTablaUsos);
- }*/
  void agregarAReemplazables(marco *unMarco){//esto borraria agregarAListausos
-	 //semaforo
 	 bool estaEnLaLista(marco *otroMarco){
 		 return unMarco->nroMarco == otroMarco->nroMarco;
 
 	 }
-	 pthread_mutex_lock(&lockLRU);
 	 if(!list_any_satisfy(marcosReemplazables, (void*)estaEnLaLista)){
 		 list_add(marcosReemplazables, unMarco);
 	 }
-	 pthread_mutex_unlock(&lockLRU);
 
 	 actualizarLista();
-	 //semaforo
 
  }
  void actualizarLista(){
@@ -1133,9 +984,7 @@ int main(void) {
 		 return unMarco->ultimoUso < marcoViejo->ultimoUso;
 
 	 }
-	 pthread_mutex_lock(&lockLRU);
 	 list_sort(marcosReemplazables, (void*) marcoMasViejo);
-	 pthread_mutex_unlock(&lockLRU);
 
  }
 
@@ -1147,9 +996,7 @@ int main(void) {
 		 return marco->nroMarco == nroMarco;
 	  }
 	 //if(list_any_satisfy(marcosReemplazables, (void*)mismoMarco)){ VER SI EXPLOTA
-	 pthread_mutex_lock(&lockLRU);
 	 list_remove_by_condition(marcosReemplazables, (void*) mismoMarco);
-	 pthread_mutex_unlock(&lockLRU);
 
 	 //}
  }
@@ -1176,7 +1023,6 @@ int main(void) {
 		 pthread_mutex_lock(&lockLRU);
 		 marco *marc = list_get(marcosReemplazables, 0);
 		 pthread_mutex_unlock(&lockLRU);
-
 		 return marc->nroMarco;
 	 }
 	 else{
@@ -1184,41 +1030,7 @@ int main(void) {
 	 }
  }
 
-/*
 
- void eliminarDeListaUsos(int nroMarcoAEliminar){
-	 pthread_mutex_lock(&lockTablaUsos);
-	 bool itera(posMarcoUsado *aux){
-		 return aux->nroMarco == nroMarcoAEliminar;
-	 }
-	 list_remove_by_condition(listaDeUsos,(void*)itera);
-	 pthread_mutex_unlock(&lockTablaUsos);
- }
-
-
- void actualizarListaDeUsos(int nroMarco){
-	 pthread_mutex_lock(&lockTablaUsos);
-	 log_info(logger,"holaa %i" , list_size(listaDeUsos));
-	 /* 	void itera(posMarcoUsado *aux){
-	  		log_info(logger,"marco %i", aux->nroMarco);
-	  	}
-	  	list_iterate(listaDeUsos,(void*) itera);
-
-	 log_info(logger,"nro: %i" ,nroMarco);
- 	int tieneMismoMarco(posMarcoUsado * aux){
- 		log_info(logger,"true o false %i",aux->nroMarco == nroMarco);
- 		log_info(logger,"Marco a actualizar %i",nroMarco);
- 		log_info(logger,"Marco de la lista %i",aux->nroMarco);
- 		return aux->nroMarco == nroMarco;
- 	}
- 	log_info(logger,"antes del listfind en lru");
- 	posMarcoUsado* marcoParaActualizar = list_find(listaDeUsos,(void*) tieneMismoMarco);
- 	log_info(logger,"despues del listfind en lru");
- 	marcoParaActualizar->posicionDeUso = posicionUltimoUso;
- 	posicionUltimoUso++;
- 	pthread_mutex_unlock(&lockTablaUsos);
- }
-*/
  bool estaModificada(pagina *pag){
  	bool res = false;
  	if(pag->modificado == 1){
@@ -1362,100 +1174,7 @@ void finalizar(){
 //-------------------------------------//
 //---------------API------------------//
 //-----------------------------------//
-/*
 
-
-int mInsert(char* nombreTabla, u_int16_t key, char* valor){
-
-	log_info(logger, "Empieza el insert");
-	sem_wait(&semJournal);
-	log_info(logger, "Pasó el lock");
-	log_info(logger,"\n\n LA KEY ES : %i " , key);
-	if(strlen(valor)+1 <=maxValue){
-		log_info(logger,"entra a insert ");
-
-		segmento *seg = buscarSegmento(nombreTabla);
-		pagina *pag;
-		long timestampActual;
-
-		if(seg != NULL){ //existe el segmento
-			log_info(logger,"existe segmento ");
-			pthread_mutex_lock(&seg->lockSegmento);
-			pag = buscarPaginaConKey(seg, key);
-				if (pag == NULL){ //no existe la pagina
-					log_info(logger,"no existe pagina ");
-					pag = crearPagina();
-					if(pag->nroMarco==-1){
-						pthread_mutex_unlock(&seg->lockSegmento);
-						sem_post(&semJournal);
-						log_info(logger, "Pasó el lock de salida");
-
-						return 2;
-					}
-					agregarPagina(seg,pag);
-					timestampActual = time(NULL);
-					agregarDato(timestampActual, key, valor, pag);
-					log_info(logger, "VOLVI DE AGREGAR DATO");
-					pag->modificado = 1;
-					log_info(logger,"hola" );
-				//	log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-				}else{ //existe la pagina
-					log_info(logger,"existe pagina ");
-					agregarDato(time(NULL),key,valor,pag);
-					log_info(logger, "VOLVI DE AGREGAR DATO");
-					//pag->modificado = 1;
-					log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-
-					if(pag->modificado!=1){
-						eliminarDeListaUsos(pag->nroMarco);
-					}
-					pag->modificado = 1;
-					log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-				}
-				pthread_mutex_unlock(&seg->lockSegmento);
-		}else{ //no existe el segmento
-			log_info(logger,"no existe segmento ");
-			pagina *pag = crearPagina();
-			if(pag->nroMarco==-1){
-				sem_post(&semJournal);
-				log_info(logger, "Pasó el lock de salida");
-
-				return 2;
-			}
-			pthread_mutex_lock(&lockTablaSeg);
-			seg = crearSegmento(nombreTabla);
-			pthread_mutex_lock(&seg->lockSegmento);
-			list_add(tablaSegmentos, seg);
-			pthread_mutex_unlock(&lockTablaSeg);
-			agregarPagina(seg,pag);
-			timestampActual = time(NULL);
-			agregarDato(timestampActual, key, valor, pag);
-			log_info(logger, "VOLVI DE AGREGAR DATO");
-			pag->modificado = 1;
-			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-			pthread_mutex_unlock(&seg->lockSegmento);
-		}
-		log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
-		sem_post(&semJournal);
-		log_info(logger, "Pasó el lock de salida");
-
-		return 0;
-
-	}
-
-	else{
-		log_info(logger, "Se intentó insertar un value mayor al tamaño permitido");
-		sem_post(&semJournal);
-		log_info(logger, "Pasó el lock de salida");
-		return 1;
-	}
-
-}
-*/
 
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
@@ -1484,6 +1203,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			if(pag->nroMarco==-1){//estoy full
 				pthread_mutex_unlock(&seg->lockSegmento);
 				sem_post(&semJournal);
+				free(pag);
 				log_info(logger, "Pasó el lock de salida");
 				return 2;
 			}
@@ -1491,14 +1211,20 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			timestampActual = time(NULL);
 			agregarDato(timestampActual, key, valor, pag);
 			pag->modificado = 1;
+			pthread_mutex_lock(&lockLRU);
 			eliminarDeReemplazables(pag->nroMarco);
+			pthread_mutex_lock(&lockLRU);
+
 
 		}else{ //existe la pagina
 
 			log_info(logger,"existe pagina ");
 			agregarDato(time(NULL),key,valor,pag);
 			if(pag->modificado==0){
+				pthread_mutex_lock(&lockLRU);
 				eliminarDeReemplazables(pag->nroMarco);
+				pthread_mutex_unlock(&lockLRU);
+
 			}
 			pag->modificado = 1;
 
@@ -1511,6 +1237,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		pagina *pag = crearPagina();
 		if(pag->nroMarco==-1){//estoy full
 			sem_post(&semJournal);
+			free(pag);
 			log_info(logger, "Pasó el lock de salida");
 			return 2;
 		}
@@ -1524,7 +1251,10 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarDato(timestampActual, key, valor, pag);
 		log_info(logger, "VOLVI DE AGREGAR DATO");
 		pag->modificado = 1;
+		pthread_mutex_lock(&lockLRU);
 		eliminarDeReemplazables(pag->nroMarco);
+		pthread_mutex_unlock(&lockLRU);
+
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
@@ -1533,132 +1263,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	return 0;
 }
 
-/*
 
-char* mSelect(char* nombreTabla,u_int16_t key){
-
-	log_info(logger, "Empieza el select");
-	sem_wait(&semJournal);
-	log_info(logger, "Pasó el lock");
-
-	segmento *nuevo = buscarSegmento(nombreTabla);
-	pagina* pNueva;
-	char* valorPagNueva;
-	char* valor;
-	char* noExiste =string_duplicate("3");
-	char* estoyFull = string_duplicate("2");
-
-	log_info(logger, "Se pidio un select de la tabla %s key %d", nombreTabla, key);
-	if(nuevo!= NULL){
-
-		pNueva = buscarPaginaConKey(nuevo,key);
-
-		if(pNueva != NULL){
-			valor = (char*)conseguirValor(pNueva);
-			log_info(logger, "Se seleccionó el valor %s", valor);
-			log_info(logger, "Encontro segmento y pagina");
-
-			if(pNueva->modificado == 0){
-				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-				actualizarListaDeUsos(pNueva->nroMarco);
-				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-			}
-			log_info(logger, "salio lru");
-			log_info(logger, "Se seleccionó el valor despues de lru %s", valor);
-
-			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-			sem_post(&semJournal);
-			log_info(logger, "Pasó el lock de salida");
-			free(estoyFull);
-			free(noExiste);
-			return valor;
-		}
-		else{
-			//if(!FULL()){
-			pNueva = crearPagina();
-			if(pNueva->nroMarco==-1){
-				sem_post(&semJournal);
-				log_info(logger, "Pasó el lock de salida");
-
-				free(noExiste);
-				return estoyFull;
-			}
-			valorPagNueva = selectLissandra(nombreTabla,key);
-			if(valorPagNueva != NULL){
-				pNueva->modificado = 0;
-				pthread_mutex_lock(&nuevo->lockSegmento);
-				agregarPagina(nuevo,pNueva);
-				pthread_mutex_unlock(&nuevo->lockSegmento);
-				agregarDato(time(NULL),key,valorPagNueva,pNueva);
-				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-				agregarAListaUsos(pNueva->nroMarco);
-				log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
-				sem_post(&semJournal);
-				log_info(logger, "Pasó el lock de salida");
-				free(estoyFull);
-				free(noExiste);
-				return valorPagNueva;
-			}
-				else{
-					sem_post(&semJournal);
-					log_info(logger, "Pasó el lock de salida");
-					free(estoyFull);
-					return noExiste;
-				}
-
-		}
-	}
-	else{
-		//if(!FULL()){
-		pNueva = crearPagina();
-		if(pNueva->nroMarco==-1){
-			sem_post(&semJournal);
-			log_info(logger, "Pasó el lock de salida");
-			free(noExiste);
-			return estoyFull;
-		}
-		pthread_mutex_lock(&lockTablaSeg);
-		nuevo = crearSegmento(nombreTabla);
-		list_add(tablaSegmentos, nuevo);
-		pthread_mutex_unlock(&lockTablaSeg);
-		valorPagNueva = selectLissandra(nombreTabla,key);
-		if(valorPagNueva !=NULL){
-			pNueva->modificado = 0;
-			pthread_mutex_lock(&nuevo->lockSegmento);
-			agregarPagina(nuevo,pNueva);
-			pthread_mutex_unlock(&nuevo->lockSegmento);
-
-			agregarDato(time(NULL),key,valorPagNueva,pNueva);
-			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-			agregarAListaUsos(pNueva->nroMarco);
-			log_info(logger,"\n\n\n\n tamanio de lista usos: %i \n\n\n\n\n\n", list_size(listaDeUsos));
-
-
-			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
-			sem_post(&semJournal);
-			log_info(logger, "Pasó el lock de salida");
-			free(estoyFull);
-			free(noExiste);
-			return valorPagNueva;
-
-		}
-		else{
-			sem_post(&semJournal);
-			log_info(logger, "Pasó el lock de salida");
-			free(estoyFull);
-			return noExiste;
-		}
-
-	}
-
-
-}
-*/
 
 char* mSelect(char* nombreTabla,u_int16_t key){
 
@@ -1680,13 +1285,19 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		if(pNueva != NULL){//encontro segmento y pagina
 			valor = (char*)conseguirValor(pNueva);
 			marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
+			pthread_mutex_lock(&marc->lockMarco);
 			marc->ultimoUso = time(NULL);
+			pthread_mutex_unlock(&marc->lockMarco);
+
 
 			log_info(logger, "Se seleccionó el valor %s", valor);
 			log_info(logger, "Encontro segmento y pagina");
 
 			if(pNueva->modificado == 0){
+				pthread_mutex_lock(&lockLRU);
 				actualizarLista();
+				pthread_mutex_unlock(&lockLRU);
+
 			}
 
 			sem_post(&semJournal);
@@ -1699,6 +1310,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			pNueva = crearPagina();
 			if(pNueva->nroMarco==-1){//si estoy full
 				sem_post(&semJournal);
+				free(pNueva);
 				log_info(logger, "Pasó el lock de salida");
 				free(noExiste);
 				return estoyFull;
@@ -1712,8 +1324,14 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				agregarDato(time(NULL),key,valorPagNueva,pNueva);
 
 				marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
+				pthread_mutex_lock(&marc->lockMarco);
 				marc->ultimoUso = time(NULL);
+				pthread_mutex_unlock(&marc->lockMarco);
+
+				pthread_mutex_lock(&lockLRU);
 				agregarAReemplazables(marc);
+				pthread_mutex_unlock(&lockLRU);
+
 
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 				sem_post(&semJournal);
@@ -1725,6 +1343,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			else{//si lfs no tenía el valor
 				sem_post(&semJournal);
 				log_info(logger, "Pasó el lock de salida");
+				//free de la pagina que se creo al pedo
 				free(estoyFull);
 				return noExiste;
 			}
@@ -1736,6 +1355,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		pNueva = crearPagina();
 		if(pNueva->nroMarco==-1){//si estoy full
 			sem_post(&semJournal);
+			free(pNueva);
 			log_info(logger, "Pasó el lock de salida");
 			free(noExiste);
 			return estoyFull;
@@ -1755,8 +1375,13 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
 			marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
+			pthread_mutex_lock(&marc->lockMarco);
 			marc->ultimoUso = time(NULL);
+			pthread_mutex_unlock(&marc->lockMarco);
+			pthread_mutex_lock(&lockLRU);
 			agregarAReemplazables(marc);
+			pthread_mutex_unlock(&lockLRU);
+
 
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 			sem_post(&semJournal);
@@ -1768,6 +1393,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		}
 		else{//lfs no tenía el valor
 			sem_post(&semJournal);
+			//free de la pagina que se creo al pedo
 			log_info(logger, "Pasó el lock de salida");
 			free(estoyFull);
 			return noExiste;
@@ -1825,19 +1451,9 @@ int mDrop(char* nombreTabla){
 
 
 int mJournal(){
-
+	pthread_mutex_lock(&lockJournal);
 	for(int i = 0; i<config->multiprocesamiento; i++){
 		sem_wait(&semJournal);
-	}
-
-	log_info(logger, "\n\n Inicio del journal, se bloquea la tabla de segmentos \n\n\n\n\n\n\n\n\n\n\n");
-	pthread_mutex_lock(&lockTablaSeg);
-	pthread_mutex_lock(&lockTablaMarcos);
-
-
-	for(int i = 0; i<tablaSegmentos->elements_count; i++){
-		segmento *seg = list_get(tablaSegmentos, i);
-		pthread_mutex_lock(&seg->lockSegmento);
 	}
 
 
@@ -1883,6 +1499,8 @@ int mJournal(){
 
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
+	list_clean(marcosReemplazables);
+
 	int listaVacia = list_is_empty(tablaSegmentos);
 	if (listaVacia == 1){
 		marco *marc;
@@ -1892,18 +1510,19 @@ int mJournal(){
 		}
 		log_info(logger, "Datos borrados, se desbloquea la tabla de segmentos");
 
-		//log_info(logger,"size usos %d" ,  list_size(listaDeUsos));
-		pthread_mutex_unlock(&lockTablaSeg);
-		pthread_mutex_unlock(&lockTablaMarcos);
+
 		void itera(marco *marco){
 			marco->estaLibre=0;
 		}
 		list_iterate(tablaMarcos,(void*)itera);
 
+
 		for(int i = 0; i<config->multiprocesamiento; i++){
 			sem_post(&semJournal);
 
 		}
+		pthread_mutex_unlock(&lockJournal);
+
 
 		return 0;
 	}
@@ -1913,230 +1532,7 @@ int mJournal(){
 	}
 
 }
-/*
-//NROMEM;IP;PUERTO SUPER SEND CON TABLA ENTERA
 
-char* formatearTablaGossip(int nro,char*ip,char*puerto){
-	char* paquetin = string_from_format("%d;%s;%s;",nro,ip,puerto);
-	log_info(logger, "ID EMPAQUETADO %d", nro);
-	return paquetin;
-}
-
-
-char* empaquetarTablaActivas(){
-	int i=0;
-	char* paquetote=string_new();
-    sem_wait(&lockTablaMem);
-
-	infoMemActiva* aux = list_get(tablaMemActivas,i);
-
-	while(i<(tablaMemActivas->elements_count)){
-		if(aux->activa){
-		log_info(logger, "ANTES DEL STRING APPEND %d", aux->nroMem);
-			string_append(&paquetote,formatearTablaGossip(aux->nroMem,aux->ip,aux->puerto));
-		log_info(logger, "DESPUES DEL STRING APPEND %d", aux->nroMem);
-		log_info(logger, "PAQUETOTE DESPUES DE FORMATEAR LA TABLA %s", paquetote);
-
-
-		}
-		i++;
-		aux = list_get(tablaMemActivas,i);
-	}
-    sem_post(&lockTablaMem);
-	return paquetote;
-}
-void desempaquetarTablaSecundaria(char* paquete){
-	int i=0;
-	log_info(logger, "Estoy por desempaquetar esto %s", paquete);
-	char** split = string_split(paquete,";");
-    sem_wait(&lockTablaMem);
-
-	while(split[i]){
-		infoMemActiva* aux = malloc(sizeof(infoMemActiva));
-		log_info(logger, "split %i ID:%s I", i, split[i]);
-		aux->nroMem = atoi(split[i]);
-		i++;
-		aux->ip = split[i];
-		log_info(logger, "split %i IP:%s", i, split[i]);
-		i++;
-		aux->puerto = split[i];
-		log_info(logger, "split %i PUERTO:%s", i, split[i]);
-		i++;
-		list_add(tablaMemActivasSecundaria,aux);
-	}
-    sem_post(&lockTablaMem);
-
-} // desempaqueta la tabla recibida y la carga en la lista secundaria que es global
-
-int pedirConfirmacion(char*ip,char* puerto){
-	u_int16_t cliente;
-	char* codOpe = "6";
-	u_int16_t puertoAux=atoi(puerto);
-	int conexion = linkClient(&cliente,ip,puertoAux,0);
-
-	if(conexion ==1){
-		return 0; // no esta activa la memoria
-	}
-	char* rta=malloc(sizeof(char)*2);
-	sendData(cliente,codOpe,sizeof(char)*2); //Le mando el codigo para que me mande su tabla
-	recvData(cliente,rta,sizeof(char));
-	rta[1] = '\0';
-	char* tamTabla=malloc(sizeof(char)*4);
-	recvData(cliente,tamTabla,sizeof(char)*3);
-	tamTabla[3] = '\0';
-	char* buffer=malloc(atoi(tamTabla)+1);
-	recvData(cliente,buffer,atoi(tamTabla));
-	log_info(logger, "PAQUETE RECIBIDO %s", buffer);
-	desempaquetarTablaSecundaria(buffer);  //aca actualizo mi tabla con lo que me envian
-	close(cliente);
-
-
-	//Le envio mi tabla
-	u_int16_t nuevoCli;
-
-	conexion = linkClient(&nuevoCli,ip,puertoAux,0);
-	if(conexion ==1){
-			return 0; // no esta activa la memoria
-	}
-	codOpe = "7";
-	char*paquete = confirmarActivo();
-	char*paqueteEntero = malloc(strlen(paquete)+2);
-	strcpy(paqueteEntero,codOpe);
-	string_append(&paqueteEntero,paquete);
-	log_info(logger, "Paquete entero %s", paqueteEntero);
-	sendData(cliente,paqueteEntero,strlen(paqueteEntero)+1);
-	close(nuevoCli);
-
-
-	return 1;
-} // devuelve si confirmo con 1 y recibe la tablaSecundaria y envio mi tabla
-
-char* confirmarActivo(){ // podria recibir la ip y puerto del que pidio la confirmacion
-   char* paquete=empaquetarTablaActivas();
-   char* paqueteListo=empaquetar(0,paquete);
-   return paqueteListo;
-} //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
-
-int estaRepetido(char*ip,char* puerto){
-	int mismaIp(infoMemActiva* aux){
-		return (strcmp(aux->ip,ip)==0)&&(strcmp(aux->puerto,puerto)==0);
-	}
-	return list_any_satisfy(tablaMemActivas,(void*)mismaIp); //Devuelve 1 si hay repetido
-}
-
-void cargarInfoDeSecundaria(int i){// el i decide si se cargo la primera antes o no
-    sem_wait(&lockTablaMem);
-
-	int tam = list_size(tablaMemActivasSecundaria);
-	if(tam != 0){
-		infoMemActiva*aux=list_get(tablaMemActivasSecundaria,i);
-		while(aux){
-			if(!estaRepetido(aux->ip,aux->puerto)){
-				aux->activa=1;
-				list_add(tablaMemActivas,aux);//si NO esta repetido lo agrega y sino lo pasa de largo
-				}
-			i++;
-			aux=list_get(tablaMemActivasSecundaria,i);
-		}
-	}
-    list_clean(tablaMemActivasSecundaria);
-    sem_post(&lockTablaMem);
-
-}
-
-void agregarMemActiva(int id,char* ip,char*puerto){ //Se agrega a la lista //falta usar la secundaria y agregarle su info a la ppal y la config
-    sem_wait(&lockTablaMem);
-
-	if(!estaRepetido(ip,puerto)){
-	infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
-	nueva->ip=malloc(strlen(ip)+1);
-	nueva->puerto=malloc(strlen(puerto)+1);
-	memcpy(nueva->ip,ip,strlen(ip)+1);
-	memcpy(nueva->puerto,puerto,strlen(puerto)+1);
-	nueva->nroMem=id;
-	nueva->activa=1;
-	list_add(tablaMemActivas,nueva);
-	}else{
-		int i = 1;
-		infoMemActiva* aux = list_get(tablaMemActivas,i);
-		while(aux->nroMem != id){
-			i++;
-			aux = list_get(tablaMemActivas,i);
-		}
-		aux->activa=1;
-	}
-    sem_post(&lockTablaMem);
-
-	cargarInfoDeSecundaria(1);
-}
-
-int conseguirIdSecundaria(){ //Devuelve el id de la memoria que confirmo que esta activa
-    sem_wait(&lockTablaMem);
-	infoMemActiva* aux = list_get(tablaMemActivasSecundaria,0); //es la posicion cero porque como confirmo hay una nueva tabla secundaria
-    sem_post(&lockTablaMem);
-
-	return aux->nroMem;
-}
-
-void estaEnActivaElim(char*ip,char*puerto){ //Si estaba en la tablaMemActivas la elimina
-    int i=1;
-    sem_wait(&lockTablaMem);
-    infoMemActiva* aux = list_get(tablaMemActivas,i);
-    while(aux){
-        if((strcmp(aux->ip,ip)==0)&&(strcmp(aux->puerto,puerto)==0)){
-            aux->activa=0;
-        }
-        i++;
-        aux = list_get(tablaMemActivas,i);
-    }
-    sem_post(&lockTablaMem);
-}
-
-
-void mostrarActivas(){
-	int i = 0;
-	sem_wait(&lockTablaMem);
-	infoMemActiva* aux = list_get(tablaMemActivas,i);
-	printf("\nTabla Activas: \n");
-	while(aux){
-		printf("ID: %i \n",aux->nroMem);
-		printf("IP: %s \n",aux->ip);
-		printf("Activa : %i \n",aux->activa);
-		printf("---------- \n");
-		i++;
-		aux = list_get(tablaMemActivas,i);
-	}
-	sem_post(&lockTablaMem);
-}
-
-void mGossip(){
-
-    int i=1;
-    //lee de la lista de activas
-    infoMemActiva* aux = list_get(tablaMemActivas,i);
-    while(aux){
-    	if(aux->nroMem ==0){
-    		if(pedirConfirmacion(aux->ip,aux->puerto)){
-    		int id = conseguirIdSecundaria();
-    		aux->nroMem=id;
-    		aux->activa=1;
-    		}
-    	}else if(pedirConfirmacion(aux->ip,aux->puerto)){
-        	int id = conseguirIdSecundaria();
-        	log_info(logger,"Se confirmo la memoria con id: %i",id);
-         	agregarMemActiva(id,aux->ip,aux->puerto);
-     	}else{
-       	    estaEnActivaElim(aux->ip,aux->puerto);
-       		log_info(logger,"La memoria con ip : %s no esta activa",aux->ip);
-        	}
-       	i++;
-       	aux=list_get(tablaMemActivas,i);
-    }
-	
-    log_info(logger,"Termino el gossip");
-    mostrarActivas();
-}
-*/
 bool existeMemoria(char *ip,int puerto,int id){
 	bool mismoID(memorias *repetida){
 		if(id==0){
@@ -2176,7 +1572,6 @@ memorias *obtenerMemorias(char *ip,int puerto,int id){
 	return obtenida;
 }
 void desempaquetarMemorias(char* paquete){
-	sem_wait(&lockTablaMem);
 	while(paquete!=NULL){
 		char **split=string_n_split(paquete,4,";");
 		if(verificarParametros(split,3)==0){
@@ -2202,9 +1597,8 @@ void desempaquetarMemorias(char* paquete){
 			break;
 		}
 	}
-	sem_post(&lockTablaMem);
-	//SIGNAL DE LISTA
 }
+
 char *empaquetarMemorias(){
 	char *paquete=NULL;
 	void empaquetando(memorias *aEmpaquetar){
@@ -2220,17 +1614,15 @@ char *empaquetarMemorias(){
 		}
 		free(paquetito);
 	}
-	sem_wait(&lockTablaMem);
 	list_iterate(memoriasConocidas,(void *)empaquetando);
-	sem_post(&lockTablaMem);
-
 	return paquete;
 }
-char *paqueteVerdadero(){ // podria recibir la ip y puerto del que pidio la confirmacion
+char *paqueteVerdadero(){
    char* paquete=empaquetarMemorias();
    char* paqueteListo=empaquetar(7,paquete);
+   free(paquete);
    return paqueteListo;
-} //un listen y da el ok a otra mem al enviarle su tablaMemActivas //tendria que haber un hilo siempre escuchando
+}
 
 int memoriaActiva(char *ip, int puerto){
 	u_int16_t cliente;
@@ -2242,7 +1634,9 @@ int memoriaActiva(char *ip, int puerto){
 }
 void pedirMemorias(int cliente){
 	char* codOpe =string_duplicate("6");
-	sendData(cliente,codOpe,strlen(codOpe)+1); //Le mando el codigo para que me mande su tabla
+	sendData(cliente,codOpe,strlen(codOpe)+1);
+	free(codOpe);
+	recibirMemorias(cliente);
 }
 void recibirMemorias(int cliente){
 	char* tamanioTabla=malloc(4);
@@ -2250,28 +1644,39 @@ void recibirMemorias(int cliente){
 	tamanioTabla[3] = '\0';
 	log_info(logger,"tamanio de tabla recibido %s",tamanioTabla);
 	char* buffer=malloc(atoi(tamanioTabla)+1);
+	free(tamanioTabla);
 	recvData(cliente,buffer,atoi(tamanioTabla));
 	log_info(logger, "PAQUETE RECIBIDO %s",buffer);
+	sem_wait(&lockTablaMem);
+	log_info(logger, "Se empieza a desempaquetar las memorias recibidas");
 	desempaquetarMemorias(buffer);  //aca actualizo mi tabla con lo que me envian
+	log_info(logger, "Se termino de desempaquetar las memorias recibidas");
+	sem_post(&lockTablaMem);
 }
 void enviarMemorias(char *ip,int puerto){
 	int socket=memoriaActiva(ip,puerto);
 	if(socket==0){
+		sem_wait(&lockTablaMem);
 		desactivarMemoria(ip,puerto);
+		sem_post(&lockTablaMem);
+		log_info(logger,"la semilla de ip %s y puerto %i no esta activa",ip,puerto);
 	}else{
+		sem_wait(&lockTablaMem);
+		log_info(logger,"Empaquetando mis memorias para mandar");
 		char *paquete =paqueteVerdadero();
-		log_info(logger, "Paquete entero %s", paquete);
+		sem_post(&lockTablaMem);
+		log_info(logger,"Intentando enviar mi paquete de memorias");
 		sendData(socket,paquete,strlen(paquete)+1);
+		log_info(logger, "Se envio el Paquete entero %s", paquete);
+		free(paquete);
 		close(socket);
 	}
 }
 void desactivarMemoria(char *ip,int puerto){
-	sem_wait(&lockTablaMem);
 	if(existeMemoria(ip,puerto,0)){//Si existe la desactiva
 		memorias *semi=obtenerMemorias(ip,puerto,0);
 		semi->activa=0;
 	}
-	sem_post(&lockTablaMem);
 }
 void mostrarActivas(){
 	int i = 0;
@@ -2305,20 +1710,18 @@ void mGossip(){
 		//pedir confirmacion
 		int socket=memoriaActiva(semilla->ip,semilla->puerto);
 		if(socket==0){
+			sem_wait(&lockTablaMem);
 			desactivarMemoria(semilla->ip,semilla->puerto);
+			sem_post(&lockTablaMem);
+			log_info(logger,"la semilla de ip %s y puerto %i no esta activa",semilla->ip,semilla->puerto);
 		}else{
-			//recibir tabla
+		//recibir tabla
 			//agregar las nuevas memorias que recibo
 			pedirMemorias(socket);
-			recibirMemorias(socket);
 			close(socket);
 			//enviar tabla
 			enviarMemorias(semilla->ip,semilla->puerto);
 		}
 	}
-	if(!list_is_empty(semillas)){
 	list_iterate(semillas,(void *)gossipGirl);
-    log_info(logger,"Termino el gossip");
-    mostrarActivas();
-	}
 }
