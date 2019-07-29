@@ -1609,7 +1609,7 @@ char *empaquetarMemorias(){
 char *paqueteVerdadero(){
    char* paquete=empaquetarMemorias();
    char* paqueteListo=empaquetar(7,paquete);
-   free(paquete);
+   //free(paquete);
    return paqueteListo;
 }
 
@@ -1625,6 +1625,9 @@ void pedirMemorias(int cliente){
 	char* codOpe =string_duplicate("6");
 	sendData(cliente,codOpe,strlen(codOpe)+1);
 	free(codOpe);
+	char *siete=malloc(2);
+	recv(cliente,siete,1);
+	free(siete);
 	recibirMemorias(cliente);
 }
 void recibirMemorias(int cliente){
@@ -1633,8 +1636,8 @@ void recibirMemorias(int cliente){
 	tamanioTabla[3] = '\0';
 	log_info(logger,"tamanio de tabla recibido %s",tamanioTabla);
 	char* buffer=malloc(atoi(tamanioTabla)+1);
-	free(tamanioTabla);
 	recvData(cliente,buffer,atoi(tamanioTabla));
+	free(tamanioTabla);
 	log_info(logger, "PAQUETE RECIBIDO %s",buffer);
 	sem_wait(&lockTablaMem);
 	log_info(logger, "Se empieza a desempaquetar las memorias recibidas");
@@ -1642,6 +1645,7 @@ void recibirMemorias(int cliente){
 	log_info(logger, "Se termino de desempaquetar las memorias recibidas");
 	sem_post(&lockTablaMem);
 }
+
 void enviarMemorias(char *ip,int puerto){
 	int socket=memoriaActiva(ip,puerto);
 	if(socket==0){
