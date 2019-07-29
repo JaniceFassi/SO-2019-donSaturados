@@ -34,7 +34,7 @@ int main(void) {
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
 	m1->cantI=0;
 	m1->cantS=0;
-	list_add(memorias,m1);
+	//list_add(memorias,m1);
 	//list_add(criterioSC,m1);
 	//list_add(criterioEC,m1);
 	//list_add(criterioSHC,m1);
@@ -1306,7 +1306,7 @@ void *gossiping(){
 		char* salioBien = malloc(2);
 		recvData(sock, salioBien, 1);
 		salioBien[1]='\0';
-		if(atoi(salioBien)==0){
+		if(atoi(salioBien)==7){
 			char *tamanio= malloc(4);
 			recvData(sock,tamanio,3);
 			tamanio[3]='\0';

@@ -197,9 +197,8 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 	log_info(logger,"Se ha creado la tabla %s.",nombre);
 	free(path);
 	Sdirectorio *uno=malloc(sizeof(Sdirectorio));
-	uno->nombre=malloc(strlen(nombre)+1);
+	uno->nombre=string_duplicate(nombre);
 	uno->time_compact=timeCompaction;
-	strcpy(uno->nombre,nombre);
 	uno->terminar=1;
 	semaforosTabla(uno);
 	sem_wait(criticaDirectorio);

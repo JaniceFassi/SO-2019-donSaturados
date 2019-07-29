@@ -269,6 +269,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		}else{
 			log_info(logger,"\nDESCRIBE %s",buffer);	//orden: tabla
 			tabla=describe(buffer);
+			free(buffer);
 		}
 		if(list_is_empty(tabla)){
 			respuesta=string_from_format("1");
@@ -347,10 +348,10 @@ void exec_api(op_code mode,u_int16_t sock){
 		break;
 
 	}
-	if(mode==0 || mode==1 || mode==2 || mode==3 || mode==4){
+	if(mode==0 || mode==1 || mode==2 || mode==4){
 		free(buffer);
 	}
-	if(mode==0 || mode==1 || mode==2 || mode==3 || mode==4){
+	if(mode==0 || mode==1 || mode==2 ){
 		liberarSubstrings(subCadena);
 	}
 }

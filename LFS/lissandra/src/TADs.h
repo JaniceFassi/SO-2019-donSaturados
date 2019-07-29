@@ -127,7 +127,6 @@ char *obtenerMontaje();
 char *nivelUnaTabla(char *nombre, int modo);
 char *nivelMetadata(int modo);
 char *concatRegistro(Registry *reg);
-char *ponerSeparador(char *linea);
 char *array_A_String(char **array,int cantBloques);
 char *cadenaDeRegistros(t_list *lista);
 //FUNCIONES QUE DESCONCATENAN

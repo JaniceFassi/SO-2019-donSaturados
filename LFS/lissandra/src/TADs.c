@@ -34,36 +34,6 @@ void liberarSemaforos(){
 
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
-/*char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
-	char *punto=malloc(2);
-	strcpy(punto,".");
-	path=realloc(path,strlen(path)+strlen(punto)+1);
-	strcat(path,punto);
-
-	if(modo==0){
-		char *bin=malloc(4);
-		strcpy(bin,"bin");
-		path=realloc(path,strlen(path)+strlen(bin)+1);
-		strcat(path,bin);
-		free(bin);
-	}
-	if(modo==1){
-		char *tmp=malloc(4);
-		strcpy(tmp,"tmp");
-		path=realloc(path,strlen(path)+strlen(tmp)+1);
-		strcat(path,tmp);
-		free(tmp);
-	}
-	if(modo==2){
-		char *tmpc=malloc(5);
-		strcpy(tmpc,"tmpc");
-		path=realloc(path,strlen(path)+strlen(tmpc)+1);
-		strcat(path,tmpc);
-		free(tmpc);
-	}
-	free(punto);
-	return path;
-}*/
 
 char *array_A_String(char **array,int cantBloques){
 	char *casteo=malloc(2);
@@ -108,15 +78,6 @@ char *cadenaDeRegistros(t_list *lista){
 	list_iterate(lista,(void*)sumarRegistro);
 	return buffer;
 }
-
-/*char *ponerSeparador(char *linea){
-	char *separador=malloc(2);
-	strcpy(separador,";");
-	linea=realloc(linea,strlen(linea)+strlen(separador)+1);
-	strcat(linea,separador);
-	free(separador);
-	return linea;
-}*/
 
 char *obtenerMontaje(){
 	if(string_starts_with(configLissandra->puntoMontaje,"/home/utnso")){
@@ -202,6 +163,7 @@ char *nivelParticion(char *tabla, int particion, int modo){		//montaje/TABLAS/TA
 
 /****************************************************************************************************/
 //FUNCIONES DE DESCONCATENAR
+
 Registry *desconcatParaArch(char *linea){
 	char **subString=string_n_split(linea,3,";");
 	int key=atoi(subString[1]);
@@ -329,7 +291,6 @@ metaArch *leerMetaArch(char *path){
 		return nuevo;
 	}
 	return NULL;
-
 }
 
 metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPartition,long timeCompaction){
@@ -357,8 +318,8 @@ metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPar
 	free(cantParticiones);
 	free(tiempoCompact);
 	free(path);
-	free(nombre);
-	free(consistency);
+	//free(nombre);
+	//free(consistency);
 	return nuevo;
 }
 
@@ -384,13 +345,13 @@ metaTabla *levantarMetadataTabla(char *nombre){
 }
 
 metaTabla *obtenerMetadataTabla(char *nombre, t_config *arch){
-
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=config_get_long_value(arch, "COMPACTION_TIME");
 	char *aux=config_get_string_value(arch, "CONSISTENCY");
 	nuevo->consistency=string_duplicate(aux);
 	nuevo->partitions= config_get_int_value(arch, "PARTITIONS");
 	nuevo->nombre=string_duplicate(nombre);
+	free(aux);
 	return nuevo;
 }
 
@@ -471,7 +432,7 @@ void leerMetaLFS(){
 	config_destroy(metadataLFS);
 	free(path);
 }
-//MODIFICADO
+
 void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){//no deberia ser int?
 	t_list *aux;
 	metaArch *archivoAbierto=abrirArchivo(nameTable, part, extension);
@@ -491,14 +452,18 @@ void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){
 
 void modificarConfig(){
 	t_config *config = config_create(pathInicial);
-	configLissandra->Ip=config_get_string_value(config,"IP");
+	char *ip=config_get_string_value(config, "IP");
+	configLissandra->Ip=string_duplicate(ip);
 	configLissandra->puerto=config_get_int_value(config,"PORT");
-	configLissandra->puntoMontaje=config_get_string_value(config,"PUNTO_MONTAJE");
+	char *montaje= config_get_string_value(config,"PUNTO_MONTAJE");
+	configLissandra->puntoMontaje=string_duplicate(montaje);
 	configLissandra->tamValue=config_get_int_value(config,"TAMVALUE");
 	configLissandra->id=config_get_int_value(config,"ID");
 	configLissandra->idEsperado=config_get_int_value(config,"ID_ESPERADO");
 	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
 	configLissandra->retardo= config_get_int_value(config, "RETARDO");
+	free(montaje);
+	free(ip);
 	config_destroy(config);
 	log_info(logger,"Se modifico el archivo de configuracion.");
 }
@@ -516,7 +481,8 @@ void estructurarConfig(){							//Lee el config y crea una estructura con esos d
 	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
 	configLissandra->retardo= config_get_int_value(config, "RETARDO");
 	configLissandra->tamValue= config_get_int_value(config, "TAMVALUE");
-
+	//free(montaje);
+	//free(ip);
 	config_destroy(config);
 }
 
@@ -526,7 +492,7 @@ void crearConfig(){
 
 	configLissandra=malloc(sizeof(datosConfig));
 
-	printf("Ingrese el punto de montaje correspendiente, sin el home/utnso: ");
+	printf("Ingrese el punto de montaje correspendiente:");//, sin el home/utnso: ");
 	char *path=malloc(100);
 	scanf("%s",path);
 	configLissandra->puntoMontaje=malloc(strlen(path)+1);
