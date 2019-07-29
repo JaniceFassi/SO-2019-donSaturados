@@ -104,9 +104,9 @@ int main(void) {
 
 
 	u_int16_t lfsServidor;
-	maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
+	//maxValue = handshakeConLissandra(lfsServidor, config->ipFS, config->puertoFS);
 
-	//maxValue = 20;
+	maxValue = 20;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -159,7 +159,7 @@ int main(void) {
  }
 
  void prepararGossiping(t_config *configuracion){ //Hace las configuraciones iniciales del gossiping, NO lo empieza solo lo deja configurado
-	 
+	 int i=0;
 	 tablaMemActivas = list_create();
 	 tablaMemActivasSecundaria = list_create();
 
@@ -172,8 +172,19 @@ int main(void) {
 	 idMemoria = config_get_int_value(configuracion,"MEMORY_NUMBER");//Unico de cada proceso
 	 char* ipMem = config_get_string_value(configuracion,"IP");
 	 char* puerto = config_get_string_value(configuracion,"PUERTO");
-
 	 agregarMemActiva(idMemoria,ipMem,puerto);
+
+	 while(ipSeeds[i]){
+		 infoMemActiva* nueva = malloc(sizeof(infoMemActiva));
+		 nueva->ip=malloc(strlen(ipSeeds[i])+1);
+		 nueva->puerto=malloc(strlen(puertoSeeds[i])+1);
+		 memcpy(nueva->ip,ipSeeds[i],strlen(ipSeeds[i])+1);
+		 memcpy(nueva->puerto,puertoSeeds[i],strlen(puertoSeeds[i])+1);
+		 nueva->nroMem=0;
+		 nueva->activa=0;
+		 list_add(tablaMemActivas,nueva);
+		 i++;
+	 }
  }
 
  segmento *crearSegmento(char* nombre){
@@ -680,10 +691,10 @@ int main(void) {
  void* gossipProgramado(void* arg){
 
  	while(1){
-
+ 	//	sem_wait(&lockTablaMem);
  		log_info(logger, "Se realiza un gossip programado");
  		mGossip();
-
+ 	//	sem_post(&lockTablaMem);
  		usleep(config->retardoGossiping);
  	}
 
@@ -1860,29 +1871,17 @@ void mostrarActivas(){
 
 void mGossip(){
 
-    int i=0;
-
-    char* ipsConfig = config->ipSeeds;
-    char* seedsConfig = config->puertoSeeds;
-    ipSeeds = string_split(ipsConfig,";");
-    puertoSeeds = string_split(seedsConfig,";");
-
-    while(ipSeeds[i]){ //lee de la config
-    	if(pedirConfirmacion(ipSeeds[i],puertoSeeds[i])){
-    		int id = conseguirIdSecundaria();
-		log_info(logger,"Se confirmo la memoria con id: %i",id);
-    		agregarMemActiva(id,ipSeeds[i],puertoSeeds[i]);
-    	}else{
-    		estaEnActivaElim(ipSeeds[i],puertoSeeds[i]);
-		log_info(logger,"La memoria con ip : %s no esta activa",ipSeeds[i]);
-    	}
-    	i++;
-    }
-
-    i=1; //lee de la lista de activas
+    int i=1;
+    //lee de la lista de activas
     infoMemActiva* aux = list_get(tablaMemActivas,i);
     while(aux){
-     	if(pedirConfirmacion(aux->ip,aux->puerto)){
+    	if(aux->nroMem ==0){
+    		if(pedirConfirmacion(aux->ip,aux->puerto)){
+    		int id = conseguirIdSecundaria();
+    		aux->nroMem=id;
+    		aux->activa=1;
+    		}
+    	}else if(pedirConfirmacion(aux->ip,aux->puerto)){
         	int id = conseguirIdSecundaria();
         	log_info(logger,"Se confirmo la memoria con id: %i",id);
          	agregarMemActiva(id,aux->ip,aux->puerto);
