@@ -694,7 +694,6 @@ int main(void) {
 
 	 msj = string_from_format("%s%s", tamanioFormateado, paquete);
 	 free(tamanioFormateado);
-	 free(paquete);
  	 return msj;
 
  }
@@ -939,14 +938,17 @@ int main(void) {
 	 int nroMarco;
 	 if(!memoriaFull()){
 		 if(hayMarcosLibres()){
+			 log_info(logger, "Hay marcos libres");
 			 int primerMarcoLibre(marco *unMarco){
 				 return unMarco->estaLibre == 0;
 			 }
 			marco* marc = list_find(tablaMarcos, (void*)primerMarcoLibre);
 			marc->estaLibre = 1;
+			log_info(logger, "Se le asigno a la pagina el marco %i", marc->nroMarco);
 			return marc->nroMarco;
 		 }
 		 else{
+			 log_info(logger, "No hay marcos libres");
 			 nroMarco = mlru();
 			 return nroMarco;
 		 }
@@ -979,6 +981,9 @@ int main(void) {
  }
  void actualizarLista(){
 	 bool marcoMasViejo(marco* unMarco, marco* marcoViejo){
+		 if(unMarco->ultimoUso == marcoViejo->ultimoUso){
+			 return unMarco->nroMarco < marcoViejo->nroMarco;
+		 }
 		 return unMarco->ultimoUso < marcoViejo->ultimoUso;
 
 	 }
@@ -1009,6 +1014,7 @@ int main(void) {
  int memoriaFull(){
 	 if(hayMarcosLibres()==0){
 		 if(list_is_empty(marcosReemplazables)){
+			 log_info(logger, "Memoria full");
 		 return 1;
 		 }
 		 return 0;
@@ -1018,9 +1024,9 @@ int main(void) {
 
  int mlru(){
 	 if(!list_is_empty(marcosReemplazables)){
-		 pthread_mutex_lock(&lockLRU);
+		 log_info(logger, "Se ingreso al LRU");
 		 marco *marc = list_get(marcosReemplazables, 0);
-		 pthread_mutex_unlock(&lockLRU);
+		 log_info(logger, "El marco que se va a reemplazar es el %i", marc->nroMarco);
 		 return marc->nroMarco;
 	 }
 	 else{
@@ -1195,8 +1201,8 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		pag = buscarPaginaConKey(seg, key);
 
 		if (pag == NULL){ //no existe la pagina
-			log_info(logger,"no existe pagina ");
 			pthread_mutex_lock(&lockLRU);
+			log_info(logger,"no existe pagina ");
 			pag = crearPagina();
 			if(pag->nroMarco==-1){//estoy full
 				pthread_mutex_unlock(&seg->lockSegmento);
@@ -1214,23 +1220,21 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			pag->modificado = 1;
 
 		}else{ //existe la pagina
-
+			pthread_mutex_lock(&lockLRU);
 			log_info(logger,"existe pagina ");
-			agregarDato(time(NULL),key,valor,pag);
 			if(pag->modificado==0){
-				pthread_mutex_lock(&lockLRU);
 				eliminarDeReemplazables(pag->nroMarco);
-				pthread_mutex_unlock(&lockLRU);
-
 			}
+			pthread_mutex_unlock(&lockLRU);
+			agregarDato(time(NULL),key,valor,pag);
 			pag->modificado = 1;
 
 		}
 		pthread_mutex_unlock(&seg->lockSegmento);
 
 	}else{ //no existe el segmento
-		log_info(logger,"no existe segmento ");
 		pthread_mutex_lock(&lockLRU);
+		log_info(logger,"no existe segmento ");
 		pagina *pag = crearPagina();
 		if(pag->nroMarco==-1){//estoy full
 			sem_post(&semJournal);
@@ -1626,7 +1630,7 @@ void pedirMemorias(int cliente){
 	sendData(cliente,codOpe,strlen(codOpe)+1);
 	free(codOpe);
 	char *siete=malloc(2);
-	recv(cliente,siete,1);
+	recvData(cliente,siete,1);
 	free(siete);
 	recibirMemorias(cliente);
 }
