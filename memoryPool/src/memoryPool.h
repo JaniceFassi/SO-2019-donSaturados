@@ -35,23 +35,35 @@ t_log *logger;
 char* pathConfig;
 t_list* tablaMarcos;
 t_list* tablaSegmentos;
-t_list* listaDeUsos;
-t_list* tablaMemActivas;
-t_list* tablaMemActivasSecundaria; //tablas del gossiping
+//t_list* listaDeUsos;
+//t_list* tablaMemActivas;
+//t_list* tablaMemActivasSecundaria; //tablas del gossiping
+t_list* marcosReemplazables;
+
+
+t_list* memoriasConocidas;
+t_list* semillas;
+
+/*
 char** ipSeeds;
 char** puertoSeeds; //variables del gossiping
 int idMemoria;
+*/
+//int posicionUltimoUso; // Lo usa el LRU
+
 void* memoria;
 int offsetMarco;
 u_int16_t maxValue;
 int cantMarcos;
-int posicionUltimoUso; // Lo usa el LRU
+
 pthread_mutex_t lockTablaSeg;
 pthread_mutex_t lockTablaMarcos;
 pthread_mutex_t lockTablaUsos;
 pthread_mutex_t lockConfig;
+pthread_mutex_t lockLRU;
 sem_t lockTablaMem;
 sem_t semJournal;
+
 
 
 //ESTRUCTURA MEMORIA
@@ -59,6 +71,7 @@ typedef struct {
 	int nroMarco;
 	int estaLibre; //0 si libre 1 si ocupado
 	pthread_mutex_t lockMarco;
+	long ultimoUso;
 }marco;
 
 typedef struct {
@@ -82,27 +95,44 @@ typedef struct {
 	int retardoMem;
 	int retardoFS;
 	int multiprocesamiento;
-	char* ipSeeds;
-	char* puertoSeeds;
+	char** ipSeeds;
+	char** puertoSeeds;
+	int id;
 }estructuraConfig;
 
 
 estructuraConfig *config;
-
+/*
 //ESTRUCTURA LRU
 typedef struct{
 	int nroMarco;
 	char *segmento;
 	int posicionDeUso;
 }posMarcoUsado;
+*/
 
 //GOSSIPING
 typedef struct {
     int nroMem; //cada proceso tendra un nroMem propio. Asignado a mano y unico.
     char* ip;
-    char* puerto;
+    int puerto;
     int activa; //1 si esta activa
-}infoMemActiva;
+}memorias;
+
+
+//LRU COMO DIOS MANDA
+void actualizarLista();
+void agregarAReemplazables(marco *marc);
+void eliminarDeReemplazables(int nroMarco);
+int getMarcoLibre();
+int hayMarcosLibres();
+int memoriaFull();
+int mlru();
+
+
+
+
+
 
 //API
 char* mSelect(char* nombreTabla,u_int16_t key);
@@ -122,15 +152,15 @@ void destruirConfig();
 //AUXILIARES DE ARRANQUE
 int inicializar();
 void init_configuracion(t_config* configuracion);
-void prepararGossiping(t_config *configuracion);
+void prepararGossiping();
 t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
 pagina* crearPagina();
-posMarcoUsado* crearPosMarcoUsado(int nroMarco,int pos);
+//posMarcoUsado* crearPosMarcoUsado(int nroMarco,int pos);
 void agregarSegmento(segmento* nuevo);
 void agregarPagina(segmento *seg, pagina *pag);
-void agregarPosMarcoUsado(posMarcoUsado* nuevo);
+//void agregarPosMarcoUsado(posMarcoUsado* nuevo);
 pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
 
@@ -162,12 +192,13 @@ int crearConexionLFS();
 
 //MANEJAR MEMORIA
 int memoriaLlena();
-int primerMarcoLibre();
+//int primerMarcoLibre();
 void liberarMarco(int nroMarco);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
 void eliminarSegmento(segmento* nuevo);
 void paginaDestroy(pagina* pagParaDestruir);
 void segmentoDestroy(segmento* segParaDestruir);
+/*
 int LRU();
 void agregarListaUsos(int nroMarco);
 void eliminarDeListaUsos(int nroMarcoAEliminar);
@@ -175,9 +206,10 @@ void actualizarListaDeUsos(int nroMarco);
 bool estaModificada(pagina *pag);
 int FULL();
 int todosModificados(segmento* aux);
-
+*/
 //GOSSIPING
-void agregarMemActiva(int id,char* ip,char* puerto);
+void prepararGossiping();
+/*void agregarMemActiva(int id,char ip,char* puerto);
 char* empaquetarTablaActivas();
 char* formatearTablaGossip(int nro,char*ip,char*puerto);
 void desempaquetarTablaSecundaria(char* paquete);
@@ -187,9 +219,22 @@ int estaRepetido(char*ip,char*puerto);
 void agregarMemActiva(int id,char* ip,char*puerto);
 int conseguirIdSecundaria();
 void estaEnActivaElim(char*ip,char*puerto);
-void cargarInfoDeSecundaria(int i);
+void cargarInfoDeSecundaria(int i);*/
+void desactivarMemoria(char *ip,int puerto);
+void enviarMemorias(char *ip,int puerto);
+void recibirMemorias(int cliente);
+int memoriaActiva(char *ip, int puerto);
+char *paqueteVerdadero();
+char *empaquetarMemorias();
+void pedirMemorias(int cliente);
+void desempaquetarMemorias(char* paquete);
+memorias *obtenerMemorias(char *ip,int puerto,int id);
+bool existeMemoria(char *ip,int puerto,int id);
+void liberarMemoria(memorias *victima);
+memorias *crearMemoria(char *ip,int puerto, int id, int activa);
 
 //AUX SECUNDARIAS
+
 int conseguirIndexSeg(segmento* nuevo);
 void* conseguirValor(pagina* pNueva);
 void* conseguirTimestamp(pagina *pag);
