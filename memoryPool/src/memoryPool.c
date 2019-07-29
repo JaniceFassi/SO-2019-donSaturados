@@ -1667,21 +1667,22 @@ void desactivarMemoria(char *ip,int puerto){
 		semi->activa=0;
 	}
 }
+
 void mostrarActivas(){
-	int i = 0;
-	sem_wait(&lockTablaMem);
-	memorias* aux = list_get(memoriasConocidas,i);
-	printf("\nTabla Activas: \n");
-	while(aux){
+	int i = 0, size;
+	size=list_size(memoriasConocidas);
+	printf("\n*Tabla Activas: *\n");
+	while(i<size){
+		memorias* aux = list_get(memoriasConocidas,i);
 		printf("ID: %i \n",aux->nroMem);
 		printf("IP: %s \n",aux->ip);
+		printf("Puerto: %i \n",aux->puerto);
 		printf("Activa : %i \n",aux->activa);
 		printf("---------- \n");
 		i++;
-		aux = list_get(memoriasConocidas,i);
 	}
-	sem_post(&lockTablaMem);
 }
+
 memorias *crearMemoria(char *ip,int puerto, int id, int activa){
 	memorias *nueva=malloc(sizeof(memorias));
 	nueva->activa=activa;

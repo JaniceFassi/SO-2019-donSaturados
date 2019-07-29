@@ -34,19 +34,13 @@ int main(void) {
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
 	m1->cantI=0;
 	m1->cantS=0;
-<<<<<<< HEAD
-	//list_add(memorias,m1);
-	//list_add(criterioSC,m1);
-	//list_add(criterioEC,m1);
-	//list_add(criterioSHC,m1);
-	//pruebas();
-=======
+
 	list_add(memorias,m1);
 //	list_add(criterioSC,m1);
 //	list_add(criterioEC,m1);
 //	list_add(criterioSHC,m1);
 //	pruebas();
->>>>>>> 41a8069186a09c0867e17b12c7e3766df2243d15
+
 
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	//config_destroy(config);

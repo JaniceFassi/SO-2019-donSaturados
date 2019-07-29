@@ -167,7 +167,6 @@ int crearConexionLFS();
 
 //MANEJAR MEMORIA
 int memoriaLlena();
-//int primerMarcoLibre();
 void liberarMarco(int nroMarco);
 void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
 void eliminarSegmento(segmento* nuevo);
@@ -188,6 +187,7 @@ memorias *obtenerMemorias(char *ip,int puerto,int id);
 bool existeMemoria(char *ip,int puerto,int id);
 void liberarMemoria(memorias *victima);
 memorias *crearMemoria(char *ip,int puerto, int id, int activa);
+void mostrarActivas();
 
 //AUX SECUNDARIAS
 
