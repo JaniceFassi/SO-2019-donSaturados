@@ -181,9 +181,7 @@ int main(void) {
 	pagina *pag = malloc(sizeof(pagina));
 
 	pthread_mutex_lock(&lockTablaMarcos);
-	pthread_mutex_lock(&lockLRU);
 	pag->nroMarco = getMarcoLibre();
-	pthread_mutex_unlock(&lockLRU);
 	pthread_mutex_unlock(&lockTablaMarcos);
 
 	pag->modificado = 0;
@@ -1198,23 +1196,22 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 		if (pag == NULL){ //no existe la pagina
 			log_info(logger,"no existe pagina ");
+			pthread_mutex_lock(&lockLRU);
 			pag = crearPagina();
-
 			if(pag->nroMarco==-1){//estoy full
 				pthread_mutex_unlock(&seg->lockSegmento);
+				pthread_mutex_unlock(&lockLRU);
 				sem_post(&semJournal);
 				free(pag);
 				log_info(logger, "Pasó el lock de salida");
 				return 2;
 			}
+			eliminarDeReemplazables(pag->nroMarco);
+			pthread_mutex_unlock(&lockLRU);
 			agregarPagina(seg,pag);
 			timestampActual = time(NULL);
 			agregarDato(timestampActual, key, valor, pag);
 			pag->modificado = 1;
-			pthread_mutex_lock(&lockLRU);
-			eliminarDeReemplazables(pag->nroMarco);
-			pthread_mutex_lock(&lockLRU);
-
 
 		}else{ //existe la pagina
 
@@ -1233,14 +1230,18 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 	}else{ //no existe el segmento
 		log_info(logger,"no existe segmento ");
-
+		pthread_mutex_lock(&lockLRU);
 		pagina *pag = crearPagina();
 		if(pag->nroMarco==-1){//estoy full
 			sem_post(&semJournal);
+			pthread_mutex_unlock(&lockLRU);
 			free(pag);
 			log_info(logger, "Pasó el lock de salida");
 			return 2;
 		}
+		eliminarDeReemplazables(pag->nroMarco);
+		pthread_mutex_unlock(&lockLRU);
+
 		pthread_mutex_lock(&lockTablaSeg);
 		seg = crearSegmento(nombreTabla);
 		list_add(tablaSegmentos, seg);
@@ -1251,10 +1252,6 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarDato(timestampActual, key, valor, pag);
 		log_info(logger, "VOLVI DE AGREGAR DATO");
 		pag->modificado = 1;
-		pthread_mutex_lock(&lockLRU);
-		eliminarDeReemplazables(pag->nroMarco);
-		pthread_mutex_unlock(&lockLRU);
-
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
@@ -1283,22 +1280,19 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		pNueva = buscarPaginaConKey(nuevo,key);
 
 		if(pNueva != NULL){//encontro segmento y pagina
+			pthread_mutex_lock(&lockLRU);
+			if(pNueva->modificado == 0){
+				marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
+				pthread_mutex_lock(&marc->lockMarco);
+				marc->ultimoUso = time(NULL);
+				pthread_mutex_unlock(&marc->lockMarco);
+				actualizarLista();
+			}
+			pthread_mutex_unlock(&lockLRU);
+
 			valor = (char*)conseguirValor(pNueva);
-			marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
-			pthread_mutex_lock(&marc->lockMarco);
-			marc->ultimoUso = time(NULL);
-			pthread_mutex_unlock(&marc->lockMarco);
-
-
 			log_info(logger, "Se seleccionó el valor %s", valor);
 			log_info(logger, "Encontro segmento y pagina");
-
-			if(pNueva->modificado == 0){
-				pthread_mutex_lock(&lockLRU);
-				actualizarLista();
-				pthread_mutex_unlock(&lockLRU);
-
-			}
 
 			sem_post(&semJournal);
 			log_info(logger, "Pasó el lock de salida");
@@ -1307,31 +1301,30 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			return valor;
 		}
 		else{//si encontro el segmento pero no la página
+			pthread_mutex_lock(&lockLRU);
 			pNueva = crearPagina();
 			if(pNueva->nroMarco==-1){//si estoy full
 				sem_post(&semJournal);
+				pthread_mutex_unlock(&lockLRU);
 				free(pNueva);
 				log_info(logger, "Pasó el lock de salida");
 				free(noExiste);
 				return estoyFull;
 
 			}//si no estoy full
+			marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
+			pthread_mutex_lock(&marc->lockMarco);
+			marc->ultimoUso = time(NULL);
+			pthread_mutex_unlock(&marc->lockMarco);
+			agregarAReemplazables(marc);
+			pthread_mutex_unlock(&lockLRU);
+
 			valorPagNueva = selectLissandra(nombreTabla,key);
 			if(valorPagNueva != NULL){//si lfs tenía el valor
 				pthread_mutex_lock(&nuevo->lockSegmento);
 				agregarPagina(nuevo,pNueva);
 				pthread_mutex_unlock(&nuevo->lockSegmento);
 				agregarDato(time(NULL),key,valorPagNueva,pNueva);
-
-				marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
-				pthread_mutex_lock(&marc->lockMarco);
-				marc->ultimoUso = time(NULL);
-				pthread_mutex_unlock(&marc->lockMarco);
-
-				pthread_mutex_lock(&lockLRU);
-				agregarAReemplazables(marc);
-				pthread_mutex_unlock(&lockLRU);
-
 
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 				sem_post(&semJournal);
@@ -1351,21 +1344,26 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		}
 	}
 	else{//si no encontró el segmento
-
+		pthread_mutex_lock(&lockLRU);
 		pNueva = crearPagina();
 		if(pNueva->nroMarco==-1){//si estoy full
 			sem_post(&semJournal);
+			pthread_mutex_unlock(&lockLRU);
 			free(pNueva);
 			log_info(logger, "Pasó el lock de salida");
 			free(noExiste);
 			return estoyFull;
 		}
-
+		marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
+		pthread_mutex_lock(&marc->lockMarco);
+		marc->ultimoUso = time(NULL);
+		pthread_mutex_unlock(&marc->lockMarco);
+		agregarAReemplazables(marc);
+		pthread_mutex_unlock(&lockLRU);
 		pthread_mutex_lock(&lockTablaSeg);
 		nuevo = crearSegmento(nombreTabla);
 		list_add(tablaSegmentos, nuevo);
 		pthread_mutex_unlock(&lockTablaSeg);
-
 
 		valorPagNueva = selectLissandra(nombreTabla,key);
 		if(valorPagNueva !=NULL){//si lfs tenia el valor
@@ -1374,15 +1372,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			pthread_mutex_unlock(&nuevo->lockSegmento);
 
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
-			marco *marc = list_get(tablaMarcos, pNueva->nroMarco);
-			pthread_mutex_lock(&marc->lockMarco);
-			marc->ultimoUso = time(NULL);
-			pthread_mutex_unlock(&marc->lockMarco);
-			pthread_mutex_lock(&lockLRU);
-			agregarAReemplazables(marc);
-			pthread_mutex_unlock(&lockLRU);
-
-
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 			sem_post(&semJournal);
 			log_info(logger, "Pasó el lock de salida");
