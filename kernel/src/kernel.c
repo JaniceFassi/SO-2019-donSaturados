@@ -34,11 +34,19 @@ int main(void) {
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
 	m1->cantI=0;
 	m1->cantS=0;
+<<<<<<< HEAD
 	//list_add(memorias,m1);
 	//list_add(criterioSC,m1);
 	//list_add(criterioEC,m1);
 	//list_add(criterioSHC,m1);
 	//pruebas();
+=======
+	list_add(memorias,m1);
+//	list_add(criterioSC,m1);
+//	list_add(criterioEC,m1);
+//	list_add(criterioSHC,m1);
+//	pruebas();
+>>>>>>> 41a8069186a09c0867e17b12c7e3766df2243d15
 
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
 	//config_destroy(config);
@@ -253,6 +261,7 @@ int parsear(char * aux){
 	char ** split=NULL;
 	int resultado=1;
 	char *linea= string_substring(aux,0,strlen(aux)-1);
+	log_info(logger,linea);
 	if(string_starts_with(linea,"SELECT")){
 		split = string_split(linea," ");
 		if(esNumero(split[2])==0){
@@ -309,7 +318,7 @@ int parsear(char * aux){
 			resultado=add(split[2],split[4]);
 		}
 		else{
-			log_error(logger,"ERROR - El id de la memoria debe ser un número");
+			log_error(logger,"ERROR - El id de la memoria debe ser numérico");
 		}
 
 	}
@@ -350,8 +359,8 @@ int mySelect(char * table, char *key){
 	}
 	char *msj=string_from_format("%s%s",tamanioYop,linea);
 
-	log_info(logger,"SELECT %s",msj);
-	log_info(logger,"mide %i",strlen(msj));
+//	log_info(logger,"SELECT %s",msj);
+//	log_info(logger,"mide %i",strlen(msj));
 
 	//aca fijandome la tabla deberia elegir la memoria adecuada
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
@@ -410,11 +419,11 @@ int mySelect(char * table, char *key){
 		close(sock);
 		return 0;
 	}
-	log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
+//	log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
 
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
-			log_info(logger,"\n\n\n\n\n\n JOURNAL \n\n\n\n\n\n");
+			log_info(logger,"\n\n JOURNAL \n\n");
 			sendData(sock,"5",2);//journal
 			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
@@ -422,9 +431,9 @@ int mySelect(char * table, char *key){
 				return -1;
 			}
 			close(sock);
-			log_info(logger,"voy a intentar conectarme de nuevo");
+//			log_info(logger,"voy a intentar conectarme de nuevo");
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
-			log_info(logger,"me conecte de nuevo");
+//			log_info(logger,"me conecte de nuevo");
 			sendData(sock,msj,strlen(msj)+1);
 			recvData(sock,resultado,1);
 			resultado[1]='\0';
@@ -435,12 +444,12 @@ int mySelect(char * table, char *key){
 				tamRta[3]='\0';
 				char *rtaS=malloc(atoi(tamRta));
 				recvData(sock,rtaS,atoi(tamRta));
-				log_info(logger,"\n\nResultado SELECT despues de journal: %s \n\n\n", rtaS);
+				log_info(logger,"\n\nResultado SELECT despues de journal: %s \n\n", rtaS);
 			}
 			else{
 				log_info(loggerConsola,"El select no tiene valor en esa key");
 			}
-			log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
+//			log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
 		}
 		else{
 			return -1;
@@ -451,22 +460,22 @@ int mySelect(char * table, char *key){
 	free(msj);
 	free(tamanioYop);
 	close(sock);
-	log_info(logger,"antes de tiempo");
+//	log_info(logger,"antes de tiempo");
     gettimeofday(&tf, NULL);   // Instante final
     tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
-    log_info(logger,"despues de tiempo");
+//    log_info(logger,"despues de tiempo");
 	//semaforo
 	sem_wait(&semMemorias);
 	memAsignada->cantS++;
 	sem_post(&semMemorias);
-	log_info(logger,"le agregue cantS a mem");
+//	log_info(logger,"le agregue cantS a mem");
 
 	sem_wait(&semMetricas);
 	agregarAMetricas(cons,"S",tiempo);
 //	metrica.tiempoS += tiempo;
 //	metrica.cantS++;
 	sem_post(&semMetricas);
-	log_info(logger,"despues de metricas");
+//	log_info(logger,"despues de metricas");
 	return 0;
 }
 
@@ -493,7 +502,7 @@ int insert(char* table ,char* key ,char* value){
 	}
 	char*msj=string_from_format("%s%s",tamanioYop,linea);
 
-	log_info(logger,"INSERT %s",msj);
+//	log_info(logger,"INSERT %s",msj);
 
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	sem_wait(&semMetadata);
@@ -568,20 +577,20 @@ int insert(char* table ,char* key ,char* value){
 	free(msj);
 	free(tamanioYop);
 	close(sock);
-	log_info(logger,"antes de tiempo");
+//	log_info(logger,"antes de tiempo");
     gettimeofday(&tf, NULL);   // Instante final
     tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
-    log_info(logger,"despues de tiempo:%f", tiempo);
+//    log_info(logger,"despues de tiempo:%f", tiempo);
 	sem_wait(&semMetricas);
 	agregarAMetricas(cons,"I",tiempo);
 //	metrica.tiempoI+= tiempo;
 //	metrica.cantI++;
 	sem_post(&semMetricas);
-	log_info(logger,"despues de metricas");
+//	log_info(logger,"despues de metricas");
 	sem_wait(&semMemorias);
 	memAsignada->cantI++;
 	sem_post(&semMemorias);
-	log_info(logger,"despues de agregar mem cantI");
+//	log_info(logger,"despues de agregar mem cantI");
 	return 0;
 }
 
@@ -591,15 +600,15 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	char*linea=string_from_format("%s;%s;%s;%s",table,consistency,numPart,timeComp);
 	char * pepe = string_duplicate(linea);
 	int len = strlen(linea)+1;
-	log_info(loggerConsola,"linea: %s" , linea);
+//	log_info(loggerConsola,"linea: %s" , linea);
 /*	int i=0;
 	while(i< strlen(timeComp)){
 		log_info(loggerConsola,"pepe: %c" , timeComp[i]);
 		i++;
 	}*/
 
-	log_info(loggerConsola,"tamanio: %i" , strlen(pepe));
-	log_info(loggerConsola,"tamanio %i" , len);
+//	log_info(loggerConsola,"tamanio: %i" , strlen(pepe));
+//	log_info(loggerConsola,"tamanio %i" , len);
 	char* tamanioYop;//= malloc(4);
 	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
@@ -614,7 +623,7 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	}
 	char*msj=string_from_format("%s%s",tamanioYop,linea);
 
-	log_info(logger,"CREATE %s",msj);
+//	log_info(logger,"CREATE %s",msj);
 
 	//prueba, luego borrar
 	struct metadataTabla *m = malloc(sizeof(struct metadataTabla));
@@ -622,7 +631,9 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	m->consistency= string_duplicate(consistency);
 	m->numPart= atoi(numPart);
 	m->table=string_duplicate(table);
+	sem_wait(&semMetadata);
 	list_add(listaMetadata,m);
+	sem_post(&semMetadata);
 
 	//tengo que hacer la metadata de la tabla? o despues con el describe? quedaria inconsistente hasta que lo hagan
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
@@ -652,19 +663,19 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	recvData(sock,resultado,2);
 	resultado[1]='\0';
 	log_info(logger,"resultado CREATE: %i", atoi(resultado));
-	log_info(loggerConsola,"resultado CREATE: %i", atoi(resultado));
+//	log_info(loggerConsola,"resultado CREATE: %i", atoi(resultado));
 
 	if(atoi(resultado)!=0){
 		close(sock);
 		return -1;
 	}
-
-	struct metadataTabla *met= malloc(sizeof(struct metadataTabla));
-	met->compTime=atoi(timeComp);
-	met->consistency=string_duplicate(consistency);
-	met->numPart=atoi(numPart);
-	met->table=string_duplicate(table);
-	list_add(listaMetadata,met);
+// XQ ESTABA 2 VECES????
+//	struct metadataTabla *met= malloc(sizeof(struct metadataTabla));
+//	met->compTime=atoi(timeComp);
+//	met->consistency=string_duplicate(consistency);
+//	met->numPart=atoi(numPart);
+//	met->table=string_duplicate(table);
+//	list_add(listaMetadata,met);
 
 //	free(memAsignada);
 	free(linea);
@@ -711,7 +722,7 @@ int describe(char *table){
 	if(table!=NULL){
 		tamanio= strlen(table)+1;
 	}
-	log_info(loggerConsola,"tamanio %i" , tamanio);
+//	log_info(loggerConsola,"tamanio %i" , tamanio);
 	int op=3;//verificar
 	char *msj;
 	if(tamanio==0){
@@ -729,9 +740,9 @@ int describe(char *table){
 		}
 	}
 
-	log_info(logger,"DESCRIBE %s",msj);
-	log_info(loggerConsola,"msj:%s",msj);
-	log_info(loggerConsola,"tamanio msj:%i",strlen(msj));
+//	log_info(logger,"DESCRIBE %s",msj);
+//	log_info(loggerConsola,"msj:%s",msj);
+//	log_info(loggerConsola,"tamanio msj:%i",strlen(msj));
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
@@ -765,7 +776,7 @@ int describe(char *table){
 	resultado[1]='\0';
 
 	log_info(logger,"resultado DESCRIBE: %i", atoi(resultado));
-	log_info(loggerConsola,"resultado describe:%i",atoi(resultado));
+//	log_info(loggerConsola,"resultado describe:%i",atoi(resultado));
 
 	if(atoi(resultado)!=0){
 		close(sock);
@@ -777,8 +788,8 @@ int describe(char *table){
 	recvData(sock,cantTablas,2);
 	cantTablas[2]='\0';
 	int tr= atoi(cantTablas);
-	log_info(logger,cantTablas);
-	log_info(logger,"%i" , tr);
+	log_info(logger,"Cantidad de tablas del describe: %s",cantTablas);
+//	log_info(logger,"%i" , tr);
 	int i=0;
 
 //	me falta un recv de la cantidad de tablas, ademas deberia borrar las tablas que tengo
@@ -792,8 +803,8 @@ int describe(char *table){
 			recvData(sock,t,3);
 			char *buffer=malloc(atoi(t)+1);
 			recvData(sock,buffer,atoi(t));
-			log_info(loggerConsola,"buffer : %s",buffer);
-			log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
+			log_info(loggerConsola,"buffer : %s",buffer);//ACA SIEMPRE LLEGA BASURA PERO LO GUARDA BIEN
+//			log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
 			//REVISAR
 			struct metadataTabla *metadata= malloc(sizeof(struct metadataTabla));
 			char ** split = string_split(buffer,";");
@@ -828,8 +839,8 @@ int describe(char *table){
 		metadata->numPart=atoi(split[2]);
 		metadata->compTime=atol(split[3]);
 		actualizarMetadataTabla(metadata);
-		log_info(loggerConsola,"buffer : %s",buffer);
-		log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
+//		log_info(loggerConsola,"buffer : %s",buffer);
+//		log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
 
 
 
@@ -839,24 +850,24 @@ int describe(char *table){
 		free(split[3]);
 		free(split);
 		free(t);
-		log_info(loggerConsola,"termino free ");
+//		log_info(loggerConsola,"termino free ");
 		free(buffer);
 	}
-	void itera(struct metadataTabla*m){
-		log_info(loggerConsola,"consistency %s",m->consistency);
-		log_info(loggerConsola,"table %s",m->table);
-		log_info(loggerConsola," compTime %d",m->compTime);
-		log_info(loggerConsola,"numPart %i",m->numPart);
-	}
-	list_iterate(listaMetadata,(void*)itera);
+//	void itera(struct metadataTabla*m){
+//		log_info(loggerConsola,"consistency %s",m->consistency);
+//		log_info(loggerConsola,"table %s",m->table);
+//		log_info(loggerConsola," compTime %d",m->compTime);
+//		log_info(loggerConsola,"numPart %i",m->numPart);
+//	}
+//	list_iterate(listaMetadata,(void*)itera);
 	sem_post(&semMetadata);
 
 	free(resultado);
 //	free(tamanioRespuesta);
 	free(msj);
-	log_info(loggerConsola,"entra a free mem ");
+//	log_info(loggerConsola,"entra a free mem ");
 	close(sock);
-	log_info(loggerConsola,"sale fun ");
+//	log_info(loggerConsola,"sale fun ");
 	return 0;
 }
 
@@ -911,7 +922,7 @@ int drop(char*table){
 	sendData(sock,msj,strlen(msj)+1);
 
 	char * resultado=malloc(2);
-	recvData(sock,resultado,2);
+	recvData(sock,resultado,1);
 	resultado[1]='\0';
 
 	// deberia borrar la metadata de la tabla? (iria un semaforo)
@@ -933,7 +944,7 @@ int drop(char*table){
 	list_remove_and_destroy_by_condition(listaMetadata,(void*) buscar,(void*) destruirMet);
 	sem_post(&semMetadata);
 
-	log_info(logger,"INSERT %s",msj);
+//	log_info(logger,"INSERT %s",msj);
 
 	free(msj);
 	free(resultado);
@@ -1290,7 +1301,7 @@ void *describeGlobal(){
 void *gossiping(){
 	while(1){
 		log_info(logger, "GOSSIP");
-		sleep(15000);// NO TENGO DE DONDE SACAR ESTE DATO
+	//	sleep(1);// NO TENGO DE DONDE SACAR ESTE DATO(lo pase abajo de todo)
 		int sock=-1;
 		struct memoria *m ;
 		while(sock==-1){
@@ -1358,6 +1369,7 @@ void *gossiping(){
 			}
 			sem_post(&semMemorias);
 			}
+			sleep(10);
 		}
 	return NULL;
 

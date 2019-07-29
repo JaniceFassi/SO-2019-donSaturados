@@ -178,8 +178,7 @@ char *empaquetarDescribe(t_list *lista){
 		if(paquete==NULL){
 			paquete=string_from_format("%s",aux);
 		}else{
-			char *viejo=malloc(strlen(paquete)+1);
-			strcpy(viejo,paquete);
+			char *viejo=string_duplicate(paquete);
 			free(paquete);
 			paquete=string_from_format("%s;%s",viejo,aux);
 			free(viejo);

@@ -30,43 +30,8 @@
 #include <socketSaturados.h>
 
 
-//VARIABLES GLOBALES
-t_log *logger;
-char* pathConfig;
-t_list* tablaMarcos;
-t_list* tablaSegmentos;
-//t_list* listaDeUsos;
-//t_list* tablaMemActivas;
-//t_list* tablaMemActivasSecundaria; //tablas del gossiping
-t_list* marcosReemplazables;
 
-
-t_list* memoriasConocidas;
-t_list* semillas;
-
-/*
-char** ipSeeds;
-char** puertoSeeds; //variables del gossiping
-int idMemoria;
-*/
-//int posicionUltimoUso; // Lo usa el LRU
-
-void* memoria;
-int offsetMarco;
-u_int16_t maxValue;
-int cantMarcos;
-
-pthread_mutex_t lockTablaSeg;
-pthread_mutex_t lockTablaMarcos;
-pthread_mutex_t lockTablaUsos;
-pthread_mutex_t lockConfig;
-pthread_mutex_t lockLRU;
-sem_t lockTablaMem;
-sem_t semJournal;
-
-
-
-//ESTRUCTURA MEMORIA
+//ESTRUCTURAS
 typedef struct {
 	int nroMarco;
 	int estaLibre; //0 si libre 1 si ocupado
@@ -101,15 +66,6 @@ typedef struct {
 }estructuraConfig;
 
 
-estructuraConfig *config;
-/*
-//ESTRUCTURA LRU
-typedef struct{
-	int nroMarco;
-	char *segmento;
-	int posicionDeUso;
-}posMarcoUsado;
-*/
 
 //GOSSIPING
 typedef struct {
@@ -118,6 +74,31 @@ typedef struct {
     int puerto;
     int activa; //1 si esta activa
 }memorias;
+
+//VARIABLES GLOBALES
+t_log *logger;
+char* pathConfig;
+t_list* tablaMarcos;
+t_list* tablaSegmentos;
+t_list* marcosReemplazables;
+t_list* memoriasConocidas;
+t_list* semillas;
+void* memoria;
+int offsetMarco;
+u_int16_t maxValue;
+int cantMarcos;
+estructuraConfig *config;
+
+//SEMAFOROS
+pthread_mutex_t lockTablaSeg;
+pthread_mutex_t lockTablaMarcos;
+pthread_mutex_t lockTablaUsos;
+pthread_mutex_t lockConfig;
+pthread_mutex_t lockLRU;
+sem_t lockTablaMem;
+sem_t semJournal;
+pthread_mutex_t lockJournal;
+
 
 
 //LRU COMO DIOS MANDA
@@ -128,10 +109,6 @@ int getMarcoLibre();
 int hayMarcosLibres();
 int memoriaFull();
 int mlru();
-
-
-
-
 
 
 //API
@@ -157,10 +134,8 @@ t_log* init_logger();
 t_config* read_config();
 segmento* crearSegmento(char* nombre);
 pagina* crearPagina();
-//posMarcoUsado* crearPosMarcoUsado(int nroMarco,int pos);
 void agregarSegmento(segmento* nuevo);
 void agregarPagina(segmento *seg, pagina *pag);
-//void agregarPosMarcoUsado(posMarcoUsado* nuevo);
 pagina* buscarPaginaConKey(segmento *seg, u_int16_t key);
 segmento* buscarSegmento(char* nombre);
 
@@ -187,7 +162,7 @@ int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* valu
 int createLissandra(char* nombreTabla,char*criterio,u_int16_t nroParticiones,long tiempoCompactacion);
 char* describeLissandra(char* nombreTabla);
 int dropLissandra(char* nombreTabla);
-u_int16_t handshakeConLissandra(u_int16_t socket, char* ip, u_int16_t puerto);
+u_int16_t handshakeConLissandra(char* ip, u_int16_t puerto);
 int crearConexionLFS();
 
 //MANEJAR MEMORIA
@@ -198,28 +173,9 @@ void agregarDato(long timestamp, u_int16_t key, char* value, pagina *pag);
 void eliminarSegmento(segmento* nuevo);
 void paginaDestroy(pagina* pagParaDestruir);
 void segmentoDestroy(segmento* segParaDestruir);
-/*
-int LRU();
-void agregarListaUsos(int nroMarco);
-void eliminarDeListaUsos(int nroMarcoAEliminar);
-void actualizarListaDeUsos(int nroMarco);
-bool estaModificada(pagina *pag);
-int FULL();
-int todosModificados(segmento* aux);
-*/
+
 //GOSSIPING
 void prepararGossiping();
-/*void agregarMemActiva(int id,char ip,char* puerto);
-char* empaquetarTablaActivas();
-char* formatearTablaGossip(int nro,char*ip,char*puerto);
-void desempaquetarTablaSecundaria(char* paquete);
-int pedirConfirmacion(char*ip,char* puerto);
-char* confirmarActivo();
-int estaRepetido(char*ip,char*puerto);
-void agregarMemActiva(int id,char* ip,char*puerto);
-int conseguirIdSecundaria();
-void estaEnActivaElim(char*ip,char*puerto);
-void cargarInfoDeSecundaria(int i);*/
 void desactivarMemoria(char *ip,int puerto);
 void enviarMemorias(char *ip,int puerto);
 void recibirMemorias(int cliente);
