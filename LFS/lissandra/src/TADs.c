@@ -34,7 +34,7 @@ void liberarSemaforos(){
 
 /************************************************************************************************/
 //FUNCIONES DE CONCATENAR
-char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
+/*char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
 	char *punto=malloc(2);
 	strcpy(punto,".");
 	path=realloc(path,strlen(path)+strlen(punto)+1);
@@ -63,7 +63,8 @@ char *extension(char *path,int modo){				//0 .bin, 1 .tmp, 2 .tmpc
 	}
 	free(punto);
 	return path;
-}
+}*/
+
 char *array_A_String(char **array,int cantBloques){
 	char *casteo=malloc(2);
 	strcpy(casteo,"[");
@@ -108,122 +109,97 @@ char *cadenaDeRegistros(t_list *lista){
 	return buffer;
 }
 
-char *ponerBarra(char *linea){
-	char *barra=malloc(2);
-	strcpy(barra,"/");
-	linea=realloc(linea,strlen(linea)+strlen(barra)+1);
-	strcat(linea,barra);
-	free(barra);
-	return linea;
-}
-
-char *ponerSeparador(char *linea){
+/*char *ponerSeparador(char *linea){
 	char *separador=malloc(2);
 	strcpy(separador,";");
 	linea=realloc(linea,strlen(linea)+strlen(separador)+1);
 	strcat(linea,separador);
 	free(separador);
 	return linea;
-}
+}*/
 
 char *obtenerMontaje(){
 	if(string_starts_with(configLissandra->puntoMontaje,"/home/utnso")){
-		char *pMontaje=malloc(strlen(configLissandra->puntoMontaje)+1);
-		strcpy(pMontaje,configLissandra->puntoMontaje);
+		char *pMontaje=string_duplicate(configLissandra->puntoMontaje);
 		return pMontaje;
 	}
 	else{
-	char *montaje=malloc(strlen(raizDirectorio)+1);
-	strcpy(montaje,raizDirectorio);
-	montaje=realloc(montaje,strlen(montaje)+strlen(configLissandra->puntoMontaje)+1);
-	strcat(montaje,configLissandra->puntoMontaje);
+	char *montaje=string_from_format("/home/utnso%s",configLissandra->puntoMontaje);
 	return montaje;
 	}
 }
 
 char *nivelMetadata(int modo){	//0 metadata carpeta, 1 metadata.bin, 2 metadata.bitmap
 	char *path=obtenerMontaje();
-	char *metadata=malloc(9);
-	strcpy(metadata,"METADATA");
-	path=realloc(path,strlen(path)+strlen(metadata)+1);
-	strcat(path,metadata);
-
+	char *aux=string_from_format("%sMETADATA",path);
+	free(path);
 	if(modo==1){
-		path=ponerBarra(path);
-		path=realloc(path,strlen(path)+strlen(metadata)+1);
-		strcat(path,metadata);
-		path=extension(path,0);
+		char *newAux=string_from_format("%s/METADATA.bin",aux);
+		free(aux);
+		return newAux;
 	}
 
 	if(modo==2){
-		path=ponerBarra(path);
-		char *bitmap=malloc(7);
-		strcpy(bitmap,"BITMAP");
-		path=realloc(path,strlen(path)+strlen(bitmap)+1);
-		strcat(path,bitmap);
-		path=extension(path,0);
-		free(bitmap);
+		char *newAux=string_from_format("%s/BITMAP.bin",aux);
+		free(aux);
+		return newAux;
 	}
-	free(metadata);
-	return path;
+	return aux;
 }
+
 char *nivelTablas(){
 	char *path=obtenerMontaje();
-	char *tablas=malloc(7);
-	strcpy(tablas,"TABLAS");
-	path=realloc(path,strlen(path)+strlen(tablas)+1);
-	strcat(path,tablas);
-	path=ponerBarra(path);
-	free(tablas);
-	return path;
+	char *aux=string_from_format("%sTABLAS/",path);
+	free(path);
+	return aux;
 }
 
 char *nivelBloques(){
 	char *path=obtenerMontaje();
-	char *bloques=malloc(8);
-	strcpy(bloques,"BLOQUES");
-	path=realloc(path,strlen(path)+strlen(bloques)+1);
-	strcat(path,bloques);
-	path=ponerBarra(path);
-	free(bloques);
-	return path;
+	char *aux=string_from_format("%sBLOQUES/",path);
+	free(path);
+	return aux;
 }
 
 char *rutaBloqueNro(int nroBloque){
 	char *path=nivelBloques();
-	char *nro=string_itoa(nroBloque);
-	path=realloc(path,strlen(path)+strlen(nro)+1);
-	strcat(path,nro);
-	path=extension(path,0);
-	free(nro);
-	return path;
+	char *aux=string_from_format("%s%i.bin",path,nroBloque);
+	free(path);
+	return aux;
 }
+
 char *nivelUnaTabla(char *nombre, int modo){			//0 carpeta tabla, 1 metaTabla
 	char *path=nivelTablas();
-	path=realloc(path,strlen(path)+strlen(nombre)+1);
-	strcat(path,nombre);										//montaje/TABLAS/TABLA/
-	path=ponerBarra(path);
-
+	char *aux=string_from_format("%s%s/",path,nombre);
+	free(path);
 	if(modo==1){
-		char *metadata=malloc(9);
-		strcpy(metadata,"METADATA");
-		path=realloc(path,strlen(path)+strlen(metadata)+1);		//montaje/TABLAS/TABLA/METADATA.bin
-		strcat(path,metadata);
-		path=extension(path,0);
-		free(metadata);
+		char *newAux=string_from_format("%sMETADATA.bin",aux);
+		free(aux);
+		return newAux;
 	}
-	return path;
+	return aux;
 }
 
 char *nivelParticion(char *tabla, int particion, int modo){		//montaje/TABLAS/TABLA/part.ext		modo->ext 0 .bin, 1 .tmp, 2 .tmpc
 	char *path=nivelUnaTabla(tabla,2);
 	char *part=string_itoa(particion);
-	path=realloc(path,strlen(path)+strlen(part)+1);
-	strcat(path,part);
-	path=extension(path,modo);
+	char *aux;
+	switch(modo){
+	case 0:
+		aux=string_from_format("%s%s.bin",path,part);
+		break;
+	case 1:
+		aux=string_from_format("%s%s.tmp",path,part);
+		break;
+	case 2:
+		aux=string_from_format("%s%s.tmpc",path,part);
+		break;
+	}
+	free(path);
 	free(part);
-	return path;
+	return aux;
 }
+
 /****************************************************************************************************/
 //FUNCIONES DE DESCONCATENAR
 Registry *desconcatParaArch(char *linea){
@@ -361,11 +337,9 @@ metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPar
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 
 	nuevo->compaction_time=timeCompaction;
-	nuevo->consistency= malloc(strlen(consistency)+1);
-	strcpy(nuevo->consistency,consistency);
+	nuevo->consistency= string_duplicate(consistency);
 	nuevo->partitions= numPartition;
-	nuevo->nombre=malloc(strlen(nombre)+1);
-	strcpy(nuevo->nombre,nombre);
+	nuevo->nombre=string_duplicate(nombre);
 
 	FILE* metadata= fopen(path,"wb"); //BINARIO
 	fclose(metadata);
@@ -383,6 +357,8 @@ metaTabla *crearMetadataTabla(char* nombre, char* consistency , u_int16_t numPar
 	free(cantParticiones);
 	free(tiempoCompact);
 	free(path);
+	free(nombre);
+	free(consistency);
 	return nuevo;
 }
 
@@ -412,11 +388,9 @@ metaTabla *obtenerMetadataTabla(char *nombre, t_config *arch){
 	metaTabla *nuevo=malloc(sizeof(metaTabla));
 	nuevo->compaction_time=config_get_long_value(arch, "COMPACTION_TIME");
 	char *aux=config_get_string_value(arch, "CONSISTENCY");
-	nuevo->consistency=malloc(string_length(aux)+1);
-	strcpy(nuevo->consistency,aux);
+	nuevo->consistency=string_duplicate(aux);
 	nuevo->partitions= config_get_int_value(arch, "PARTITIONS");
-	nuevo->nombre=malloc(strlen(nombre)+1);
-	strcpy(nuevo->nombre,nombre);
+	nuevo->nombre=string_duplicate(nombre);
 	return nuevo;
 }
 
@@ -428,8 +402,7 @@ void oldCrearMetaLFS(u_int16_t size,u_int16_t cantBloques,char *magicNumber){
 
 	metaLFS = malloc(sizeof(metaFileSystem));
 
-	metaLFS->magicNumber=malloc(strlen(magicNumber)+1);
-	strcpy(metaLFS->magicNumber,magicNumber);
+	metaLFS->magicNumber=string_duplicate(magicNumber);
 	metaLFS->cantBloques=cantBloques;
 	metaLFS->tamBloques=size;
 
@@ -492,8 +465,7 @@ void leerMetaLFS(){
 	metaLFS=malloc(sizeof(metaFileSystem));
 	metaLFS->tamBloques=config_get_int_value(metadataLFS, "TAMANIO");
 	char *magicN=config_get_string_value(metadataLFS, "MAGIC_NUMBER");
-	metaLFS->magicNumber=malloc(string_length(magicN)+1);
-	strcpy(metaLFS->magicNumber,magicN);
+	metaLFS->magicNumber=string_duplicate(magicN);
 	metaLFS->cantBloques= config_get_int_value(metadataLFS, "BLOQUES");
 
 	config_destroy(metadataLFS);
@@ -534,13 +506,11 @@ void modificarConfig(){
 void estructurarConfig(){							//Lee el config y crea una estructura con esos datos
 	t_config *config = config_create(pathInicial);				//Crea una estructura datosConfig en configLissandra, variable global
 	configLissandra=malloc(sizeof(datosConfig));
-	char *aux= config_get_string_value(config,"PUNTO_MONTAJE");
-	configLissandra->puntoMontaje=malloc(strlen(aux)+1);
-	strcpy(configLissandra->puntoMontaje,aux);
+	char *montaje= config_get_string_value(config,"PUNTO_MONTAJE");
+	configLissandra->puntoMontaje=string_duplicate(montaje);
 	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
-	char *aux2=config_get_string_value(config, "IP");
-	configLissandra->Ip=malloc(strlen(aux2)+1);
-	strcpy(configLissandra->Ip,aux2);
+	char *ip=config_get_string_value(config, "IP");
+	configLissandra->Ip=string_duplicate(ip);
 	configLissandra->puerto= config_get_int_value(config, "PORT");
 	configLissandra->id= config_get_int_value(config, "ID");
 	configLissandra->idEsperado= config_get_int_value(config, "ID_ESPERADO");
@@ -1020,8 +990,7 @@ Tabla *find_tabla_by_name_in(char *name,t_list *l) {
 
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time){
 	Tabla *nueva=malloc(sizeof(Tabla));
-	nueva->nombre=malloc(strlen(nombre)+1);
-	strcpy(nueva->nombre,nombre);
+	nueva->nombre=nueva->nombre=string_duplicate(nombre);
 	nueva->registros=list_create();
 	list_add(nueva->registros,createRegistry(key,val,time));
 	return nueva;

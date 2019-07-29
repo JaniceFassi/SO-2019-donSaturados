@@ -27,12 +27,9 @@ int crearMontaje(){
 	char *montaje=obtenerMontaje();					//Si la opcion es 0 se devuelve el montaje, si no se concatena a /home/utnso
 	char **subCadena=string_split(montaje,"/");
 	int i=2;
-	char *path=malloc(strlen(raizDirectorio)+1);
-	strcpy(path,raizDirectorio);
+	char *path;
 	while(subCadena[i]!=NULL){
-		path=ponerBarra(path);
-		path=realloc(path,strlen(path)+strlen(subCadena[i])+1);
-		strcat(path,subCadena[i]);
+		path=string_from_format("/home/utnso/%s",subCadena[i]);
 		if(folderExist(path)==1){
 			if(crearCarpeta(path)!=0){
 				return 1;

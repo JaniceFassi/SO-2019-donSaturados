@@ -26,6 +26,12 @@
 #include <sys/mman.h>
 #include "Compactor.h"
 
+typedef enum{
+	BIN,
+	TMP,
+	TMPC
+}cod_ext;
+
 typedef struct {
 	u_int16_t key;
 	char *value;
@@ -76,7 +82,6 @@ datosConfig *configLissandra;
 metaFileSystem *metaLFS;
 int cantBloqGlobal;
 char *pathInicial;
-char *raizDirectorio;
 //semaforos
 sem_t *criticaMemtable;
 sem_t *criticaDirectorio;
@@ -114,7 +119,6 @@ t_list *regDep(t_list *aDepu);
 
 //FUNCIONES DE CONCATENAR
 char *extension(char *path,int modo);
-char *ponerBarra(char *linea);
 char *nivelTablas();
 char *nivelBloques();
 char *rutaBloqueNro(int nroBloque);

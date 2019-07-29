@@ -8,6 +8,7 @@ void *dump(){
 		sem_wait(sem_dump);
 		if(list_is_empty(memtable)){
 			//log_info(dumplog,"la memtable esta vacia por lo cual no se hace el dump");
+			log_info(dumplog,"Se termino de hacer el dump.");
 			sem_post(sem_dump);
 		}else{
 			sem_wait(criticaMemtable);

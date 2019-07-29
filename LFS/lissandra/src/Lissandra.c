@@ -30,10 +30,7 @@ int main(void) {
 }
 
 void theStart(){
-	pathInicial=malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config")+1);		//Inicia variable global de path inicial (ruta conocida del config)
-	strcpy(pathInicial,"/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
-	raizDirectorio=malloc(strlen("/home/utnso")+1);
-	strcpy(raizDirectorio,"/home/utnso");
+	pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");		//Inicia variable global de path inicial (ruta conocida del config)
 	logger = init_logger();//Inicia el logger global
 	memtable= list_create();								//Inicia la memtable global
 	if(archivoValido(pathInicial)!=0){
@@ -350,8 +347,12 @@ void exec_api(op_code mode,u_int16_t sock){
 		break;
 
 	}
-	//free(buffer);							//SE LO SAQUE MOMENTANEAMENTE PARA PROBAR EL EXIT
-	//liberarSubstrings(subCadena);			//NO SIEMPRE HAY QUE LIBERAR SUBSTRINGS
+	if(mode==0 || mode==1 || mode==2 || mode==3 || mode==4){
+		free(buffer);
+	}
+	if(mode==0 || mode==1 || mode==2 || mode==3 || mode==4){
+		liberarSubstrings(subCadena);
+	}
 }
 
 void *console(){
@@ -501,7 +502,6 @@ void theEnd(){
 	borrarMetaLFS();
 	liberarTabGlobal();
 	free(pathInicial);
-	free(raizDirectorio);
 	close(archivoBitmap);
 	bitarray_destroy(bitmap);
 	log_destroy(logger);
