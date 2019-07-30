@@ -1394,7 +1394,6 @@ int mJournal(){
 		char* nombreSegmento = string_duplicate(seg->nombreTabla);
 		t_list *paginasMod;
 		if(list_is_empty(seg->tablaPaginas)){
-			list_destroy(paginasMod);
 			free(nombreSegmento);
 			break;
 		}
