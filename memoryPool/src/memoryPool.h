@@ -85,6 +85,7 @@ t_list* memoriasConocidas;
 t_list* semillas;
 void* memoria;
 int offsetMarco;
+fin;
 u_int16_t maxValue;
 int cantMarcos;
 estructuraConfig *config;
@@ -190,8 +191,6 @@ memorias *crearMemoria(char *ip,int puerto, int id, int activa);
 void mostrarActivas();
 
 //AUX SECUNDARIAS
-
-int conseguirIndexSeg(segmento* nuevo);
 void* conseguirValor(pagina* pNueva);
 void* conseguirTimestamp(pagina *pag);
 void* conseguirKey(pagina *pag);

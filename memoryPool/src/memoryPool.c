@@ -31,22 +31,16 @@ int main(void) {
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
 	pthread_t journalTemporal;
 	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
+
 	pthread_join(hiloConsola, (void*)&fin);
 	if(fin == 0){
 		pthread_cancel(gestorConexiones);
 		pthread_cancel(inotify);
-		//pthread_cancel(journalTemporal);
-		//pthread_cancel(gossipTemporal);
+		pthread_cancel(journalTemporal);
+		pthread_cancel(gossipTemporal);
 		log_info(logger, "Se apagará la memoria de forma correcta");
 
 	}
-	else{
-	pthread_join(gestorConexiones, NULL);
-	//pthread_join(journalTemporal, NULL);
-	//pthread_join(gossipTemporal, NULL);
-
-	}
-
 
 	finalizar();
 	return EXIT_SUCCESS;
@@ -72,13 +66,8 @@ int main(void) {
 	pthread_mutex_init(&lockLRU, NULL);
 	pthread_mutex_init(&lockConfig, NULL);
 	pthread_mutex_init(&lockJournal, NULL);
-
 	sem_init(&lockTablaMem, 0, 1);
-
 	sem_init(&semJournal, 0, config->multiprocesamiento);
-
-
-
 
 	memoria = calloc(1,tamanioMemoria);
 
@@ -89,9 +78,9 @@ int main(void) {
 	log_info(logger, "Se inicializo la memoria con tamanio %d", tamanioMemoria);
 
 
-	//maxValue = handshakeConLissandra(config->ipFS, config->puertoFS);
+	maxValue = handshakeConLissandra(config->ipFS, config->puertoFS);
 
-	maxValue = 60;
+	//maxValue = 60;
 
 	if(maxValue == 1){
 		log_error(logger, "No se pudo recibir el handshake con LFS, abortando ejecución\n");
@@ -103,7 +92,6 @@ int main(void) {
 	offsetMarco = sizeof(long) + sizeof(u_int16_t) + maxValue;
 	tablaMarcos = list_create();
 	tablaSegmentos = list_create();
-	//listaDeUsos = list_create();
 	marcosReemplazables = list_create();
 
 	cantMarcos = tamanioMemoria/offsetMarco;
@@ -226,24 +214,20 @@ int main(void) {
  	//log_info(logger,"sock: %d",cli);
 
  	char *buffer = malloc(sizeof(char)*2);
- 	int b = recvData(cli, buffer, sizeof(char));
+ 	recvData(cli, buffer, sizeof(char));
  	buffer[1] = '\0';
- 	//log_info(logger, "Bytes recibidos: %d", b);
  	//log_info(logger, "Operacion %d", atoi(buffer));
 
  	int operacion = atoi(buffer);
  	free(buffer);
  	char** desempaquetado=NULL;
  	char* paquete;
- 	char* tamanioPaq = malloc(sizeof(char)*4);
 
  	if(operacion !=5 && operacion !=6 && operacion !=7){
-
-
+ 	 	char* tamanioPaq = malloc(sizeof(char)*4);
  		recvData(cli,tamanioPaq, sizeof(char)*3);
  		tamanioPaq[3]='\0';
  		int tamanio = atoi(tamanioPaq);
- 		log_info(logger, tamanioPaq);
  		free(tamanioPaq);
 
  		if(tamanio!=0){
@@ -252,8 +236,6 @@ int main(void) {
 
  			desempaquetado = string_n_split(paquete, 5, ";");
  	 		free(paquete);
-
-
  		}
  		else{
  			desempaquetado=string_n_split("global; ",2,";");
@@ -276,7 +258,6 @@ int main(void) {
  	 					key = atoi(desempaquetado[1]);
  	 					log_info(logger,"SELECT %s %i",nombreTabla,key);
  	 					rta = mSelect(nombreTabla, key);
- 	 					//log_info(logger,rta);
  	 					//si no existe
  	 					if(strcmp(rta, "2")!=0){
  	 						if(strcmp(rta, "3")==0){
@@ -322,7 +303,6 @@ int main(void) {
  					value = desempaquetado[2];
  					log_info(logger,"INSERT %s %i %s",nombreTabla,key,value);
  					resp = mInsert(nombreTabla, key, value);
- 					//log_info(logger, "Antes de responder el insert");
  					rta = string_itoa(resp);
  					sendData(cli, rta, sizeof(char)*2);
  					log_info(logger, "Respondi el insert %d\n", resp);
@@ -338,6 +318,7 @@ int main(void) {
  							resp = mInsert(nombreTabla, key, value);
  							rta = string_itoa(resp);
  							sendData(cli, rta, sizeof(char)*2);
+ 							free(rta);
  							log_info(logger, "envie la respuesta del insert %d\n", resp);
  							}
 
@@ -364,9 +345,6 @@ int main(void) {
  				case 3: //DESCRIBE
  					usleep(config->retardoMem);
 
- 					//log_info(logger,"DESCribe");
- 					//log_info(logger,"holaa %s",desempaquetado[0]==NULL);
- 					//log_info(logger,"DESCribe");
  					nombreTabla = desempaquetado[0];
  					log_info(logger,"DESCRIBE %s",nombreTabla);
  					rta =mDescribe(nombreTabla);
@@ -399,11 +377,9 @@ int main(void) {
  				case 6: //DEVOLVER TABLA DE ACTIVOS
  				 	usleep(config->retardoMem);
  				 	sem_wait(&lockTablaMem);
- 				 	//log_info(logger, "Intentando empaquetar");
  				 	char *paquete =paqueteVerdadero();
  				 	sem_post(&lockTablaMem);
  				 	sendData(cli, paquete, strlen(paquete)+1);
- 				 	//log_info(logger, "Tabla empaquetada %s", paquete);
  				 	free(paquete);
  				 	break;
 
@@ -413,7 +389,6 @@ int main(void) {
  					break;
 
  				}
- 	//responder 0 si salio bien, 1 si salio mal
  	close(cli);
  	if(desempaquetado!=NULL){
  		liberarSubstrings(desempaquetado);
@@ -424,8 +399,6 @@ int main(void) {
  void* gestionarConexiones (void* arg){
 
  	u_int16_t server;
-
-
  	int servidorCreado = createServer(config->ip, config->puerto, &server);
 
  	if(servidorCreado!=0){
@@ -446,13 +419,12 @@ int main(void) {
  			pthread_t atiendeCliente;
  			pthread_create(&atiendeCliente, NULL, recibirOperacion, (void*)cliente);
  			pthread_detach(atiendeCliente);
-
  		}
-
-
  	}
+
  	return NULL;
  }
+
  void* correrInotify(void*arg){
 
  	while(1){
@@ -483,6 +455,7 @@ int main(void) {
  	pthread_mutex_unlock(&lockConfig);
 
  }
+
  int esNumero(char *num){ //devuelve 0 si es un num
  	int r=0,i=0;
  	if(num!=NULL){
@@ -496,6 +469,7 @@ int main(void) {
  	}
  	else return 1;
  }
+
  int verificarParametros(char **split,int cantParametros){
  	int contador=0;
  	while(contador<cantParametros){
@@ -509,7 +483,6 @@ int main(void) {
 
  void* consola(void* arg){
 
-	int fin = (int*) arg;
 	char* linea;
 	while(1){
 
@@ -639,7 +612,6 @@ int main(void) {
 
  void* journalProgramado(void *arg){
 
-
  	while(1){
  		usleep(config->retardoJournal);
  		log_info(logger,"Se realiza un journal programado");
@@ -763,22 +735,27 @@ int main(void) {
  }
 
  char* selectLissandra(char* nombreTabla,u_int16_t key){
+	 u_int16_t lfsSock = crearConexionLFS();
+	 char* error = string_duplicate("1");
+	 if(lfsSock == -1){
+		 log_error(logger, "No se pudo conectar con LFS");
+		 return error;
+	  }
+	 free(error);
+
 	 char* datos = formatearSelect(nombreTabla, key);
 	 char* paqueteListo = empaquetar(0, datos);
 	 char* value;
-	 u_int16_t lfsSock = crearConexionLFS();
-
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-	 //log_info(logger, "Paquete select %s", paqueteListo);
 	 log_info(logger, "Para Lissandra: SELECT %s %i", nombreTabla,key);
 	 free(datos);
 	 free(paqueteListo);
+
 	 char* buffer = malloc(sizeof(char)*2);
 	 recvData(lfsSock, buffer, sizeof(char));
 	 buffer[1] = '\0';
 	 if(atoi(buffer)==0){
 		 char* tam = malloc(sizeof(char)*4);
-
 		 recvData(lfsSock, tam, sizeof(char)*3);
 		 tam[3]= '\0';
 		 int t = atoi(tam);
@@ -803,9 +780,13 @@ int main(void) {
 
 int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value){
 
+	u_int16_t lfsSock = crearConexionLFS();
+	if(lfsSock == -1){
+		log_error(logger, "No se pudo conectar con LFS");
+		return 1;
+	}
 	char* datos = formatearInsert(nombreTabla, timestamp, key, value);
 	char* paqueteListo = empaquetar(1, datos);
-	u_int16_t lfsSock = crearConexionLFS();
 	sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	log_info(logger, "Paquete INSERT %s %ld %i %s",nombreTabla,timestamp,key,value);
 	free(datos);
@@ -824,19 +805,23 @@ int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* valu
 char* describeLissandra(char* nombreTabla){
 
 	u_int16_t lfsSock = crearConexionLFS();
-	char* describeGlobal = malloc(sizeof(char)*5);
-	strcpy(describeGlobal, "3000");
+	char* error = string_duplicate("1");
+	if(lfsSock == -1){
+		log_error(logger, "No se pudo conectar con LFS");
+		return error;
+	}
+	free(error);
+	char* describeGlobal = string_duplicate("3000");
 
 	if(strcmp(nombreTabla, "global")!=0){
 		char* paqueteListo = empaquetar(3, nombreTabla);
 		sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-		log_info(logger, "Paquete DESCRIBE %s", nombreTabla);
+		log_info(logger, "Se pidio un describe de %s", nombreTabla);
 		free(paqueteListo);
 	}
 	else{
-
 		sendData(lfsSock, describeGlobal, strlen(describeGlobal)+1);
-		log_info(logger, "Paquete DESCRIBE");
+		log_info(logger, "Se pidio un describe global");
 
 	}
 	free(describeGlobal);
@@ -867,16 +852,16 @@ char* describeLissandra(char* nombreTabla){
 }
 
 int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
-	char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
-	char* paqueteListo = empaquetar(2, datos);
+
 	u_int16_t lfsSock = crearConexionLFS();
 	if(lfsSock == -1){
 		log_error(logger, "No se pudo conectar con LFS");
 		return 1;
 	}
+	char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
+	char* paqueteListo = empaquetar(2, datos);
 	sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-	//log_info(logger, "Paquete create %s", paqueteListo);
-	log_info(logger,"paquete CREATE %s %s %i %ld",nombreTabla,criterio,nroParticiones,tiempoCompactacion);
+	log_info(logger,"Se pidio un create de %s %s %i %ld",nombreTabla,criterio,nroParticiones,tiempoCompactacion);
 	free(datos);
 	free(paqueteListo);
 
@@ -892,12 +877,12 @@ int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones,
 }
 
 int dropLissandra(char* nombreTabla){
-	char* paqueteListo = empaquetar(4, nombreTabla);
 	u_int16_t lfsSock = crearConexionLFS();
 	if(lfsSock == -1){
 		log_error(logger, "No se pudo conectar con LFS");
 		return 1;
 	}
+	char* paqueteListo = empaquetar(4, nombreTabla);
 	sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
 	log_info(logger, "Paquete DROP %s", nombreTabla);
 	free(paqueteListo);
@@ -934,8 +919,8 @@ int dropLissandra(char* nombreTabla){
 	 int nroMarco;
 	 if(!memoriaFull()){
 		 if(hayMarcosLibres()){
-			 log_info(logger, "Hay marcos libres");
-			 int primerMarcoLibre(marco *unMarco){
+			log_info(logger, "Hay marcos libres");
+			int primerMarcoLibre(marco *unMarco){
 				 return unMarco->estaLibre == 0;
 			 }
 			marco* marc = list_find(tablaMarcos, (void*)primerMarcoLibre);
@@ -963,7 +948,7 @@ int dropLissandra(char* nombreTabla){
 
  }
 
- void agregarAReemplazables(marco *unMarco){//esto borraria agregarAListausos
+ void agregarAReemplazables(marco *unMarco){
 	 bool estaEnLaLista(marco *otroMarco){
 		 return unMarco->nroMarco == otroMarco->nroMarco;
 
@@ -971,20 +956,18 @@ int dropLissandra(char* nombreTabla){
 	 if(!list_any_satisfy(marcosReemplazables, (void*)estaEnLaLista)){
 		 list_add(marcosReemplazables, unMarco);
 	 }
-
 	 actualizarLista();
-
  }
+
  void actualizarLista(){
 	 bool marcoMasViejo(marco* unMarco, marco* marcoViejo){
 		 if(unMarco->ultimoUso == marcoViejo->ultimoUso){
 			 return unMarco->nroMarco < marcoViejo->nroMarco;
 		 }
 		 return unMarco->ultimoUso < marcoViejo->ultimoUso;
-
 	 }
-	 list_sort(marcosReemplazables, (void*) marcoMasViejo);
 
+	 list_sort(marcosReemplazables, (void*) marcoMasViejo);
  }
 
 
@@ -994,10 +977,8 @@ int dropLissandra(char* nombreTabla){
 	 bool mismoMarco(marco *marco){
 		 return marco->nroMarco == nroMarco;
 	  }
-	 //if(list_any_satisfy(marcosReemplazables, (void*)mismoMarco)){ VER SI EXPLOTA
-	 list_remove_by_condition(marcosReemplazables, (void*) mismoMarco);
 
-	 //}
+	 list_remove_by_condition(marcosReemplazables, (void*) mismoMarco);
  }
 
  int hayMarcosLibres(){
@@ -1046,21 +1027,18 @@ int dropLissandra(char* nombreTabla){
 
 void mostrarMemoria(){
 	int desplazador=0 ,i=0;
-
-		while(i<cantMarcos){
-
-			printf("Timestamp: %ld \n", *(long*)((memoria) + desplazador));
-			printf("Key: %d \n", *(u_int16_t*)((memoria)+ sizeof(long) + desplazador));
-			printf("Value: %s \n", (char*)((memoria) + sizeof(long) + sizeof(u_int16_t)+desplazador));
-			desplazador += offsetMarco;
-			i++;
-		}
+	while(i<cantMarcos){
+		printf("Timestamp: %ld \n", *(long*)((memoria) + desplazador));
+		printf("Key: %d \n", *(u_int16_t*)((memoria)+ sizeof(long) + desplazador));
+		printf("Value: %s \n", (char*)((memoria) + sizeof(long) + sizeof(u_int16_t)+desplazador));
+		desplazador += offsetMarco;
+		i++;
+	}
 }
 
 void* conseguirValor(pagina* pNueva){
 	void* value = malloc(maxValue);
 	memcpy(value, ((memoria) + sizeof(long) + sizeof(u_int16_t)+ (pNueva->nroMarco)*offsetMarco),maxValue);
-
 	return value;
 }
 
@@ -1076,23 +1054,6 @@ void *conseguirKey(pagina *pag){
 	return key;
 }
 
-int conseguirIndexSeg(segmento* nuevo){
-
-	int index=0;
-
-	while(index < (tablaSegmentos->elements_count)){
-		segmento* aux = list_get(tablaSegmentos,index);
-		if(string_equals_ignore_case(aux->nombreTabla,nuevo->nombreTabla)){
-			break;
-		}
-		else{
-			index++;
-		}
-	}
-	return index;
-}
-
-
 
 //---------------------------------------------------------//
 //--------------------------BORRADO-----------------------//
@@ -1100,17 +1061,11 @@ int conseguirIndexSeg(segmento* nuevo){
 
 
 void eliminarSegmento(segmento* nuevo){
+	bool mismoNombre(segmento *seg){
+		return string_equals_ignore_case(seg->nombreTabla, nuevo->nombreTabla);
+	}
 
-	/*void itera(pagina *p){
-		if(p->modificado==)
-	}*/
-	//list_iterate(nuevo->tablaPaginas,(void*) itera);
-
-	int index = conseguirIndexSeg(nuevo); //se usa para el free
-
-	list_remove_and_destroy_element(tablaSegmentos,index,(void*)segmentoDestroy);
-
-
+	list_remove_and_destroy_by_condition(tablaSegmentos, (void*)mismoNombre ,(void*)segmentoDestroy);
 }
 
 void paginaDestroy(pagina* pagParaDestruir){
@@ -1123,13 +1078,13 @@ void paginaDestroy(pagina* pagParaDestruir){
 
 void segmentoDestroy(segmento* segParaDestruir){
    list_destroy_and_destroy_elements(segParaDestruir->tablaPaginas,(void*)paginaDestroy);
-	free(segParaDestruir->nombreTabla);
-	pthread_mutex_destroy(&segParaDestruir->lockSegmento);
-	free(segParaDestruir);
+   free(segParaDestruir->nombreTabla);
+   pthread_mutex_destroy(&segParaDestruir->lockSegmento);
+   free(segParaDestruir);
 }
 
 void eliminarMarcos(){
-		list_destroy_and_destroy_elements(tablaMarcos,(void*)marcoDestroy);
+	list_destroy_and_destroy_elements(tablaMarcos,(void*)marcoDestroy);
 
 }
 
@@ -1149,26 +1104,28 @@ void liberarSubstrings(char **liberar){
 void destruirConfig(){
 	free(config->ip);
 	free(config->ipFS);
+	liberarSubstrings(config->ipSeeds);
+	liberarSubstrings(config->puertoSeeds);
 	free(config);
 
 }
 
 void finalizar(){
 	list_destroy_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
-	pthread_mutex_destroy(&lockTablaSeg);
 	eliminarMarcos();
+	pthread_mutex_destroy(&lockTablaSeg);
 	pthread_mutex_destroy(&lockTablaMarcos);
 	pthread_mutex_destroy(&lockConfig);
-
+	pthread_mutex_destroy(&lockLRU);
+	pthread_mutex_destroy(&lockJournal);
+	sem_destroy(&semJournal);
+	sem_destroy(&lockTablaMem);
 	free(memoria);
 	destruirConfig();
 	free(pathConfig);
 	log_info(logger, "Memoria limpia, adiós mundo cruel");
 	log_destroy(logger);
-
 }
-
-
 
 
 //-------------------------------------//
@@ -1179,11 +1136,9 @@ void finalizar(){
 int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 
 	sem_wait(&semJournal);
-	log_info(logger, "Pasó el lock");
 	if(strlen(valor)+1 >maxValue){
 		log_info(logger, "Se intentó insertar un value mayor al tamaño permitido");
 		sem_post(&semJournal);
-		//log_info(logger, "Pasó el lock de salida");
 		return 1;
 	}
 	log_info(logger, "Empieza el insert");
@@ -1205,7 +1160,6 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				pthread_mutex_unlock(&lockLRU);
 				sem_post(&semJournal);
 				free(pag);
-				//log_info(logger, "Pasó el lock de salida");
 				return 2;
 			}
 			eliminarDeReemplazables(pag->nroMarco);
@@ -1236,7 +1190,6 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			sem_post(&semJournal);
 			pthread_mutex_unlock(&lockLRU);
 			free(pag);
-			//log_info(logger, "Pasó el lock de salida");
 			return 2;
 		}
 		eliminarDeReemplazables(pag->nroMarco);
@@ -1250,7 +1203,6 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarPagina(seg,pag);
 		timestampActual = time(NULL);
 		agregarDato(timestampActual, key, valor, pag);
-		//log_info(logger, "VOLVI DE AGREGAR DATO");
 		pag->modificado = 1;
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
@@ -1266,8 +1218,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 	log_info(logger, "Empieza el select");
 	sem_wait(&semJournal);
-	log_info(logger, "Pasó el lock");
-
 	segmento *nuevo = buscarSegmento(nombreTabla);
 	pagina* pNueva;
 	char* valorPagNueva;
@@ -1295,7 +1245,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			log_info(logger, "Encontro segmento y pagina");
 
 			sem_post(&semJournal);
-			//log_info(logger, "Pasó el lock de salida");
 			free(estoyFull);
 			free(noExiste);
 			return valor;
@@ -1307,7 +1256,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				sem_post(&semJournal);
 				pthread_mutex_unlock(&lockLRU);
 				free(pNueva);
-				//log_info(logger, "Pasó el lock de salida");
 				free(noExiste);
 				return estoyFull;
 
@@ -1328,15 +1276,13 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 				sem_post(&semJournal);
-				//log_info(logger, "Pasó el lock de salida");
 				free(estoyFull);
 				free(noExiste);
 				return valorPagNueva;
 			}
 			else{//si lfs no tenía el valor
 				sem_post(&semJournal);
-				//log_info(logger, "Pasó el lock de salida");
-				//free de la pagina que se creo al pedo
+				paginaDestroy(pNueva);
 				free(estoyFull);
 				return noExiste;
 			}
@@ -1350,7 +1296,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			sem_post(&semJournal);
 			pthread_mutex_unlock(&lockLRU);
 			free(pNueva);
-			log_info(logger, "Pasó el lock de salida");
 			free(noExiste);
 			return estoyFull;
 		}
@@ -1374,7 +1319,6 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			agregarDato(time(NULL),key,valorPagNueva,pNueva);
 			log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 			sem_post(&semJournal);
-			log_info(logger, "Pasó el lock de salida");
 			free(estoyFull);
 			free(noExiste);
 			return valorPagNueva;
@@ -1382,8 +1326,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		}
 		else{//lfs no tenía el valor
 			sem_post(&semJournal);
-			//free de la pagina que se creo al pedo
-			log_info(logger, "Pasó el lock de salida");
+			paginaDestroy(pNueva);
 			free(estoyFull);
 			return noExiste;
 		}
@@ -1405,18 +1348,13 @@ char* mDescribe(char* nombreTabla){
 
 	char* rta = describeLissandra(nombreTabla);
 	if(string_starts_with(rta, "1")){
-		log_info(logger, "DESCRIBE GLOBAL 1");
 		return rta;
 	}
 	else{
 		char* respuesta = string_from_format("0%s", rta);
-		log_info(logger, "RESPUESTA PARA KERNEL %s", respuesta);
 		free(rta);
 		return respuesta;
-
 	}
-
-
 }
 
 int mDrop(char* nombreTabla){
@@ -1441,17 +1379,22 @@ int mDrop(char* nombreTabla){
 
 int mJournal(){
 	pthread_mutex_lock(&lockJournal);
+	if(list_is_empty(tablaSegmentos)){
+		log_info(logger, "La memoria ya esta vacia");
+		return 0;
+	}
 	for(int i = 0; i<config->multiprocesamiento; i++){
 		sem_wait(&semJournal);
 	}
-	log_info(logger,"empece el journal");
+	log_info(logger,"Empieza el journal");
 
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
-		char* nombreSegmento = malloc(sizeof(char)*100);
 		segmento *seg = list_get(tablaSegmentos, i);
-		strcpy(nombreSegmento, seg->nombreTabla);
+		char* nombreSegmento = string_duplicate(seg->nombreTabla);
 		t_list *paginasMod;
 		if(list_is_empty(seg->tablaPaginas)){
+			list_destroy(paginasMod);
+			free(nombreSegmento);
 			break;
 		}
 		if(list_any_satisfy(seg->tablaPaginas, (void*)estaModificada)){
@@ -1468,22 +1411,21 @@ int mJournal(){
 				log_info(logger, "Rta insert LFS %d", insertExitoso);
 
 				if(insertExitoso == 0){
-						log_info(logger, "Se insertó correctamente el valor %s en la tabla %s", value, nombreSegmento);
-					}
+					log_info(logger, "Se insertó correctamente el valor %s en la tabla %s", value, nombreSegmento);
+				}
 				else{
-						log_info(logger, "No se pudo insertar el valor %s en la tabla %s", value, nombreSegmento);
-					}
+					log_info(logger, "No se pudo insertar el valor %s en la tabla %s", value, nombreSegmento);
+				}
 				free(t);
 				free(k);
 				free(value);
+			}
+			log_info(logger, "Se borra la lista de modificados para el segmento %s", nombreSegmento);
+			list_destroy(paginasMod);
 		}
 
-		log_info(logger, "Se borra la lista de modificados para el segmento %s", nombreSegmento);
-		list_destroy(paginasMod);
+
 		free(nombreSegmento);
-		}
-
-
 	}
 
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
@@ -1571,7 +1513,6 @@ void desempaquetarMemorias(char* paquete){
 				obtener->activa=1;
 			}else{
 				memorias *nueva=crearMemoria(split[1],puerto,id,1);
-				//log_info(logger,"se agrego %s a la lista",split[1]);
 				list_add(memoriasConocidas,nueva);
 			}
 			free(paquete);
@@ -1582,7 +1523,6 @@ void desempaquetarMemorias(char* paquete){
 			}
 			liberarSubstrings(split);
 		}else{
-			//log_info(logger,"Inconvenientes a la hora de desempaquetar la tabla de memorias");
 			break;
 		}
 	}
@@ -1592,7 +1532,6 @@ char *empaquetarMemorias(){
 	char *paquete=NULL;
 	void empaquetando(memorias *aEmpaquetar){
 		char *paquetito=string_from_format("%i;%s;%i",aEmpaquetar->nroMem,aEmpaquetar->ip,aEmpaquetar->puerto);
-		//log_info(logger,"paquetito= %s",paquetito);
 		if(paquete==NULL){
 			paquete=string_duplicate(paquetito);
 		}else{
@@ -1609,7 +1548,7 @@ char *empaquetarMemorias(){
 char *paqueteVerdadero(){
    char* paquete=empaquetarMemorias();
    char* paqueteListo=empaquetar(7,paquete);
-   //free(paquete);
+   free(paquete);
    return paqueteListo;
 }
 
@@ -1634,15 +1573,11 @@ void recibirMemorias(int cliente){
 	char* tamanioTabla=malloc(4);
 	recvData(cliente,tamanioTabla,3);
 	tamanioTabla[3] = '\0';
-	//log_info(logger,"tamanio de tabla recibido %s",tamanioTabla);
 	char* buffer=malloc(atoi(tamanioTabla)+1);
 	recvData(cliente,buffer,atoi(tamanioTabla));
 	free(tamanioTabla);
-	//log_info(logger, "PAQUETE RECIBIDO %s",buffer);
 	sem_wait(&lockTablaMem);
-	//log_info(logger, "Se empieza a desempaquetar las memorias recibidas");
 	desempaquetarMemorias(buffer);  //aca actualizo mi tabla con lo que me envian
-	//log_info(logger, "Se termino de desempaquetar las memorias recibidas");
 	sem_post(&lockTablaMem);
 }
 
@@ -1655,12 +1590,9 @@ void enviarMemorias(char *ip,int puerto){
 		//log_info(logger,"la semilla de ip %s y puerto %i no esta activa",ip,puerto);
 	}else{
 		sem_wait(&lockTablaMem);
-		//log_info(logger,"Empaquetando mis memorias para mandar");
 		char *paquete =paqueteVerdadero();
 		sem_post(&lockTablaMem);
-		//log_info(logger,"Intentando enviar mi paquete de memorias");
 		sendData(socket,paquete,strlen(paquete)+1);
-		//log_info(logger, "Se envio el Paquete entero %s", paquete);
 		free(paquete);
 		close(socket);
 	}
@@ -1701,15 +1633,12 @@ void liberarMemoria(memorias *victima){
 }
 void mGossip(){
 	void gossipGirl(memorias *semilla){
-		//pedir confirmacion
 		int socket=memoriaActiva(semilla->ip,semilla->puerto);
 		if(socket==0){
 			sem_wait(&lockTablaMem);
 			desactivarMemoria(semilla->ip,semilla->puerto);
 			sem_post(&lockTablaMem);
-			//log_info(logger,"la semilla de ip %s y puerto %i no esta activa",semilla->ip,semilla->puerto);
 		}else{
-		//recibir tabla
 			//agregar las nuevas memorias que recibo
 			pedirMemorias(socket);
 			close(socket);
