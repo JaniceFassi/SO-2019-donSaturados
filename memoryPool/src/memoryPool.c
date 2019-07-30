@@ -1423,10 +1423,11 @@ int mJournal(){
 			}
 			log_info(logger, "Se borra la lista de modificados para el segmento %s", nombreSegmento);
 			list_destroy(paginasMod);
+			free(nombreSegmento);
+		}else{
+			free(nombreSegmento);
 		}
 
-
-		free(nombreSegmento);
 	}
 
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
