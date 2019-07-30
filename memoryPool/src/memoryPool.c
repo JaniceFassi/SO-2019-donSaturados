@@ -555,7 +555,13 @@ int main(void) {
 
  	 	else if(!strncmp(linea,"DESCRIBE",8)){
  			char **subStrings= string_n_split(linea,2," ");
- 			mDescribe(subStrings[1]);
+ 			if(subStrings[1]==NULL){
+ 				mDescribe("global");
+ 			}
+ 			else{
+ 				mDescribe(subStrings[1]);
+ 			}
+
  			liberarSubstrings(subStrings);
  		}
 
@@ -1347,7 +1353,7 @@ int mCreate(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long ti
 char* mDescribe(char* nombreTabla){
 
 	char* rta = describeLissandra(nombreTabla);
-	if(string_starts_with(rta, "1")){
+	if(string_equals_ignore_case(rta, "1")){
 		return rta;
 	}
 	else{
