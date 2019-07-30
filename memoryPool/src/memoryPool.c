@@ -1381,6 +1381,7 @@ int mJournal(){
 	pthread_mutex_lock(&lockJournal);
 	if(list_is_empty(tablaSegmentos)){
 		log_info(logger, "La memoria ya esta vacia");
+		pthread_mutex_unlock(&lockJournal);
 		return 0;
 	}
 	for(int i = 0; i<config->multiprocesamiento; i++){
