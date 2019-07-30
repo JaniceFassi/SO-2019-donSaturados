@@ -242,15 +242,23 @@ void ejecutarScripts(){
 }
 FILE* avanzarLineas(int num,FILE * fp){
 	int conta=num;
-	fseek(fp, 0, SEEK_SET);
-	while (conta>0){
-		if(fgetc (fp) == '\n'){
-			conta--;
-		}
+//	fseek(fp, 0, SEEK_SET);
+//	while (conta>0){
+//		if(fgetc (fp) == '\n'){
+//			conta--;
+//		}
+//	}
+
+	char *p=NULL;
+	size_t a = 1024;
+	while(conta>0){
+		getline(&p,&a,fp);
+		free(p);
+		p=NULL;
+		conta--;
 	}
 	return fp;
 }
-
 int parsear(char * aux){
 	char ** split=NULL;
 	int resultado=1;
@@ -391,8 +399,8 @@ int mySelect(char * table, char *key){
 	}
 
 	int enviados=sendData(sock,msj,strlen(msj)+1);
-	log_info(logger,"%i",enviados);
-
+	//log_info(logger,"%i",enviados);
+	log_info(logger,"Envie SELECT %s %s",table,key);
 	char * resultado=malloc(2);
 	recvData(sock,resultado,1);
 	resultado[1]='\0';
@@ -417,7 +425,7 @@ int mySelect(char * table, char *key){
 
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
-			log_info(logger,"\n\n JOURNAL \n\n");
+			log_info(logger,"\n JOURNAL \n");
 			sendData(sock,"5",2);//journal
 			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
@@ -533,14 +541,14 @@ int insert(char* table ,char* key ,char* value){
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
-
+	log_info(logger,"envie el insert");
 	char * resultado=malloc(2);
 	recvData(sock,resultado,1);
 	resultado[1]='\0';
 	log_info(logger,"resultado INSERT: %i", atoi(resultado));
 	if(atoi(resultado)!=0){
 		if(atoi(resultado)==2){
-			log_info(logger,"\n\n\n\n\n\n JOURNAL \n\n\n\n\n\n");
+			log_info(logger,"\n\n\n JOURNAL \n\n\n");
 			sendData(sock,"5",2);//journal
 			char *res= malloc(2);
 			recvData(sock,res,1);
@@ -652,7 +660,7 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
-
+	log_info(logger,"Mande el create");
 	char * resultado=malloc(2);
 	recvData(sock,resultado,2);
 	resultado[1]='\0';
@@ -762,7 +770,7 @@ int describe(char *table){
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
-
+	log_info(logger,"mande el describe");
 
 
 	char *resultado=malloc(2);
@@ -914,7 +922,7 @@ int drop(char*table){
 	}
 
 	sendData(sock,msj,strlen(msj)+1);
-
+	log_info(logger,"Mande el drop");
 	char * resultado=malloc(2);
 	recvData(sock,resultado,1);
 	resultado[1]='\0';

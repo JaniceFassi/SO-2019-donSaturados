@@ -12,11 +12,7 @@
 #define EVENT_SIZE  ( sizeof (struct inotify_event) + 100 )
 #define BUF_LEN     ( 1024 * EVENT_SIZE )
 
-
-
 int main(void) {
-
-
 	int exito = inicializar();
 
 	if(exito==1){
@@ -24,27 +20,17 @@ int main(void) {
 		return 1;
 
 	}
-
-
 	pthread_t inotify;
 	pthread_create(&inotify, NULL, correrInotify, NULL);
-
-
-
 	pthread_t gossipTemporal;
 	pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
 	int *fin;
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
-
 	pthread_t gestorConexiones;
 	pthread_create(&gestorConexiones, NULL, gestionarConexiones, NULL);
-
-
 	pthread_t journalTemporal;
-	//pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
-
-
+	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 	pthread_join(hiloConsola, (void*)&fin);
 	if(fin == 0){
 		pthread_cancel(gestorConexiones);
@@ -237,13 +223,13 @@ int main(void) {
  //---------------------AUXILIARES DE HILOS------------------//
  //---------------------------------------------------------//
  void* recibirOperacion(int cli){
- 	log_info(logger,"sock: %d",cli);
+ 	//log_info(logger,"sock: %d",cli);
 
  	char *buffer = malloc(sizeof(char)*2);
  	int b = recvData(cli, buffer, sizeof(char));
  	buffer[1] = '\0';
- 	log_info(logger, "Bytes recibidos: %d", b);
- 	log_info(logger, "Operacion %d", atoi(buffer));
+ 	//log_info(logger, "Bytes recibidos: %d", b);
+ 	//log_info(logger, "Operacion %d", atoi(buffer));
 
  	int operacion = atoi(buffer);
  	free(buffer);
@@ -288,19 +274,20 @@ int main(void) {
  				case 0: //SELECT
  	 					nombreTabla = desempaquetado[0];
  	 					key = atoi(desempaquetado[1]);
+ 	 					log_info(logger,"SELECT %s %i",nombreTabla,key);
  	 					rta = mSelect(nombreTabla, key);
- 	 					log_info(logger,rta);
+ 	 					//log_info(logger,rta);
  	 					//si no existe
  	 					if(strcmp(rta, "2")!=0){
  	 						if(strcmp(rta, "3")==0){
- 	 							log_info(logger,"mando que no existe");
  	 							sendData(cli, rta, strlen(rta)+1);
+ 	 							log_info(logger,"mande que no existe");
  	 							free(rta);
  	 						}else{
  	 							char* msj;
  	 							msj = empaquetar(0, rta);
- 	 							log_info(logger,"mando que existe rta:%s",msj);
  	 							sendData(cli, msj, strlen(msj)+1);
+ 	 							log_info(logger,"mande que existe rta:%s",msj);
  	 							free(msj);
  	 							free(rta);
  	 						}
@@ -308,6 +295,7 @@ int main(void) {
  	 					//si estoy full
  	 					else{
  	 						sendData(cli, rta, strlen(rta)+1);
+ 	 						log_info(logger,"mande que estoy full");
  	 						free(rta);
  	 						rtaFull= malloc(2);
  	 						recvData(cli, rtaFull, sizeof(char));
@@ -316,8 +304,10 @@ int main(void) {
  	 					 		int r =mJournal();
  	 					 		if(r==0){
  	 					 			sendData(cli,"0",2);
+ 	 					 			log_info(logger,"mande fin journal");
  	 					 		}else{
  	 					 			sendData(cli,"1",2);
+ 	 					 			log_info(logger,"mande fin journal");
  	 					 		}
  	 					 	}
  	 					 	free(rtaFull);
@@ -330,12 +320,12 @@ int main(void) {
  					nombreTabla = desempaquetado[0];
  					key = atoi(desempaquetado[1]);
  					value = desempaquetado[2];
-
+ 					log_info(logger,"INSERT %s %i %s",nombreTabla,key,value);
  					resp = mInsert(nombreTabla, key, value);
- 					log_info(logger, "Antes de responder el insert");
+ 					//log_info(logger, "Antes de responder el insert");
  					rta = string_itoa(resp);
  					sendData(cli, rta, sizeof(char)*2);
- 					log_info(logger, "Rta insert %d\n", resp);
+ 					log_info(logger, "Respondi el insert %d\n", resp);
  					free(rta);
  					rtaFull= malloc(2);
 
@@ -344,10 +334,11 @@ int main(void) {
  						rtaFull[1]='\0';
  						if(atoi(rtaFull)==5){
  							mJournal();
+ 							log_info(logger,"empiezo el insert despues del journal");
  							resp = mInsert(nombreTabla, key, value);
  							rta = string_itoa(resp);
  							sendData(cli, rta, sizeof(char)*2);
- 							log_info(logger, "Rta insert después de un journal %d\n", resp);
+ 							log_info(logger, "envie la respuesta del insert %d\n", resp);
  							}
 
  						}
@@ -362,22 +353,25 @@ int main(void) {
  					consistencia = desempaquetado[1];
  					particiones = atoi(desempaquetado[2]);
  					tiempoCompactacion = atol(desempaquetado[3]);
+ 					log_info(logger,"CREATE %s %s %i %ld",nombreTabla, consistencia, particiones, tiempoCompactacion);
  					resp = mCreate(nombreTabla, consistencia, particiones, tiempoCompactacion);
  					rta = string_itoa(resp);
  					sendData(cli, rta, sizeof(char)*2);
+ 					log_info(logger,"Envie la respuesta del create");
  					free(rta);
  					break;
 
  				case 3: //DESCRIBE
  					usleep(config->retardoMem);
 
- 					log_info(logger,"DESCribe");
- 					log_info(logger,"holaa %s",desempaquetado[0]==NULL);
- 					log_info(logger,"DESCribe");
+ 					//log_info(logger,"DESCribe");
+ 					//log_info(logger,"holaa %s",desempaquetado[0]==NULL);
+ 					//log_info(logger,"DESCribe");
  					nombreTabla = desempaquetado[0];
- 					log_info(logger,desempaquetado[0]);
+ 					log_info(logger,"DESCRIBE %s",nombreTabla);
  					rta =mDescribe(nombreTabla);
  					sendData(cli, rta, strlen(rta)+1);
+ 					log_info(logger,"Envie la respuesta del describe");
  					free(rta);
  					break;
 
@@ -385,9 +379,11 @@ int main(void) {
  					usleep(config->retardoMem);
 
  					nombreTabla = desempaquetado[0];
+ 					log_info(logger,"DROP %s",nombreTabla);
  					resp = mDrop(nombreTabla);
  					rta = string_itoa(resp);
  					sendData(cli, rta, sizeof(char)*2);
+ 					log_info(logger,"Envie la respuesta del drop");
  					free(rta);
 
  					break;
@@ -396,17 +392,18 @@ int main(void) {
  					resp = mJournal();
  					rta = string_itoa(resp);
  					sendData(cli, rta, sizeof(char)*2);
+ 					log_info(logger,"Mande respuesta del journal");
  					free(rta);
  					break;
 
  				case 6: //DEVOLVER TABLA DE ACTIVOS
  				 	usleep(config->retardoMem);
  				 	sem_wait(&lockTablaMem);
- 				 	log_info(logger, "Intentando empaquetar");
+ 				 	//log_info(logger, "Intentando empaquetar");
  				 	char *paquete =paqueteVerdadero();
  				 	sem_post(&lockTablaMem);
  				 	sendData(cli, paquete, strlen(paquete)+1);
- 				 	log_info(logger, "Tabla empaquetada %s", paquete);
+ 				 	//log_info(logger, "Tabla empaquetada %s", paquete);
  				 	free(paquete);
  				 	break;
 
@@ -772,7 +769,8 @@ int main(void) {
 	 u_int16_t lfsSock = crearConexionLFS();
 
 	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-	 log_info(logger, "Paquete select %s", paqueteListo);
+	 //log_info(logger, "Paquete select %s", paqueteListo);
+	 log_info(logger, "Para Lissandra: SELECT %s %i", nombreTabla,key);
 	 free(datos);
 	 free(paqueteListo);
 	 char* buffer = malloc(sizeof(char)*2);
@@ -803,118 +801,116 @@ int main(void) {
 
  }
 
- int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value){
+int insertLissandra(char* nombreTabla, long timestamp, u_int16_t key, char* value){
 
-		 char* datos = formatearInsert(nombreTabla, timestamp, key, value);
-		 char* paqueteListo = empaquetar(1, datos);
-		 u_int16_t lfsSock = crearConexionLFS();
-		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-		 log_info(logger, "Paquete insert %s", paqueteListo);
-		 free(datos);
-		 free(paqueteListo);
+	char* datos = formatearInsert(nombreTabla, timestamp, key, value);
+	char* paqueteListo = empaquetar(1, datos);
+	u_int16_t lfsSock = crearConexionLFS();
+	sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+	log_info(logger, "Paquete INSERT %s %ld %i %s",nombreTabla,timestamp,key,value);
+	free(datos);
+	free(paqueteListo);
 
-		 char *buffer = malloc(sizeof(char)*2);
-		 recvData(lfsSock, buffer, sizeof(char));
-		 close(lfsSock);
-		 buffer[1] = '\0';
-		 int rta = atoi(buffer);
-		 free(buffer);
-		 return rta;
+	char *buffer = malloc(sizeof(char)*2);
+	recvData(lfsSock, buffer, sizeof(char));
+	log_info(logger,"Recibi la respuesta de Liss");
+	close(lfsSock);
+	buffer[1] = '\0';
+	int rta = atoi(buffer);
+	free(buffer);
+	return rta;
+}
 
+char* describeLissandra(char* nombreTabla){
 
- }
+	u_int16_t lfsSock = crearConexionLFS();
+	char* describeGlobal = malloc(sizeof(char)*5);
+	strcpy(describeGlobal, "3000");
 
- char* describeLissandra(char* nombreTabla){
+	if(strcmp(nombreTabla, "global")!=0){
+		char* paqueteListo = empaquetar(3, nombreTabla);
+		sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+		log_info(logger, "Paquete DESCRIBE %s", nombreTabla);
+		free(paqueteListo);
+	}
+	else{
 
-	 u_int16_t lfsSock = crearConexionLFS();
-	 char* describeGlobal = malloc(sizeof(char)*5);
-	 strcpy(describeGlobal, "3000");
+		sendData(lfsSock, describeGlobal, strlen(describeGlobal)+1);
+		log_info(logger, "Paquete DESCRIBE");
 
-	 if(strcmp(nombreTabla, "global")!=0){
-		 char* paqueteListo = empaquetar(3, nombreTabla);
-		 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-		 log_info(logger, "Paquete describe con tabla %s", paqueteListo);
-		 free(paqueteListo);
+	}
+	free(describeGlobal);
 
-	 }
-	 else{
+	//recibir
+	char* buffer = malloc(sizeof(char)*2);
+	recvData(lfsSock, buffer, sizeof(char));
+	buffer[1]='\0';
 
-		 sendData(lfsSock, describeGlobal, strlen(describeGlobal)+1);
-		 log_info(logger, "Paquete describe %s", describeGlobal);
+	if(atoi(buffer) == 0){
+		char* tam = malloc(sizeof(char)*5);
+		recvData(lfsSock, tam, sizeof(char)*4);
+		tam[4] = '\0';
+		int tamanio = atoi(tam);
+		char* listaMetadatas = malloc(tamanio+1);
+		recvData(lfsSock, listaMetadatas, tamanio);
+		log_info(logger, "Respuesta del describe %s", listaMetadatas);
+		close(lfsSock);
+		free(buffer);
+		free(tam);
 
-	 }
-	 free(describeGlobal);
+		return listaMetadatas;
+	}
+	else{
+		return buffer;
+	}
 
+}
 
-	 //recibir
-	 char* buffer = malloc(sizeof(char)*2);
-	 recvData(lfsSock, buffer, sizeof(char));
-	 buffer[1]='\0';
+int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
+	char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
+	char* paqueteListo = empaquetar(2, datos);
+	u_int16_t lfsSock = crearConexionLFS();
+	if(lfsSock == -1){
+		log_error(logger, "No se pudo conectar con LFS");
+		return 1;
+	}
+	sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+	//log_info(logger, "Paquete create %s", paqueteListo);
+	log_info(logger,"paquete CREATE %s %s %i %ld",nombreTabla,criterio,nroParticiones,tiempoCompactacion);
+	free(datos);
+	free(paqueteListo);
 
-	 if(atoi(buffer) == 0){
-		 char* tam = malloc(sizeof(char)*5);
-		 recvData(lfsSock, tam, sizeof(char)*4);
-		 tam[4] = '\0';
-		 int tamanio = atoi(tam);
-		 char* listaMetadatas = malloc(tamanio+1);
-		 recvData(lfsSock, listaMetadatas, tamanio);
+	char* buffer = malloc(sizeof(char)*2);
+	recvData(lfsSock, buffer, sizeof(char));
+	log_info(logger,"Recibi la respuesta del create de Liss");
+	buffer[1] = '\0';
+	close(lfsSock);
+	int rta = atoi(buffer);
+	log_info(logger, "Respuesta del create %d", rta);
+	free(buffer);
+	return rta;
+}
 
-		 close(lfsSock);
-		 log_info(logger, "Respuesta del describe %s", listaMetadatas);
-		 free(buffer);
-		 free(tam);
+int dropLissandra(char* nombreTabla){
+	char* paqueteListo = empaquetar(4, nombreTabla);
+	u_int16_t lfsSock = crearConexionLFS();
+	if(lfsSock == -1){
+		log_error(logger, "No se pudo conectar con LFS");
+		return 1;
+	}
+	sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
+	log_info(logger, "Paquete DROP %s", nombreTabla);
+	free(paqueteListo);
 
-		 return listaMetadatas;
-	 }
-	 else{
-		 return buffer;
-	 }
-
- }
-
- int createLissandra(char* nombreTabla, char* criterio, u_int16_t nroParticiones, long tiempoCompactacion){
-	 char* datos = formatearCreate(nombreTabla, criterio, nroParticiones, tiempoCompactacion);
-	 char* paqueteListo = empaquetar(2, datos);
-	 u_int16_t lfsSock = crearConexionLFS();
-	 if(lfsSock == -1){
-		 log_error(logger, "No se pudo conectar con LFS");
-		 return 1;
-	 }
-	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-	 log_info(logger, "Paquete create %s", paqueteListo);
-	 free(datos);
-	 free(paqueteListo);
-
-	 char* buffer = malloc(sizeof(char)*2);
-	 recvData(lfsSock, buffer, sizeof(char));
-	 buffer[1] = '\0';
-	 close(lfsSock);
-	 int rta = atoi(buffer);
-	 log_info(logger, "Respuesta del create %d", rta);
-	 free(buffer);
-	 return rta;
- }
-
- int dropLissandra(char* nombreTabla){
-	 char* paqueteListo = empaquetar(4, nombreTabla);
-	 u_int16_t lfsSock = crearConexionLFS();
-	 if(lfsSock == -1){
-	 	 log_error(logger, "No se pudo conectar con LFS");
-	 	 return 1;
-	  }
-	 sendData(lfsSock, paqueteListo, strlen(paqueteListo)+1);
-	 log_info(logger, "Paquete drop %s", paqueteListo);
-	 free(paqueteListo);
-
-	 char* buffer = malloc(sizeof(char)*2);
-	 recvData(lfsSock, buffer, sizeof(char));
-	 buffer[1] = '\0';
-	 close(lfsSock);
-	 int rta = atoi(buffer);
-	 free(buffer);
-	 return rta;
-
- }
+	char* buffer = malloc(sizeof(char)*2);
+	recvData(lfsSock, buffer, sizeof(char));
+	log_info(logger,"Recibi la respuesta del drop de Liss");
+	buffer[1] = '\0';
+	close(lfsSock);
+	int rta = atoi(buffer);
+	free(buffer);
+	return rta;
+}
 
 
  //---------------------------------------------------------//
@@ -1187,7 +1183,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 	if(strlen(valor)+1 >maxValue){
 		log_info(logger, "Se intentó insertar un value mayor al tamaño permitido");
 		sem_post(&semJournal);
-		log_info(logger, "Pasó el lock de salida");
+		//log_info(logger, "Pasó el lock de salida");
 		return 1;
 	}
 	log_info(logger, "Empieza el insert");
@@ -1209,7 +1205,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 				pthread_mutex_unlock(&lockLRU);
 				sem_post(&semJournal);
 				free(pag);
-				log_info(logger, "Pasó el lock de salida");
+				//log_info(logger, "Pasó el lock de salida");
 				return 2;
 			}
 			eliminarDeReemplazables(pag->nroMarco);
@@ -1240,7 +1236,7 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 			sem_post(&semJournal);
 			pthread_mutex_unlock(&lockLRU);
 			free(pag);
-			log_info(logger, "Pasó el lock de salida");
+			//log_info(logger, "Pasó el lock de salida");
 			return 2;
 		}
 		eliminarDeReemplazables(pag->nroMarco);
@@ -1254,13 +1250,13 @@ int mInsert(char* nombreTabla, u_int16_t key, char* valor){
 		agregarPagina(seg,pag);
 		timestampActual = time(NULL);
 		agregarDato(timestampActual, key, valor, pag);
-		log_info(logger, "VOLVI DE AGREGAR DATO");
+		//log_info(logger, "VOLVI DE AGREGAR DATO");
 		pag->modificado = 1;
 		pthread_mutex_unlock(&seg->lockSegmento);
 	}
 	log_info(logger, "Se inserto al segmento %s el valor %s", nombreTabla, valor);
 	sem_post(&semJournal);
-	log_info(logger, "Pasó el lock de salida");
+	log_info(logger, "Termino el insert");
 	return 0;
 }
 
@@ -1279,7 +1275,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 	char* noExiste =string_duplicate("3");
 	char* estoyFull = string_duplicate("2");
 
-	log_info(logger, "Se pidio un select de la tabla %s key %d", nombreTabla, key);
+	//log_info(logger, "Se pidio un select de la tabla %s key %d", nombreTabla, key);
 	if(nuevo!= NULL){
 		pNueva = buscarPaginaConKey(nuevo,key);
 
@@ -1299,7 +1295,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			log_info(logger, "Encontro segmento y pagina");
 
 			sem_post(&semJournal);
-			log_info(logger, "Pasó el lock de salida");
+			//log_info(logger, "Pasó el lock de salida");
 			free(estoyFull);
 			free(noExiste);
 			return valor;
@@ -1311,7 +1307,7 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 				sem_post(&semJournal);
 				pthread_mutex_unlock(&lockLRU);
 				free(pNueva);
-				log_info(logger, "Pasó el lock de salida");
+				//log_info(logger, "Pasó el lock de salida");
 				free(noExiste);
 				return estoyFull;
 
@@ -1332,14 +1328,14 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 
 				log_info(logger, "Se seleccionó el valor %s", valorPagNueva);
 				sem_post(&semJournal);
-				log_info(logger, "Pasó el lock de salida");
+				//log_info(logger, "Pasó el lock de salida");
 				free(estoyFull);
 				free(noExiste);
 				return valorPagNueva;
 			}
 			else{//si lfs no tenía el valor
 				sem_post(&semJournal);
-				log_info(logger, "Pasó el lock de salida");
+				//log_info(logger, "Pasó el lock de salida");
 				//free de la pagina que se creo al pedo
 				free(estoyFull);
 				return noExiste;
@@ -1448,7 +1444,7 @@ int mJournal(){
 	for(int i = 0; i<config->multiprocesamiento; i++){
 		sem_wait(&semJournal);
 	}
-
+	log_info(logger,"empece el journal");
 
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
 		char* nombreSegmento = malloc(sizeof(char)*100);
@@ -1515,7 +1511,7 @@ int mJournal(){
 
 		}
 		pthread_mutex_unlock(&lockJournal);
-
+		log_info(logger,"Termine definitivamente el journal");
 
 		return 0;
 	}
@@ -1575,7 +1571,7 @@ void desempaquetarMemorias(char* paquete){
 				obtener->activa=1;
 			}else{
 				memorias *nueva=crearMemoria(split[1],puerto,id,1);
-				log_info(logger,"se agrego %s a la lista",split[1]);
+				//log_info(logger,"se agrego %s a la lista",split[1]);
 				list_add(memoriasConocidas,nueva);
 			}
 			free(paquete);
@@ -1586,7 +1582,7 @@ void desempaquetarMemorias(char* paquete){
 			}
 			liberarSubstrings(split);
 		}else{
-			log_info(logger,"Inconvenientes a la hora de desempaquetar la tabla de memorias");
+			//log_info(logger,"Inconvenientes a la hora de desempaquetar la tabla de memorias");
 			break;
 		}
 	}
@@ -1596,7 +1592,7 @@ char *empaquetarMemorias(){
 	char *paquete=NULL;
 	void empaquetando(memorias *aEmpaquetar){
 		char *paquetito=string_from_format("%i;%s;%i",aEmpaquetar->nroMem,aEmpaquetar->ip,aEmpaquetar->puerto);
-		log_info(logger,"paquetito= %s",paquetito);
+		//log_info(logger,"paquetito= %s",paquetito);
 		if(paquete==NULL){
 			paquete=string_duplicate(paquetito);
 		}else{
@@ -1638,15 +1634,15 @@ void recibirMemorias(int cliente){
 	char* tamanioTabla=malloc(4);
 	recvData(cliente,tamanioTabla,3);
 	tamanioTabla[3] = '\0';
-	log_info(logger,"tamanio de tabla recibido %s",tamanioTabla);
+	//log_info(logger,"tamanio de tabla recibido %s",tamanioTabla);
 	char* buffer=malloc(atoi(tamanioTabla)+1);
 	recvData(cliente,buffer,atoi(tamanioTabla));
 	free(tamanioTabla);
-	log_info(logger, "PAQUETE RECIBIDO %s",buffer);
+	//log_info(logger, "PAQUETE RECIBIDO %s",buffer);
 	sem_wait(&lockTablaMem);
-	log_info(logger, "Se empieza a desempaquetar las memorias recibidas");
+	//log_info(logger, "Se empieza a desempaquetar las memorias recibidas");
 	desempaquetarMemorias(buffer);  //aca actualizo mi tabla con lo que me envian
-	log_info(logger, "Se termino de desempaquetar las memorias recibidas");
+	//log_info(logger, "Se termino de desempaquetar las memorias recibidas");
 	sem_post(&lockTablaMem);
 }
 
@@ -1656,15 +1652,15 @@ void enviarMemorias(char *ip,int puerto){
 		sem_wait(&lockTablaMem);
 		desactivarMemoria(ip,puerto);
 		sem_post(&lockTablaMem);
-		log_info(logger,"la semilla de ip %s y puerto %i no esta activa",ip,puerto);
+		//log_info(logger,"la semilla de ip %s y puerto %i no esta activa",ip,puerto);
 	}else{
 		sem_wait(&lockTablaMem);
-		log_info(logger,"Empaquetando mis memorias para mandar");
+		//log_info(logger,"Empaquetando mis memorias para mandar");
 		char *paquete =paqueteVerdadero();
 		sem_post(&lockTablaMem);
-		log_info(logger,"Intentando enviar mi paquete de memorias");
+		//log_info(logger,"Intentando enviar mi paquete de memorias");
 		sendData(socket,paquete,strlen(paquete)+1);
-		log_info(logger, "Se envio el Paquete entero %s", paquete);
+		//log_info(logger, "Se envio el Paquete entero %s", paquete);
 		free(paquete);
 		close(socket);
 	}
@@ -1711,7 +1707,7 @@ void mGossip(){
 			sem_wait(&lockTablaMem);
 			desactivarMemoria(semilla->ip,semilla->puerto);
 			sem_post(&lockTablaMem);
-			log_info(logger,"la semilla de ip %s y puerto %i no esta activa",semilla->ip,semilla->puerto);
+			//log_info(logger,"la semilla de ip %s y puerto %i no esta activa",semilla->ip,semilla->puerto);
 		}else{
 		//recibir tabla
 			//agregar las nuevas memorias que recibo
