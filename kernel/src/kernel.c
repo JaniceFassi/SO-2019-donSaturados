@@ -369,13 +369,15 @@ int mySelect(char * table, char *key){
 
 	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	if(metadata==NULL){
+		log_info(logger,"ERROR - no existe la tabla especificada");
+		sem_post(&semMetadata);
+		return 1;
+	}
 	char *cons = string_duplicate(metadata->consistency);
 	sem_post(&semMetadata);
 
-	if(metadata==NULL){
-		log_info(logger,"ERROR - no existe la tabla especificada");
-		return 1;
-	}
+
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 
 	sem_wait(&semMemorias);
@@ -509,13 +511,15 @@ int insert(char* table ,char* key ,char* value){
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	if(metadata==NULL){
+		log_info(logger,"ERROR - no existe la tabla especificada");
+		sem_post(&semMetadata);
+		return 1;
+	}
+
 	char *cons = string_duplicate(metadata->consistency);
 	sem_post(&semMetadata);
 
-	if(metadata==NULL){
-		log_info(logger,"ERROR - no existe la tabla especificada");
-		return 1;
-	}
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
@@ -749,6 +753,7 @@ int describe(char *table){
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
 	memAsignada= verMemoriaLibre(memorias);
+	log_info(logger, "Memoria seleccionada para el describe %i", memAsignada->id);
 	sem_post(&semMemorias);
 	//ver si tengo que usar una memoria asignada al criterio de la tabla
 	int c=0;
@@ -803,13 +808,16 @@ int describe(char *table){
 		while(i<tr){
 			char *t=malloc(4);
 			recvData(sock,t,3);
-			char *buffer=malloc(atoi(t)+1);
-			recvData(sock,buffer,atoi(t));
-			log_info(loggerConsola,"buffer : %s",buffer);//ACA SIEMPRE LLEGA BASURA PERO LO GUARDA BIEN
+			t[3]='\0';
+			int tam = atoi(t);
+			char *buffer=malloc(tam+1);
+			recvData(sock,buffer,tam);
+			char *realBuffer= string_substring(buffer, 0, tam);
+			log_info(loggerConsola,"buffer : %s",realBuffer);//ACA SIEMPRE LLEGA BASURA PERO LO GUARDA BIEN
 //			log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
 			//REVISAR
 			struct metadataTabla *metadata= malloc(sizeof(struct metadataTabla));
-			char ** split = string_split(buffer,";");
+			char ** split = string_split(realBuffer,";");
 			metadata->table= string_duplicate(split[0]);
 			metadata->consistency=string_duplicate(split[1]);
 			metadata->numPart=atoi(split[2]);
@@ -821,6 +829,7 @@ int describe(char *table){
 
 			free(t);
 			free(buffer);
+			free(realBuffer);
 			free(split[0]);
 			free(split[1]);
 			free(split[2]);
@@ -832,10 +841,13 @@ int describe(char *table){
 	else{
 		char *t=malloc(4);
 		recvData(sock,t,3);
-		char *buffer=malloc(atoi(t)+1);
-		recvData(sock,buffer,atoi(t));
+		t[3]='\0';
+		int tam = atoi(t);
+		char *buffer=malloc(tam+1);
+		recvData(sock,buffer,tam);
 		struct metadataTabla *metadata= malloc(sizeof(struct metadataTabla));
-		char ** split = string_split(buffer,";");
+		char *realBuffer= string_substring(buffer, 0, tam);
+		char ** split = string_split(realBuffer,";");
 		metadata->table= string_duplicate(split[0]);
 		metadata->consistency=string_duplicate(split[1]);
 		metadata->numPart=atoi(split[2]);
@@ -891,13 +903,15 @@ int drop(char*table){
 	struct metadataTabla * metadata = malloc(sizeof(struct metadataTabla));
 	sem_wait(&semMetadata);
 	metadata = buscarMetadataTabla(table);
+	if(metadata==NULL){
+		log_info(logger,"ERROR - no existe la tabla especificada");
+		sem_post(&semMetadata);
+		return 1;
+	}
 	char *cons = string_duplicate(metadata->consistency);
 	sem_post(&semMetadata);
 
-	if(metadata==NULL){
-		log_info(logger,"ERROR - no existe la tabla especificada");
-		return 1;
-	}
+
 
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
@@ -950,7 +964,7 @@ int drop(char*table){
 
 	free(msj);
 	free(resultado);
-	free(metadata);
+	//free(metadata);
 //	free(memAsignada);
 	close(sock);
 	return 0;
@@ -1096,7 +1110,7 @@ int metrics(int modo){
 
 void *metricasAutomaticas(){
 	while(terminaHilo==0){
-		sleep(30000);
+		sleep(30);
 		metrics(0);
 		//semaforos
 		inicializarMetricas();
@@ -1185,7 +1199,7 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 	//sem_post(&semMetadata);
 	log_info(loggerConsola,"consistency %s",m->consistency);
 	log_info(loggerConsola,"table %s",m->table);
-	log_info(loggerConsola," compTime %d",m->compTime);
+	log_info(loggerConsola,"compTime %d",m->compTime);
 	log_info(loggerConsola,"numPart %i",m->numPart);
 }
 
