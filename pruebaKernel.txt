@@ -1,0 +1,34 @@
+ADD MEMORY 1 TO SC
+ADD MEMORY 2 TO SHC
+ADD MEMORY 4 TO SHC
+ADD MEMORY 3 TO EC
+ADD MEMORY 4 TO EC
+
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/animales.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/comidas.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/internet_browser_falla.lql
+
+METRICS
+
+cambia el quantum a 2 // FALLA
+
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/misc_1.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/misc_2.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/cosas_falla.lql
+
+Desconectar memoria 3
+
+INSERT POSTRES 63 "Flan"
+INSERT COLORES 326 "Gris"
+SELECT COSAS 332
+SELECT SERIES 89
+
+Desconectar memoria 2
+Reconectar la 3
+ADD MEMORY 3 TO SHC
+
+METRICS
+
+JOURNAL
+
+
