@@ -85,7 +85,7 @@ t_list* memoriasConocidas;
 t_list* semillas;
 void* memoria;
 int offsetMarco;
-fin;
+int fin;
 u_int16_t maxValue;
 int cantMarcos;
 estructuraConfig *config;

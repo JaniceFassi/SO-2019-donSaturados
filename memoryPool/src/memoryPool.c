@@ -24,7 +24,6 @@ int main(void) {
 	pthread_create(&inotify, NULL, correrInotify, NULL);
 	pthread_t gossipTemporal;
 	pthread_create(&gossipTemporal, NULL, gossipProgramado, NULL);
-	int *fin;
 	pthread_t hiloConsola;
 	pthread_create(&hiloConsola, NULL, consola, NULL);
 	pthread_t gestorConexiones;
@@ -52,13 +51,23 @@ int main(void) {
 
  int inicializar(){
 	logger = init_logger();
+
+	log_info(logger, "Ingrese el nro de memoria: ");
+	int nromem;
+	scanf("%d", &nromem);
+
+	pathConfig = malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memn.config")+1);
+	if(nromem == 1){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/mem1.config");
+	}else{
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/mem2.config");
+	}
+
 	t_config* configuracion = read_config();
 	config = malloc(sizeof(estructuraConfig));
 	int tamanioMemoria = config_get_int_value(configuracion, "TAM_MEM");
 	init_configuracion(configuracion);
 
-	pathConfig = malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config")+1);
-	strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
 
 
 	pthread_mutex_init(&lockTablaSeg, NULL);
@@ -199,7 +208,7 @@ int main(void) {
 }
 
  t_config* read_config() {
-	return config_create("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memoryPool.config");
+	return config_create(pathConfig);
 }
 
  t_log* init_logger() {
@@ -617,9 +626,12 @@ int main(void) {
  }
 
  void* journalProgramado(void *arg){
-
+	int retardoJ;
  	while(1){
- 		usleep(config->retardoJournal);
+ 		pthread_mutex_lock(&lockConfig);
+ 		retardoJ = config->retardoJournal;
+ 		pthread_mutex_unlock(&lockConfig);
+ 		usleep(retardoJ);
  		log_info(logger,"Se realiza un journal programado");
  		mJournal();
 
@@ -630,6 +642,7 @@ int main(void) {
 
  void* gossipProgramado(void* arg){
 	prepararGossiping();
+	int retardoGoss;
 	while(1){
 		log_info(logger, "Se realiza un gossip programado");
 	 	if(list_is_empty(semillas)){
@@ -640,7 +653,10 @@ int main(void) {
 	 	sem_wait(&lockTablaMem);
 	 	mostrarActivas();
 	 	sem_post(&lockTablaMem);
-	 	usleep(config->retardoGossiping);
+	 	pthread_mutex_lock(&lockConfig);
+	 	retardoGoss = config->retardoGossiping;
+	 	pthread_mutex_unlock(&lockConfig);
+	 	usleep(retardoGoss);
 	}
 
  	return NULL;
