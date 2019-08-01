@@ -5,7 +5,10 @@
 
 int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long param_timestamp){
 	//RETARDO
-	usleep(configLissandra->retardo*1000);
+	sem_wait(inotifyRetardo);
+	int retardo=configLissandra->retardo*1000;
+	sem_post(inotifyRetardo);
+	usleep(retardo);
 	//Verificar que la tabla exista en el file system.
 	char *path=nivelUnaTabla(param_nameTable, 0);
 	if(folderExist(path)==1){
@@ -47,7 +50,10 @@ int insert(char *param_nameTable, u_int16_t param_key, char *param_value, long p
 }
 
 char *lSelect(char *nameTable, u_int16_t key){
-	usleep(configLissandra->retardo*1000);
+	sem_wait(inotifyRetardo);
+	int retardo=configLissandra->retardo*1000;
+	sem_post(inotifyRetardo);
+	usleep(retardo);
 	char *path=nivelUnaTabla(nameTable, 0);
 	char *valor=NULL;
 	t_list *obtenidos=list_create();
@@ -149,7 +155,10 @@ char *lSelect(char *nameTable, u_int16_t key){
 }
 //*****************************************************************************************************
 int create(char* nameTable, char* consistency , u_int16_t numPartition,long timeCompaction){
-	usleep(configLissandra->retardo*1000);
+	sem_wait(inotifyRetardo);
+	int retardo=configLissandra->retardo*1000;
+	sem_post(inotifyRetardo);
+	usleep(retardo);
 	char *nombre=string_duplicate(nameTable);
 	string_to_upper(nombre);	//solo funciona si escribis en minuscula
 	char *path=nivelUnaTabla(nombre, 0);
@@ -210,7 +219,10 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 }
 
 t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE ES NULL DEBERIA BASTAR
-	usleep(configLissandra->retardo*1000);
+	sem_wait(inotifyRetardo);
+	int retardo=configLissandra->retardo*1000;
+	sem_post(inotifyRetardo);
+	usleep(retardo);
 	t_list *tablas=list_create();
 	if(nameTable==NULL){
 		if(list_is_empty(directorioP)){
@@ -250,7 +262,10 @@ t_list *describe(char* nameTable){//PREGUNTAR, PORQUE 2 ATRIBUTOS, SI NAMETABLE 
 }
 
 int drop(char* nameTable){
-	usleep(configLissandra->retardo*1000);
+	sem_wait(inotifyRetardo);
+	int retardo=configLissandra->retardo*1000;
+	sem_post(inotifyRetardo);
+	usleep(retardo);
 	//Verificar que la tabla exista en el file system.
 	char *pathFolder=nivelUnaTabla(nameTable,0);
 	char *path;

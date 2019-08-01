@@ -89,7 +89,8 @@ sem_t *criticaTablaGlobal;
 sem_t *criticaCantBloques;
 sem_t *criticaBitmap;
 sem_t *sem_dump;
-
+sem_t *inotifyRetardo;
+sem_t *inotifyDump;
 
 //FUNCIONES DE TABLA DE ARCHIVOS GLOBAL
 metaArch *abrirArchivo(char *tabla,int nombre,int extension);

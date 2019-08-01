@@ -15,6 +15,10 @@ void inicializarSemGlob(){
 	sem_init(criticaBitmap,0,1);
 	sem_dump=malloc(sizeof(sem_t));
 	sem_init(sem_dump,0,1);
+	inotifyRetardo=malloc(sizeof(sem_t));
+	sem_init(inotifyRetardo,0,1);
+	inotifyDump=malloc(sizeof(sem_t));
+	sem_init(inotifyDump,0,1);
 }
 
 void liberarSemaforos(){
@@ -30,6 +34,10 @@ void liberarSemaforos(){
 	sem_destroy(criticaBitmap);
 	free(sem_dump);
 	sem_destroy(sem_dump);
+	free(inotifyDump);
+	sem_destroy(inotifyDump);
+	free(inotifyRetardo);
+	sem_destroy(inotifyRetardo);
 }
 
 /************************************************************************************************/
@@ -447,18 +455,12 @@ void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos){
 
 void modificarConfig(){
 	t_config *config = config_create(pathInicial);
-	char *ip=config_get_string_value(config, "IP");
-	configLissandra->Ip=string_duplicate(ip);
-	configLissandra->puerto=config_get_int_value(config,"PORT");
-	char *montaje= config_get_string_value(config,"PUNTO_MONTAJE");
-	configLissandra->puntoMontaje=string_duplicate(montaje);
-	configLissandra->tamValue=config_get_int_value(config,"TAMVALUE");
-	configLissandra->id=config_get_int_value(config,"ID");
-	configLissandra->idEsperado=config_get_int_value(config,"ID_ESPERADO");
+	sem_wait(inotifyDump);
 	configLissandra->tiempoDump=config_get_long_value(config,"TIEMPO_DUMP");
+	sem_post(inotifyDump);
+	sem_wait(inotifyRetardo);
 	configLissandra->retardo= config_get_int_value(config, "RETARDO");
-	free(montaje);
-	free(ip);
+	sem_post(inotifyRetardo);
 	config_destroy(config);
 	log_info(logger,"Se modifico el archivo de configuracion.");
 }

@@ -2,8 +2,12 @@
 #include "Compactor.h"
 
 void *dump(){
+	long tDump;
 	while(1){
-		usleep(configLissandra->tiempoDump*1000);
+		sem_wait(inotifyDump);
+		tDump=configLissandra->tiempoDump*1000;
+		sem_post(inotifyDump);
+		usleep(tDump);
 		log_info(logger,"Se empezo a hacer el dump.");
 		sem_wait(sem_dump);
 		if(list_is_empty(memtable)){
