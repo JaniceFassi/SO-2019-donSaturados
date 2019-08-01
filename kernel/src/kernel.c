@@ -436,8 +436,8 @@ int mySelect(char * table, char *key){
 	while(sock==-1 && c<5 && memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		if(sock==-1){
-			sacarMemoriaCaida(memAsignada);
 			sem_wait(&semMemorias);
+			sacarMemoriaCaida(memAsignada);
 			memAsignada= asignarMemoriaSegunCriterio(cons, key);
 			sem_post(&semMemorias);
 		}
@@ -582,8 +582,8 @@ int insert(char* table ,char* key ,char* value){
 		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 
 		if(sock==-1){
-			sacarMemoriaCaida(memAsignada);
 			sem_wait(&semMemorias);
+			sacarMemoriaCaida(memAsignada);
 			memAsignada= asignarMemoriaSegunCriterio(cons , key);
 			sem_post(&semMemorias);
 		}
@@ -705,8 +705,8 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	while(sock==-1 && c<5&& memAsignada!=NULL){
 		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		if(sock==-1){
-			sacarMemoriaCaida(memAsignada);
 			sem_wait(&semMemorias);
+			sacarMemoriaCaida(memAsignada);
 			memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
 			sem_post(&semMemorias);
 		}
@@ -771,11 +771,11 @@ int journal(){
 			close(sock);
 		}
 	}
-
+	sem_wait(&semMemorias);
 	list_iterate(criterioEC,(void*)envioJournal);
 	list_iterate(criterioSC,(void*)envioJournal);
 	list_iterate(criterioSHC,(void*)envioJournal);
-
+	sem_post(&semMemorias);
 	return ret;
 }
 
@@ -822,8 +822,8 @@ int describe(char *table){
 		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 
 		if(sock==-1){
-			sacarMemoriaCaida(memAsignada);
 			sem_wait(&semMemorias);
+			sacarMemoriaCaida(memAsignada);
 			memAsignada= verMemoriaLibre(memorias);
 			sem_post(&semMemorias);
 		}
@@ -986,8 +986,8 @@ int drop(char*table){
 	while(sock==-1 && c<5 && memAsignada!=NULL){
 			sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
 		if(sock==-1){
-			sacarMemoriaCaida(memAsignada);
 			sem_wait(&semMemorias);
+				sacarMemoriaCaida(memAsignada);
 				memAsignada= asignarMemoriaSegunCriterio(cons,NULL);
 			sem_post(&semMemorias);
 		}
@@ -1338,7 +1338,6 @@ struct memoria *verMemoriaLibre(t_list *lista){
 }
 
 void sacarMemoriaCaida(struct memoria *m){
-	sem_wait(&semMemorias);
 	log_info(logger,"La memoria %i esta caida, se procedera a eliminarla de los criterios asociados",m->id);
 	bool sacar(struct memoria * mem){
 		return mem->id==m->id;
@@ -1364,7 +1363,6 @@ void sacarMemoriaCaida(struct memoria *m){
 			list_iterate(criterioSHC,(void*)envioJournal);
 	}
 	m->estado=1;//seteo que no esta activa (en el gossip puedo volverla a poner activa)
-	sem_post(&semMemorias);
 }
 
 struct metadataTabla * buscarMetadataTabla(char* table){
@@ -1428,7 +1426,9 @@ void *gossiping(){
 			sem_post(&semMemorias);
 			sock= conexionMemoria(m->puerto,m->ip);
 			if(sock==-1){
+				sem_wait(&semMemorias);
 				sacarMemoriaCaida(m);
+				sem_post(&semMemorias);
 			}
 		}
 		if(sock!=-1){
