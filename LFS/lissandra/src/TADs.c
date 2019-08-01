@@ -205,6 +205,9 @@ t_list *deChar_Registros(char *buffer){
 		}
 		free(substring);
 	}
+	if(buffer !=NULL){
+		free(buffer);
+	}
 	return registros;
 }
 
@@ -953,7 +956,7 @@ Tabla *find_tabla_by_name_in(char *name,t_list *l) {
 
 Tabla *crearTabla(char *nombre,u_int16_t key, char *val, long time){
 	Tabla *nueva=malloc(sizeof(Tabla));
-	nueva->nombre=nueva->nombre=string_duplicate(nombre);
+	nueva->nombre=string_duplicate(nombre);
 	nueva->registros=list_create();
 	list_add(nueva->registros,createRegistry(key,val,time));
 	return nueva;

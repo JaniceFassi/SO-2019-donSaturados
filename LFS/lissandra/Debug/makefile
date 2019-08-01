@@ -26,7 +26,7 @@ endif
 all: Lissandra
 
 dependents:
-	-cd /home/utnso/tp-2019-1c-donSaturados/sharedLibrary/Debug && $(MAKE) clean all
+	-cd /home/utnso/tp-2019-1c-donSaturados/sharedLibrary/Debug && $(MAKE) all
 
 # Tool invocations
 Lissandra: $(OBJS) $(USER_OBJS) /home/utnso/tp-2019-1c-donSaturados/sharedLibrary/Debug/libsharedLibrary.so
