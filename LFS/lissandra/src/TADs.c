@@ -205,9 +205,6 @@ t_list *deChar_Registros(char *buffer){
 		}
 		free(substring);
 	}
-	if(buffer !=NULL){
-		free(buffer);
-	}
 	return registros;
 }
 
