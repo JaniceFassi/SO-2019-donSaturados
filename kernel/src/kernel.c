@@ -8,9 +8,10 @@ int main(void) {
 	sem_init(&semMemorias,0,1);
 	sem_init(&semMetadata,0,1);
 	sem_init(&semMetricas,0,1);
+	sem_init(&semConfig,0,1);
 	srand(time(NULL));
 	logger = init_logger(0);
-	loggerConsola = init_logger(1);
+
 	config = read_config();
 	inicializarColas();
 	inicializarListas();
@@ -36,14 +37,9 @@ int main(void) {
 	m1->cantS=0;
 
 	list_add(memorias,m1);
-//	list_add(criterioSC,m1);
-//	list_add(criterioEC,m1);
-//	list_add(criterioSHC,m1);
-//	pruebas();
-
 
 	int limiteProcesamiento=config_get_int_value(config, "MULTIPROCESAMIENTO");
-	//config_destroy(config);
+
 	pthread_t hilos[limiteProcesamiento];
 	int i=0;
 	while(i<limiteProcesamiento){
@@ -59,10 +55,9 @@ int main(void) {
 	pthread_create(&hiloGossip, NULL, (void*)gossiping, NULL);
 	pthread_t hiloInotify;
 	pthread_create(&hiloInotify, NULL, (void*)inotifyKernel, NULL);
-//	run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_1.lql");
-	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/misc_2.lql");
-	//run("/home/utnso/Descargas/1C2019-Scripts-lql-checkpoint-master/películas.lql");
+
 	apiKernel();
+
 	i=0;
 	if(queue_size(ready)!=0){
 		while(i<limiteProcesamiento){
@@ -71,23 +66,44 @@ int main(void) {
 		}
 	}
 
-//	mostrarResultados();
 	destruir();
 
-//	ejecutarScripts();
 
 	return EXIT_SUCCESS;
 }
 
 t_log* init_logger(int i) {
-	if(i==0){
 	return log_create("kernel.log", "kernel",1, LOG_LEVEL_INFO);
-	}
-	else return log_create("kernel.log", "kernel",1, LOG_LEVEL_INFO);
 }
 
-t_config* read_config() {
-	return config_create("/home/utnso/tp-2019-1c-donSaturados/kernel/kernel.config");
+t_config* read_config(){
+	int c;
+	printf("Ingrese el número de la configuracion a utilizar:");
+	printf("\n1- Prueba base \n2- Prueba kernel\n3- Prueba lfs \n4- Prueba memoria\n5- Prueba stress");
+	while(1){
+		scanf("%i",&c);
+		switch(c){
+		case 1:
+			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/kernel");
+			break;
+		case 2:
+			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/kernel");
+			break;
+		case 3:
+			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/kernel");
+			break;
+		case 4:
+			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/kernel");
+			break;
+		case 5:
+			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/kernel");
+			break;
+		default:
+			printf("Numero invalido, por favor ingrese de nuevo");
+			break;
+		}
+	}
+	return NULL;
 }
 
 void apiKernel(){
@@ -99,7 +115,7 @@ void apiKernel(){
 			run(split[1]);
 		}
 		else{
-			if(string_starts_with(linea,"EXIT")||strcmp(linea,"")==0){
+			if(string_starts_with(linea,"EXIT")==0){
 				terminaHilo=1;
 				return;
 			}
@@ -130,6 +146,7 @@ int conexionMemoria(int puerto, char*ip){
 }
 
 void run(char *path){
+	sem_wait(&semColasMutex);
 	queue_push(new,path);
 	log_info(logger,"Script con el path %s entro a cola new",path);
 
@@ -144,7 +161,6 @@ void run(char *path){
 
 	char * pathReady=queue_pop(new);
 	nuevo->input=string_from_format("%s", pathReady);
-	sem_wait(&semColasMutex);
 	queue_push(ready,nuevo);
 	sem_post(&semColasMutex);
 	sem_post(&semColasContador);
@@ -197,6 +213,10 @@ void ejecutarScripts(){
 					size_t a=1024;
 					char *linea=NULL;
 					int lineasEjecutadas=0;
+					sem_wait(&semConfig);
+					int quantumAux = quantum;
+					sem_post(&semConfig);
+
 					getline(&linea,&a,f);
 					do{
 						resultado=parsear(linea);
@@ -207,10 +227,10 @@ void ejecutarScripts(){
 						execNuevo->lineasLeidas++;
 						free(linea);
 						linea=NULL;
-					}while(getline(&linea,&a,f)!=EOF && lineasEjecutadas<quantum && resultado==0);
+					}while(getline(&linea,&a,f)!=EOF && lineasEjecutadas<quantumAux && resultado==0);
 					free(linea);
 					if(!feof(f)){
-						if(lineasEjecutadas>=quantum && resultado==0){
+						if(lineasEjecutadas>=quantumAux && resultado==0){
 							sem_wait(&semColasMutex);
 							queue_pop(exec);
 							queue_push(ready,execNuevo);
@@ -266,44 +286,64 @@ int parsear(char * aux){
 	log_info(logger,linea);
 	if(string_starts_with(linea,"SELECT")){
 		split = string_split(linea," ");
-		if(esNumero(split[2])==0){
-			resultado=mySelect(split[1],split[2]);
+		if(verificarParametros(split,3)==0){
+			if(esNumero(split[2])==0){
+				resultado=mySelect(split[1],split[2]);
+			}
+			else{
+				log_error(logger,"ERROR - La key debe ser numérica");
+			}
 		}
 		else{
-			log_error(logger,"ERROR - La key debe ser numérica");
+			log_info(logger,"ERROR - La cantidad de parametros es incorrecta");
 		}
 	}
 	if(string_starts_with(linea,"INSERT")){
 		split = string_n_split(linea,4," ");
-		if(esNumero(split[2])==0){
-			if(split[3]!=NULL){
-				resultado=insert(split[1],split[2],split[3]);
+		if(verificarParametros(split,4)==0){
+			if(esNumero(split[2])==0){
+				if(split[3]!=NULL){
+					resultado=insert(split[1],split[2],split[3]);
+				}
+			}
+			else{
+				log_error(logger,"ERROR - La key debe ser numérica");
 			}
 		}
 		else{
-			log_error(logger,"ERROR - La key debe ser numérica");
+			log_info(logger,"ERROR - La cantidad de parametros es incorrecta");
 		}
 	}
 	if(string_starts_with(linea,"DROP")){
 		split = string_split(linea," ");
-		resultado=drop(split[1]);
+		if(verificarParametros(split,2)==0){
+			resultado=drop(split[1]);
+		}
+		else{
+			log_info(logger,"ERROR - La cantidad de parametros es incorrecta");
+		}
 	}
 	if(string_starts_with(linea,"CREATE")){
 		split = string_split(linea," ");
-		if(esNumero(split[3])==0){
-			if(esNumero(split[4])==0){
-				if(strcmp(split[2],"SC")==0 || strcmp(split[2],"SHC")==0 ||strcmp(split[2],"EC")==0 ){
-					resultado=create(split[1],split[2],split[3],split[4]);
-				}else{
-					log_error(logger,"ERROR - No existe el criterio");
+		if(verificarParametros(split,5)==0){
+			if(esNumero(split[3])==0){
+				if(esNumero(split[4])==0){
+					if(strcmp(split[2],"SC")==0 || strcmp(split[2],"SHC")==0 ||strcmp(split[2],"EC")==0 ){
+						resultado=create(split[1],split[2],split[3],split[4]);
+					}else{
+						log_error(logger,"ERROR - No existe el criterio");
+					}
+				}
+				else{
+					log_error(logger,"ERROR - El tiempo de compactación debe ser numérico");
 				}
 			}
 			else{
-				log_error(logger,"ERROR - El tiempo de compactación debe ser numérico");
+				log_error(logger,"ERROR - La cantidad de particiones debe ser numérica");
 			}
 		}
 		else{
-			log_error(logger,"ERROR - La cantidad de particiones debe ser numérica");
+			log_info(logger,"ERROR - La cantidad de parametros es incorrecta");
 		}
 
 	}
@@ -316,11 +356,16 @@ int parsear(char * aux){
 	}
 	if(string_starts_with(linea,"ADD")){
 		split= string_n_split(linea,5," ");
-		if(esNumero(split[2])==0){
-			resultado=add(split[2],split[4]);
+		if(verificarParametros(split,5)==0){
+			if(esNumero(split[2])==0){
+				resultado=add(split[2],split[4]);
+			}
+			else{
+				log_error(logger,"ERROR - El id de la memoria debe ser numérico");
+			}
 		}
 		else{
-			log_error(logger,"ERROR - El id de la memoria debe ser numérico");
+			log_info(logger,"ERROR - La cantidad de parametros es incorrecta");
 		}
 
 	}
@@ -343,7 +388,10 @@ int mySelect(char * table, char *key){
     struct timeval ti, tf;
     double tiempo;
     gettimeofday(&ti, NULL);   // Instante inicial
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	int op= 0;
 	char*linea=string_from_format("%s;%s",table,key);
 	int len = strlen(linea)+1;
@@ -415,11 +463,11 @@ int mySelect(char * table, char *key){
 		recvData(sock,rta,atoi(tamanioRta));
 		log_info(logger,"Resultado SELECT : %s", rta);
 		/*if(consola==1){
-			log_info(loggerConsola,"Resultado SELECT : %s",rta);
+			log_info(logger,"Resultado SELECT : %s",rta);
 		}*/
 	}
 	if(atoi(resultado)==3){
-		log_info(loggerConsola,"El select no tiene valor en esa key");
+		log_info(logger,"El select no tiene valor en esa key");
 		close(sock);
 		return 0;
 	}
@@ -451,7 +499,7 @@ int mySelect(char * table, char *key){
 				log_info(logger,"\n\nResultado SELECT despues de journal: %s \n\n", rtaS);
 			}
 			else{
-				log_info(loggerConsola,"El select no tiene valor en esa key");
+				log_info(logger,"El select no tiene valor en esa key");
 			}
 //			log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
 		}
@@ -487,7 +535,10 @@ int insert(char* table ,char* key ,char* value){
     struct timeval ti, tf;
     double tiempo;
     gettimeofday(&ti, NULL);   // Instante inicial
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	int op= 1;
 	char **split= string_split(value,"\"");
 	char*linea=string_from_format("%s;%s;%s",table,key,split[0]);
@@ -601,20 +652,23 @@ int insert(char* table ,char* key ,char* value){
 }
 
 int create(char* table , char* consistency , char* numPart , char* timeComp){
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	int op= 2;
 	char*linea=string_from_format("%s;%s;%s;%s",table,consistency,numPart,timeComp);
 	char * pepe = string_duplicate(linea);
 	int len = strlen(linea)+1;
-//	log_info(loggerConsola,"linea: %s" , linea);
+//	log_info(logger,"linea: %s" , linea);
 /*	int i=0;
 	while(i< strlen(timeComp)){
-		log_info(loggerConsola,"pepe: %c" , timeComp[i]);
+		log_info(logger,"pepe: %c" , timeComp[i]);
 		i++;
 	}*/
 
-//	log_info(loggerConsola,"tamanio: %i" , strlen(pepe));
-//	log_info(loggerConsola,"tamanio %i" , len);
+//	log_info(logger,"tamanio: %i" , strlen(pepe));
+//	log_info(logger,"tamanio %i" , len);
 	char* tamanioYop;//= malloc(4);
 	if(len>=100){
 		tamanioYop=string_from_format("%i%i",op,len);
@@ -669,7 +723,7 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	recvData(sock,resultado,2);
 	resultado[1]='\0';
 	log_info(logger,"resultado CREATE: %i", atoi(resultado));
-//	log_info(loggerConsola,"resultado CREATE: %i", atoi(resultado));
+//	log_info(logger,"resultado CREATE: %i", atoi(resultado));
 
 	if(atoi(resultado)!=0){
 		close(sock);
@@ -692,7 +746,10 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 }
 
 int journal(){
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	int ret=0;
 
 	void envioJournal(struct memoria *m){
@@ -704,7 +761,7 @@ int journal(){
 		}
 		else{
 			sendData(sock,"5",2);
-			recvData(sock,resultado,2);
+			recvData(sock,resultado,1);
 			resultado[1]='\0';
 			if(atoi(resultado)!=0){
 				ret=1;
@@ -723,12 +780,15 @@ int journal(){
 }
 
 int describe(char *table){
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	int tamanio=0;
 	if(table!=NULL){
 		tamanio= strlen(table)+1;
 	}
-//	log_info(loggerConsola,"tamanio %i" , tamanio);
+//	log_info(logger,"tamanio %i" , tamanio);
 	int op=3;//verificar
 	char *msj;
 	if(tamanio==0){
@@ -747,8 +807,8 @@ int describe(char *table){
 	}
 
 //	log_info(logger,"DESCRIBE %s",msj);
-//	log_info(loggerConsola,"msj:%s",msj);
-//	log_info(loggerConsola,"tamanio msj:%i",strlen(msj));
+//	log_info(logger,"msj:%s",msj);
+//	log_info(logger,"tamanio msj:%i",strlen(msj));
 
 	struct memoria* memAsignada = malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
@@ -783,7 +843,7 @@ int describe(char *table){
 	resultado[1]='\0';
 
 	log_info(logger,"resultado DESCRIBE: %i", atoi(resultado));
-//	log_info(loggerConsola,"resultado describe:%i",atoi(resultado));
+//	log_info(logger,"resultado describe:%i",atoi(resultado));
 
 	if(atoi(resultado)!=0){
 		close(sock);
@@ -813,8 +873,8 @@ int describe(char *table){
 			char *buffer=malloc(tam+1);
 			recvData(sock,buffer,tam);
 			char *realBuffer= string_substring(buffer, 0, tam);
-			log_info(loggerConsola,"buffer : %s",realBuffer);//ACA SIEMPRE LLEGA BASURA PERO LO GUARDA BIEN
-//			log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
+			log_info(logger,"buffer : %s",realBuffer);//ACA SIEMPRE LLEGA BASURA PERO LO GUARDA BIEN
+//			log_info(logger,"tamaño buffer : %i",strlen(buffer));
 			//REVISAR
 			struct metadataTabla *metadata= malloc(sizeof(struct metadataTabla));
 			char ** split = string_split(realBuffer,";");
@@ -853,8 +913,8 @@ int describe(char *table){
 		metadata->numPart=atoi(split[2]);
 		metadata->compTime=atol(split[3]);
 		actualizarMetadataTabla(metadata);
-//		log_info(loggerConsola,"buffer : %s",buffer);
-//		log_info(loggerConsola,"tamaño buffer : %i",strlen(buffer));
+//		log_info(logger,"buffer : %s",buffer);
+//		log_info(logger,"tamaño buffer : %i",strlen(buffer));
 
 
 
@@ -864,14 +924,14 @@ int describe(char *table){
 		free(split[3]);
 		free(split);
 		free(t);
-//		log_info(loggerConsola,"termino free ");
+//		log_info(logger,"termino free ");
 		free(buffer);
 	}
 //	void itera(struct metadataTabla*m){
-//		log_info(loggerConsola,"consistency %s",m->consistency);
-//		log_info(loggerConsola,"table %s",m->table);
-//		log_info(loggerConsola," compTime %d",m->compTime);
-//		log_info(loggerConsola,"numPart %i",m->numPart);
+//		log_info(logger,"consistency %s",m->consistency);
+//		log_info(logger,"table %s",m->table);
+//		log_info(logger," compTime %d",m->compTime);
+//		log_info(logger,"numPart %i",m->numPart);
 //	}
 //	list_iterate(listaMetadata,(void*)itera);
 	sem_post(&semMetadata);
@@ -879,14 +939,17 @@ int describe(char *table){
 	free(resultado);
 //	free(tamanioRespuesta);
 	free(msj);
-//	log_info(loggerConsola,"entra a free mem ");
+//	log_info(logger,"entra a free mem ");
 	close(sock);
-//	log_info(loggerConsola,"sale fun ");
+//	log_info(logger,"sale fun ");
 	return 0;
 }
 
 int drop(char*table){
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	int op=4;
 	int len=strlen(table)+1;
 
@@ -971,7 +1034,10 @@ int drop(char*table){
 }
 
 int add(char* memory , char* consistency){
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	u_int16_t idMemoria = atoi(memory);
 	struct memoria *memoria;//= malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
@@ -1007,7 +1073,6 @@ int add(char* memory , char* consistency){
 				int ret=0;
 				sem_wait(&semMemorias);
 					list_add(criterioSHC,memoria);
-				sem_post(&semMemorias);
 				void envioJournal(struct memoria *m){
 					char *resultado= malloc(2);
 					int sock=conexionMemoria(m->puerto,m->ip);
@@ -1017,7 +1082,7 @@ int add(char* memory , char* consistency){
 					}
 					else{
 						sendData(sock,"5",2);
-						recvData(sock,resultado,2);
+						recvData(sock,resultado,1);
 						resultado[1]='\0';
 						if(atoi(resultado)!=0){
 							ret=1;
@@ -1028,6 +1093,7 @@ int add(char* memory , char* consistency){
 					}
 				}
 				list_iterate(criterioSHC,(void*)envioJournal);
+				sem_post(&semMemorias);
 				return 0;
 			}
 			else{
@@ -1060,7 +1126,10 @@ int add(char* memory , char* consistency){
 }
 
 int metrics(int modo){
-	usleep(retardo*1000);
+    sem_wait(&semConfig);
+    int retardoEjecucion=retardo;
+    sem_post(&semConfig);
+	usleep(retardoEjecucion*1000);
 	sem_wait(&semMetricas);
 	int totalOp=0;
 	void iterador(struct metrica *metrica){
@@ -1159,7 +1228,7 @@ struct memoria * buscarMemoria(u_int16_t id){
 // borro toda la metadata para no andar actualizando
 void limpiarMetadata(){
 	// agregar semaforo
-	log_info(loggerConsola,"limpiarMeta");
+	log_info(logger,"limpiarMeta");
 	void destruirMet(struct metadataTabla *mt){
 		free(mt->consistency);
 		free(mt->table);
@@ -1197,10 +1266,10 @@ void actualizarMetadataTabla(struct metadataTabla *m){
 	}
 	list_add(listaMetadata,m);
 	//sem_post(&semMetadata);
-	log_info(loggerConsola,"consistency %s",m->consistency);
-	log_info(loggerConsola,"table %s",m->table);
-	log_info(loggerConsola,"compTime %d",m->compTime);
-	log_info(loggerConsola,"numPart %i",m->numPart);
+	log_info(logger,"consistency %s",m->consistency);
+	log_info(logger,"table %s",m->table);
+	log_info(logger,"compTime %d",m->compTime);
+	log_info(logger,"numPart %i",m->numPart);
 }
 
 
@@ -1269,14 +1338,33 @@ struct memoria *verMemoriaLibre(t_list *lista){
 }
 
 void sacarMemoriaCaida(struct memoria *m){
-
+	sem_wait(&semMemorias);
+	log_info(logger,"La memoria %i esta caida, se procedera a eliminarla de los criterios asociados",m->id);
 	bool sacar(struct memoria * mem){
 		return mem->id==m->id;
 	}
-	list_remove_by_condition(criterioSHC,(void*)sacar);
 	list_remove_by_condition(criterioSC,(void*)sacar);
 	list_remove_by_condition(criterioEC,(void*)sacar);
+	if(list_any_satisfy(criterioSHC,(void*)sacar)){
+		list_remove_by_condition(criterioSHC,(void*)sacar);
+			void envioJournal(struct memoria *m){
+				char *resultado= malloc(2);
+				int sock=conexionMemoria(m->puerto,m->ip);
+				if(sock!=-1){
+					sendData(sock,"5",2);
+					recvData(sock,resultado,1);
+					resultado[1]='\0';
+					if(atoi(resultado)!=0){
+						log_info(logger,"La memoria %i no pudo hacer el journal",m->id);
+
+					}
+					close(sock);
+				}
+			}
+			list_iterate(criterioSHC,(void*)envioJournal);
+	}
 	m->estado=1;//seteo que no esta activa (en el gossip puedo volverla a poner activa)
+	sem_post(&semMemorias);
 }
 
 struct metadataTabla * buscarMetadataTabla(char* table){
@@ -1300,11 +1388,24 @@ int esNumero(char *key){
 	else return 1;
 }
 
+int verificarParametros(char **split,int cantParametros){
+	int contador=0;
+	while(contador<cantParametros){
+		if(split[contador]==NULL){
+			return 1;
+		}
+		else contador ++;
+	}
+	return 0;
+}
 
 
 void *describeGlobal(){
 	while(terminaHilo==0){
-		usleep(retardoMetadata*1000);
+	    sem_wait(&semConfig);
+	    int retardoMet=retardoMetadata;
+	    sem_post(&semConfig);
+		usleep(retardoMet*1000);
 		describe(NULL);
 		log_info(logger,"Describe global automático");
 	}
@@ -1320,7 +1421,8 @@ void *gossiping(){
 	//	sleep(1);// NO TENGO DE DONDE SACAR ESTE DATO(lo pase abajo de todo)
 		int sock=-1;
 		struct memoria *m ;
-		while(sock==-1){
+		int termina=0;
+		while(sock==-1 && termina <5){
 			sem_wait(&semMemorias);
 				m=verMemoriaLibre(memorias);
 			sem_post(&semMemorias);
@@ -1329,63 +1431,80 @@ void *gossiping(){
 				sacarMemoriaCaida(m);
 			}
 		}
-		sendData(sock,"6",2);
-		char* salioBien = malloc(2);
-		recvData(sock, salioBien, 1);
-		salioBien[1]='\0';
-		if(atoi(salioBien)==7){
-			char *tamanio= malloc(4);
-			recvData(sock,tamanio,3);
-			tamanio[3]='\0';
-			char *buffer=malloc(atoi(tamanio)+1);
-			recvData(sock,buffer,atoi(tamanio));
-			close(sock);
-			//toda la bola del gossip
-			sem_wait(&semMemorias);
-			void itera(struct memoria *m){
-				m->estado=1;
-			}
-			list_iterate(memorias,(void*) itera);
-			char ** split= string_n_split(buffer,4,";");
-			char * bufferAux=NULL;
-			int termino=0;
-			while(termino==0){
-				if(verificaMemoriaRepetida(atoi(split[0]),memorias)){
-					struct memoria *aux=buscarMemoria(atoi(split[0]));
-					aux->estado=0;
-					}
-				else{
-					struct memoria *aux= malloc(sizeof(struct memoria));
-					aux->cantI=0;
-					aux->cantS=0;
-					aux->estado=0;
-					aux->id=atoi(split[0]);
-					aux->ip=string_duplicate(split[1]);
-					aux->puerto=atoi(split[2]);
-					list_add(memorias,aux);
-					}
-				if(split[3]!=NULL){
-					bufferAux= string_duplicate(split[3]);
-					}
-
-				free(split[0]);
-				free(split[1]);
-				free(split[2]);
-				free(split[3]);
-				free(split);
-
-				if(bufferAux==NULL){
-					termino=1;
+		if(sock!=-1){
+			sendData(sock,"6",2);
+			char* salioBien = malloc(2);
+			recvData(sock, salioBien, 1);
+			salioBien[1]='\0';
+			if(atoi(salioBien)==7){
+				char *tamanio= malloc(4);
+				recvData(sock,tamanio,3);
+				tamanio[3]='\0';
+				char *buffer=malloc(atoi(tamanio)+1);
+				recvData(sock,buffer,atoi(tamanio));
+				close(sock);
+				//toda la bola del gossip
+				sem_wait(&semMemorias);
+				void itera(struct memoria *m){
+					m->estado=1;
 				}
-				else{
-					split=string_n_split(bufferAux,4,";");
+				list_iterate(memorias,(void*) itera);
+				char ** split= string_n_split(buffer,4,";");
+				char * bufferAux=NULL;
+				int termino=0;
+				while(termino==0){
+					if(verificaMemoriaRepetida(atoi(split[0]),memorias)){
+						struct memoria *aux=buscarMemoria(atoi(split[0]));
+						aux->estado=0;
+						}
+					else{
+						struct memoria *aux= malloc(sizeof(struct memoria));
+						aux->cantI=0;
+						aux->cantS=0;
+						aux->estado=0;
+						aux->id=atoi(split[0]);
+						aux->ip=string_duplicate(split[1]);
+						aux->puerto=atoi(split[2]);
+						list_add(memorias,aux);
+						}
+					if(split[3]!=NULL){
+						bufferAux= string_duplicate(split[3]);
+						}
+
+					free(split[0]);
+					free(split[1]);
+					free(split[2]);
+					free(split[3]);
+					free(split);
+
+					if(bufferAux==NULL){
+						termino=1;
 					}
-				free(bufferAux);
-				bufferAux=NULL;
+					else{
+						split=string_n_split(bufferAux,4,";");
+						}
+					free(bufferAux);
+					bufferAux=NULL;
+				}
+				log_info(logger,"Fin del gossiping, el estado de las memorias conocidas es:");
+
+				void sacaMemoriasCaidas(struct memoria *m){
+					if(m->estado==1){
+						sacarMemoriaCaida(m);
+						log_info(logger,"Memoria %i: CAIDA");
+					}
+					else{
+						log_info(logger,"Memoria %i: ACTIVA");
+					}
+				}
+				list_iterate(memorias,(void*)sacaMemoriasCaidas);
+				sem_post(&semMemorias);
+				}
 			}
-			sem_post(&semMemorias);
-			}
-			sleep(10);
+		else{
+			log_info(logger,"No se pudo hacer el gossiping, no se pudo conectar con las memorias");
+		}
+				sleep(10);
 		}
 	return NULL;
 
@@ -1398,16 +1517,19 @@ void *inotifyKernel(){
 			if (file_descriptor < 0) {
 				perror("inotify_init");
 			}
-			int watch_descriptor = inotify_add_watch(file_descriptor, "/home/utnso/tp-2019-1c-donSaturados/kernel/kernel.config", IN_MODIFY );
+			int watch_descriptor = inotify_add_watch(file_descriptor, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/kernel", IN_MODIFY );
 			int length = read(file_descriptor, buffer, BUF_LEN);
 			if (length < 0) {
 				perror("read");
 			}
-			t_config *config = config_create("/home/utnso/tp-2019-1c-donSaturados/kernel/kernel.config");
-			quantum=config_get_int_value(config, "QUANTUM");
-			retardo=config_get_int_value(config, "SLEEP_EJECUCION");
-			retardoMetadata=config_get_int_value(config, "METADATA_REFRESH");
-			config_destroy(config);
+			t_config *configInotify = config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/kernel");
+			//semaforo wait
+			sem_wait(&semConfig);
+			quantum=config_get_int_value(configInotify, "QUANTUM");
+			retardo=config_get_int_value(configInotify, "SLEEP_EJECUCION");
+			retardoMetadata=config_get_int_value(configInotify, "METADATA_REFRESH");
+			sem_post(&semConfig);
+			config_destroy(configInotify);
 		}
 		return NULL;
 }

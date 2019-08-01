@@ -120,6 +120,7 @@ int esNumero(char *key);
 void sacarMemoriaCaida(struct memoria *m);
 void inicializarMetricas();
 void agregarAMetricas(char *criterio , char* op , double tiempo);
+int verificarParametros(char **split,int cantParametros);
 
 struct memoria *verMemoriaLibreSHC(int key);
 
@@ -128,7 +129,7 @@ static sem_t semColasContador;
 static sem_t semMetadata;
 static sem_t semMemorias;
 static sem_t semMetricas;
-
+static sem_t semConfig;
 
 
 #endif /*KERNEL_H_*/
