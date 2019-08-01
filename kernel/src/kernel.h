@@ -29,7 +29,7 @@ struct metrica{
 	int cantI;
 };
 
-
+int idMem;
 t_list * metricas;
 
 t_log* logger;

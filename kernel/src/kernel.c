@@ -28,9 +28,12 @@ int main(void) {
 	quantum = config_get_int_value(config, "QUANTUM");
 	retardoMetadata = config_get_int_value(config, "METADATA_REFRESH");
 	retardo=config_get_int_value(config, "SLEEP_EJECUCION");
+
+	printf("ingrese el Id de la memoria conocida\n");
+	scanf("%i", &idMem);
 	//inicializa memoria x archivo de configuracion
 	struct memoria *m1=malloc(sizeof(struct memoria));
-	m1->id=1;
+	m1->id=idMem;
 	m1->ip=config_get_string_value(config,"IP_MEMORIA");
 	m1->puerto=config_get_int_value(config,"PUERTO_MEMORIA");
 	m1->cantI=0;
@@ -79,7 +82,7 @@ t_log* init_logger(int i) {
 t_config* read_config(){
 	int c;
 	printf("Ingrese el número de la configuracion a utilizar:");
-	printf("\n1- Prueba base \n2- Prueba kernel\n3- Prueba lfs \n4- Prueba memoria\n5- Prueba stress");
+	printf("\n1- Prueba base \n2- Prueba kernel\n3- Prueba lfs \n4- Prueba memoria\n5- Prueba stress\n");
 	while(1){
 		scanf("%i",&c);
 		switch(c){
@@ -115,7 +118,7 @@ void apiKernel(){
 			run(split[1]);
 		}
 		else{
-			if(string_starts_with(linea,"EXIT")==0){
+			if(string_starts_with(linea,"EXIT")){
 				terminaHilo=1;
 				return;
 			}
@@ -139,6 +142,8 @@ void apiKernel(){
 int conexionMemoria(int puerto, char*ip){
 		u_int16_t sock;
 		u_int16_t port= puerto;
+		log_info(logger,"puerto a conectar: %i" , port);
+		log_info(logger,"ip a conectar: %s" , ip);
 		if(linkClient(&sock,ip , port,0)!=0){
 			return -1;
 		}
@@ -1060,6 +1065,7 @@ int add(char* memory , char* consistency){
 			else{
 				sem_wait(&semMemorias);
 					list_add(criterioSC,memoria);
+					log_info(logger,"Se agrego la memoria %i al criterio SC", idMemoria);
 				sem_post(&semMemorias);			// semN wait (pongo N xq no se si poner un semaforo para cada lista o con poner una sirve)
 				// semN signal
 				return 0;
@@ -1093,6 +1099,7 @@ int add(char* memory , char* consistency){
 					}
 				}
 				list_iterate(criterioSHC,(void*)envioJournal);
+				log_info(logger,"Se agrego la memoria %i al criterio SHC", idMemoria);
 				sem_post(&semMemorias);
 				return 0;
 			}
@@ -1109,7 +1116,7 @@ int add(char* memory , char* consistency){
 				sem_wait(&semMemorias);
 				list_add(criterioEC,memoria);
 				sem_post(&semMemorias);
-
+				log_info(logger,"Se agrego la memoria %i al criterio EC", idMemoria);
 				return 0;
 			}
 			else{
@@ -1342,8 +1349,12 @@ void sacarMemoriaCaida(struct memoria *m){
 	bool sacar(struct memoria * mem){
 		return mem->id==m->id;
 	}
-	list_remove_by_condition(criterioSC,(void*)sacar);
-	list_remove_by_condition(criterioEC,(void*)sacar);
+	if(list_any_satisfy(criterioSC,(void*)sacar)){
+		list_remove_by_condition(criterioSC,(void*)sacar);
+	}
+	if(list_any_satisfy(criterioEC,(void*)sacar)){
+		list_remove_by_condition(criterioEC,(void*)sacar);
+	}
 	if(list_any_satisfy(criterioSHC,(void*)sacar)){
 		list_remove_by_condition(criterioSHC,(void*)sacar);
 			void envioJournal(struct memoria *m){
@@ -1430,6 +1441,7 @@ void *gossiping(){
 				sacarMemoriaCaida(m);
 				sem_post(&semMemorias);
 			}
+			termina++;
 		}
 		if(sock!=-1){
 			sendData(sock,"6",2);
@@ -1442,6 +1454,9 @@ void *gossiping(){
 				tamanio[3]='\0';
 				char *buffer=malloc(atoi(tamanio)+1);
 				recvData(sock,buffer,atoi(tamanio));
+				log_info(logger,"\n\n");
+				log_info(logger,buffer);
+				log_info(logger,"\n\n");
 				close(sock);
 				//toda la bola del gossip
 				sem_wait(&semMemorias);
@@ -1489,12 +1504,13 @@ void *gossiping(){
 				log_info(logger,"Fin del gossiping, el estado de las memorias conocidas es:");
 
 				void sacaMemoriasCaidas(struct memoria *m){
+					log_info(logger,"mem %i puerto %i ip %s" , m->id , m->puerto , m->ip);
 					if(m->estado==1){
 						sacarMemoriaCaida(m);
-						log_info(logger,"Memoria %i: CAIDA");
+						log_info(logger,"Memoria %i: CAIDA" , m->id);
 					}
 					else{
-						log_info(logger,"Memoria %i: ACTIVA");
+						log_info(logger,"Memoria %i: ACTIVA", m->id);
 					}
 				}
 				list_iterate(memorias,(void*)sacaMemoriasCaidas);
