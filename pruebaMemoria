@@ -1,0 +1,8 @@
+ADD MEMORY 1 TO SC
+
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/reemplazo1.lql
+
+espero journal desde memoria
+
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/reemplazo2.lql
+
