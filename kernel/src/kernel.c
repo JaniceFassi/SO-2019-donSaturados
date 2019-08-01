@@ -1544,6 +1544,11 @@ void *inotifyKernel(){
 			quantum=config_get_int_value(configInotify, "QUANTUM");
 			retardo=config_get_int_value(configInotify, "SLEEP_EJECUCION");
 			retardoMetadata=config_get_int_value(configInotify, "METADATA_REFRESH");
+
+			log_info(logger,"Se efectuaron cambios en la configuracion:");
+			log_info(logger,"Retardo Ejecucion: %i", retardo);
+			log_info(logger,"Refresh metadata: %i", retardoMetadata);
+			log_info(logger,"quantum: %i", quantum);
 			sem_post(&semConfig);
 			config_destroy(configInotify);
 		}
