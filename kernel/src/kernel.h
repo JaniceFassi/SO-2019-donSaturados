@@ -28,7 +28,7 @@ struct metrica{
 	int cantS;
 	int cantI;
 };
-
+char *pathConfig;
 int idMem;
 t_list * metricas;
 
