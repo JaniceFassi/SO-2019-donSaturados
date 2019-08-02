@@ -461,6 +461,7 @@ int mySelect(char * table, char *key){
 	}
 	if(sock==-1){
 		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		free(cons);
 		return 0;
 	}
 
@@ -496,6 +497,7 @@ int mySelect(char * table, char *key){
 		recvData(sock,rta,atoi(tamanioRta));
 		log_info(logger,"Resultado SELECT : %s", rta);
 		free(tamanioRta);
+		free(rta);
 		/*if(consola==1){
 			log_info(logger,"Resultado SELECT : %s",rta);
 		}*/
@@ -538,7 +540,7 @@ int mySelect(char * table, char *key){
 			return -1;
 		}
 	}
-
+	free(resultado);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -552,6 +554,7 @@ int mySelect(char * table, char *key){
 	sem_wait(&semMetricas);
 	agregarAMetricas(cons,"S",tiempo);
 	sem_post(&semMetricas);
+	free(cons);
 	return 0;
 }
 
@@ -678,6 +681,7 @@ int insert(char* table ,char* key ,char* value){
 	free(linea);
 	free(msj);
 	free(tamanioYop);
+	free(resultado);
 	close(sock);
     gettimeofday(&tf, NULL);   // Instante final
     tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
