@@ -213,9 +213,11 @@ Registry *desconcatParaArch(char *linea){
 t_list *deChar_Registros(char *buffer){
 	t_list *registros=list_create();
 	bool seguir=1;
+	char **substring;
 	while(seguir){
-		char **substring=string_n_split(buffer,4,";");
+		substring=string_n_split(buffer,4,";");
 		if(verificarParametro(substring,3)==1){
+			liberarSubstrings(substring);
 			break;
 		}
 		int key=atoi(substring[1]);
@@ -223,16 +225,17 @@ t_list *deChar_Registros(char *buffer){
 		Registry *nuevo=createRegistry(key,substring[2], time);
 		list_add(registros,nuevo);
 		free(buffer);
-		free(substring[0]);
-		free(substring[1]);
-		free(substring[2]);
+		//free(substring[0]);
+		//free(substring[1]);
+		//free(substring[2]);
 		seguir=0;
 		if(substring[3]!=NULL){
 			buffer=string_duplicate(substring[3]);
-			free(substring[3]);
+			//free(substring[3]);
 			seguir=1;
 		}
-		free(substring);
+		//free(substring);
+		liberarSubstrings(substring);
 	}
 	return registros;
 }
@@ -878,9 +881,13 @@ t_list *regDep(t_list *aDepu){
 		}else{
 			if(primerRegistroConKey(depu,nuevo->key)!=NULL){
 				Registry *viejo=primerRegistroConKey(depu,nuevo->key);
+				log_info(logger,"voy a comparar %ld con %ld",viejo->timestamp,nuevo->timestamp);
 				if(viejo->timestamp <= nuevo->timestamp){
+					log_info(logger,"me quede con %ld de %s",nuevo->timestamp,nuevo->value);
 					int index= calcularIndexReg(depu,viejo->key);
 					list_replace(depu, index-1, nuevo);
+				}else{
+					log_info(logger,"me quede con %ld de %s",viejo->timestamp,nuevo->value);
 				}
 			}else{
 				list_add(depu,nuevo);
