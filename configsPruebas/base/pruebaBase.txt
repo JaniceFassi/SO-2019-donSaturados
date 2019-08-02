@@ -1,0 +1,13 @@
+ADD MEMORY 1 TO SC
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/simple_sc.lql
+
+ADD MEMORY 1 TO EC
+ADD MEMORY 2 TO EC
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/simple_ec.lql
+
+ADD MEMORY 1 TO SHC
+ADD MEMORY 2 TO SHC
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/simple_shc.lql
+
+JOURNAL	
+

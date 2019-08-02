@@ -87,19 +87,24 @@ t_config* read_config(){
 		scanf("%i",&c);
 		switch(c){
 		case 1:
-			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/kernel");
+			pathConfig = string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/kernel");
+			return config_create(pathConfig);
 			break;
 		case 2:
-			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/kernel");
+			pathConfig= string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/kernel");
+			return config_create(pathConfig);
 			break;
 		case 3:
-			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/kernel");
+			pathConfig= string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/kernel");
+			return config_create(pathConfig);
 			break;
 		case 4:
-			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/kernel");
+			pathConfig= string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/kernel");
+			return config_create(pathConfig);
 			break;
 		case 5:
-			return config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/kernel");
+			pathConfig= string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/kernel");
+			return config_create(pathConfig);
 			break;
 		default:
 			printf("Numero invalido, por favor ingrese de nuevo");
@@ -113,47 +118,56 @@ void apiKernel(){
 	while(1){
 		char * linea;
 		linea= readline(">");
-		if(string_starts_with(linea,"RUN")){
-			char ** split= string_n_split(linea,2," ");
-			run(split[1]);
-			int i=0;
-			if(split!=NULL){
-				while(split[i]!=NULL){
-					free(split[i]);
-					i++;
-				}
-				free(split);
-			}
+		if(strcmp(linea,"")!=0){
+			if(string_starts_with(linea,"RUN")){
+						char ** split= string_n_split(linea,2," ");
+						run(split[1]);
+						int i=0;
+						if(split!=NULL){
+							while(split[i]!=NULL){
+								free(split[i]);
+								i++;
+							}
+							free(split);
+						}
+					}
+					else{
+						if(string_starts_with(linea,"EXIT")){
+							terminaHilo=1;
+							free(linea);
+							return;
+						}
+						else{
+							if(string_starts_with(linea,"ADD") || string_starts_with(linea,"METRICS")){
+								char * comando = string_from_format("%s0",linea);
+								parsear(comando);
+								free(comando);
+							}
+							else{
+								struct script *nuevo= malloc(sizeof(struct script));
+								nuevo->id=idScriptGlobal;
+								idScriptGlobal++;
+								nuevo->lineasLeidas=0;
+								nuevo->estado=0;
+								nuevo->modoOp=1;// Script de una sola linea
+								nuevo->input= string_from_format("%s0",linea);
+								sem_wait(&semColasMutex);
+								queue_push(ready,nuevo);
+								sem_post(&semColasMutex);
+								sem_post(&semColasContador);
+							}
+						}
+					}
 		}
-		else{
-			if(string_starts_with(linea,"EXIT")){
-				terminaHilo=1;
-				free(linea);
-				return;
-			}
-			else{
-				struct script *nuevo= malloc(sizeof(struct script));
-				nuevo->id=idScriptGlobal;
-				idScriptGlobal++;
-				nuevo->lineasLeidas=0;
-				nuevo->estado=0;
-				nuevo->modoOp=1;// Script de una sola linea
-				nuevo->input= string_from_format("%s0",linea);
-				sem_wait(&semColasMutex);
-				queue_push(ready,nuevo);
-				sem_post(&semColasMutex);
-				sem_post(&semColasContador);
-			}
-		}
-		free(linea);
+			free(linea);
 	}
 }
 
 int conexionMemoria(int puerto, char*ip){
 		u_int16_t sock;
 		u_int16_t port= puerto;
-		log_info(logger,"puerto a conectar: %i" , port);
-		log_info(logger,"ip a conectar: %s" , ip);
+//		log_info(logger,"puerto a conectar: %i" , port);
+//		log_info(logger,"ip a conectar: %s" , ip);
 		if(linkClient(&sock,ip , port,0)!=0){
 			return -1;
 		}
@@ -409,22 +423,6 @@ int mySelect(char * table, char *key){
     sem_post(&semConfig);
 	usleep(retardoEjecucion*1000);
 	int op= 0;
-	char*linea=string_from_format("%s;%s",table,key);
-	int len = strlen(linea)+1;
-	char* tamanioYop;//= malloc(4);
-	if(len>=100){
-		tamanioYop=string_from_format("%i%i",op,len);
-	}
-	else{
-		if(len>=10){
-			tamanioYop=string_from_format("%i0%i",op,len);
-		}
-		else{
-			tamanioYop=string_from_format("%i00%i",op,len);
-		}
-	}
-	char *msj=string_from_format("%s%s",tamanioYop,linea);
-
 	struct metadataTabla * metadata;// = malloc(sizeof(struct metadataTabla));
 
 	sem_wait(&semMetadata);
@@ -442,6 +440,9 @@ int mySelect(char * table, char *key){
 
 	sem_wait(&semMemorias);
 	memAsignada= asignarMemoriaSegunCriterio(cons, key);
+	if(memAsignada){
+		log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+	}
 	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
@@ -451,14 +452,35 @@ int mySelect(char * table, char *key){
 			sem_wait(&semMemorias);
 			sacarMemoriaCaida(memAsignada);
 			memAsignada= asignarMemoriaSegunCriterio(cons, key);
+			if(memAsignada){
+				log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+			}
 			sem_post(&semMemorias);
 		}
 		c++;
 	}
 	if(sock==-1){
 		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		free(cons);
 		return 0;
 	}
+
+	char*linea=string_from_format("%s;%s",table,key);
+	int len = strlen(linea)+1;
+	char* tamanioYop;//= malloc(4);
+	if(len>=100){
+		tamanioYop=string_from_format("%i%i",op,len);
+	}
+	else{
+		if(len>=10){
+			tamanioYop=string_from_format("%i0%i",op,len);
+		}
+		else{
+			tamanioYop=string_from_format("%i00%i",op,len);
+		}
+	}
+	char *msj=string_from_format("%s%s",tamanioYop,linea);
+
 
 	int enviados=sendData(sock,msj,strlen(msj)+1);
 	//log_info(logger,"%i",enviados);
@@ -475,6 +497,7 @@ int mySelect(char * table, char *key){
 		recvData(sock,rta,atoi(tamanioRta));
 		log_info(logger,"Resultado SELECT : %s", rta);
 		free(tamanioRta);
+		free(rta);
 		/*if(consola==1){
 			log_info(logger,"Resultado SELECT : %s",rta);
 		}*/
@@ -517,7 +540,7 @@ int mySelect(char * table, char *key){
 			return -1;
 		}
 	}
-
+	free(resultado);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -531,6 +554,7 @@ int mySelect(char * table, char *key){
 	sem_wait(&semMetricas);
 	agregarAMetricas(cons,"S",tiempo);
 	sem_post(&semMetricas);
+	free(cons);
 	return 0;
 }
 
@@ -543,6 +567,48 @@ int insert(char* table ,char* key ,char* value){
     sem_post(&semConfig);
 	usleep(retardoEjecucion*1000);
 	int op= 1;
+	struct metadataTabla * metadata ;//= malloc(sizeof(struct metadataTabla));
+	sem_wait(&semMetadata);
+	metadata = buscarMetadataTabla(table);
+	if(metadata==NULL){
+		log_info(logger,"ERROR - no existe la tabla especificada");
+		sem_post(&semMetadata);
+		return 1;
+	}
+
+	char *cons = string_duplicate(metadata->consistency);
+	sem_post(&semMetadata);
+
+	struct memoria* memAsignada ;//= malloc(sizeof(struct memoria));
+	sem_wait(&semMemorias);
+	memAsignada= asignarMemoriaSegunCriterio(cons , key);
+	if(memAsignada){
+		log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+	}
+	sem_post(&semMemorias);
+	int c=0;
+	int sock=-1;
+	while(sock==-1 && c<5&&memAsignada!=NULL){
+		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
+
+		if(sock==-1){
+			sem_wait(&semMemorias);
+			sacarMemoriaCaida(memAsignada);
+			memAsignada= asignarMemoriaSegunCriterio(cons , key);
+			if(memAsignada){
+				log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+			}
+			sem_post(&semMemorias);
+		}
+
+		c++;
+	}
+	if(sock==-1){
+		free(cons);
+		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		return 0;
+	}
+
 	char **split= string_split(value,"\"");
 	char*linea=string_from_format("%s;%s;%s",table,key,split[0]);
 
@@ -572,42 +638,7 @@ int insert(char* table ,char* key ,char* value){
 
 //	log_info(logger,"INSERT %s",msj);
 
-	struct metadataTabla * metadata ;//= malloc(sizeof(struct metadataTabla));
-	sem_wait(&semMetadata);
-	metadata = buscarMetadataTabla(table);
-	if(metadata==NULL){
-		log_info(logger,"ERROR - no existe la tabla especificada");
-		sem_post(&semMetadata);
-		return 1;
-	}
 
-	char *cons = string_duplicate(metadata->consistency);
-	sem_post(&semMetadata);
-
-
-	struct memoria* memAsignada ;//= malloc(sizeof(struct memoria));
-	sem_wait(&semMemorias);
-	memAsignada= asignarMemoriaSegunCriterio(cons , key);
-	sem_post(&semMemorias);
-	int c=0;
-	int sock=-1;
-	while(sock==-1 && c<5&&memAsignada!=NULL){
-		sock = conexionMemoria(memAsignada->puerto,memAsignada->ip);
-
-		if(sock==-1){
-			sem_wait(&semMemorias);
-			sacarMemoriaCaida(memAsignada);
-			memAsignada= asignarMemoriaSegunCriterio(cons , key);
-			sem_post(&semMemorias);
-		}
-
-		c++;
-	}
-	if(sock==-1){
-		free(cons);
-		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
-		return 0;
-	}
 
 	sendData(sock,msj,strlen(msj)+1);
 	log_info(logger,"envie el insert");
@@ -650,6 +681,7 @@ int insert(char* table ,char* key ,char* value){
 	free(linea);
 	free(msj);
 	free(tamanioYop);
+	free(resultado);
 	close(sock);
     gettimeofday(&tf, NULL);   // Instante final
     tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
@@ -700,6 +732,9 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	struct memoria* memAsignada;// = malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
 	memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
+	if(memAsignada){
+		log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+	}
 	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
@@ -709,6 +744,9 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 			sem_wait(&semMemorias);
 			sacarMemoriaCaida(memAsignada);
 			memAsignada= asignarMemoriaSegunCriterio(consistency,NULL);
+			if(memAsignada){
+				log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+			}
 			sem_post(&semMemorias);
 		}
 		c++;
@@ -801,7 +839,9 @@ int describe(char *table){
 	struct memoria* memAsignada ;//= malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
 	memAsignada= verMemoriaLibre(memorias);
-	log_info(logger, "Memoria seleccionada para el describe %i", memAsignada->id);
+	if(memAsignada){
+		log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+	}
 	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
@@ -812,6 +852,9 @@ int describe(char *table){
 			sem_wait(&semMemorias);
 			sacarMemoriaCaida(memAsignada);
 			memAsignada= verMemoriaLibre(memorias);
+			if(memAsignada){
+				log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+			}
 			sem_post(&semMemorias);
 		}
 		c++;
@@ -957,6 +1000,9 @@ int drop(char*table){
 	struct memoria* memAsignada; //= malloc(sizeof(struct memoria));
 	sem_wait(&semMemorias);
 		memAsignada= asignarMemoriaSegunCriterio(cons,NULL);
+		if(memAsignada){
+			log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+		}
 	sem_post(&semMemorias);
 	int c=0;
 	int sock=-1;
@@ -966,6 +1012,9 @@ int drop(char*table){
 			sem_wait(&semMemorias);
 				sacarMemoriaCaida(memAsignada);
 				memAsignada= asignarMemoriaSegunCriterio(cons,NULL);
+				if(memAsignada){
+					log_info(logger, "Se intentara conectar con la memoria %i", memAsignada->id);
+				}
 			sem_post(&semMemorias);
 		}
 		c++;
@@ -1390,6 +1439,9 @@ void *gossiping(){
 		while(sock==-1 && termina <5){
 			sem_wait(&semMemorias);
 				m=verMemoriaLibre(memorias);
+				if(m){
+					log_info(logger, "Se intentara conectar con la memoria %i", m->id);
+				}
 			sem_post(&semMemorias);
 			sock= conexionMemoria(m->puerto,m->ip);
 			if(sock==-1){
@@ -1491,12 +1543,12 @@ void *inotifyKernel(){
 			if (file_descriptor < 0) {
 				perror("inotify_init");
 			}
-			int watch_descriptor = inotify_add_watch(file_descriptor, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/kernel", IN_MODIFY );
+			int watch_descriptor = inotify_add_watch(file_descriptor, pathConfig, IN_MODIFY );
 			int length = read(file_descriptor, buffer, BUF_LEN);
 			if (length < 0) {
 				perror("read");
 			}
-			t_config *configInotify = config_create("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/kernel");
+			t_config *configInotify = config_create(pathConfig);
 			//semaforo wait
 			sem_wait(&semConfig);
 			quantum=config_get_int_value(configInotify, "QUANTUM");
@@ -1558,11 +1610,9 @@ void mostrarResultados(){
 
 void destruir(){
 	log_info(logger,"Se procedera a finalizar el sistema");
-	log_info(logger,"Estado de los scripts ejecutados");
-
 
 	log_destroy(logger);
-
+	free(pathConfig);
 	list_destroy(criterioEC);
 	list_destroy(criterioSC);
 	list_destroy(criterioSHC);
