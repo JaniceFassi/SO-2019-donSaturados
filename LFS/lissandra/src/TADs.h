@@ -26,12 +26,6 @@
 #include <sys/mman.h>
 #include "Compactor.h"
 
-typedef enum{
-	BIN,
-	TMP,
-	TMPC
-}cod_ext;
-
 typedef struct {
 	u_int16_t key;
 	char *value;
@@ -73,8 +67,6 @@ typedef struct{
 }datosConfig;
 
 t_log* logger;
-t_log* dumplog;
-t_log* compaclog;
 t_list *memtable;
 t_bitarray* bitmap;
 int archivoBitmap;
@@ -130,6 +122,7 @@ char *nivelMetadata(int modo);
 char *concatRegistro(Registry *reg);
 char *array_A_String(char **array,int cantBloques);
 char *cadenaDeRegistros(t_list *lista);
+void inicializarPath();
 //FUNCIONES QUE DESCONCATENAN
 t_list *deChar_Registros(char *buffer);
 Registry *desconcatParaArch(char *linea);
@@ -149,7 +142,6 @@ int archivoValido(char *path);
 void escanearArchivo(char *nameTable,int part,int extension, t_list *obtenidos);
 int crearMetaArchivo(char *path, int size, char **bloques, int cantBloques);
 int contarArchivos(char *nombre, int modo);
-void crearConfig();
 void modificarConfig();
 metaArch *leerMetaArch(char *path);
 void escribirArchB(char *path,char *buffer);

@@ -11,8 +11,7 @@ void *dump(){
 		log_info(logger,"Se empezo a hacer el dump.");
 		sem_wait(sem_dump);
 		if(list_is_empty(memtable)){
-			//log_info(dumplog,"la memtable esta vacia por lo cual no se hace el dump");
-			log_info(dumplog,"No hay datos en la memtable para hacer el dump.");
+			log_info(logger,"No hay datos en la memtable para hacer el dump.");
 			sem_post(sem_dump);
 		}else{
 			sem_wait(criticaMemtable);
@@ -32,6 +31,7 @@ void *dump(){
 					if(escribirParticion(ruta,dumpTabla->registros,0)==1){
 						log_error(logger,"error al escribir el dump");
 					}
+					log_info(logger,"Se escribieron %i registros en el %i.tmp de la tabla %s.",list_size(dumpTabla->registros),cantTmp,dumpTabla->nombre);
 					sem_post(&tabDirectorio->semaforoContarTMP);
 					free(ruta);
 				}
@@ -54,10 +54,10 @@ void *compactar(Sdirectorio* nuevo){
 		usleep(nuevo->time_compact*1000);
 		sem_wait(&nuevo->semaforoCompactor);
 		nuevo->pedido_extension=3;
-		log_info(compaclog,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
+		log_info(logger,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
 		char *path=nivelUnaTabla(nuevo->nombre,0);
 		if(folderExist(path)==1){
-			log_error(compaclog,"No se puede hacer la compactacion por que la tabla %s ya no existe",nuevo->nombre);
+			log_error(logger,"No se puede hacer la compactacion por que la tabla %s ya no existe",nuevo->nombre);
 			free(path);
 			return NULL;
 		}
@@ -66,7 +66,7 @@ void *compactar(Sdirectorio* nuevo){
 		int cantTemp=contarArchivos(nuevo->nombre,1);
 		//Cambiar nombre de tmp a tmpc
 		if(cantTemp==0){
-			log_info(compaclog,"No hay datos para la compactacion de %s.",nuevo->nombre);
+			log_info(logger,"No hay datos para la compactacion de %s.",nuevo->nombre);
 			sem_post(&nuevo->semaforoContarTMP);
 		}else{
 			int contador=0;
@@ -76,7 +76,9 @@ void *compactar(Sdirectorio* nuevo){
 			while(cantTemp>contador){
 				char *arch=nivelParticion(nuevo->nombre,contador,1);
 				if(renombrarTemp_TempC(arch)==1){
-					log_error(compaclog,"No se puedo renombrar el tmp de la tabla %s.",nuevo->nombre);
+					log_error(logger,"No se puedo renombrar el tmp %i de la tabla %s.",contador,nuevo->nombre);
+				}else{
+					log_info(logger,"Se renombro el tmp %i de la tabla %s.",contador,nuevo->nombre);
 				}
 				free(arch);
 				contador++;
@@ -84,18 +86,18 @@ void *compactar(Sdirectorio* nuevo){
 			//log_info(compaclog,"Se pudieron renombrar los tmps de la tabla %s.",nuevo->nombre);
 			sem_post(&nuevo->semaforoTMP);
 			int valor;
+			nuevo->pedido_extension=-1;
 			sem_getvalue(&nuevo->archivoBloqueado,&valor);
 			if(valor==0){
 				sem_post(&nuevo->archivoBloqueado);
 			}
 			sem_post(&nuevo->semaforoContarTMP);
 			//SIGNAL WAIT PEDIDO RENOMBRAR
-			nuevo->pedido_extension=-1;
 			//sacar la metadata
 			metaTabla *metadata=leerMetadataTabla(nuevo->nombre);
 			//log_info(compaclog,"Se abrio la metadata %s.",nuevo->nombre);
 			if(metadata==NULL){
-				log_info(compaclog,"Error al abrir la metada, se terminara el hilo de %s.",nuevo->nombre);
+				log_info(logger,"Error al abrir la metadata, se terminara el hilo de %s.",nuevo->nombre);
 				pthread_exit(NULL);
 				return NULL;
 			}
@@ -115,14 +117,14 @@ void *compactar(Sdirectorio* nuevo){
 				}
 				escanearArchivo(nuevo->nombre,contador,extension,todosLosRegistros);
 				if(contador+1==cantMax && binario==0){
-					//log_info(compaclog,"Se terminaron de leer los bins de la tabla %s.",nuevo->nombre);
+					log_info(logger,"Compactador termino de leer los bins de la tabla %s.",nuevo->nombre);
 					contador=-1;
 					cantMax=cantTemp;
 					binario++;
 				}
 				contador++;
 			}
-			//log_info(compaclog,"Se terminaron de leer los tmps y bins de la tabla %s.",nuevo->nombre);
+			log_info(logger,"Compactador termino de leer los tmpc de la tabla %s.",nuevo->nombre);
 			contador=0;
 			t_list *depurado=regDep(todosLosRegistros);
 			//escribir
@@ -133,8 +135,9 @@ void *compactar(Sdirectorio* nuevo){
 				t_list *particion=filtrarPorParticion(depurado,contador,metadata->partitions);
 				char *archP=nivelParticion(nuevo->nombre,contador,0);
 				liberarParticion(archP);
+				log_info(logger,"Se liberaron los bloques del %i.bin de %s.",contador,nuevo->nombre);
 				if(escribirParticion(archP,particion,1)==1){
-					log_error(compaclog,"Error a la hora de escribir la compactacion de %s.",nuevo->nombre);
+					log_error(logger,"Error a la hora de escribir la compactacion de %s.",nuevo->nombre);
 					free(archP);
 					list_destroy(particion);
 					borrarMetadataTabla(metadata);
@@ -143,11 +146,12 @@ void *compactar(Sdirectorio* nuevo){
 					pthread_exit(NULL);
 					//compactar(nuevo);
 				}
+				log_info(logger,"Se terminaron de escribir los bloques de la particion %i de %s.",contador,nuevo->nombre);
 				free(archP);
 				list_destroy(particion);
 				contador++;
 			}
-			//log_info(compaclog,"se termino de escribir la compactacion de %s",nuevo->nombre);
+			log_info(logger,"se termino de escribir la compactacion de %s.",nuevo->nombre);
 			//SIGNAL MUTEX BINARIOS DE LA TABLA
 			sem_post(&nuevo->semaforoBIN);
 			sem_getvalue(&nuevo->archivoBloqueado,&valor);
@@ -162,10 +166,11 @@ void *compactar(Sdirectorio* nuevo){
 			while(cantTemp>contador){
 				char *arch=nivelParticion(nuevo->nombre,contador,2);
 				liberarParticion(arch);
+				log_info(logger,"Se liberaron los bloques del %i.tmpc de %s.",contador,nuevo->nombre);
 				free(arch);
 				contador++;
 			}
-			//log_info(compaclog,"se eliminaron los archivos tmpC de la tabla %s",nuevo->nombre);
+			log_info(logger,"Se eliminaron los archivos tmpc de la tabla %s.",nuevo->nombre);
 			//SIGNAL MUTEX TMPC DE LA TABLA
 			sem_post(&nuevo->semaforoTMPC);
 			sem_getvalue(&nuevo->archivoBloqueado,&valor);
@@ -176,7 +181,7 @@ void *compactar(Sdirectorio* nuevo){
 			list_destroy(depurado);
 			borrarMetadataTabla(metadata);
 			list_destroy_and_destroy_elements(todosLosRegistros,(void *)destroyRegistry);
-			log_info(compaclog,"Fin de la compactacion de %s",nuevo->nombre);
+			log_info(logger,"Fin de la compactacion de %s",nuevo->nombre);
 		}
 		sem_post(&nuevo->semaforoCompactor);
 	}

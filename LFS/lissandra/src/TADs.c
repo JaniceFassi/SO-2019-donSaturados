@@ -168,7 +168,37 @@ char *nivelParticion(char *tabla, int particion, int modo){		//montaje/TABLAS/TA
 	free(part);
 	return aux;
 }
-
+void inicializarPath(){
+	int opc;
+	printf("Ingrese el número de la configuracion a utilizar:");
+	printf("\n1- Prueba base \n2- Prueba kernel\n3- Prueba lfs \n4- Prueba memoria\n5- Prueba stress\n6- Carpeta Principal\n");
+	while(1){
+		scanf("%i",&opc);
+		switch(opc){
+		case 1:
+			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/lfs.config");
+			break;
+		case 2:
+			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/lfs.config");
+			break;
+		case 3:
+			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/lfs.config");
+			break;
+		case 4:
+			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/lfs.config");
+			break;
+		case 5:
+			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/lfs.config");
+			break;
+		case 6:
+			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
+			break;
+		default:
+			printf("Numero invalido, por favor ingrese de nuevo");
+			break;
+		}
+	}
+}
 /****************************************************************************************************/
 //FUNCIONES DE DESCONCATENAR
 
@@ -255,6 +285,8 @@ int crearParticiones(metaTabla *tabla){
 				free(arrayBlock[0]);
 				free(arrayBlock);
 			 return 1;
+		}else{
+			log_info(logger,"Se creo la particion %i de la tabla %s en el bloque %i.\n",tabla->partitions,tabla->nombre,bloque);
 		}
 		free(path);
 		free(arrayBlock[0]);
@@ -483,73 +515,6 @@ void estructurarConfig(){							//Lee el config y crea una estructura con esos d
 	config_destroy(config);
 }
 
-void crearConfig(){
-	FILE *config=fopen(pathInicial,"wb");
-	fclose(config);
-
-	configLissandra=malloc(sizeof(datosConfig));
-
-	printf("Ingrese el punto de montaje correspendiente:");//, sin el home/utnso: ");
-	char *path=malloc(100);
-	scanf("%s",path);
-	configLissandra->puntoMontaje=malloc(strlen(path)+1);
-	strcpy(configLissandra->puntoMontaje,path);
-	free(path);
-	printf("\nIngrese el tamaño maximo del value: ");
-	int aux;
-	scanf("%i",&aux);
-	configLissandra->tamValue=aux;
-	printf("\nIngrese el ID de Lissandra: ");
-	scanf("%i",&configLissandra->id);
-	printf("\nIngrese el ID de Memoria: ");
-	scanf("%i",&configLissandra->idEsperado);
-	printf("Ingrese la IP de Lissandra: ");
-	char *ip=malloc(25);
-	scanf("%s",ip);
-	configLissandra->Ip=malloc(strlen(ip)+1);
-	strcpy(configLissandra->Ip,ip);
-	free(ip);
-	aux=0;
-	printf("\nIngrese el puerto de escucha: ");
-	scanf("%i",&aux);
-	configLissandra->puerto=aux;
-	aux=0;
-	printf("\nIngrese el tiempo para el dump: ");
-	scanf("%i",&aux);
-	configLissandra->tiempoDump=aux;
-	aux=0;
-	printf("\nIngrese el tiempo de retardo: ");
-	scanf("%i",&aux);
-	configLissandra->retardo=aux;
-
-	t_config *lissConfig=config_create(pathInicial);
-
-	config_set_value(lissConfig,"PUNTO_MONTAJE",configLissandra->puntoMontaje);
-	char *tamanio=string_itoa(configLissandra->tamValue);
-	config_set_value(lissConfig,"TAMVALUE",tamanio);
-	char *id=string_itoa(configLissandra->id);
-	config_set_value(lissConfig,"ID",id);
-	char *idEsperado=string_itoa(configLissandra->idEsperado);
-	config_set_value(lissConfig,"ID_ESPERADO",idEsperado);
-	config_set_value(lissConfig,"IP",configLissandra->Ip);
-	char *puerto=string_itoa(configLissandra->puerto);
-	config_set_value(lissConfig,"PORT",puerto);
-	char *tempDump=string_itoa(configLissandra->tiempoDump);
-	config_set_value(lissConfig,"TIEMPO_DUMP",tempDump);
-	char *tempRetar=string_itoa(configLissandra->retardo);
-	config_set_value(lissConfig,"RETARDO",tempRetar);
-
-	config_save(lissConfig);
-	config_destroy(lissConfig);
-
-	free(tamanio);
-	free(id);
-	free(idEsperado);
-	free(puerto);
-	free(tempDump);
-	free(tempRetar);
-}
-
 void escribirArchB(char *path,char *buffer){
 	FILE *bloque=fopen(path,"wb");
 	fwrite(buffer,1,strlen(buffer)*sizeof(char)+1,bloque);
@@ -685,6 +650,7 @@ void escribirBloque(char *buffer,char **bloques){
 		char *pathB=rutaBloqueNro(nroBloq);
 		//escribir el archivo
 		escribirArchB(pathB,escribir);
+		log_info(logger,"Se escribio el bloque %i.",nroBloq);
 		free(escribir);
 		free(pathB);
 		char *auxilar=string_substring_from(buffer,metaLFS->tamBloques-1);
@@ -700,6 +666,7 @@ void escribirBloque(char *buffer,char **bloques){
 		char *pathB=rutaBloqueNro(nroBloq);
 		//escribir el archivo
 		escribirArchB(pathB,buffer);
+		log_info(logger,"Se escribio el bloque %i.",nroBloq);
 		free(buffer);
 		free(pathB);
 	}
@@ -1070,6 +1037,7 @@ void liberarParticion(char *path){
 		int cantBloques=0;
 		while(archivoAbierto->bloques[cantBloques]!=NULL){
 			limpiarBloque(archivoAbierto->bloques[cantBloques]);
+			log_info(logger,"Se libero el bloque %s",archivoAbierto->bloques[cantBloques]);
 			cantBloques++;
 		}
 		//se aumenta el contador de bloques

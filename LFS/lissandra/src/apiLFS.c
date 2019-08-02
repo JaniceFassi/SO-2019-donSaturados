@@ -279,6 +279,7 @@ int drop(char* nameTable){
 		while(i<cantBins){
 			path=nivelParticion(nameTable,i, 0);
 			liberarParticion(path);
+			log_info(logger,"Se elimino el %i.bin de %s.",i,nameTable);
 			free(path);
 			i++;
 		}
@@ -290,6 +291,7 @@ int drop(char* nameTable){
 		while(i<cantDumps){
 			path=nivelParticion(nameTable,i, 1);
 			liberarParticion(path);
+			log_info(logger,"Se elimino el %i.tmp de %s.",i,nameTable);
 			free(path);
 			i++;
 		}
@@ -301,6 +303,7 @@ int drop(char* nameTable){
 		while(i<cantTmpc){
 			path=nivelParticion(nameTable,i, 2);
 			liberarParticion(path);
+			log_info(logger,"Se elimino el %i.tmpc de %s.",i,nameTable);
 			free(path);
 			i++;
 		}
@@ -310,6 +313,7 @@ int drop(char* nameTable){
 		path=nivelUnaTabla(nameTable,1);
 		sem_wait(&tabDirectorio->semaforoMeta);
 		eliminarArchivo(path);
+		log_info(logger,"Se elimino la metadata de %s.",nameTable);
 		sem_post(&tabDirectorio->semaforoMeta);
 
 		free(path);

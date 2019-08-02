@@ -30,19 +30,17 @@ int main(void) {
 }
 
 void theStart(){
-	pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");		//Inicia variable global de path inicial (ruta conocida del config)
+	inicializarPath();
 	logger = init_logger();//Inicia el logger global
 	memtable= list_create();								//Inicia la memtable global
 	if(archivoValido(pathInicial)!=0){
 		estructurarConfig();								//Si existe el config en el path inicial crea la estructura, si no lo crea
-	}else{
-		crearConfig();										//EN CASO DE QUE NO NOS DEN EL CONFIG. DEBERIA SEGUIR ESTANDO ESTO??
 	}
 	tablaArchGlobal=list_create();
 	inicializarSemGlob();
 	directorioP=list_create();
-	dumplog=log_create("/home/utnso/tp-2019-1c-donSaturados/LFS/lissandra/dump.log","Lissandra",0,LOG_LEVEL_INFO);
-	compaclog=log_create("/home/utnso/tp-2019-1c-donSaturados/LFS/lissandra/compact.log","Lissandra",0,LOG_LEVEL_INFO);
+	//dumplog=log_create("/home/utnso/tp-2019-1c-donSaturados/LFS/lissandra/dump.log","Lissandra",0,LOG_LEVEL_INFO);
+	//compaclog=log_create("/home/utnso/tp-2019-1c-donSaturados/LFS/lissandra/compact.log","Lissandra",0,LOG_LEVEL_INFO);
 	levantarDirectorio();									//Crea todos los niveles del directorio ya teniendo el archivo config listo
 }
 
@@ -364,6 +362,7 @@ void *console(){
 			if(verificarParametro(subStrings,3)==0){
 				if(esNumero(subStrings[2])==0){
 					u_int16_t k=atoi(subStrings[2]);
+					log_info(logger,"SELECT %s %i",subStrings[1],k);
 					char *valor=lSelect(subStrings[1],k);
 					free(valor);
 				}else{
@@ -403,7 +402,7 @@ void *console(){
 							value=realloc(value,base);
 							strcat(value,cadena[i]);
 						}
-
+						log_info(logger,"INSERT %s %i %s %ld",split[1],key,value,timestamp);
 						insert(split[1],key,value,timestamp);
 						free(espacio);
 						free(value);
@@ -429,6 +428,7 @@ void *console(){
 						log_info(logger,"El tiempo de compactacion es un long.");
 					}else{
 						if(!strncmp(subStrings[2],"SC",2)||!strncmp(subStrings[2],"EC",2)||!strncmp(subStrings[2],"SHC",3)){
+							log_info(logger,"CREATE %s %s %i %ld",subStrings[1],subStrings[2],particiones,timeCompaction);
 							create(subStrings[1],subStrings[2],particiones,timeCompaction);
 						}else{
 							log_info(logger,"Los criterios pueden ser SC, EC Y SHC.");
@@ -461,6 +461,7 @@ void *console(){
 			if(subStrings[1]==NULL){
 				log_info(logger,"No se ingreso el nombre de la tabla.");
 			}else{
+				log_info(logger,"DROP %s",subStrings[1]);
 				drop(subStrings[1]);
 			}
 			free(subStrings[0]);
@@ -488,7 +489,6 @@ void theEnd(){
 	pthread_cancel(hiloDump);
 	sem_post(sem_dump);
 	//log_info(logger,"se termino el hilo de Dump");
-	log_destroy(dumplog);
 	if(!list_is_empty(memtable)){
 		list_destroy_and_destroy_elements(memtable,(void*)liberarTabla);
 	}else{
@@ -496,7 +496,6 @@ void theEnd(){
 	}
 	//log_info(logger,"se elimino la memtable");
 	liberarDirectorioP();
-	log_destroy(compaclog);
 	liberarSemaforos();
 	borrarDatosConfig();
 	borrarMetaLFS();
