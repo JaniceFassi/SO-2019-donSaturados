@@ -11,6 +11,10 @@ int main(void) {
 	sem_init(&semConfig,0,1);
 	srand(time(NULL));
 	logger = init_logger(0);
+	log_info(logger,"Arranca kernel");
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
 
 	config = read_config();
 	inicializarColas();
@@ -46,18 +50,18 @@ int main(void) {
 	pthread_t hilos[limiteProcesamiento];
 	int i=0;
 	while(i<limiteProcesamiento){
-		pthread_create(&(hilos[i]), NULL, (void*)ejecutarScripts, NULL);
+		pthread_create(&(hilos[i]), &attr, (void*)ejecutarScripts, NULL);
 		i++;
 	}
 	// aca deberia poder conocer el resto de las memorias
 	pthread_t hiloMetricas;
-	pthread_create(&hiloMetricas, NULL, metricasAutomaticas, NULL);
+	pthread_create(&hiloMetricas, &attr, metricasAutomaticas, NULL);
 	pthread_t hiloDescribe;
-	pthread_create(&hiloDescribe, NULL, describeGlobal, NULL);
+	pthread_create(&hiloDescribe, &attr, describeGlobal, NULL);
 	pthread_t hiloGossip;
-	pthread_create(&hiloGossip, NULL, (void*)gossiping, NULL);
+	pthread_create(&hiloGossip, &attr, (void*)gossiping, NULL);
 	pthread_t hiloInotify;
-	pthread_create(&hiloInotify, NULL, (void*)inotifyKernel, NULL);
+	pthread_create(&hiloInotify, &attr, (void*)inotifyKernel, NULL);
 
 	apiKernel();
 
@@ -70,6 +74,12 @@ int main(void) {
 	}
 
 	destruir();
+	pthread_attr_destroy (&attr);
+	pthread_cancel(hiloGossip);
+	pthread_cancel(hiloInotify);
+	pthread_cancel(hiloDescribe);
+	pthread_cancel(hiloMetricas);
+
 
 
 	return EXIT_SUCCESS;
@@ -115,8 +125,8 @@ t_config* read_config(){
 }
 
 void apiKernel(){
+	char * linea;
 	while(1){
-		char * linea;
 		linea= readline(">");
 		if(strcmp(linea,"")!=0){
 			if(string_starts_with(linea,"RUN")){
@@ -130,6 +140,7 @@ void apiKernel(){
 							}
 							free(split);
 						}
+						free(linea);
 					}
 					else{
 						if(string_starts_with(linea,"EXIT")){
@@ -142,6 +153,7 @@ void apiKernel(){
 								char * comando = string_from_format("%s0",linea);
 								parsear(comando);
 								free(comando);
+								free(linea);
 							}
 							else{
 								struct script *nuevo= malloc(sizeof(struct script));
@@ -155,11 +167,15 @@ void apiKernel(){
 								queue_push(ready,nuevo);
 								sem_post(&semColasMutex);
 								sem_post(&semColasContador);
+								free(linea);
 							}
 						}
 					}
 		}
+		else{
 			free(linea);
+		}
+		linea=NULL;
 	}
 }
 
@@ -505,6 +521,11 @@ int mySelect(char * table, char *key){
 	if(atoi(resultado)==3){
 		log_info(logger,"El select no tiene valor en esa key");
 		close(sock);
+		free(msj);
+		free(linea);
+		free(tamanioYop);
+		free(cons);
+		free(resultado);
 		return 0;
 	}
 //	log_info(logger,"resultado entero SELECT: %i" , atoi(resultado));
@@ -516,6 +537,11 @@ int mySelect(char * table, char *key){
 			recvData(sock,resultado,1);
 			if(atoi(resultado)!=0){
 				close(sock);
+				free(msj);
+				free(linea);
+				free(tamanioYop);
+				free(cons);
+				free(resultado);
 				return -1;
 			}
 			close(sock);
@@ -530,13 +556,20 @@ int mySelect(char * table, char *key){
 				tamRta[3]='\0';
 				char *rtaS=malloc(atoi(tamRta));
 				recvData(sock,rtaS,atoi(tamRta));
+				free(tamRta);
 				log_info(logger,"\n\nResultado SELECT despues de journal: %s \n\n", rtaS);
+				free(rtaS);
 			}
 			else{
 				log_info(logger,"El select no tiene valor en esa key");
 			}
 		}
 		else{
+			free(msj);
+			free(linea);
+			free(tamanioYop);
+			free(cons);
+			free(resultado);
 			return -1;
 		}
 	}
@@ -656,9 +689,11 @@ int insert(char* table ,char* key ,char* value){
 			log_info(logger,"resultado del journal: %i",atoi(res));
 			if(atoi(res)!=0){
 				close(sock);
+				free(res);
 				free(cons);
 				return -1;
 			}
+			free(res);
 			/*char *resI= malloc(2);
 			sendData(sock,linea,strlen(linea)+1);
 			recvData(sock,resI,1);
@@ -764,10 +799,11 @@ int create(char* table , char* consistency , char* numPart , char* timeComp){
 	log_info(logger,"resultado CREATE: %i", atoi(resultado));
 
 	if(atoi(resultado)!=0){
+		free(resultado);
 		close(sock);
 		return -1;
 	}
-
+	free(resultado);
 	free(linea);
 	free(msj);
 	free(tamanioYop);
@@ -861,6 +897,7 @@ int describe(char *table){
 	}
 	if(sock==-1){
 		log_info(logger, "no se pudo conectar con las memorias, se seguira con la ejecucion del script");
+		free(msj);
 		return 0;
 	}
 
@@ -876,6 +913,7 @@ int describe(char *table){
 
 	if(atoi(resultado)!=0){
 		close(sock);
+		free(msj);
 		return -1;
 	}
 	char *cantTablas= malloc(3);
@@ -1509,6 +1547,7 @@ void *gossiping(){
 						split=string_n_split(bufferAux,4,";");
 						}
 					free(bufferAux);
+					free(salioBien);
 					bufferAux=NULL;
 				}
 				log_info(logger,"Fin del gossiping, el estado de las memorias conocidas es:");
@@ -1613,6 +1652,7 @@ void destruir(){
 
 	log_destroy(logger);
 	free(pathConfig);
+	config_destroy(config);
 	list_destroy(criterioEC);
 	list_destroy(criterioSC);
 	list_destroy(criterioSHC);
@@ -1661,4 +1701,5 @@ void destruir(){
 	free(myExit);
 	free(exec->elements);
 	free(exec);
+
 }
