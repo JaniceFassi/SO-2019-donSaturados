@@ -82,7 +82,6 @@ void *connectMemory(){
 		pthread_t unHilo;
 		//log_info(logger,"creando hilo");
 		pthread_create(&unHilo,NULL,interactuarConMemoria,(void*)socket_client);
-
 		//log_info(logger,"se creo hilo");
 		pthread_detach(unHilo);
 	}
@@ -299,6 +298,7 @@ void exec_api(op_code mode,u_int16_t sock){
 		sendData(sock,respuesta,strlen(respuesta)+1);
 		//log_info(logger,respuesta);
 		free(respuesta);
+		list_destroy_and_destroy_elements(tabla,(void *)borrarMetadataTabla);
 		close(sock);
 		break;
 

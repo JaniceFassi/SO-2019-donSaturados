@@ -172,33 +172,32 @@ void inicializarPath(){
 	int opc;
 	printf("Ingrese el número de la configuracion a utilizar:");
 	printf("\n1- Prueba base \n2- Prueba kernel\n3- Prueba lfs \n4- Prueba memoria\n5- Prueba stress\n6- Carpeta Principal\n");
-	while(1){
-		scanf("%i",&opc);
-		switch(opc){
-		case 1:
-			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/lfs.config");
-			break;
-		case 2:
-			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/lfs.config");
-			break;
-		case 3:
-			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/lfs.config");
-			break;
-		case 4:
-			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/lfs.config");
-			break;
-		case 5:
-			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/lfs.config");
-			break;
-		case 6:
-			pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
-			break;
-		default:
-			printf("Numero invalido, por favor ingrese de nuevo");
-			break;
-		}
+	scanf("%i",&opc);
+	switch(opc){
+	case 1:
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/lfs.config");
+		break;
+	case 2:
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/lfs.config");
+		break;
+	case 3:
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/lfs.config");
+		break;
+	case 4:
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/lfs.config");
+		break;
+	case 5:
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/lfs.config");
+		break;
+	case 6:
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
+		break;
+	default:
+		printf("Numero invalido, por favor ingrese de nuevo");
+		break;
 	}
 }
+
 /****************************************************************************************************/
 //FUNCIONES DE DESCONCATENAR
 

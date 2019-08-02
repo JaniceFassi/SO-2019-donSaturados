@@ -180,6 +180,7 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 		if(crearCarpeta(path)==1){
 			log_error(logger,"ERROR AL CREAR LA CARPETA %s.",nombre);
 			free(path);
+			free(nombre);
 			//liberar el semaforo de bloques ocupados
 			return 1;
 		}
@@ -194,6 +195,9 @@ int create(char* nameTable, char* consistency , u_int16_t numPartition,long time
 			sem_wait(criticaCantBloques);
 			cantBloqGlobal+=numPartition;
 			sem_post(criticaCantBloques);
+			borrarMetadataTabla(tabla);
+			free(path);
+			free(nombre);
 			return 1;
 		}
 		borrarMetadataTabla(tabla);
