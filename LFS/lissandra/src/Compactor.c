@@ -54,10 +54,10 @@ void *compactar(Sdirectorio* nuevo){
 		usleep(nuevo->time_compact*1000);
 		sem_wait(&nuevo->semaforoCompactor);
 		nuevo->pedido_extension=3;
-		log_info(logger,"Se empezo a hacer la compactacion de la tabla %s",nuevo->nombre);
+		log_info(logger,"Se empezo a hacer la compactacion de la tabla %s.",nuevo->nombre);
 		char *path=nivelUnaTabla(nuevo->nombre,0);
 		if(folderExist(path)==1){
-			log_error(logger,"No se puede hacer la compactacion por que la tabla %s ya no existe",nuevo->nombre);
+			log_error(logger,"No se puede hacer la compactacion por que la tabla %s ya no existe.",nuevo->nombre);
 			free(path);
 			return NULL;
 		}

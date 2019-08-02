@@ -175,19 +175,19 @@ void inicializarPath(){
 	scanf("%i",&opc);
 	switch(opc){
 	case 1:
-		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/lfs.config");
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/lfs");
 		break;
 	case 2:
-		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/lfs.config");
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/lfs");
 		break;
 	case 3:
-		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/lfs.config");
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/lfs");
 		break;
 	case 4:
-		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/lfs.config");
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/lfs");
 		break;
 	case 5:
-		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/lfs.config");
+		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/lfs");
 		break;
 	case 6:
 		pathInicial=string_duplicate("/home/utnso/tp-2019-1c-donSaturados/LFS/LFS.config");
@@ -646,6 +646,7 @@ int renombrarTemp_TempC(char *path){
 //FUNCIONES DE BLOQUES
 void escribirBloque(char *buffer,char **bloques){
 	int nroArray=0;
+	log_info(logger,buffer);
 	while(strlen(buffer)>metaLFS->tamBloques){
 		char *escribir=string_substring_until(buffer,metaLFS->tamBloques-1);
 		int nroBloq=atoi(bloques[nroArray]);
