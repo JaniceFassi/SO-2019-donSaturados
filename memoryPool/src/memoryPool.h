@@ -129,10 +129,6 @@ void destruirConfig();
 
 //AUXILIARES DE ARRANQUE
 void deploy();
-void configLFS(int id);
-void configKernel(int id);
-void configStress(int id);
-void configBase(int id);
 int inicializar();
 void init_configuracion(t_config* configuracion);
 void prepararGossiping();

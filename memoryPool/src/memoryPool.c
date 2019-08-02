@@ -34,7 +34,7 @@ int main(void) {
 	pthread_create(&journalTemporal, NULL, journalProgramado, NULL);
 
 	pthread_join(hiloConsola, (void*)&fin);
-	if(fin == 0){
+	if(fin == 1){
 		pthread_cancel(gestorConexiones);
 		pthread_cancel(inotify);
 		pthread_cancel(journalTemporal);
@@ -63,73 +63,20 @@ void deploy(){
 	printf("Prueba %d id %d \n", prueba, id);
 	switch(prueba){
 	case 1:
-		configBase(id);
+		pathConfig = string_from_format("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/mem%d.config", id);
 		break;
 	case 2:
-		configKernel(id);
+		pathConfig = string_from_format("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem%d.config", id);
 		break;
 	case 3:
-		configLFS(id);
+		pathConfig = string_from_format("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/mem%d.config", id);
 		break;
 	case 4:
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/mem1.config");
+		pathConfig = string_from_format("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/mem%d.config", id);
 		break;
 	case 5:
-		configStress(id);
+		pathConfig = string_from_format("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem%d.config", id);
 		break;
-	}
-}
-void configBase(int id){
-	if(id==1){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/mem1.config");
-	}
-	if(id ==2){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/mem2.config");
-	}
-}
-
-void configKernel(int id){
-	if(id ==1){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem1.config");
-	}
-	if(id ==2){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem2.config");
-	}
-	if(id ==3){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem3.config");
-	}
-	if(id ==4){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem4.config");
-	}
-}
-
-void configLFS(int id){
-	if(id ==1){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/mem1.config");
-	}
-	if(id ==2){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/mem2.config");
-	}
-	if(id ==3){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/mem3.config");
-	}
-}
-
-void configStress(int id){
-	if(id ==1){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem1.config");
-	}
-	if(id ==2){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem2.config");
-	}
-	if(id ==3){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem3.config");
-	}
-	if(id ==4){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem4.config");
-	}
-	if(id ==5){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem5.config");
 	}
 }
 
@@ -494,7 +441,6 @@ void configStress(int id){
  	log_info(logger, "Servidor escuchando\n");
 
  	while(1){
-
  		u_int16_t cliente;
  		int salioBien = acceptConexion(server, &cliente, 0);
  		if(salioBien == 0){
@@ -511,18 +457,18 @@ void configStress(int id){
  void* correrInotify(void*arg){
 
  	while(1){
- 			char buffer[BUF_LEN];
- 			int file_descriptor = inotify_init();
- 			if (file_descriptor < 0) {
- 				perror("inotify_init");
- 			}
- 			int watch_descriptor = inotify_add_watch(file_descriptor, pathConfig, IN_MODIFY );
- 			int length = read(file_descriptor, buffer, BUF_LEN);
- 			if (length < 0) {
- 				perror("read");
- 			}
- 			modificarConfig();
+ 		char buffer[BUF_LEN];
+ 		int file_descriptor = inotify_init();
+ 		if (file_descriptor < 0) {
+ 			perror("inotify_init");
  		}
+ 		int watch_descriptor = inotify_add_watch(file_descriptor, pathConfig, IN_MODIFY );
+ 		int length = read(file_descriptor, buffer, BUF_LEN);
+ 		if (length < 0) {
+ 			perror("read");
+ 		}
+ 		modificarConfig();
+ 	}
 
  	return NULL;
  }
@@ -568,7 +514,9 @@ void configStress(int id){
 
 	char* linea;
 	while(1){
-
+		if(fin){
+			pthread_exit(NULL);
+		}
 		linea = readline(">");
 
  		if(!strncmp(linea,"SELECT",6)){
@@ -684,7 +632,7 @@ void configStress(int id){
 
  	 	else if(!strncmp(linea,"EXIT",5)){
  			free(linea);
- 			fin = 0;
+ 			fin = 1;
  			break;
  		}
  	 	else{
@@ -1181,6 +1129,7 @@ void segmentoDestroy(segmento* segParaDestruir){
 
 void eliminarMarcos(){
 	list_destroy_and_destroy_elements(tablaMarcos,(void*)marcoDestroy);
+	list_destroy(marcosReemplazables);
 
 }
 
@@ -1378,7 +1327,9 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 			}
 			else{//si lfs no tenía el valor
 				sem_post(&semJournal);
+				pthread_mutex_lock(&lockLRU);
 				paginaDestroy(pNueva);
+				pthread_mutex_unlock(&lockLRU);
 				free(estoyFull);
 				return noExiste;
 			}
@@ -1422,7 +1373,10 @@ char* mSelect(char* nombreTabla,u_int16_t key){
 		}
 		else{//lfs no tenía el valor
 			sem_post(&semJournal);
+			pthread_mutex_lock(&lockLRU);
 			paginaDestroy(pNueva);
+			pthread_mutex_unlock(&lockLRU);
+
 			free(estoyFull);
 			return noExiste;
 		}
@@ -1461,7 +1415,9 @@ int mDrop(char* nombreTabla){
 
 	if(nuevo != NULL){
 		pthread_mutex_lock(&lockTablaSeg);
+		pthread_mutex_lock(&lockLRU);
 		eliminarSegmento(nuevo);
+		pthread_mutex_unlock(&lockLRU);
 		pthread_mutex_unlock(&lockTablaSeg);
 		log_info(logger, "Se realizo un drop del segmento %s", nombreTabla);
 
@@ -1484,7 +1440,6 @@ int mJournal(){
 		sem_wait(&semJournal);
 	}
 	log_info(logger,"Empieza el journal");
-
 	for(int i =0; i<(tablaSegmentos->elements_count); i++){
 		segmento *seg = list_get(tablaSegmentos, i);
 		char* nombreSegmento = string_duplicate(seg->nombreTabla);
@@ -1528,7 +1483,6 @@ int mJournal(){
 	log_info(logger, "Fin del journal, procede a borrar datos existentes");
 	list_clean_and_destroy_elements(tablaSegmentos, (void*)segmentoDestroy);
 	list_clean(marcosReemplazables);
-
 	int listaVacia = list_is_empty(tablaSegmentos);
 	if (listaVacia == 1){
 		marco *marc;
