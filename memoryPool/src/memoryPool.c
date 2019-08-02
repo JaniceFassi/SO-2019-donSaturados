@@ -12,7 +12,9 @@
 #define EVENT_SIZE  ( sizeof (struct inotify_event) + 100 )
 #define BUF_LEN     ( 1024 * EVENT_SIZE )
 
+
 int main(void) {
+	deploy();
 	int exito = inicializar();
 
 	if(exito==1){
@@ -49,19 +51,91 @@ int main(void) {
 //------------------AUXILIARES DE ARRANQUE----------------//
 //-------------------------------------------------------//
 
+void deploy(){
+	pathConfig = malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/memn.config")+1);
+	printf("Ingrese el numero correspondiente a la prueba que se está por realizar\n");
+	int prueba;
+	int id;
+	printf("1 - Base \n2 - Kernel\n3 - Lissandra\n4 - Memoria\n5 - Stress\n");
+	scanf("%d", &prueba);
+	printf("Ingrese el ID de la memoria que desea levantar: ");
+	scanf("%d", &id);
+	printf("Prueba %d id %d \n", prueba, id);
+	switch(prueba){
+	case 1:
+		configBase(id);
+		break;
+	case 2:
+		configKernel(id);
+		break;
+	case 3:
+		configLFS(id);
+		break;
+	case 4:
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/memoria/mem1.config");
+		break;
+	case 5:
+		configStress(id);
+		break;
+	}
+}
+void configBase(int id){
+	if(id==1){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/mem1.config");
+	}
+	if(id ==2){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/base/mem2.config");
+	}
+}
+
+void configKernel(int id){
+	if(id ==1){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem1.config");
+	}
+	if(id ==2){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem2.config");
+	}
+	if(id ==3){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem3.config");
+	}
+	if(id ==4){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/kernel/mem4.config");
+	}
+}
+
+void configLFS(int id){
+	if(id ==1){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/mem1.config");
+	}
+	if(id ==2){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/mem2.config");
+	}
+	if(id ==3){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/lfs/mem3.config");
+	}
+}
+
+void configStress(int id){
+	if(id ==1){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem1.config");
+	}
+	if(id ==2){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem2.config");
+	}
+	if(id ==3){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem3.config");
+	}
+	if(id ==4){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem4.config");
+	}
+	if(id ==5){
+		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/configsPruebas/stress/mem5.config");
+	}
+}
+
  int inicializar(){
 	logger = init_logger();
 
-	log_info(logger, "Ingrese el nro de memoria: ");
-	int nromem;
-	scanf("%d", &nromem);
-
-	pathConfig = malloc(strlen("/home/utnso/tp-2019-1c-donSaturados/memoryPool/memn.config")+1);
-	if(nromem == 1){
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/mem1.config");
-	}else{
-		strcpy(pathConfig, "/home/utnso/tp-2019-1c-donSaturados/memoryPool/mem2.config");
-	}
 
 	t_config* configuracion = read_config();
 	config = malloc(sizeof(estructuraConfig));

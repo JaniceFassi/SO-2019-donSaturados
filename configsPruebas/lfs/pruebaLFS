@@ -1,0 +1,11 @@
+ADD MEMORY 1 TO EC
+ADD MEMORY 2 TO EC
+ADD MEMORY 3 TO EC
+
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/compactacion_larga.lql
+
+DESCRIBE
+SELECT METALS 198
+SELECT METALS 135 
+SELECT ANIMALS 110
+

@@ -1,0 +1,31 @@
+ADD MEMORY 5 TO SC
+ADD MEMORY 1 TO SHC
+ADD MEMORY 2 TO SHC
+ADD MEMORY 3 TO SHC
+ADD MEMORY 4 TO SHC
+ADD MEMORY 2 TO EC
+ADD MEMORY 3 TO EC
+ADD MEMORY 5 TO EC
+
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/cities_countries.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/games_computer.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/internet_browser_falla.lql
+
+Modificar quantum a 3
+
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/library_study.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/nintendo_playstation.lql
+RUN /home/utnso/tp-2019-1c-donSaturados/1C2019-Scripts-lql-entrega/scripts/cosas_falla.lql
+
+Desconectar memoria 4
+Reconectar memoria 4
+ADD MEMORY 4 TO EC
+
+Desconectar memoria 2
+Reconectar memoria 2
+ADD MEMORY 2 TO SHC
+
+METRICS
+
+JOURNAL
+
