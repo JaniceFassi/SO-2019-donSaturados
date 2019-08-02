@@ -650,7 +650,6 @@ int insert(char* table ,char* key ,char* value){
 	free(linea);
 	free(msj);
 	free(tamanioYop);
-	free(split);
 	close(sock);
     gettimeofday(&tf, NULL);   // Instante final
     tiempo= (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
@@ -1590,13 +1589,6 @@ void destruir(){
 		free(s);
 	}
 	void destruirScriptExit(struct script *s){
-		if(s->modoOp==0){
-			if(s->estado==0){
-				log_info(logger,"el script con el path: %s termino correctamente", s->input);
-			}else{
-				log_info(logger,"el script con el path: %s fallo", s->input);
-			}
-		}
 		free(s->input);
 		free(s);
 	}
